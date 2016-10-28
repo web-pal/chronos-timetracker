@@ -1,0 +1,300 @@
+@import('~lesshat');
+// Works with browsers that support transitions and animations on CSS generated content: http://css-tricks.com/transitions-and-animations-on-css-generated-content/
+
+// THE CONFIG:
+
+@speed: 1;
+
+@startHour   : 2;
+@startMinute : 48;
+@startSecond : 0;
+
+
+@clockSize : 400px;
+
+// ---------------------
+
+
+
+
+@step : 360/60;
+
+@clockStartDelay : 3s;  // wait till all the animations are finished
+@borderWidth     : round(@clockSize / 22);
+@wrapperWidth    : round(@clockSize * 1.15);
+
+
+.clock-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: #eceef0;
+    overflow: hidden;
+}
+
+.clock-border {
+    .center;
+    .size(@wrapperWidth, @wrapperWidth);
+
+    border-width: @borderWidth;
+    border-color: transparent #d2d8df #d2d8df;
+    border-style: solid;
+
+    .border-radius(50%);
+    .rotate(45deg);
+    .animation(rotate-clock-border 0.69s cubic-bezier(0.645, 0.000, 0.605, 1.000) 0.69s 1 forwards);
+    .animation-timing-function(cubic-bezier(0.645, -0.180, 0.605, 1.360));
+}
+
+.clock {
+    .center;
+    .size(@clockSize, @clockSize);
+    padding: 0;
+    background-color: #262c33;
+    border: @borderWidth solid #373f4a;
+    .border-radius(50%);
+    .background-clip(border-box);   // lesshat inserts padding-box along with border-radius, which makes it look ugly on webkit
+    .rotate(-45deg);
+    .animation(counterrotate-clock 0.69s cubic-bezier(0.645, 0.000, 0.605, 1.000) 0.69s 1 forwards);
+    .animation-timing-function(cubic-bezier(0.645, -0.180, 0.605, 1.360));
+}
+
+.keyframes(~'rotate-clock-border, 0%{ transform: rotate( 45deg); } 100%{ transform: rotate( 315deg); }');
+.keyframes(~'counterrotate-clock, 0%{ transform: rotate(-45deg); } 100%{ transform: rotate(-315deg); }');
+
+
+.hour {
+    @hourWidth  : @clockSize * 0.04;
+    @hourLength : @clockSize * 0.3;
+
+    @hourStart : (@startHour + @startMinute/60 ) * 5 * @step;
+
+    .center;
+    .rotate(@hourStart);
+
+    .hand { 
+        .pointed-hand(@hourWidth, @hourLength); 
+        .pointed-hand-grow-animation("hour", @hourWidth, @hourLength, 1.35s); 
+
+        @time : 60 * 3600s / 5; // 60 minutes; full minute hand circle = 3600s; 1 hour = 5 minute distance
+        .animation(tick @time/@speed normal infinite steps(3600, end) @clockStartDelay);
+    }
+}
+
+.minute {
+    @minuteWidth  : @clockSize * 0.03;
+    @minuteLength : @clockSize * 0.42;
+
+    @minuteStart : (@startMinute + @startSecond/60)* @step;
+    
+    .center;
+    .rotate(@minuteStart);
+
+    .hand { 
+        .pointed-hand(@minuteWidth, @minuteLength); 
+        .pointed-hand-grow-animation("minute", @minuteWidth, @minuteLength, 1.6s); 
+        .animation(tick 3600s/@speed normal infinite steps(3600, end) @clockStartDelay);
+    }
+}
+
+.second {
+    @secondWidth  : @clockSize * 0.02;
+    @secondLength : @clockSize * 0.6;
+
+    .center;
+    .rotate(@startSecond * @step);
+
+    .hand {
+        .center;
+        .animation(tick-second 1s/@speed normal infinite steps(30, end) @clockStartDelay);
+
+        &:before {
+            content: '';
+            display: inline-block;
+            .center;
+            @top : -@secondLength/2;
+            top: 0; // animates to => top: @top;
+            .size(@secondWidth, 0); // animates to => .size(@secondWidth, @secondLength);
+            background-color: #f16b41;
+            .border-radius(@secondWidth);
+            .transform-origin(center, @secondLength*3/4);
+            .animation(second-grow 1.6s cubic-bezier(1.000, 0.000, 0.000, 1.000) 1.45s 1 forwards,
+                       second 60s/@speed normal infinite steps(60, end) @clockStartDelay);
+
+            .keyframes(~'second-grow, from { top: 0; height: 0; } 100%{ top: @{top}; height: @{secondLength}; }');
+        }
+
+        &:after {
+            content: '';
+            position: absolute;
+            .center;
+            display: inline-block;
+            .size(@secondWidth*4);
+            .border-radius(@secondWidth*4);
+            background-color: #f16b41;
+        }
+    }
+}
+
+.keyframes(~'tick, 0%{ transform: rotate(0deg); } 100%{ transform: rotate(360deg); }');
+
+.keyframes(~'second, 0%{ transform: rotate(0deg) } 100%{ transform: rotate(360deg) }');
+
+.keyframes(~'tick-second, 0%{ transform: rotate(0deg); } 21%{ transform: rotate(4deg); } 26%{ transform: rotate(8deg); } 33%{ transform: rotate(4deg); } 37%{ transform: rotate(6deg); } 100%{ transform: rotate(6deg); }');
+
+
+.minute-marks {
+    @minuteSize: @clockSize/100;
+    @fiveSize: @clockSize/20;
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+    .size(0);
+    li {
+        .center;
+        display: inline-block;
+        .size(200);
+
+        &:before,
+        &:after {
+            content: '';
+            .center;
+            .size(0);
+            display: inline-block;
+            border-color: #d4d5d6;
+            border-width: @minuteSize;
+            border-style: solid;
+            .border-radius(@minuteSize);
+            .opacity(0);
+            .animation(fade-in 0.1s ease 0s 1 forwards);
+            .keyframes(~'fade-in, from{ -webkit-opacity: 0; -moz-opacity: 0; -o-opacity: 0; opacity: 0; } to{ -webkit-opacity: 1; -moz-opacity: 1; -o-opacity: 1; opacity: 1; }');
+        }
+        &:before { top:    -@clockSize + @minuteSize*5; }
+        &:after  { bottom: -@clockSize + @minuteSize*5; }
+
+        &.five {
+            &:before,
+            &:after {
+                .size(0, @fiveSize);
+            }
+            &:before { top:    -@clockSize + @fiveSize*2; }
+            &:after  { bottom: -@clockSize + @fiveSize*2; }
+        }
+    .rotateMinutes;
+    }
+}
+
+
+// Mixins:
+
+.center () {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+.rotateMinutes () {
+    @limit : 31;
+    .loop(1);
+    .loop (@index) when (@index < @limit) {
+        @delay : 0.017s;
+        &:nth-child(@{index}) {
+            // step => 360 degrees, 60 second
+            // since there is no nth-child(0), we need to back every rotation a little (hence the -@step)
+            .rotate(@index*@step - @step);
+            @firstHalfDelay  : (@index * @delay);
+            @secondHalfDelay : (@index * @delay) + (@limit * @delay);
+            &:before { .animation-delay(@firstHalfDelay);  }
+            &:after  { .animation-delay(@secondHalfDelay); }
+        }
+        .loop(@index + 1);
+    }
+    .loop (30) {}
+}
+
+.pointed-hand (@width, @length) {
+    @arrowCorrection : @clockSize/200;
+
+    .center;
+
+    &:before {
+        content: '';
+        .center;
+        display: inline-block;
+        top: 0; // animates to => top: -@length;
+        .size(@width, @length);
+        height: 0;
+        .border-top-left-radius(@arrowCorrection);
+        .border-top-right-radius(@arrowCorrection);
+        .transform-origin(center, 100);
+        background-color: #fff;
+    }
+
+    &:after {
+        content: '';
+        position: absolute;
+        .center;
+        top: 0; // animates to => top: -(2*@length) - @width + @arrowCorrection;
+        display: inline-block;
+        border-bottom: @width solid #fff;
+        border-left: @width/2 solid transparent;
+        border-right: @width/2 solid transparent;
+        .size(0);
+        .transform-origin(center, 100);
+    }
+}
+
+.pointed-hand-grow-animation(@handName, @width, @length, @delay) {
+    @arrowCorrection : @clockSize/200;
+    @easingLimited: cubic-bezier(0.690, 0.000, 0.490, 1.000);
+    @easing : cubic-bezier(0.690, -0.060, 0.490, 1.400);
+    &:before {
+        .animation(~"@{handName}-grow-before" 0.4s @easingLimited @delay 1 forwards);
+        .animation-timing-function(@easing);
+        .keyframes(~'@{handName}-grow-before, 0%{ height: 0; top: 0; } 100%{ height: @{length}; top: -@{length}; }');
+    }
+    &:after {
+        @top : -(2*@length) - @width + @arrowCorrection;
+        .animation(~"@{handName}-grow-after" 0.4s @easingLimited @delay 1 forwards);
+        .animation-timing-function(@easing);
+        .keyframes(~'@{handName}-grow-after, 0%{ top: 0; } 100%{ top: @{top}; }');
+    }
+}
+
+
+// ...and the additional caption
+h1 {
+    position: absolute;
+    bottom: 0;
+    margin-bottom: 44px;
+    width: 100%;
+    text-align: center;
+    font: bold 33px/1  "Trebuchet MS", Verdana, sans-serif;
+    color: #d2d8df;
+    text-shadow: 0 -2px 0 #fff;
+    @media (max-height: 740px) {
+        display: none;
+    }
+    small {
+        display: block;
+        margin-top: 10px;
+        font-weight: normal;
+        font-size: 12px;
+        color: darken(#d2d8df, 10%);
+        text-shadow: none;
+        a {
+            color: darken(#d2d8df, 10%);
+            text-decoration: none;
+            .transition(all 0.25s ease);
+            &:hover {
+                color: darken(#d2d8df, 33%);
+            }
+        }
+    }
+}

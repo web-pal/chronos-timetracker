@@ -1,0 +1,79 @@
+.button {
+  font: 15px Open Sans;
+  font-style: bold;
+  background: white;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 3px;
+  padding: 8px 15px;
+  color: rgba(255, 255, 255, 0.90);
+  outline: none;
+  cursor: pointer;
+}
+
+.button.button-default {
+  background: @default;
+  &:focus {
+    box-shadow:  0 0 5px darken(@default, 10%);
+  }
+  &:hover {
+    background: @default-hover;
+  }
+}
+
+.button.button-primary {
+  background: @primary;
+  &:focus {
+    box-shadow:  0 0 5px darken(@primary, 10%);
+  }
+  &:hover {
+    background: @primary-hover;
+  }
+}
+
+.button.button-success {
+  background: @success;
+  &:focus {
+    box-shadow:  0 0 5px darken(@success, 10%);
+  }
+  &:hover {
+    background: @success-hover;
+  }
+}
+
+.button.button-info {
+  background: @info;
+  &:focus {
+    box-shadow:  0 0 5px darken(@info, 10%);
+  }
+  &:hover {
+    background: @info-hover;
+  }
+}
+
+.button.button-warning {
+  background: @warning;
+  &:focus {
+    box-shadow:  0 0 5px darken(@warning, 10%);
+  }
+  &:hover {
+    background: @warning-hover;
+  }
+}
+
+.button.button-danger {
+  background: @danger;
+  &:focus {
+    box-shadow:  0 0 5px darken(@danger, 10%);
+  }
+  &:hover {
+    background: @danger-hover;
+  }
+}
+
+.button.button-link {
+  background: white;
+  color: @link;
+  &:hover {
+    text-decoration: underline;
+  }
+}
