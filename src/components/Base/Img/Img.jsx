@@ -1,10 +1,11 @@
 import React, { PropTypes } from 'react';
 
-const Img = ({ source }) =>
-  <img role="presentation" src={source} />;
+const Img = ({ src, className }) =>
+  <img role="presentation" src={src} className={`image ${className}`} />;
 
 Img.propTypes = {
-  source: PropTypes.string,
+  src: PropTypes.string,
+  className: PropTypes.string,
 };
 
 export default Img;

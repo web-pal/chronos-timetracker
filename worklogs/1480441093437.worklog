@@ -1,0 +1,47 @@
+{
+    "issue": {
+        "issueId": "10901",
+        "summary": "[WA/BACK] Fetch screenshots from backend"
+    },
+    "screenshots": [
+        {
+            "name": "34_1480441093437.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "54_1480441093437.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "68_1480441093437.jpeg",
+            "uploaded": false
+        },
+        {
+            "name": "82_1480441093437.jpeg",
+            "uploaded": false
+        },
+        {
+            "name": "87_1480441093437.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "111_1480441093437.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "166_1480441093437.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "240_1480441093437.jpeg",
+            "uploaded": false
+        },
+        {
+            "name": "252_1480441093437.jpeg",
+            "uploaded": true
+        }
+    ],
+    "timeTracked": 252,
+    "submitted": true,
+    "id": "11026"
+}

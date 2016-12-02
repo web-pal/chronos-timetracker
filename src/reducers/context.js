@@ -8,6 +8,7 @@ const InitialState = Immutable.Record({
   currentIssue: Immutable.Map({}),
   currentIssueId: null,
   worklogs: Immutable.List([]),
+  settings: Immutable.Map({}),
 });
 
 const initialState = new InitialState();
@@ -26,6 +27,8 @@ export default function context(state = initialState, action) {
       return state
               .set('currentIssue', state.issues.get(action.issueId))
               .set('currentIssueId', action.issueId);
+    case types.GET_SETTINGS:
+      return state.set('settings', Immutable.fromJS(action.settings));
     default:
       return state;
   }

@@ -5,13 +5,17 @@ import baseConfig from './webpack.config.base.js';
 export default merge(baseConfig, {
   debug: true,
   devtool: 'eval',
-  entry: [
-    'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
-    'babel-polyfill',
-    './src/index',
-  ],
+  entry: {
+    main: [
+      'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
+      'babel-polyfill',
+      './src/index',
+    ],
+    popup: './src/popup',
+  },
   output: {
     publicPath: 'http://localhost:3000/dist',
+    filename: '[name]-bundle.js',
   },
   module: {
     loaders: [

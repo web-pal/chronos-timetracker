@@ -1,0 +1,26 @@
+{
+    "issue": {
+        "key": "TTP-35",
+        "summary": "[WA/BACK] Fetch screenshots from backend"
+    },
+    "screenshots": [
+        {
+            "name": "649_1479734565064.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "1046_1479734565064.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "1132_1479734565064.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "1216_1479734565064.jpeg",
+            "uploaded": true
+        }
+    ],
+    "timeTracked": 1216,
+    "submitted": true
+}

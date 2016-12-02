@@ -1,6 +1,9 @@
 import React, { PropTypes, Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import getScreen from 'user-media-screenshot';
+import fs from 'fs';
+import { remote, ipcRenderer } from 'electron';
 
 import Flex from '../components/Base/Flex/Flex';
 import Timer from '../components/Timer/Timer';
@@ -8,12 +11,16 @@ import TrackerHeader from '../components/TrackerHeader/TrackerHeader';
 
 import * as trackerActions from '../actions/tracker';
 
+let timeRange = 60;
+
 function mapStateToProps(state) {
   return {
     trackingIssue: state.get('context').currentIssue,
     time: state.get('tracker').time,
     running: state.get('tracker').running,
     paused: state.get('tracker').paused,
+    currentWorklogId: state.get('tracker').currentWorklogId,
+    settings: state.get('context').settings,
   };
 }
 
@@ -25,13 +32,30 @@ function mapDispatchToProps(dispatch) {
 export default class Tracker extends Component {
   static propTypes = {
     trackingIssue: PropTypes.object.isRequired,
+    settings: PropTypes.object.isRequired,
+    currentWorklogId: PropTypes.number,
     time: PropTypes.number.isRequired,
     running: PropTypes.bool.isRequired,
     paused: PropTypes.bool.isRequired,
+    rejectScreenshot: PropTypes.func.isRequired,
+    acceptScreenshot: PropTypes.func.isRequired,
     startTimer: PropTypes.func.isRequired,
     pauseTimer: PropTypes.func.isRequired,
     stopTimer: PropTypes.func.isRequired,
     tick: PropTypes.func.isRequired,
+  }
+
+  constructor(props) {
+    super(props);
+    ipcRenderer.on('screenshot-reject', () => {
+      this.props.rejectScreenshot();
+    });
+    ipcRenderer.on('screenshot-accept', () => {
+      const { getGlobal } = remote;
+      const { screenshotTime, lastScreenshotPath } = getGlobal('sharedObj');
+
+      this.props.acceptScreenshot(screenshotTime, lastScreenshotPath);
+    });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -43,24 +67,66 @@ export default class Tracker extends Component {
     }
   }
 
-  handleTimerStart = () => {
-    this.props.startTimer();
-  }
+  handleTimerStart = () => this.props.startTimer();
 
-  handleTimerPause = () => {
-    this.props.pauseTimer();
-  }
+  handleTimerPause = () => this.props.pauseTimer();
 
-  handleTimerStop = () => {
-    this.props.stopTimer();
-  }
+  handleTimerStop = () => this.props.stopTimer();
 
   tick = () => {
-    this.props.tick();
+    const { tick, time, settings } = this.props;
+    const { interval, dispersion } = settings.toJS();
+    tick();
+    if (time === 1) {
+      timeRange = Math.ceil(
+        Number(interval) + ((Math.random() *
+        (Number(dispersion) + Number(dispersion))) - Number(dispersion))
+      );
+    }
+    if ((time + 1) % timeRange === 0) {
+      this.openScreenShotPopup();
+    }
+  }
+
+  openScreenShotPopup = () => {
+    const { BrowserWindow, getGlobal } = remote;
+    const { currentWorklogId, time, settings } = this.props;
+    const { interval, dispersion } = settings.toJS();
+    const dir = getGlobal('appDir');
+    const screenshotTime = time;
+    getScreen((image) => {
+      const validImage = image.replace(/^data:image\/jpeg;base64,/, '');
+      const imageDir = `${dir}/screenshots/${screenshotTime}_${currentWorklogId}.jpeg`;
+      fs.writeFile(imageDir, validImage, 'base64', (err) => {
+        getGlobal('sharedObj').lastScreenshotPath = imageDir;
+        getGlobal('sharedObj').currentWorklogId = currentWorklogId;
+        getGlobal('sharedObj').screenshotTime = screenshotTime;
+        if (err) throw err;
+        const options = {
+          width: 400,
+          height: 300,
+          x: window.screen.width - 400,
+          y: window.screen.height - 300,
+          frame: false,
+          transparent: true,
+          resizable: false,
+          movable: false,
+          alwaysOnTop: true,
+        };
+        const win = new BrowserWindow(options);
+        win.loadURL(`file://${dir}/src/popup.html`);
+        // timeRange = Math.ceil(10 + Math.random() * (5 + 5) - 5);
+        timeRange = Math.ceil(
+          Number(interval) + ((Math.random() *
+          (Number(dispersion) + Number(dispersion))) - Number(dispersion))
+        );
+        // timeRange = Math.ceil(600 + Math.random() * (120 + 120) - 120);
+      });
+    });
   }
 
   render() {
-    const { running, paused, time, trackingIssue } = this.props;
+    const { running, paused, time, trackingIssue, startTimer, pauseTimer, stopTimer } = this.props;
     return (
       <Flex column className="tracker">
         <TrackerHeader currentIssue={trackingIssue} />
@@ -69,9 +135,9 @@ export default class Tracker extends Component {
           paused={paused}
           time={time}
           trackingIssue={trackingIssue}
-          onStart={this.handleTimerStart}
-          onStop={this.handleTimerStop}
-          onPause={this.handleTimerPause}
+          onStart={startTimer}
+          onPause={pauseTimer}
+          onStop={stopTimer}
         />
       </Flex>
     );

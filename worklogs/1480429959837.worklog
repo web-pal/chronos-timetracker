@@ -1,0 +1,18 @@
+{
+    "issue": {
+        "id": "10901",
+        "summary": "[WA/BACK] Fetch screenshots from backend"
+    },
+    "screenshots": [
+        {
+            "name": "54_1480429959837.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "62_1480429959837.jpeg",
+            "uploaded": false
+        }
+    ],
+    "timeTracked": 62,
+    "submitted": true
+}

@@ -5,7 +5,7 @@ import Img from '../Base/Img/Img';
 const Avatar = ({ avatarUrl }) =>
   <span className="avatar">
     <span className="avatar-inner">
-      <Img source={avatarUrl || ''} />
+      <Img src={avatarUrl || ''} />
     </span>
   </span>;
 

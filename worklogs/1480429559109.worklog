@@ -1,0 +1,14 @@
+{
+    "issue": {
+        "key": "TTP-35",
+        "summary": "[WA/BACK] Fetch screenshots from backend"
+    },
+    "screenshots": [
+        {
+            "name": "43_1480429559109.jpeg",
+            "uploaded": true
+        }
+    ],
+    "timeTracked": 43,
+    "submitted": true
+}

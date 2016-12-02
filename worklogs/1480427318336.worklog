@@ -1,0 +1,26 @@
+{
+    "issue": {
+        "key": "TTP-36",
+        "summary": "[WA/BACK] Highlight diff in worklogs"
+    },
+    "screenshots": [
+        {
+            "name": "88_1480427318336.jpeg",
+            "uploaded": false
+        },
+        {
+            "name": "96_1480427318336.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "168_1480427318336.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "171_1480427318336.jpeg",
+            "uploaded": true
+        }
+    ],
+    "timeTracked": 171,
+    "submitted": true
+}

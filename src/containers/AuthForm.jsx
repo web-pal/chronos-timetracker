@@ -2,6 +2,9 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Field, reduxForm } from 'redux-form/immutable';
+import fs from 'fs';
+import path from 'path';
+import request from 'request';
 
 import * as jiraActions from '../actions/jira';
 import Flex from '../components/Base/Flex/Flex';
@@ -24,26 +27,34 @@ export default class AuthForm extends Component {
     initialValues: PropTypes.object.isRequired,
     handleSubmit: PropTypes.func.isRequired,
     connect: PropTypes.func.isRequired,
-    getSelf: PropTypes.func.isRequired,
+    jwtConnect: PropTypes.func.isRequired,
     setAuthSucceeded: PropTypes.func.isRequired,
     getSavedCredentials: PropTypes.func.isRequired,
+    getJWT: PropTypes.func.isRequired,
     initialize: PropTypes.func.isRequired,
   }
 
   componentDidMount() {
     this.props.getSavedCredentials()
       .then(
-        () => this.props.initialize(this.props.initialValues.toJS())
+        () => {
+          this.props.initialize(this.props.initialValues.toJS());
+          return this.props.getJWT();
+        }
+      )
+      .then(
+      result => this.props.jwtConnect(result.payload.token)
+      )
+      .then(
+      () => this.props.setAuthSucceeded()
       );
   }
 
   submit = (values) => {
     this.props.connect(values)
       .then(
-        () => this.props.getSelf()
-      )
-      .then(
-        () => this.props.setAuthSucceeded()
+        () => this.props.setAuthSucceeded(),
+        err => console.error(err)
       );
   }
 

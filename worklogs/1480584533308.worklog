@@ -1,0 +1,91 @@
+{
+    "issue": {
+        "issueId": "10901",
+        "summary": "[WA/BACK] Fetch screenshots from backend"
+    },
+    "screenshots": [
+        {
+            "name": "598_1480584533308.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "1176_1480584533308.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "1455_1480584533308.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "1749_1480584533308.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "2192_1480584533308.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "2656_1480584533308.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "2848_1480584533308.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "3020_1480584533308.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "3198_1480584533308.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "3255_1480584533308.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "3425_1480584533308.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "4068_1480584533308.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "4375_1480584533308.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "4781_1480584533308.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "4784_1480584533308.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "4837_1480584533308.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "4970_1480584533308.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "5400_1480584533308.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "5599_1480584533308.jpeg",
+            "uploaded": true
+        },
+        {
+            "name": "6072_1480584533308.jpeg",
+            "uploaded": true
+        }
+    ],
+    "timeTracked": 6072,
+    "submitted": true,
+    "id": "11100"
+}

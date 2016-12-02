@@ -48,8 +48,8 @@ export default class Menu extends Component {
     return (
       <Flex column className="menu">
         <Header
-          avatarUrl={self.get('avatarUrls').get('32x32')}
-          username={self.get('displayName')}
+          avatarUrl={self && self.get('avatarUrls').get('32x32')}
+          username={self && self.get('displayName')}
           projects={projects}
           currentProject={currentProject}
           onProjectChange={this.handleProjectChange}

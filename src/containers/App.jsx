@@ -26,6 +26,7 @@ export default class App extends Component {
     currentProject: PropTypes.object.isRequired,
     fetchProjects: PropTypes.func.isRequired,
     fetchIssues: PropTypes.func.isRequired,
+    fetchSettings: PropTypes.func.isRequired,
     setCurrentProject: PropTypes.func.isRequired,
   }
 
@@ -33,7 +34,7 @@ export default class App extends Component {
     if (!this.props.connected && nextProps.connected) {
       this.props.fetchProjects()
         .then(
-          () => this.props.setCurrentProject(0)
+          () => this.props.fetchSettings()
         );
     }
     if (!this.props.currentProject.equals(nextProps.currentProject)) {
