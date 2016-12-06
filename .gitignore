@@ -38,3 +38,6 @@ main.js
 main.js.map
 
 app/db.json
+
+worklogs/*
+screenshots/*
