@@ -1,3 +1,4 @@
+/* global window */
 import React, { PropTypes, Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -10,6 +11,7 @@ import Timer from '../components/Timer/Timer';
 import TrackerHeader from '../components/TrackerHeader/TrackerHeader';
 
 import * as trackerActions from '../actions/tracker';
+import * as uiActions from '../actions/ui';
 
 let timeRange = 60;
 
@@ -21,11 +23,13 @@ function mapStateToProps(state) {
     paused: state.get('tracker').paused,
     currentWorklogId: state.get('tracker').currentWorklogId,
     settings: state.get('context').settings,
+    descriptionPopupOpen: state.get('ui').descriptionPopupOpen,
+    description: state.get('tracker').description,
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(trackerActions, dispatch);
+  return bindActionCreators({ ...trackerActions, ...uiActions }, dispatch);
 }
 
 @connect(mapStateToProps, mapDispatchToProps)
@@ -37,12 +41,17 @@ export default class Tracker extends Component {
     time: PropTypes.number.isRequired,
     running: PropTypes.bool.isRequired,
     paused: PropTypes.bool.isRequired,
+    description: PropTypes.string,
+    descriptionPopupOpen: PropTypes.bool.isRequired,
     rejectScreenshot: PropTypes.func.isRequired,
     acceptScreenshot: PropTypes.func.isRequired,
     startTimer: PropTypes.func.isRequired,
     pauseTimer: PropTypes.func.isRequired,
+    unpauseTimer: PropTypes.func.isRequired,
     stopTimer: PropTypes.func.isRequired,
     tick: PropTypes.func.isRequired,
+    closeDescriptionPopup: PropTypes.func.isRequired,
+    openDescriptionPopup: PropTypes.func.isRequired,
   }
 
   constructor(props) {
@@ -74,17 +83,19 @@ export default class Tracker extends Component {
   handleTimerStop = () => this.props.stopTimer();
 
   tick = () => {
-    const { tick, time, settings } = this.props;
-    const { interval, dispersion } = settings.toJS();
-    tick();
-    if (time === 1) {
-      timeRange = Math.ceil(
-        Number(interval) + ((Math.random() *
-        (Number(dispersion) + Number(dispersion))) - Number(dispersion))
-      );
-    }
-    if ((time + 1) % timeRange === 0) {
-      this.openScreenShotPopup();
+    if (!this.props.paused) {
+      const { tick, time, settings } = this.props;
+      const { interval, dispersion } = settings.toJS();
+      tick();
+      if (time === 1) {
+        timeRange = Math.ceil(
+          Number(interval) + ((Math.random() *
+            (Number(dispersion) + Number(dispersion))) - Number(dispersion)),
+        );
+      }
+      if ((time + 1) % timeRange === 0) {
+        this.openScreenShotPopup();
+      }
     }
   }
 
@@ -96,7 +107,7 @@ export default class Tracker extends Component {
     const screenshotTime = time;
     getScreen((image) => {
       const validImage = image.replace(/^data:image\/jpeg;base64,/, '');
-      const imageDir = `${dir}/screenshots/${screenshotTime}_${currentWorklogId}.jpeg`;
+      const imageDir = `${dir}/screenshots/${screenshotTime}_${Date.now()}.jpeg`;
       fs.writeFile(imageDir, validImage, 'base64', (err) => {
         getGlobal('sharedObj').lastScreenshotPath = imageDir;
         getGlobal('sharedObj').currentWorklogId = currentWorklogId;
@@ -118,7 +129,7 @@ export default class Tracker extends Component {
         // timeRange = Math.ceil(10 + Math.random() * (5 + 5) - 5);
         timeRange = Math.ceil(
           Number(interval) + ((Math.random() *
-          (Number(dispersion) + Number(dispersion))) - Number(dispersion))
+          (Number(dispersion) + Number(dispersion))) - Number(dispersion)),
         );
         // timeRange = Math.ceil(600 + Math.random() * (120 + 120) - 120);
       });
@@ -126,7 +137,10 @@ export default class Tracker extends Component {
   }
 
   render() {
-    const { running, paused, time, trackingIssue, startTimer, pauseTimer, stopTimer } = this.props;
+    const {
+      running, paused, time, trackingIssue, startTimer, closeDescriptionPopup, description,
+      pauseTimer, unpauseTimer, stopTimer, openDescriptionPopup, descriptionPopupOpen,
+    } = this.props;
     return (
       <Flex column className="tracker">
         <TrackerHeader currentIssue={trackingIssue} />
@@ -135,9 +149,17 @@ export default class Tracker extends Component {
           paused={paused}
           time={time}
           trackingIssue={trackingIssue}
-          onStart={startTimer}
+          onStart={openDescriptionPopup}
           onPause={pauseTimer}
+          description={description}
+          onUnPause={unpauseTimer}
           onStop={stopTimer}
+          descPopupOpen={descriptionPopupOpen}
+          onDescPopupClose={closeDescriptionPopup}
+          onDescPopupConfirm={(desc) => {
+            closeDescriptionPopup();
+            startTimer(desc);
+          }}
         />
       </Flex>
     );

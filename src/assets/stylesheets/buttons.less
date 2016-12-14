@@ -71,9 +71,29 @@
 }
 
 .button.button-link {
-  background: white;
+  background: transparent;
   color: @link;
+  &.button-danger {
+    color: @danger;
+    &:hover {
+      background: transparent;
+    }
+  }
   &:hover {
     text-decoration: underline;
   }
+}
+
+.button.button-disabled {
+  background: #c1c1c1;
+  color: #e6e6e6;
+  cursor: not-allowed;
+}
+
+.button + .button {
+  margin-left: 10px;
+}
+
+.button.pause {
+  width: 100px;
 }

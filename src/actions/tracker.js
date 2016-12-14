@@ -12,7 +12,7 @@ export function tick() {
   };
 }
 
-export function startTimer() {
+export function startTimer(description) {
   return (dispatch, getState) => {
     const { getGlobal } = remote;
     const currentIssue = getState().get('context').currentIssue.toJS();
@@ -21,6 +21,7 @@ export function startTimer() {
         issueId: currentIssue.id,
         summary: currentIssue.fields.summary,
       },
+      description,
       screenshots: [],
       timeTracked: 0,
       submitted: false,
@@ -35,6 +36,7 @@ export function startTimer() {
     dispatch({
       type: types.START,
       worklogId,
+      description,
     });
   };
 }
@@ -42,6 +44,12 @@ export function startTimer() {
 export function pauseTimer() {
   return {
     type: types.PAUSE,
+  };
+}
+
+export function unpauseTimer() {
+  return {
+    type: types.UNPAUSE,
   };
 }
 
@@ -67,7 +75,6 @@ export function stopTimer() {
       };
       jiraClient.issue.addWorkLog(opts, (error, status, response) => {
         if (error) {
-          console.error(error);
           dispatch({
             type: types.THROW_ERROR,
             error,
@@ -90,7 +97,7 @@ export function stopTimer() {
                 worklog.id = id;
                 fs.writeFile(worklogFile, JSON.stringify(worklog, null, 4));
               }
-            }
+            },
           );
       });
       dispatch({
@@ -120,7 +127,7 @@ function uploadScreenshot(screenshotPath) {
     };
     fetch(url, options)
       .then(
-        res => res.status === 200 && res.json()
+        res => res.status === 200 && res.json(),
       )
       .then(
         (json) => {
@@ -136,10 +143,10 @@ function uploadScreenshot(screenshotPath) {
             };
             return fetch(signedUrl, opts);
           });
-        }
+        },
       )
       .then(
-        () => resolve(success)
+        () => resolve(success),
       );
   });
 }
@@ -165,7 +172,7 @@ export function acceptScreenshot(screenshotTime, screenshotPath) {
               screenshotTime,
             });
           });
-        }
+        },
       );
   };
 }

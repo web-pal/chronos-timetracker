@@ -1,10 +1,19 @@
 import React, { PropTypes } from 'react';
+import moment from 'moment';
+
+function addLeadingZero(s) {
+  return s < 10 ? `0${s}` : s;
+}
 
 const TimerDisplay = (props) => {
-  const { time } = props;
+  const time = moment.duration(props.time * 1000);
+  const timeString =
+    `${addLeadingZero(time.hours())}:\
+${addLeadingZero(time.minutes())}:\
+${addLeadingZero(time.seconds())}`;
   return (
     <div className="timer-display">
-      {time}
+      {timeString}
     </div>
   );
 };

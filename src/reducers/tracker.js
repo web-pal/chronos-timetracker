@@ -6,6 +6,7 @@ const InitialState = Immutable.Record({
   paused: false,
   currentWorklogId: null,
   lastScreenshotTime: null,
+  description: null,
 });
 
 const initialState = new InitialState();
@@ -18,12 +19,17 @@ export default function tracker(state = initialState, action) {
       if (state.paused) {
         return state.set('paused', false);
       }
-      return state.set('running', true).set('currentWorklogId', action.worklogId);
+      return state
+        .set('running', true)
+        .set('currentWorklogId', action.worklogId)
+        .set('description', action.description);
     }
     case types.STOP:
       return initialState;
     case types.PAUSE:
       return state.set('paused', true);
+    case types.UNPAUSE:
+      return state.delete('paused');
     case types.REJECT_SCREENSHOT:
       return state.set('time', state.lastScreenshotTime);
     case types.ACCEPT_SCREENSHOT:

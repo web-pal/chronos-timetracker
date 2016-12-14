@@ -5,6 +5,13 @@
 
 .timer {
   height: 100%;
+  position: relative;
+}
+
+.description {
+  font-size: 12px;
+  margin-top: 20px;
+  color: rgba(0, 0, 0, .67);
 }
 
 .timer-display {
@@ -14,11 +21,26 @@
   background: #e6e6e6;
   margin-bottom: 8px;
   border-radius: 3px;
+  padding: 10px;
   box-shadow: inset 0 0 10px rgba(0, 0, 0, .2);
 }
 
 .tracker-header {
-  padding: 8px;
+  padding: 8px 15px;
   min-height: 120px;
+  background: #f8f8f8;
   border-bottom: 1px solid #e6e6e6;
+  .tracker-header__issuekey {
+    font-size: 1em;
+    font-weight: bold;
+    color: rgba(0, 0, 0, .87);
+  }
+  .tracker-header__summary {
+    font-size: .9em;
+    color: rgba(0, 0, 0, .67);
+  }
+  .tracker-header__description  {
+    font-size: .8em;
+    color: rgba(0, 0, 0, .6);
+  }
 }
