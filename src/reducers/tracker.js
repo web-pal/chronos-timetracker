@@ -5,6 +5,7 @@ const InitialState = Immutable.Record({
   running: false,
   paused: false,
   currentWorklogId: null,
+  trackingIssue: null,
   lastScreenshotTime: null,
   description: null,
 });
@@ -22,6 +23,7 @@ export default function tracker(state = initialState, action) {
       return state
         .set('running', true)
         .set('currentWorklogId', action.worklogId)
+        .set('trackingIssue', action.issueId)
         .set('description', action.description);
     }
     case types.STOP:

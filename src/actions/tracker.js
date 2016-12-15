@@ -36,6 +36,7 @@ export function startTimer(description) {
     dispatch({
       type: types.START,
       worklogId,
+      issueId: currentIssue.id,
       description,
     });
   };

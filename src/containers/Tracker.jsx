@@ -10,14 +10,18 @@ import Flex from '../components/Base/Flex/Flex';
 import Timer from '../components/Timer/Timer';
 import TrackerHeader from '../components/TrackerHeader/TrackerHeader';
 
+import { getTrackingIssue } from '../selectors/issues';
+
 import * as trackerActions from '../actions/tracker';
 import * as uiActions from '../actions/ui';
+import * as contextActions from '../actions/context';
 
 let timeRange = 60;
 
 function mapStateToProps(state) {
   return {
-    trackingIssue: state.get('context').currentIssue,
+    currentIssue: state.get('context').currentIssue,
+    trackingIssue: getTrackingIssue({ context: state.get('context'), tracker: state.get('tracker')}),
     time: state.get('tracker').time,
     running: state.get('tracker').running,
     paused: state.get('tracker').paused,
@@ -29,13 +33,14 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ ...trackerActions, ...uiActions }, dispatch);
+  return bindActionCreators({ ...trackerActions, ...uiActions, ...contextActions }, dispatch);
 }
 
 @connect(mapStateToProps, mapDispatchToProps)
 export default class Tracker extends Component {
   static propTypes = {
-    trackingIssue: PropTypes.object.isRequired,
+    trackingIssue: PropTypes.object,
+    currentIssue: PropTypes.object.isRequired,
     settings: PropTypes.object.isRequired,
     currentWorklogId: PropTypes.number,
     time: PropTypes.number.isRequired,
@@ -52,6 +57,7 @@ export default class Tracker extends Component {
     tick: PropTypes.func.isRequired,
     closeDescriptionPopup: PropTypes.func.isRequired,
     openDescriptionPopup: PropTypes.func.isRequired,
+    setCurrentIssue: PropTypes.func.isRequired,
   }
 
   constructor(props) {
@@ -139,16 +145,19 @@ export default class Tracker extends Component {
   render() {
     const {
       running, paused, time, trackingIssue, startTimer, closeDescriptionPopup, description,
-      pauseTimer, unpauseTimer, stopTimer, openDescriptionPopup, descriptionPopupOpen,
+      pauseTimer, unpauseTimer, stopTimer, openDescriptionPopup, descriptionPopupOpen, currentIssue,
+      setCurrentIssue,
     } = this.props;
     return (
       <Flex column className="tracker">
-        <TrackerHeader currentIssue={trackingIssue} />
+        <TrackerHeader currentIssue={currentIssue} />
         <Timer
           running={running}
           paused={paused}
           time={time}
           trackingIssue={trackingIssue}
+          currentIssue={currentIssue}
+          setCurrentIssue={setCurrentIssue}
           onStart={openDescriptionPopup}
           onPause={pauseTimer}
           description={description}
@@ -159,6 +168,7 @@ export default class Tracker extends Component {
           onDescPopupConfirm={(desc) => {
             closeDescriptionPopup();
             startTimer(desc);
+            remote.BrowserWindow.getFocusedWindow().hide();
           }}
         />
       </Flex>

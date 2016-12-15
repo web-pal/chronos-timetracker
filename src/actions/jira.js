@@ -7,6 +7,10 @@ import * as types from '../constants/jira';
 
 export function jwtConnect(token) {
   return dispatch => new Promise((resolve, reject) => {
+    dispatch({
+      type: 'context/START_FETCH',
+      value: 'connect',
+    });
     const options = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -49,6 +53,9 @@ export function jwtConnect(token) {
                   memorize: true, // temp
                 },
               });
+              dispatch({
+                type: 'context/FINISH_FETCH',
+              });
               resolve(success());
             }
           });
@@ -59,6 +66,10 @@ export function jwtConnect(token) {
 
 export function connect(credentials) {
   return dispatch => new Promise((resolve, reject) => {
+    dispatch({
+      type: 'context/START_FETCH',
+      value: 'connect',
+    });
     const { host, username, password, memorize } = credentials.toJS();
     const jiraClient = new JiraClient({
       host,
@@ -125,6 +136,9 @@ export function connect(credentials) {
                   },
                 });
               }
+              dispatch({
+                type: 'context/FINISH_FETCH',
+              });
               resolve(success);
             }
           );

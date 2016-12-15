@@ -9,6 +9,9 @@ const InitialState = Immutable.Record({
   currentIssueId: null,
   worklogs: Immutable.List([]),
   settings: Immutable.Map({}),
+  filterValue: '',
+  resolveFilter: true,
+  fetching: null,
 });
 
 const initialState = new InitialState();
@@ -25,10 +28,20 @@ export default function context(state = initialState, action) {
       return state.set('issues', Immutable.fromJS(action.issues));
     case types.SET_CURRENT_ISSUE:
       return state
-              .set('currentIssue', state.issues.get(action.issueId))
+              .set('currentIssue', state.issues.find(issue => issue.get('id') === action.issueId))
               .set('currentIssueId', action.issueId);
     case types.GET_SETTINGS:
       return state.set('settings', Immutable.fromJS(action.settings));
+    case types.CHANGE_FILTER:
+      return state.set('filterValue', action.value);
+    case types.CLEAR_FILTER:
+      return state.delete('filterValue');
+    case types.TOGGLE_RESOLVE_FILTER:
+      return state.set('resolveFilter', !state.get('resolveFilter'));
+    case types.START_FETCH:
+      return state.set('fetching', action.value);
+    case types.FINISH_FETCH:
+      return state.delete('fetching');
     default:
       return state;
   }

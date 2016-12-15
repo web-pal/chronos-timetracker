@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { app, BrowserWindow, ipcMain, webContents } from 'electron';
+import { app, Tray, BrowserWindow, ipcMain, webContents } from 'electron';
 import installExtension,
   { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer';
 
@@ -33,8 +33,8 @@ function createWindow() {
 
   mainWindow = new BrowserWindow({
     show: false,
-    width: 480,
-    height: 640,
+    width: 575,
+    height: 475,
     ...noFrameOption,
   });
 
@@ -83,7 +83,12 @@ ipcMain.on('screenshot-accept', () => {
   mainWindow.webContents.send('screenshot-accept');
 });
 
+let tray = null;
+
 app.on('ready', () => {
+  tray = new Tray('./src/assets/images/clock.png');
+  tray.setToolTip('Open chronos tracker');
+  tray.on('click', () => mainWindow.show());
   initializeApp();
 });
 

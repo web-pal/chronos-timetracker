@@ -9,6 +9,7 @@ const Header = (props) => {
     avatarUrl,
     username,
     projects,
+    fetching,
     currentProject,
     currentProjectId,
     onProjectChange,
@@ -41,6 +42,7 @@ const Header = (props) => {
         options={dropdownOptions}
         onChange={onProjectChange}
         value={value}
+        fetching={fetching}
       />
     </Flex>
   );
@@ -50,6 +52,7 @@ Header.propTypes = {
   avatarUrl: PropTypes.string.isRequired,
   username: PropTypes.string.isRequired,
   projects: PropTypes.object,
+  fetchin: PropTypes.string,
   currentProject: PropTypes.object,
   currentProjectId: PropTypes.number,
   onProjectChange: PropTypes.func.isRequired,

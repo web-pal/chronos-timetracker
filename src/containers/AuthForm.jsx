@@ -10,6 +10,8 @@ import * as jiraActions from '../actions/jira';
 import Flex from '../components/Base/Flex/Flex';
 import Checkbox from '../components/Checkbox/Checkbox';
 
+const spinner = require('../assets/images/ring-alt.svg');
+
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(jiraActions, dispatch);
 }
@@ -17,6 +19,7 @@ function mapDispatchToProps(dispatch) {
 function mapStateToProps(state) {
   return {
     initialValues: state.get('jira').credentials,
+    fetching: state.get('context').fetching,
   };
 }
 
@@ -59,9 +62,14 @@ export default class AuthForm extends Component {
   }
 
   render() {
-    const { handleSubmit } = this.props;
+    const { handleSubmit, fetching } = this.props;
     return (
       <Flex column centered className="occupy-height">
+        {fetching === 'connect' && 
+          <div className="connect-fetching">
+            <img src={spinner} />
+          </div>
+        }
         <Flex row centered>
           <form onSubmit={handleSubmit(this.submit)} className="form">
             <div className="form-element">

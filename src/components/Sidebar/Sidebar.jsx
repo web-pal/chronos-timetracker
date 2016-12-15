@@ -3,12 +3,26 @@ import React, { PropTypes } from 'react';
 import Flex from '../Base/Flex/Flex';
 import SidebarItems from './SidebarItems/SidebarItems';
 
-const Sidebar = ({ items, current, currentProjectId, onItemClick }) =>
+const spinner = require('../../assets/images/ring-alt.svg');
+
+const Sidebar = ({
+  items, tracking, current, currentProjectId, onResolveFilter, fetching,
+  onItemClick, onFilterChange, onFilterClear, filterValue, resolveFilter,
+}) =>
   <Flex column className="sidebar">
+    {fetching === 'issues' && 
+      <img src={spinner} className="issues-spinner" />
+    }
     {currentProjectId
       ? <SidebarItems
         items={items}
         current={current}
+        tracking={tracking}
+        filterValue={filterValue}
+        resolveFilter={resolveFilter}
+        onFilterChange={onFilterChange}
+        onFilterClear={onFilterClear}
+        onResolveFilter={onResolveFilter}
         onItemClick={onItemClick}
       />
       : <span className="sidebar-nothing-selected">
@@ -18,11 +32,17 @@ const Sidebar = ({ items, current, currentProjectId, onItemClick }) =>
   </Flex>;
 
 Sidebar.propTypes = {
-  current: PropTypes.number,
+  current: PropTypes.string,
+  tracking: PropTypes.string,
   currentProjectId: PropTypes.number,
   items: PropTypes.object,
+  filterValue: PropTypes.string,
+  fetching: PropTypes.string,
+  resolveFilter: PropTypes.bool.isRequired,
+  onFilterClear: PropTypes.func.isRequired,
+  onFilterChange: PropTypes.func.isRequired,
+  onResolveFilter: PropTypes.func.isRequired,
   onItemClick: PropTypes.func,
-  header: PropTypes.string,
 };
 
 export default Sidebar;

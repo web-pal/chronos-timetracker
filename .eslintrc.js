@@ -9,13 +9,18 @@ module.exports = {
       "react",
       "jsx-a11y"
     ],
+    "env": {
+      "browser": true,
+    },
     "rules": {
       "jsx-a11y/img-uses-alt": "off",
       "jsx-a11y/redundant-alt": "off",
       "jsx-a11y/valid-aria-role": "off",
-      "new-cap": "off"
+      "new-cap": "off",
+      "no-confusing-arrow": 0,
+      "react/forbid-prop-types": 0,
     },
     "globals": {
-      "Immutable": true
+      "Immutable": true,
     }
 };

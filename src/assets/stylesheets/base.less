@@ -12,6 +12,28 @@ html, body, #root, .wrapper {
   height: 100%
 }
 
+.issues-spinner {
+  position: absolute;
+  left: 50%;
+  top: 15%;
+  width: 32px;
+  transform: translateX(-50%);
+}
+
+.connect-fetching {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, .5);
+  img {
+    position: absolute;
+    z-index: 999;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
 ::-webkit-scrollbar {
     width: 12px;
 }

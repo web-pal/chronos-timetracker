@@ -5,6 +5,10 @@ import { THROW_ERROR } from '../constants/jira';
 
 export function fetchIssues() {
   return (dispatch, getState) => new Promise((resolve, reject) => {
+    dispatch({
+      type: types.START_FETCH,
+      value: 'issues',
+    });
     const jiraClient = getState().get('jira').client;
     const currentProject = getState().get('context').currentProject;
     const currentProjectKey = currentProject.get('key');
@@ -22,6 +26,9 @@ export function fetchIssues() {
         type: types.GET_ISSUES,
         issues: response.issues,
       });
+      dispatch({
+        type: types.FINISH_FETCH,
+      });
       resolve('done');
     });
   });
@@ -29,7 +36,10 @@ export function fetchIssues() {
 
 export function fetchProjects() {
   return (dispatch, getState) => new Promise((resolve, reject) => {
-    console.log('fetch projectss');
+    dispatch({
+      type: types.START_FETCH,
+      value: 'projects',
+    });
     const jiraClient = getState().get('jira').client;
     const fetchRepedioulsy = setInterval(() => {
       jiraClient.project.getAllProjects({}, (error, response) => {
@@ -44,10 +54,13 @@ export function fetchProjects() {
           type: types.GET_PROJECTS,
           projects: response,
         });
+        dispatch({
+          type: types.FINISH_FETCH,
+        });
         clearInterval(fetchRepedioulsy);
         resolve('done');
       });
-    }, 5000);
+    }, 1000);
   });
 }
 
@@ -87,5 +100,24 @@ export function setCurrentIssue(issueId) {
   return {
     type: types.SET_CURRENT_ISSUE,
     issueId,
+  };
+}
+
+export function changeFilter(value) {
+  return {
+    type: types.CHANGE_FILTER,
+    value,
+  };
+}
+
+export function clearFilter() {
+  return {
+    type: types.CLEAR_FILTER,
+  };
+}
+
+export function toggleResolveFilter() {
+  return {
+    type: types.TOGGLE_RESOLVE_FILTER,
   };
 }

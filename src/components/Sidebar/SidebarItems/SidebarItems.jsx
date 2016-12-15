@@ -1,39 +1,65 @@
 import React, { PropTypes } from 'react';
 
+import Flex from '../../Base/Flex/Flex';
 import SidebarItem from './SidebarItem/SidebarItem';
+import SidebarFilterItem from './SidebarFilterItem/SidebarFilterItem';
 
-const SidebarItems = ({ items, current, onItemClick }) => {
+const SidebarItems = ({
+  items, current, onItemClick, tracking, onResolveFilter,
+  onFilterChange, onFilterClear, filterValue, resolveFilter,
+}) => {
   const sideBarItems = items.map((item, i) => {
-    let label =
-      item.get('displayName') ||
-      item.get('name') ||
-      item.get('fields').get('summary') ||
-      item.get('key');
-    if (label.length > 25) {
-      label = `${label.substr(0, 25)}...`;
+    if (item) {
+      let label =
+        item.get('displayName') ||
+        item.get('name') ||
+        item.get('fields').get('summary') ||
+        item.get('key');
+      if (label.length > 25) {
+        label = `${label.substr(0, 25)}...`;
+      }
+      return (
+        <SidebarItem
+          onClick={onItemClick}
+          label={label}
+          active={item.get('id') === current}
+          tracking={item.get('id') === tracking}
+          resolved={item.getIn(['fields', 'resolution']) !== null}
+          key={item.get('id')}
+          id={item.get('id')}
+        />
+      );
     }
-    return (
-      <SidebarItem
-        onClick={onItemClick}
-        label={label}
-        active={i === current}
-        key={i}
-        id={i}
-      />
-    );
-  }
-  );
+    return false;
+  });
 
   return (
-    <ul className="sidebar-list">
-      {sideBarItems}
-    </ul>
+    <Flex column>
+      <SidebarFilterItem
+        onChange={onFilterChange}
+        value={filterValue}
+        onClear={onFilterClear}
+        onResolveFilter={onResolveFilter}
+        resolveFilter={resolveFilter}
+      />
+      <div className="sidebar-list-wrapper">
+        <ul className="sidebar-list">
+          {sideBarItems}
+        </ul>
+      </div>
+    </Flex>
   );
 };
 
 SidebarItems.propTypes = {
   items: PropTypes.object,
-  current: PropTypes.number,
+  current: PropTypes.string,
+  tracking: PropTypes.string,
+  filterValue: PropTypes.string,
+  resolveFilter: PropTypes.bool,
+  onFilterClear: PropTypes.func.isRequired,
+  onFilterChange: PropTypes.func.isRequired,
+  onResolveFilter: PropTypes.func.isRequired,
   onItemClick: PropTypes.func.isRequired,
 };
 

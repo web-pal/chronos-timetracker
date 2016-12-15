@@ -10,6 +10,9 @@ const DescriptionPopup = ({ open, onClose, onConfirm }) => open &&
         type="text"
         placeholder="Briefly describe what you are doing"
         id="description"
+        autoFocus
+        onKeyDown={e =>
+          e.keyCode === 13 ? onConfirm(e.target.value) : (e.keyCode === 27 ? onClose() : null)}
       />
       <Flex row centered>
         <button

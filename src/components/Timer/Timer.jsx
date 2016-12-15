@@ -7,14 +7,38 @@ import TimerControls from './TimerControls/TimerControls';
 
 const Timer = (props) => {
   const {
-    time, running, paused, onStart, onStop, onPause, onUnPause, trackingIssue,
-    descPopupOpen, onDescPopupClose, onDescPopupConfirm, description,
+    time, running, paused, onStart, onStop, onPause, onUnPause, currentIssue, setCurrentIssue,
+    descPopupOpen, onDescPopupClose, onDescPopupConfirm, description, trackingIssue,
   } = props;
   return (
     <Flex column centered className="timer">
-      {trackingIssue.size
+      {currentIssue.size
         ? <Flex row centered>
           <Flex column>
+            {trackingIssue &&
+                <Flex
+                  column
+                  className={`current-tracking\
+ ${trackingIssue.get('id') !== currentIssue.get('id') ? 'show' : 'hide'}`}
+                >
+                <Flex row centered>
+                  Currently tracking
+                  <span
+                    className="current-tracking__key"
+                  >
+                    {trackingIssue.get('key')}
+                  </span>
+                </Flex>
+                <Flex row centered>
+                  <span
+                    className="current-tracking__link"
+                    onClick={() => setCurrentIssue(trackingIssue.get('id'))}
+                  >
+                    Jump to issue
+                  </span>
+                </Flex>
+              </Flex>
+            }
             <DescriptionPopup
               open={descPopupOpen}
               onClose={onDescPopupClose}
@@ -29,9 +53,16 @@ const Timer = (props) => {
               pause={onPause}
               unpause={onUnPause}
             />
-            <Flex row centered className="description">
-              {description}
-            </Flex>
+            {description &&
+              <Flex column centered>
+                <Flex row centered className="description__label">
+                  D E S C R I P T I O N
+                </Flex>
+                <Flex row centered className="description">
+                  {description}
+                </Flex>
+              </Flex>
+            }
           </Flex>
         </Flex>
       : <Flex row centered>
@@ -43,12 +74,14 @@ const Timer = (props) => {
 };
 
 Timer.propTypes = {
-  trackingIssue: PropTypes.object.isRequired,
+  currentIssue: PropTypes.object.isRequired,
+  trackingIssue: PropTypes.object,
   time: PropTypes.number.isRequired,
   running: PropTypes.bool.isRequired,
   paused: PropTypes.bool.isRequired,
   descPopupOpen: PropTypes.bool.isRequired,
   description: PropTypes.string,
+  setCurrentIssue: PropTypes.func.isRequired,
   onStart: PropTypes.func.isRequired,
   onPause: PropTypes.func.isRequired,
   onStop: PropTypes.func.isRequired,
