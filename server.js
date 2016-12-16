@@ -3,7 +3,7 @@ import webpack from 'webpack';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 
-import config from './config/webpack.config.development';
+import config from './webpack.config.development';
 
 const app = express();
 const bundler = webpack(config);

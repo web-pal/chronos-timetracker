@@ -21,7 +21,7 @@ const devDeps = Object.keys(pkg.devDependencies);
 
 const appName = argv.name || argv.n || pkg.productName;
 const shouldUseAsar = argv.asar || argv.a || false;
-const shouldBuildAll = argv.all || false;
+const shouldBuildAll = argv.all || true;
 
 
 const DEFAULT_OPTS = {
@@ -83,8 +83,8 @@ function startPack() {
     .then((paths) => {
       if (shouldBuildAll) {
         // build for all platforms
-        const archs = ['ia32', 'x64'];
-        const platforms = ['linux', 'win32', 'darwin'];
+        const archs = ['x64'];
+        const platforms = ['darwin'];
 
         platforms.forEach((plat) => {
           archs.forEach((arch) => {

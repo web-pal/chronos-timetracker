@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import { app, Tray, BrowserWindow, ipcMain, webContents } from 'electron';
+import path from 'path';
 import installExtension,
   { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer';
 
@@ -9,6 +10,11 @@ global.sharedObj = {
   screenshotTime: null,
   currentWorklogId: null,
 };
+
+if (process.env.NODE_ENV === 'production') {
+  const sourceMapSupport = require('source-map-support'); // eslint-disable-line
+  sourceMapSupport.install();
+}
 
 if (process.env.NODE_ENV === 'development') {
   require('electron-debug')();
@@ -86,7 +92,7 @@ ipcMain.on('screenshot-accept', () => {
 let tray = null;
 
 app.on('ready', () => {
-  tray = new Tray('./src/assets/images/clock.png');
+  tray = new Tray(path.join(__dirname, './src/assets/images/clock.png'));
   tray.setToolTip('Open chronos tracker');
   tray.on('click', () => mainWindow.show());
   initializeApp();

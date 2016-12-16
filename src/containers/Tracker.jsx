@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import getScreen from 'user-media-screenshot';
 import fs from 'fs';
-import { remote, ipcRenderer } from 'electron';
+import electron, { remote, ipcRenderer } from 'electron';
 
 import Flex from '../components/Base/Flex/Flex';
 import Timer from '../components/Timer/Timer';
@@ -119,11 +119,12 @@ export default class Tracker extends Component {
         getGlobal('sharedObj').currentWorklogId = currentWorklogId;
         getGlobal('sharedObj').screenshotTime = screenshotTime;
         if (err) throw err;
+        const { width, height } = electron.screen.getPrimaryDisplay().workAreaSize;
         const options = {
           width: 400,
           height: 300,
-          x: window.screen.width - 400,
-          y: window.screen.height - 300,
+          x: width - 400,
+          y: height - 300,
           frame: false,
           transparent: true,
           resizable: false,

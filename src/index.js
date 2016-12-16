@@ -1,4 +1,5 @@
 import React from 'react';
+import './assets/stylesheets/main.less';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 

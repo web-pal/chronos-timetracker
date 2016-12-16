@@ -3,16 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>Chronos</title>
-  <!-- <script> -->
-  <!-- (function() { -->
-    <!-- if (!process.env.HOT) { -->
-      <!-- const link = document.createElement('link'); -->
-      <!-- link.rel = 'stylesheet'; -->
-      <!-- link.href = '../dist/style.css'; -->
-      <!-- document.write(link.outerHTML); -->
-    <!-- } -->
-  <!-- }()); -->
-  <!-- </script> -->
   <!--  AUI Core -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
   <script src="https://aui-cdn.atlassian.com/aui-adg/6.0.3/js/aui.min.js"></script>
@@ -27,18 +17,27 @@
   <script src="https://aui-cdn.atlassian.com/aui-adg/6.0.3/js/aui-soy.min.js"></script>
   <!-- font awesome -->
   <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+  <script>
+    (function() {
+      if (!process.env.HOT) {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = '../dist/style.css';
+        document.write(link.outerHTML);
+      }
+    }());
+  </script>
 </head>
 <body>
   <div id="root"></div>
-  <script async src="http://localhost:3000/dist/main-bundle.js"></script>
-  <!-- <script> -->
-    <!-- (function() { -->
-      <!-- const script = document.createElement('script'); -->
-      <!-- //script.async = true; -->
-      <!-- script.src = (process.env.HOT) ? 'http://localhost:3000/dist/bundle.js' : '../dist/bundle.js'; -->
-      <!-- let s0 = document.getElementsByTagName('script')[0]; -->
-      <!-- s0.parentNode.insertBefore(script, s0); -->
-    <!-- }()); -->
-  <!-- </script> -->
+    <script>
+      (function() {
+        const script = document.createElement('script');
+        //script.async = true;
+        script.src = (process.env.HOT) ? 'http://localhost:3000/dist/main-bundle.js' : '../dist/main-bundle.js';
+        let s0 = document.getElementsByTagName('script')[0];
+        s0.parentNode.insertBefore(script, s0);
+      }());
+    </script>
 </body>
 </html>
