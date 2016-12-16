@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { app, Tray, BrowserWindow, ipcMain, webContents } from 'electron';
+import { app, Tray, BrowserWindow, ipcMain, webContents, Menu } from 'electron';
 import path from 'path';
 import installExtension,
   { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer';
