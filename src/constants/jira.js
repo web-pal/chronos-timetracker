@@ -9,3 +9,5 @@ export const GET_SELF = 'jira/GET_SELF';
 export const GET_SAVED_CREDENTIALS = 'jira/GET_SAVED_CREDENTIALS';
 export const GET_JWT = 'jira/GET_JWT_TOKEN';
 
+export const LOGOUT = 'jira/LOGOUT';
+

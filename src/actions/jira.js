@@ -17,9 +17,28 @@ export function jwtConnect(token) {
       },
     };
     const url = 'http://localhost:5000/desktop-tracker/authenticate';
+    console.log(url);
     fetch(url, options)
       .then(
-        res => res.status === 200 && res.json()
+        (res) => {
+          if (res.status === 200) {
+            return res.json();
+          } else if (res.status === 401){
+            storage.remove('desktop_tracker_jwt', () => {
+              dispatch({
+                type: types.THROW_ERROR,
+                error: 'Automatic login failed, please enter your credentials again',
+              });
+              reject(fail('Failed'));
+            })
+          } else {
+            dispatch({
+              type: types.THROW_ERROR,
+              error: 'Server error',
+            });
+            reject(fail('Server error'));
+          }
+        }
       )
       .then(
         (json) => {
@@ -83,6 +102,9 @@ export function connect(credentials) {
         dispatch({
           type: types.THROW_ERROR,
           err,
+        });
+        dispatch({
+          type: 'context/FINISH_FETCH',
         });
         reject(fail(err));
       } else {
@@ -183,6 +205,13 @@ export function getJWT() {
       resolve(success({ token }));
     });
   });
+}
+
+
+export function logout() {
+  return {
+    type: types.LOGOUT,
+  };
 }
 
 export function setAuthSucceeded() {

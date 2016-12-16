@@ -13,6 +13,7 @@ const Header = (props) => {
     currentProject,
     currentProjectId,
     onProjectChange,
+    logout
   } = props;
   const dropdownOptions = [];
   for (const entry of projects.entries()) {
@@ -36,6 +37,11 @@ const Header = (props) => {
           <span className="username">
             {username}
           </span>
+          <a title="logout">
+            <span
+              className="fa fa-sign-out" onClick={logout}
+            />
+          </a>
         </Flex>
       </Flex>
       <Dropdown
@@ -56,6 +62,7 @@ Header.propTypes = {
   currentProject: PropTypes.object,
   currentProjectId: PropTypes.number,
   onProjectChange: PropTypes.func.isRequired,
+  logout: PropTypes.func.isRequired,
 };
 
 export default Header;

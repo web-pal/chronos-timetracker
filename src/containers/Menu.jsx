@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import * as contextActions from '../actions/context';
+import * as jiraActions from '../actions/jira';
 import Flex from '../components/Base/Flex/Flex';
 import Header from '../components/Header/Header';
 import Sidebar from '../components/Sidebar/Sidebar';
@@ -25,7 +26,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(contextActions, dispatch);
+  return bindActionCreators({ ...contextActions, ...jiraActions }, dispatch);
 }
 
 @connect(mapStateToProps, mapDispatchToProps)
@@ -46,6 +47,7 @@ export default class Menu extends Component {
     setCurrentProject: PropTypes.func.isRequired,
     setCurrentIssue: PropTypes.func.isRequired,
     toggleResolveFilter: PropTypes.func.isRequired,
+    logout: PropTypes.func.isRequired,
   }
 
   handleProjectChange = entry => this.props.setCurrentProject(entry.value);
@@ -57,6 +59,7 @@ export default class Menu extends Component {
       self, projects, currentProject, currentProjectId, issues,
       currentIssueId, trackingIssue, changeFilter, clearFilter,
       filterValue, resolveFilter, toggleResolveFilter, fetching,
+      logout,
     } = this.props;
     return (
       <Flex column className="menu">
@@ -67,6 +70,7 @@ export default class Menu extends Component {
           fetching={fetching}
           currentProject={currentProject}
           onProjectChange={this.handleProjectChange}
+          logout={logout}
         />
         <Sidebar
           items={issues}

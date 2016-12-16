@@ -1,8 +1,13 @@
 .avatar {
-  width: 64px;
-  height: 64px;
+  min-width: 64px;
+  min-height: 64px;
+  overflow: hidden;
   border: 2px solid @primary;
   border-radius: 50%;
+  img {
+    width: 64px;
+    height: 64px;
+  }
 }
 
 .header {
@@ -11,12 +16,24 @@
   min-height: 120px;
   z-index: 1;
   background: #fff;
+  position: relative;
 }
 
 .username {
   font-size: 1.5em;
   margin-left: 20px;
   color: rgba(0, 0, 0, .83);
+}
+
+.fa-sign-out {
+  color: rgba(0, 0, 0, .63);
+  cursor: pointer;
+  &:hover {
+    color: #000;
+  }
+  position: absolute;
+  top: 4px;
+  right: 4px;
 }
 
 .Select {

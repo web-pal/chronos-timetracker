@@ -19,6 +19,7 @@ function mapDispatchToProps(dispatch) {
 function mapStateToProps(state) {
   return {
     initialValues: state.get('jira').credentials,
+    error: state.get('jira').error,
     fetching: state.get('context').fetching,
   };
 }
@@ -28,6 +29,7 @@ function mapStateToProps(state) {
 export default class AuthForm extends Component {
   static propTypes = {
     initialValues: PropTypes.object.isRequired,
+    error: PropTypes.object,
     handleSubmit: PropTypes.func.isRequired,
     connect: PropTypes.func.isRequired,
     jwtConnect: PropTypes.func.isRequired,
@@ -62,7 +64,7 @@ export default class AuthForm extends Component {
   }
 
   render() {
-    const { handleSubmit, fetching } = this.props;
+    const { handleSubmit, fetching, error } = this.props;
     return (
       <Flex column centered className="occupy-height">
         {fetching === 'connect' && 
@@ -70,6 +72,7 @@ export default class AuthForm extends Component {
             <img src={spinner} />
           </div>
         }
+        {error}
         <Flex row centered>
           <form onSubmit={handleSubmit(this.submit)} className="form">
             <div className="form-element">

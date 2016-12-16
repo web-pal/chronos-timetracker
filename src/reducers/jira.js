@@ -25,6 +25,10 @@ function saveToken(token) {
   });
 }
 
+function deleteToken() {
+  storage.remove('desktop_tracker_jwt');
+}
+
 export default function jira(state = initialState, action) {
   switch (action.type) {
     case types.CONNECT:
@@ -36,6 +40,9 @@ export default function jira(state = initialState, action) {
     case types.MEMORIZE_FORM:
       saveCredentials(state.credentials);
       return state;
+    case types.LOGOUT:
+      deleteToken();
+      return initialState;
     case types.SAVE_JWT:
       saveToken(action.token);
       return state.set('jwt', action.token);
