@@ -29,6 +29,7 @@ app.on('window-all-closed', () => {
 });
 
 let mainWindow;
+let template;
 
 function createWindow() {
   // disabling chrome frames differ on OSX and other platforms
