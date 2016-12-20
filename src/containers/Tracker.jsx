@@ -94,7 +94,10 @@ export default class Tracker extends Component {
 
   handleTimerPause = () => this.props.pauseTimer();
 
-  handleTimerStop = () => this.props.stopTimer();
+  handleTimerStop = () => {
+    this.props.updateWorklog();
+    this.props.stopTimer();
+  }
 
   tick = () => {
     if (!this.props.paused) {
@@ -186,7 +189,7 @@ export default class Tracker extends Component {
           onPause={pauseTimer}
           description={description}
           onUnPause={unpauseTimer}
-          onStop={stopTimer}
+          onStop={this.handleTimerStop}
           descPopupOpen={descriptionPopupOpen}
           onDescPopupClose={closeDescriptionPopup}
           onDescPopupConfirm={(desc) => {
