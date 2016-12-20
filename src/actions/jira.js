@@ -29,12 +29,18 @@ export function jwtConnect(token) {
                 type: types.THROW_ERROR,
                 error: 'Automatic login failed, please enter your credentials again',
               });
+              dispatch({
+                type: 'context/FINISH_FETCH',
+              });
               reject(fail('Failed'));
             });
           } else {
             dispatch({
               type: types.THROW_ERROR,
               error: 'Server error',
+            });
+            dispatch({
+              type: 'context/FINISH_FETCH',
             });
             reject(fail('Server error'));
           }
@@ -55,7 +61,10 @@ export function jwtConnect(token) {
             if (err2) {
               dispatch({
                 type: types.THROW_ERROR,
-                err2,
+                error: 'Something went wrong with JIRA. Please check credentials and try again',
+              });
+              dispatch({
+                type: 'context/FINISH_FETCH',
               });
               reject(fail(err2));
             } else {
@@ -106,7 +115,7 @@ export function connect(credentials) {
       if (err) {
         dispatch({
           type: types.THROW_ERROR,
-          err,
+          error: 'Cannot authorize to JIRA. Check your credentials and try again',
         });
         dispatch({
           type: 'context/FINISH_FETCH',
@@ -182,6 +191,9 @@ export function getSavedCredentials() {
           type: types.THROW_ERROR,
           error,
         });
+        dispatch({
+          type: 'context/FINISH_FETCH',
+        });
         reject(fail(error));
       }
       dispatch({
@@ -200,6 +212,9 @@ export function getJWT() {
         dispatch({
           type: types.THROW_ERROR,
           error,
+        });
+        dispatch({
+          type: 'context/FINISH_FETCH',
         });
         reject(fail(error));
       }

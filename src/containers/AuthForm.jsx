@@ -72,7 +72,6 @@ export default class AuthForm extends Component {
             <img src={spinner} />
           </div>
         }
-        {error}
         <Flex row centered>
           <form onSubmit={handleSubmit(this.submit)} className="form">
             <div className="form-element">
@@ -96,6 +95,9 @@ export default class AuthForm extends Component {
               />
             </div>
             <Flex row>
+              <span className="error">
+                {error && error.toString()}
+              </span>
               <button className="button button-success flex-item--end" type="submit">Login</button>
             </Flex>
           </form>
