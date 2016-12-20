@@ -2,6 +2,7 @@ import fetch from 'isomorphic-fetch';
 
 import * as types from '../constants/context';
 import { THROW_ERROR } from '../constants/jira';
+import { staticUrl } from '../config/config';
 
 export function fetchIssues() {
   return (dispatch, getState) => new Promise((resolve, reject) => {
@@ -67,7 +68,7 @@ export function fetchProjects() {
 export function fetchSettings() {
   return (dispatch, getState) => new Promise((resolve) => {
     const token = getState().get('jira').get('jwt');
-    const url = 'http://localhost:5000/api/tracker/settings/desktopApp';
+    const url = `${staticUrl}/api/tracker/settings/desktopApp`;
     const options = {
       headers: {
         Authorization: `Bearer ${token}`,

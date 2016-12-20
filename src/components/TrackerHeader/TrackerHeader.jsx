@@ -13,7 +13,7 @@ const TrackerHeader = ({ currentIssue }) => currentIssue.size ?
     <span className="tracker-header__description">
       {currentIssue.getIn(['fields', 'description'])}
     </span>
-    <span className="tracker-header__status">
+    <span className="tracker-header__status flex-item--end">
       <strong>Status</strong><br/>
       {currentIssue.getIn(['fields', 'status', 'name'])}
     </span>

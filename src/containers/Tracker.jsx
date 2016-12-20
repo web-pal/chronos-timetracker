@@ -71,8 +71,13 @@ export default class Tracker extends Component {
     ipcRenderer.on('screenshot-accept', () => {
       const { getGlobal } = remote;
       const { screenshotTime, lastScreenshotPath } = getGlobal('sharedObj');
+      const { interval, dispersion } = this.props.settings.toJS();
 
       this.props.acceptScreenshot(screenshotTime, lastScreenshotPath);
+      timeRange = screenshotTime + Math.ceil(
+        Number(interval) + ((Math.random() *
+        (Number(dispersion) + Number(dispersion))) - Number(dispersion)),
+      );
     });
   }
 
@@ -121,7 +126,7 @@ export default class Tracker extends Component {
           this.openScreenShotPopup();
         } else {
           this.props.updateWorklog();
-          timeRange = Math.ceil(
+          timeRange = time + Math.ceil(
             Number(interval) + ((Math.random() *
             (Number(dispersion) + Number(dispersion))) - Number(dispersion)),
           );
@@ -132,8 +137,7 @@ export default class Tracker extends Component {
 
   openScreenShotPopup = () => {
     const { BrowserWindow, getGlobal } = remote;
-    const { currentWorklogId, time, settings } = this.props;
-    const { interval, dispersion } = settings.toJS();
+    const { currentWorklogId, time } = this.props;
     const dir = getGlobal('appDir');
     const screenshotTime = time;
     getScreen((image) => {
@@ -158,12 +162,6 @@ export default class Tracker extends Component {
         };
         const win = new BrowserWindow(options);
         win.loadURL(`file://${dir}/src/popup.html`);
-        // timeRange = Math.ceil(10 + Math.random() * (5 + 5) - 5);
-        timeRange = Math.ceil(
-          Number(interval) + ((Math.random() *
-          (Number(dispersion) + Number(dispersion))) - Number(dispersion)),
-        );
-        // timeRange = Math.ceil(600 + Math.random() * (120 + 120) - 120);
       });
     });
   }

@@ -4,6 +4,7 @@ import storage from 'electron-json-storage';
 
 import { success, fail } from '../helpers/promise';
 import * as types from '../constants/jira';
+import { staticUrl } from '../config/config';
 
 export function jwtConnect(token) {
   return dispatch => new Promise((resolve, reject) => {
@@ -16,21 +17,20 @@ export function jwtConnect(token) {
         Authorization: `Bearer ${token}`,
       },
     };
-    const url = 'http://localhost:5000/desktop-tracker/authenticate';
-    console.log(url);
+    const url = `${staticUrl}/desktop-tracker/authenticate`;
     fetch(url, options)
       .then(
         (res) => {
           if (res.status === 200) {
             return res.json();
-          } else if (res.status === 401){
+          } else if (res.status === 401) {
             storage.remove('desktop_tracker_jwt', () => {
               dispatch({
                 type: types.THROW_ERROR,
                 error: 'Automatic login failed, please enter your credentials again',
               });
               reject(fail('Failed'));
-            })
+            });
           } else {
             dispatch({
               type: types.THROW_ERROR,
@@ -38,7 +38,7 @@ export function jwtConnect(token) {
             });
             reject(fail('Server error'));
           }
-        }
+        },
       )
       .then(
         (json) => {
@@ -78,7 +78,7 @@ export function jwtConnect(token) {
               resolve(success());
             }
           });
-        }
+        },
       );
   });
 }
@@ -90,8 +90,13 @@ export function connect(credentials) {
       value: 'connect',
     });
     const { host, username, password, memorize } = credentials.toJS();
+    let formatHost = host.startsWith('https://') ? host.slice(8) : host;
+    formatHost = formatHost.startsWith('http://') ? formatHost.slice(7) : formatHost;
+    formatHost = formatHost[formatHost.length - 1] === '/'
+      ? formatHost.slice(0, formatHost.length - 1)
+      : formatHost;
     const jiraClient = new JiraClient({
-      host,
+      host: formatHost,
       basic_auth: {
         username,
         password,
@@ -112,21 +117,21 @@ export function connect(credentials) {
           type: types.GET_SELF,
           self: response,
         });
-        const url = 'http://localhost:5000/desktop-tracker/authenticate';
+        const url = `${staticUrl}/desktop-tracker/authenticate`;
         const options = {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            baseUrl: host,
+            baseUrl: formatHost,
             username,
             password,
           }),
         };
         fetch(url, options)
           .then(
-            res => res.status === 200 && res.json()
+            res => res.status === 200 && res.json(),
           )
           .then(
             (json) => {
@@ -162,7 +167,7 @@ export function connect(credentials) {
                 type: 'context/FINISH_FETCH',
               });
               resolve(success);
-            }
+            },
           );
       }
     });

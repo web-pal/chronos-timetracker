@@ -5,6 +5,7 @@ import fetch from 'isomorphic-fetch';
 
 import * as types from '../constants/tracker';
 import { success, fail } from '../helpers/promise';
+import { staticUrl } from '../config/config';
 
 export function tick() {
   return {
@@ -70,7 +71,7 @@ export function rejectScreenshot(lastScreenshotTime) {
 function uploadScreenshot(screenshotPath) {
   return new Promise((resolve, reject) => {
     const fileName = path.basename(screenshotPath);
-    const url = 'http://localhost:5000/desktop-tracker/sign-bucket-url';
+    const url = `${staticUrl}/desktop-tracker/sign-bucket-url`;
     const options = {
       method: 'POST',
       body: JSON.stringify({ fileName }),
@@ -110,7 +111,7 @@ export function updateWorklog() {
     const token = getState().get('jira').jwt;
     const jiraClient = getState().get('jira').client;
     if (jiraWorklogId === null) {
-      const url = 'http://localhost:5000/desktop-tracker/submit-worklog';
+      const url = `${staticUrl}/desktop-tracker/submit-worklog`;
       const opts = {
         issueId: trackingIssue,
         worklog: {
@@ -149,7 +150,7 @@ export function updateWorklog() {
           );
       });
     } else {
-      const url = 'http://localhost:5000/desktop-tracker/update-worklog';
+      const url = `${staticUrl}/desktop-tracker/update-worklog`;
       const opts = {
         worklogId: getState().get('tracker').jiraWorklogId,
         issueId: trackingIssue,
@@ -208,7 +209,7 @@ export function acceptScreenshot(screenshotTime, screenshotPath) {
             const token = getState().get('jira').jwt;
             const jiraClient = getState().get('jira').client;
             if (lastScreenshotTime === null) {
-              const url = 'http://localhost:5000/desktop-tracker/submit-worklog';
+              const url = `${staticUrl}/desktop-tracker/submit-worklog`;
               const opts = {
                 issueId: trackingIssue,
                 worklog: {
@@ -251,7 +252,7 @@ export function acceptScreenshot(screenshotTime, screenshotPath) {
                   );
               });
             } else {
-              const url = 'http://localhost:5000/desktop-tracker/update-worklog';
+              const url = `${staticUrl}/desktop-tracker/update-worklog`;
               const opts = {
                 worklogId: getState().get('tracker').jiraWorklogId,
                 issueId: trackingIssue,
