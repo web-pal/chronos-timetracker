@@ -35,6 +35,16 @@ export function jwtConnect(token) {
               reject(fail('Failed'));
             });
           } else {
+            storage.remove('desktop_tracker_jwt', () => {
+              dispatch({
+                type: types.THROW_ERROR,
+                error: 'Automatic login failed, please enter your credentials again',
+              });
+              dispatch({
+                type: 'context/FINISH_FETCH',
+              });
+              reject(fail('Failed'));
+            });
             dispatch({
               type: types.THROW_ERROR,
               error: 'Server error',
