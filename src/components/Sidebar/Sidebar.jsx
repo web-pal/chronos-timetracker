@@ -6,7 +6,7 @@ import SidebarItems from './SidebarItems/SidebarItems';
 const spinner = require('../../assets/images/ring-alt.svg');
 
 const Sidebar = ({
-  items, tracking, current, currentProjectId, onResolveFilter, fetching,
+  items, tracking, current, currentProjectId, onResolveFilter, fetching, refreshIssues,
   onItemClick, onFilterChange, onFilterClear, filterValue, resolveFilter,
 }) =>
   <Flex column className="sidebar">
@@ -20,6 +20,7 @@ const Sidebar = ({
         tracking={tracking}
         filterValue={filterValue}
         resolveFilter={resolveFilter}
+        refreshIssues={refreshIssues}
         onFilterChange={onFilterChange}
         onFilterClear={onFilterClear}
         onResolveFilter={onResolveFilter}
@@ -38,6 +39,7 @@ Sidebar.propTypes = {
   items: PropTypes.object,
   filterValue: PropTypes.string,
   fetching: PropTypes.string,
+  refreshIssues: PropTypes.func.isRequired,
   resolveFilter: PropTypes.bool.isRequired,
   onFilterClear: PropTypes.func.isRequired,
   onFilterChange: PropTypes.func.isRequired,

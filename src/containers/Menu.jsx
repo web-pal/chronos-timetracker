@@ -47,6 +47,7 @@ export default class Menu extends Component {
     setCurrentProject: PropTypes.func.isRequired,
     setCurrentIssue: PropTypes.func.isRequired,
     toggleResolveFilter: PropTypes.func.isRequired,
+    fetchIssues: PropTypes.func.isRequired,
     logout: PropTypes.func.isRequired,
   }
 
@@ -59,7 +60,7 @@ export default class Menu extends Component {
       self, projects, currentProject, currentProjectId, issues,
       currentIssueId, trackingIssue, changeFilter, clearFilter,
       filterValue, resolveFilter, toggleResolveFilter, fetching,
-      logout,
+      logout, fetchIssues,
     } = this.props;
     return (
       <Flex column className="menu">
@@ -79,6 +80,7 @@ export default class Menu extends Component {
           current={currentIssueId}
           tracking={trackingIssue}
           filterValue={filterValue}
+          refreshIssues={fetchIssues}
           onFilterChange={changeFilter}
           onFilterClear={clearFilter}
           onItemClick={this.handleIssueClick}

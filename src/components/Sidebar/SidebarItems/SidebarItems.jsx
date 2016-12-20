@@ -5,7 +5,7 @@ import SidebarItem from './SidebarItem/SidebarItem';
 import SidebarFilterItem from './SidebarFilterItem/SidebarFilterItem';
 
 const SidebarItems = ({
-  items, current, onItemClick, tracking, onResolveFilter,
+  items, current, onItemClick, tracking, onResolveFilter, refreshIssues,
   onFilterChange, onFilterClear, filterValue, resolveFilter,
 }) => {
   const sideBarItems = items.map((item, i) => {
@@ -39,6 +39,7 @@ const SidebarItems = ({
         onChange={onFilterChange}
         value={filterValue}
         onClear={onFilterClear}
+        refreshIssues={refreshIssues}
         onResolveFilter={onResolveFilter}
         resolveFilter={resolveFilter}
       />
@@ -58,6 +59,7 @@ SidebarItems.propTypes = {
   filterValue: PropTypes.string,
   resolveFilter: PropTypes.bool,
   onFilterClear: PropTypes.func.isRequired,
+  refreshIssues: PropTypes.func.isRequired,
   onFilterChange: PropTypes.func.isRequired,
   onResolveFilter: PropTypes.func.isRequired,
   onItemClick: PropTypes.func.isRequired,

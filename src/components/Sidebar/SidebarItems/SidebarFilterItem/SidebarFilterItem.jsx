@@ -2,7 +2,14 @@ import React, { PropTypes } from 'react';
 
 import Flex from '../../../Base/Flex/Flex';
 
-const SidebarFilterItem = ({ onChange, value, onClear, onResolveFilter, resolveFilter }) =>
+const SidebarFilterItem = ({
+  onChange,
+  value,
+  onClear,
+  refreshIssues,
+  onResolveFilter,
+  resolveFilter,
+}) =>
   <Flex row centered className="sidebar-filter-item">
     <input className="text" type="text" value={value} onChange={e => onChange(e.target.value)} />
     <span className="aui-icon aui-icon-small aui-iconfont-search" />
@@ -12,6 +19,12 @@ const SidebarFilterItem = ({ onChange, value, onClear, onResolveFilter, resolveF
         onClick={onClear}
       />
     }
+    <a title="Refresh issues">
+      <span
+        className="fa fa-refresh"
+        onClick={refreshIssues}
+      />
+    </a>
     <a title={`${resolveFilter ? 'Show' : 'Hide'} resolved issues`}>
       <span
         className={`fa ${resolveFilter ? 'fa-eye-slash' : 'fa-eye'}`}
@@ -24,6 +37,7 @@ SidebarFilterItem.propTypes = {
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   onClear: PropTypes.func.isRequired,
+  refreshIssues: PropTypes.func.isRequired,
   onResolveFilter: PropTypes.func.isRequired,
   resolveFilter: PropTypes.bool.isRequired,
 };

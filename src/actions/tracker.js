@@ -193,9 +193,9 @@ export function acceptScreenshot(screenshotTime, screenshotPath) {
       .then(
         () => {
           const { getGlobal } = remote;
+          const appDir = getGlobal('appDir');
           const currentWorklogId = getState().get('tracker').currentWorklogId;
           const lastScreenshotTime = getState().get('tracker').lastScreenshotTime;
-          const appDir = getGlobal('appDir');
           const worklogsDir = `${appDir}/worklogs`;
           const worklogFile = `${worklogsDir}/${currentWorklogId}.worklog`;
           fs.readFile(worklogFile, (err, file) => {

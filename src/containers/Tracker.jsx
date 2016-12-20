@@ -192,7 +192,6 @@ export default class Tracker extends Component {
           onDescPopupConfirm={(desc) => {
             closeDescriptionPopup();
             startTimer(desc);
-            remote.BrowserWindow.getFocusedWindow().hide();
           }}
         />
       </Flex>

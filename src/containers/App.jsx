@@ -1,6 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import fs from 'fs';
+import { remote } from 'electron';
 
 import * as jiraActions from '../actions/jira';
 import * as contextActions from '../actions/context';
@@ -27,14 +29,28 @@ export default class App extends Component {
     fetchProjects: PropTypes.func.isRequired,
     fetchIssues: PropTypes.func.isRequired,
     fetchSettings: PropTypes.func.isRequired,
-    setCurrentProject: PropTypes.func.isRequired,
+  }
+  constructor(props) {
+    super(props);
+    const { getGlobal } = remote;
+    const appDir = getGlobal('appDir');
+    fs.access(`${appDir}/screenshots/`, fs.constants.R_OK | fs.constants.W_OK, (err) => {
+      if (err) {
+        fs.mkdir(`${appDir}/screenshots/`);
+      }
+    });
+    fs.access(`${appDir}/worklogs/`, fs.constants.R_OK | fs.constants.W_OK, (err) => {
+      if (err) {
+        fs.mkdir(`${appDir}/worklogs/`);
+      }
+    });
   }
 
   componentWillReceiveProps(nextProps) {
     if (!this.props.connected && nextProps.connected) {
       this.props.fetchProjects()
         .then(
-          () => this.props.fetchSettings()
+          () => this.props.fetchSettings(),
         );
     }
     if (!this.props.currentProject.equals(nextProps.currentProject)) {
