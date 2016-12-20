@@ -8,6 +8,7 @@ const InitialState = Immutable.Record({
   trackingIssue: null,
   lastScreenshotTime: null,
   description: null,
+  jiraWorklogId: null,
 });
 
 const initialState = new InitialState();
@@ -36,6 +37,8 @@ export default function tracker(state = initialState, action) {
       return state.set('time', state.lastScreenshotTime);
     case types.ACCEPT_SCREENSHOT:
       return state.set('lastScreenshotTime', action.screenshotTime);
+    case types.SET_JIRA_WORKLOG_ID:
+      return state.set('jiraWorklogId', action.id);
     default:
       return state;
   }

@@ -20,8 +20,9 @@ let timeRange = 60;
 
 function mapStateToProps(state) {
   return {
+    self: state.get('jira').get('self'),
     currentIssue: state.get('context').currentIssue,
-    trackingIssue: getTrackingIssue({ context: state.get('context'), tracker: state.get('tracker')}),
+    trackingIssue: getTrackingIssue({ context: state.get('context'), tracker: state.get('tracker') }),
     time: state.get('tracker').time,
     running: state.get('tracker').running,
     paused: state.get('tracker').paused,
@@ -40,6 +41,7 @@ function mapDispatchToProps(dispatch) {
 export default class Tracker extends Component {
   static propTypes = {
     trackingIssue: PropTypes.object,
+    self: PropTypes.object,
     currentIssue: PropTypes.object.isRequired,
     settings: PropTypes.object.isRequired,
     currentWorklogId: PropTypes.number,
@@ -58,6 +60,7 @@ export default class Tracker extends Component {
     closeDescriptionPopup: PropTypes.func.isRequired,
     openDescriptionPopup: PropTypes.func.isRequired,
     setCurrentIssue: PropTypes.func.isRequired,
+    updateWorklog: PropTypes.func.isRequired,
   }
 
   constructor(props) {
@@ -75,7 +78,7 @@ export default class Tracker extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (!this.props.running && nextProps.running) {
-      this.timerLoop = setInterval(() => this.tick(), 930);
+      this.timerLoop = setInterval(() => this.tick(), 1000);
     }
     if (this.props.running && !nextProps.running) {
       clearInterval(this.timerLoop);
@@ -90,17 +93,39 @@ export default class Tracker extends Component {
 
   tick = () => {
     if (!this.props.paused) {
-      const { tick, time, settings } = this.props;
-      const { interval, dispersion } = settings.toJS();
+      const { tick, time } = this.props;
       tick();
       if (time === 1) {
+        const { settings } = this.props;
+        const {
+          interval,
+          dispersion,
+        } = settings.toJS();
         timeRange = Math.ceil(
           Number(interval) + ((Math.random() *
             (Number(dispersion) + Number(dispersion))) - Number(dispersion)),
         );
       }
       if ((time + 1) % timeRange === 0) {
-        this.openScreenShotPopup();
+        const { self, settings } = this.props;
+        const selfKey = self.get('key');
+        const {
+          screenshotsEnabled, screenshotsEnabledUsers, interval, dispersion,
+        } = settings.toJS();
+        const cond1 = screenshotsEnabled === 'everyone';
+        const cond2 = screenshotsEnabled === 'forUsers' &&
+          screenshotsEnabledUsers.includes(selfKey);
+        const cond3 = screenshotsEnabled === 'excludingUsers' &&
+          !screenshotsEnabledUsers.includes(selfKey);
+        if (cond1 || cond2 || cond3) {
+          this.openScreenShotPopup();
+        } else {
+          this.props.updateWorklog();
+          timeRange = Math.ceil(
+            Number(interval) + ((Math.random() *
+            (Number(dispersion) + Number(dispersion))) - Number(dispersion)),
+          );
+        }
       }
     }
   }

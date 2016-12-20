@@ -55,56 +55,8 @@ export function unpauseTimer() {
 }
 
 export function stopTimer() {
-  return (dispatch, getState) => {
-    const token = getState().get('jira').jwt;
-    const jiraClient = getState().get('jira').client;
-    const currentIssue = getState().get('context').currentIssue;
-    const { getGlobal } = remote;
-    const currentWorklogId = getState().get('tracker').currentWorklogId;
-    const appDir = getGlobal('appDir');
-    const worklogsDir = `${appDir}/worklogs`;
-    const worklogFile = `${worklogsDir}/${currentWorklogId}.worklog`;
-    fs.readFile(worklogFile, (err, file) => {
-      const url = 'http://localhost:5000/desktop-tracker/submit-worklog';
-      const worklog = JSON.parse(file);
-      const opts = {
-        issueId: currentIssue.get('id'),
-        worklog: {
-          comment: 'a fresh baked automatic worklog',
-          timeSpentSeconds: worklog.timeTracked,
-        },
-      };
-      jiraClient.issue.addWorkLog(opts, (error, status, response) => {
-        if (error) {
-          dispatch({
-            type: types.THROW_ERROR,
-            error,
-          });
-        }
-        const { id } = response.body;
-        const options = {
-          method: 'POST',
-          body: JSON.stringify({ worklog, id }),
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        };
-        fetch(url, options)
-          .then(
-            (res) => {
-              if (res.status === 200) {
-                worklog.submitted = true;
-                worklog.id = id;
-                fs.writeFile(worklogFile, JSON.stringify(worklog, null, 4));
-              }
-            },
-          );
-      });
-      dispatch({
-        type: types.STOP,
-      });
-    });
+  return {
+    type: types.STOP,
   };
 }
 
@@ -152,6 +104,88 @@ function uploadScreenshot(screenshotPath) {
   });
 }
 
+export function updateWorklog() {
+  return (dispatch, getState) => new Promise((resolve) => {
+    const { time, description, trackingIssue, jiraWorklogId } = getState().get('tracker');
+    const token = getState().get('jira').jwt;
+    const jiraClient = getState().get('jira').client;
+    if (jiraWorklogId === null) {
+      const url = 'http://localhost:5000/desktop-tracker/submit-worklog';
+      const opts = {
+        issueId: trackingIssue,
+        worklog: {
+          comment: description,
+          timeSpentSeconds: time < 60 ? 60 : time,
+        },
+      };
+      jiraClient.issue.addWorkLog(opts, (e, status, response) => {
+        const { id } = response.body;
+        const options = {
+          method: 'POST',
+          body: JSON.stringify({
+            worklog: {
+              issueId: trackingIssue,
+              description,
+              timeTracked: time < 60 ? 60 : time,
+            },
+            id,
+          }),
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        };
+        fetch(url, options)
+          .then(
+            (res) => {
+              if (res.status === 200) {
+                dispatch({
+                  type: types.SET_JIRA_WORKLOG_ID,
+                  id,
+                });
+                resolve();
+              }
+            },
+          );
+      });
+    } else {
+      const url = 'http://localhost:5000/desktop-tracker/update-worklog';
+      const opts = {
+        worklogId: getState().get('tracker').jiraWorklogId,
+        issueId: trackingIssue,
+        worklog: {
+          comment: description,
+          timeSpentSeconds: time < 60 ? 60 : time,
+        },
+      };
+      jiraClient.issue.updateWorkLog(opts, (e, status, response) => {
+        const { id } = response.body;
+        const options = {
+          method: 'POST',
+          body: JSON.stringify({
+            worklog: {
+              timeTracked: time < 60 ? 60 : time,
+            },
+            id,
+          }),
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        };
+        fetch(url, options)
+          .then(
+            (res) => {
+              if (res.status === 200) {
+                resolve();
+              }
+            },
+          );
+      });
+    }
+  });
+}
+
 export function acceptScreenshot(screenshotTime, screenshotPath) {
   return (dispatch, getState) => {
     uploadScreenshot(screenshotPath)
@@ -159,6 +193,7 @@ export function acceptScreenshot(screenshotTime, screenshotPath) {
         () => {
           const { getGlobal } = remote;
           const currentWorklogId = getState().get('tracker').currentWorklogId;
+          const lastScreenshotTime = getState().get('tracker').lastScreenshotTime;
           const appDir = getGlobal('appDir');
           const worklogsDir = `${appDir}/worklogs`;
           const worklogFile = `${worklogsDir}/${currentWorklogId}.worklog`;
@@ -168,10 +203,86 @@ export function acceptScreenshot(screenshotTime, screenshotPath) {
               .findIndex(screenshot => screenshot.name === path.basename(screenshotPath));
             worklog.screenshots[screenshotId].uploaded = true;
             fs.writeFile(worklogFile, JSON.stringify(worklog, null, 4));
-            dispatch({
-              type: types.ACCEPT_SCREENSHOT,
-              screenshotTime,
-            });
+            const trackingIssue = getState().get('tracker').trackingIssue;
+            const description = getState().get('tracker').description;
+            const token = getState().get('jira').jwt;
+            const jiraClient = getState().get('jira').client;
+            if (lastScreenshotTime === null) {
+              const url = 'http://localhost:5000/desktop-tracker/submit-worklog';
+              const opts = {
+                issueId: trackingIssue,
+                worklog: {
+                  comment: description,
+                  timeSpentSeconds: lastScreenshotTime < 60 ? 60 : lastScreenshotTime,
+                },
+              };
+              jiraClient.issue.addWorkLog(opts, (e, status, response) => {
+                const { id } = response.body;
+                const options = {
+                  method: 'POST',
+                  body: JSON.stringify({
+                    worklog: {
+                      issueId: trackingIssue,
+                      description,
+                      screenshots: worklog.screenshots,
+                      timeTracked: lastScreenshotTime < 60 ? 60 : lastScreenshotTime,
+                    },
+                    id,
+                  }),
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                  },
+                };
+                fetch(url, options)
+                  .then(
+                    (res) => {
+                      if (res.status === 200) {
+                        dispatch({
+                          type: types.ACCEPT_SCREENSHOT,
+                          screenshotTime,
+                        });
+                        dispatch({
+                          type: types.SET_JIRA_WORKLOG_ID,
+                          id,
+                        });
+                      }
+                    },
+                  );
+              });
+            } else {
+              const url = 'http://localhost:5000/desktop-tracker/update-worklog';
+              const opts = {
+                worklogId: getState().get('tracker').jiraWorklogId,
+                issueId: trackingIssue,
+                worklog: {
+                  comment: description,
+                  timeSpentSeconds: lastScreenshotTime < 60 ? 60 : lastScreenshotTime,
+                },
+              };
+              jiraClient.issue.updateWorkLog(opts, (e, status, response) => {
+                const { id } = response.body;
+                const options = {
+                  method: 'POST',
+                  body: JSON.stringify({ worklog, id }),
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                  },
+                };
+                fetch(url, options)
+                  .then(
+                    (res) => {
+                      if (res.status === 200) {
+                        dispatch({
+                          type: types.ACCEPT_SCREENSHOT,
+                          screenshotTime,
+                        });
+                      }
+                    },
+                  );
+              });
+            }
           });
         },
       );
