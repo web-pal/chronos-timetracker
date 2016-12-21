@@ -30,24 +30,21 @@ export default class App extends Component {
     fetchIssues: PropTypes.func.isRequired,
     fetchSettings: PropTypes.func.isRequired,
   }
-  constructor(props) {
-    super(props);
-    const { getGlobal } = remote;
-    const appDir = getGlobal('appDir');
-    fs.access(`${appDir}/screenshots/`, fs.constants.R_OK | fs.constants.W_OK, (err) => {
-      if (err) {
-        fs.mkdirSync(`${appDir}/screenshots/`);
-      }
-    });
-    fs.access(`${appDir}/worklogs/`, fs.constants.R_OK | fs.constants.W_OK, (err) => {
-      if (err) {
-        fs.mkdirSync(`${appDir}/worklogs/`);
-      }
-    });
-  }
 
   componentWillReceiveProps(nextProps) {
     if (!this.props.connected && nextProps.connected) {
+      const { getGlobal } = remote;
+      const appDir = getGlobal('appDir');
+      fs.access(`${appDir}/screenshots/`, fs.constants.R_OK | fs.constants.W_OK, (err) => {
+        if (err) {
+          fs.mkdirSync(`${appDir}/screenshots/`);
+        }
+      });
+      fs.access(`${appDir}/worklogs/`, fs.constants.R_OK | fs.constants.W_OK, (err) => {
+        if (err) {
+          fs.mkdirSync(`${appDir}/worklogs/`);
+        }
+      });
       this.props.fetchProjects()
         .then(
           () => this.props.fetchSettings(),

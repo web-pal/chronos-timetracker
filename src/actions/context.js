@@ -15,6 +15,8 @@ export function fetchIssues() {
     const currentProjectKey = currentProject.get('key');
     jiraClient.search.search({
       jql: `project = ${currentProjectKey}`,
+      maxResults: 1000,
+      fields: ['summary', 'resolution', 'status'],
     }, (error, response) => {
       if (error) {
         dispatch({
@@ -76,16 +78,16 @@ export function fetchSettings() {
     };
     fetch(url, options)
       .then(
-        res => res.status === 200 && res.json()
+        res => res.status === 200 && res.json(),
       )
       .then(
-        json => {
+        (json) => {
           dispatch({
             type: types.GET_SETTINGS,
             settings: json.payload,
           });
           resolve();
-        }
+        },
       );
   });
 }
