@@ -65,9 +65,7 @@ export default class Tracker extends Component {
 
   constructor(props) {
     super(props);
-    ipcRenderer.on('screenshot-reject', () => {
-      this.props.rejectScreenshot();
-    });
+    ipcRenderer.on('screenshot-reject', () => this.props.rejectScreenshot());
     ipcRenderer.on('screenshot-accept', () => {
       const { getGlobal } = remote;
       const { screenshotTime, lastScreenshotPath } = getGlobal('sharedObj');
@@ -89,10 +87,6 @@ export default class Tracker extends Component {
       clearInterval(this.timerLoop);
     }
   }
-
-  handleTimerStart = () => this.props.startTimer();
-
-  handleTimerPause = () => this.props.pauseTimer();
 
   handleTimerStop = () => {
     this.props.updateWorklog();
@@ -172,7 +166,7 @@ export default class Tracker extends Component {
   render() {
     const {
       running, paused, time, trackingIssue, startTimer, closeDescriptionPopup, description,
-      pauseTimer, unpauseTimer, stopTimer, openDescriptionPopup, descriptionPopupOpen, currentIssue,
+      pauseTimer, unpauseTimer, openDescriptionPopup, descriptionPopupOpen, currentIssue,
       setCurrentIssue,
     } = this.props;
     return (
