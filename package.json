@@ -1,4 +1,4 @@
-{
+II{
   "name": "desktop-jira-tracker",
   "version": "1.0.0",
   "description": "desktop jira time tracking",
@@ -7,6 +7,7 @@
     "hot": "cross-env HOT=1 NODE_ENV=development electron --enable-transparent-visuals --disable-gpu --ignore-certificate-errors -r babel-register -r babel-polyfill ./main.development",
     "hot-server": "node -r babel-register server.js",
     "package": "cross-env NODE_ENV=production node -r babel-register package.js",
+    "package-all": "cross-env NODE_ENV=production npm run package -- --all",
     "build-main": "cross-env NODE_ENV=production node -r babel-register ./node_modules/webpack/bin/webpack --config ./webpack.config.electron.js --progress --profile --colors",
     "build-renderer": "cross-env NODE_ENV=production node -r babel-register ./node_modules/webpack/bin/webpack --config ./webpack.config.production.js --progress --profile --colors",
     "build": "npm run build-main && npm run build-renderer",
