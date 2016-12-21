@@ -26,6 +26,34 @@
   color: rgba(0, 0, 0, .83);
 }
 
+.intersect {
+  position: absolute;
+  top: 4px;
+  right: 24px;
+  &:after {
+    position: absolute;
+    content: ' ';
+    top: 6px;
+    right: -3px;
+    width: 20px;
+    transform: rotate(-45deg);
+    height: 2px;
+    background: #b2b2b2;
+    z-index: 99;
+  }
+}
+
+.fa-camera {
+  color: rgba(0, 0, 0, 1);
+  &.disabled {
+    color: rgba(0, 0, 0, .33);
+  }
+  cursor: help;
+  position: absolute;
+  top: 4px;
+  right: 24px;
+}
+
 .fa-sign-out {
   color: rgba(0, 0, 0, .63);
   cursor: pointer;

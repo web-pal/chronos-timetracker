@@ -22,6 +22,7 @@ function mapStateToProps(state) {
     filterValue: state.get('context').filterValue,
     resolveFilter: state.get('context').resolveFilter,
     fetching: state.get('context').fetching,
+    settings: state.get('context').settings,
   };
 }
 
@@ -42,12 +43,14 @@ export default class Menu extends Component {
     filterValue: PropTypes.string,
     resolveFilter: PropTypes.bool,
     fetching: PropTypes.string,
+    settings: PropTypes.object.isRequired,
     changeFilter: PropTypes.func.isRequired,
     clearFilter: PropTypes.func.isRequired,
     setCurrentProject: PropTypes.func.isRequired,
     setCurrentIssue: PropTypes.func.isRequired,
     toggleResolveFilter: PropTypes.func.isRequired,
     fetchIssues: PropTypes.func.isRequired,
+    fetchSettings: PropTypes.func.isRequired,
     logout: PropTypes.func.isRequired,
   }
 
@@ -60,8 +63,15 @@ export default class Menu extends Component {
       self, projects, currentProject, currentProjectId, issues,
       currentIssueId, trackingIssue, changeFilter, clearFilter,
       filterValue, resolveFilter, toggleResolveFilter, fetching,
-      logout, fetchIssues,
+      logout, fetchIssues, fetchSettings, settings,
     } = this.props;
+    const { screenshotsEnabled, screenshotsEnabledUsers } = settings.toJS();
+    const selfKey = self.get('key');
+    const cond1 = screenshotsEnabled === 'everyone';
+    const cond2 = screenshotsEnabled === 'forUsers' &&
+      screenshotsEnabledUsers.includes(selfKey);
+    const cond3 = screenshotsEnabled === 'excludingUsers' &&
+      !screenshotsEnabledUsers.includes(selfKey);
     return (
       <Flex column className="menu">
         <Header
@@ -69,6 +79,7 @@ export default class Menu extends Component {
           username={self && self.get('displayName')}
           projects={projects}
           fetching={fetching}
+          screenshotsEnabled={cond1 || cond2 || cond3}
           currentProject={currentProject}
           onProjectChange={this.handleProjectChange}
           logout={logout}
@@ -80,7 +91,10 @@ export default class Menu extends Component {
           current={currentIssueId}
           tracking={trackingIssue}
           filterValue={filterValue}
-          refreshIssues={fetchIssues}
+          refreshIssues={() => {
+            fetchIssues();
+            fetchSettings();
+          }}
           onFilterChange={changeFilter}
           onFilterClear={clearFilter}
           onItemClick={this.handleIssueClick}
