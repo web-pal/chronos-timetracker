@@ -66,7 +66,7 @@ export default class AuthForm extends Component {
   render() {
     const { handleSubmit, fetching, error } = this.props;
     return (
-      <Flex column centered className="occupy-height">
+      <Flex column centered className="occupy-height draggable">
         {fetching === 'connect' && 
           <div className="connect-fetching">
             <img src={spinner} />
