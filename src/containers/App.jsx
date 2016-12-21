@@ -36,12 +36,12 @@ export default class App extends Component {
     const appDir = getGlobal('appDir');
     fs.access(`${appDir}/screenshots/`, fs.constants.R_OK | fs.constants.W_OK, (err) => {
       if (err) {
-        fs.mkdir(`${appDir}/screenshots/`);
+        fs.mkdirSync(`${appDir}/screenshots/`);
       }
     });
     fs.access(`${appDir}/worklogs/`, fs.constants.R_OK | fs.constants.W_OK, (err) => {
       if (err) {
-        fs.mkdir(`${appDir}/worklogs/`);
+        fs.mkdirSync(`${appDir}/worklogs/`);
       }
     });
   }
