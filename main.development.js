@@ -1,8 +1,6 @@
 /* eslint-disable no-console */
-import { app, Tray, BrowserWindow, ipcMain, webContents, Menu } from 'electron';
+import { app, Tray, BrowserWindow, ipcMain, Menu } from 'electron';
 import path from 'path';
-import installExtension,
-  { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer';
 
 global.appDir = __dirname;
 global.sharedObj = {
@@ -17,7 +15,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 if (process.env.NODE_ENV === 'development') {
-  require('electron-debug')();
+  require('electron-debug')(); // eslint-disable-line
 }
 
 process.on('uncaughtExecption', () => {
@@ -36,7 +34,7 @@ function createWindow() {
   // disabling chrome frames differ on OSX and other platforms
   // https://github.com/electron/electron/blob/master/docs/api/frameless-window.md
   const noFrameOption = process.platform === 'darwin'
-    ? { }
+    ? { titleBarStyle: 'hidden' }
     : { frame: false };
 
   mainWindow = new BrowserWindow({
@@ -61,28 +59,21 @@ function createWindow() {
   });
 }
 
-function initializeApp() {
+const installExtensions = async () => {
   if (process.env.NODE_ENV === 'development') {
-    installExtension(REACT_DEVELOPER_TOOLS)
-      .then(
-        name => console.log(`Installed ${name} extension`),
-        error => console.error(`Error while installing extension ${error}`)
-      );
-    installExtension(REDUX_DEVTOOLS)
-      .then(
-        name => {
-          console.log(`Installed ${name} extension`);
-          // create window after installing extensions
-          console.log('Creating window...');
-          createWindow();
-        },
-        error => console.error(`Error while installing extension ${error}`)
-      );
-  } else {
-    createWindow();
+    const installer = require('electron-devtools-installer'); // eslint-disable-line global-require
+    const extensions = [
+      'REACT_DEVELOPER_TOOLS',
+      'REDUX_DEVTOOLS',
+    ];
+    const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
+    for (const name of extensions) {
+      try {
+        await installer.default(installer[name], forceDownload);
+      } catch (e) {} // eslint-disable-line
+    }
   }
-}
-
+};
 
 ipcMain.on('screenshot-reject', () => {
   mainWindow.webContents.send('screenshot-reject');
@@ -94,68 +85,69 @@ ipcMain.on('screenshot-accept', () => {
 
 let tray = null;
 
-app.on('ready', () => {
+app.on('ready', async () => {
+  await installExtensions();
   tray = new Tray(path.join(__dirname, './src/assets/images/clock.png'));
   tray.setToolTip('Open chronos tracker');
   tray.on('click', () => mainWindow.show());
-  initializeApp();
+  createWindow();
   if (process.platform === 'darwin') {
     template = [{
       label: 'Chronos',
       submenu: [{
         label: 'About Chronos',
-        selector: 'orderFrontStandardAboutPanel:'
+        selector: 'orderFrontStandardAboutPanel:',
       }, {
-        type: 'separator'
+        type: 'separator',
       }, {
         label: 'Hide DBGlass',
         accelerator: 'Command+H',
-        selector: 'hide:'
+        selector: 'hide:',
       }, {
         label: 'Hide Others',
         accelerator: 'Command+Shift+H',
-        selector: 'hideOtherApplications:'
+        selector: 'hideOtherApplications:',
       }, {
         label: 'Show All',
-        selector: 'unhideAllApplications:'
+        selector: 'unhideAllApplications:',
       }, {
-        type: 'separator'
+        type: 'separator',
       }, {
         label: 'Quit',
         accelerator: 'Command+Q',
         click() {
           app.quit();
-        }
-      }]
+        },
+      }],
     }, {
       label: 'Edit',
       submenu: [{
         label: 'Undo',
         accelerator: 'Command+Z',
-        selector: 'undo:'
+        selector: 'undo:',
       }, {
         label: 'Redo',
         accelerator: 'Shift+Command+Z',
-        selector: 'redo:'
+        selector: 'redo:',
       }, {
-        type: 'separator'
+        type: 'separator',
       }, {
         label: 'Cut',
         accelerator: 'Command+X',
-        selector: 'cut:'
+        selector: 'cut:',
       }, {
         label: 'Copy',
         accelerator: 'Command+C',
-        selector: 'copy:'
+        selector: 'copy:',
       }, {
         label: 'Paste',
         accelerator: 'Command+V',
-        selector: 'paste:'
+        selector: 'paste:',
       }, {
         label: 'Select All',
         accelerator: 'Command+A',
-        selector: 'selectAll:'
-      }]
+        selector: 'selectAll:',
+      }],
     }, {
       label: 'View',
       submenu: (process.env.NODE_ENV === 'development') ? [{
@@ -163,60 +155,42 @@ app.on('ready', () => {
         accelerator: 'Command+R',
         click() {
           mainWindow.webContents.send('reload');
-        }
+        },
       }, {
         label: 'Toggle Full Screen',
         accelerator: 'Ctrl+Command+F',
         click() {
           mainWindow.setFullScreen(!mainWindow.isFullScreen());
-        }
+        },
       }, {
         label: 'Toggle Developer Tools',
         accelerator: 'Alt+Command+I',
         click() {
           mainWindow.toggleDevTools();
-        }
+        },
       }] : [{
         label: 'Toggle Full Screen',
         accelerator: 'Ctrl+Command+F',
         click() {
           mainWindow.setFullScreen(!mainWindow.isFullScreen());
-        }
-      }]
+        },
+      }],
     }, {
       label: 'Window',
       submenu: [{
         label: 'Minimize',
         accelerator: 'Command+M',
-        selector: 'performMiniaturize:'
+        selector: 'performMiniaturize:',
       }, {
         label: 'Close',
         accelerator: 'Command+W',
-        selector: 'performClose:'
+        selector: 'performClose:',
       }, {
-        type: 'separator'
+        type: 'separator',
       }, {
         label: 'Bring All to Front',
-        selector: 'arrangeInFront:'
-      }]
-    }, {
-      label: 'Help',
-      submenu: [{
-        label: 'Learn More',
-        click() {
-          shell.openExternal('http://dbglass.web-pal.com');
-        }
-      }, {
-        label: 'Hire us!',
-        click() {
-          shell.openExternal('http://web-pal.com');
-        }
-      }, {
-        label: 'Search Issues',
-        click() {
-          shell.openExternal('https://github.com/web-pal/DBGlass/issues');
-        }
-      }]
+        selector: 'arrangeInFront:',
+      }],
     }];
     menu = Menu.buildFromTemplate(template);
     Menu.setApplicationMenu(menu);

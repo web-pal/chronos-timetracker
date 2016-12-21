@@ -72,27 +72,32 @@
 
 .tracker-header {
   padding: 8px 15px;
+  -webkit-app-region: drag;
   min-height: 137px;
   background: #f8f8f8;
   border-bottom: 1px solid #e6e6e6;
   position: relative;
   z-index: 20;
   .tracker-header__issuekey {
+    -webkit-app-region: no-drag;
     font-size: 1em;
     font-weight: bold;
     color: rgba(0, 0, 0, .87);
   }
   .tracker-header__summary {
+    -webkit-app-region: no-drag;
     font-size: .9em;
     color: rgba(0, 0, 0, .67);
   }
   .tracker-header__description  {
+    -webkit-app-region: no-drag;
     font-size: .8em;
     overflow: scroll;
     word-break: break-all;
     color: rgba(0, 0, 0, .6);
   }
   .tracker-header__status {
+    -webkit-app-region: no-drag;
     font-size: .8em;
   }
 }
