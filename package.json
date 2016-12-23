@@ -1,4 +1,4 @@
-II{
+{
   "name": "desktop-jira-tracker",
   "version": "1.0.0",
   "description": "desktop jira time tracking",
@@ -56,6 +56,7 @@ II{
     "webpack-merge": "1.1.1"
   },
   "dependencies": {
+    "bufferutil": "^1.3.0",
     "electron": "1.4.12",
     "electron-json-storage": "2.1.0",
     "immutable": "3.8.1",
@@ -74,7 +75,9 @@ II{
     "redux-thunk": "2.1.0",
     "request": "2.79.0",
     "reselect": "2.5.4",
+    "socket.io-client": "^1.7.2",
     "source-map-support": "0.4.6",
-    "user-media-screenshot": "1.0.2"
+    "user-media-screenshot": "1.0.2",
+    "utf-8-validate": "^2.0.0"
   }
 }

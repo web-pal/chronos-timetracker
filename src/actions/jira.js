@@ -5,9 +5,10 @@ import storage from 'electron-json-storage';
 import { success, fail } from '../helpers/promise';
 import * as types from '../constants/jira';
 import { staticUrl } from '../config/config';
+import Socket from '../socket';
 
 export function jwtConnect(token) {
-  return dispatch => new Promise((resolve, reject) => {
+  return (dispatch, getState) => new Promise((resolve, reject) => {
     dispatch({
       type: 'context/START_FETCH',
       value: 'connect',
@@ -67,6 +68,10 @@ export function jwtConnect(token) {
               password,
             },
           });
+          Socket.login(
+            dispatch,
+            getState
+          );
           jiraClient.myself.getMyself({}, (err2, response) => {
             if (err2) {
               dispatch({
@@ -103,7 +108,7 @@ export function jwtConnect(token) {
 }
 
 export function connect(credentials) {
-  return dispatch => new Promise((resolve, reject) => {
+  return (dispatch, getState) => new Promise((resolve, reject) => {
     dispatch({
       type: 'context/START_FETCH',
       value: 'connect',
@@ -168,6 +173,10 @@ export function connect(credentials) {
               });
               const token = json.token;
               if (token) {
+                Socket.login(
+                  dispatch,
+                  getState
+                );
                 dispatch({
                   type: types.SAVE_JWT,
                   token,
