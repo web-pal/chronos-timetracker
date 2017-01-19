@@ -6,29 +6,19 @@ import { remote } from 'electron';
 
 import * as jiraActions from '../actions/jira';
 import * as contextActions from '../actions/context';
+import * as issuesActions from '../actions/issues';
+
 import AuthForm from './AuthForm';
 import Main from '../components/Main';
 
-
-function mapStateToProps(state) {
-  return {
-    connected: state.get('jira').connected,
-    currentProject: state.get('context').currentProject,
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ ...jiraActions, ...contextActions }, dispatch);
-}
-
-@connect(mapStateToProps, mapDispatchToProps)
-export default class App extends Component {
+class App extends Component {
   static propTypes = {
     connected: PropTypes.bool.isRequired,
     currentProject: PropTypes.object.isRequired,
     fetchProjects: PropTypes.func.isRequired,
     fetchIssues: PropTypes.func.isRequired,
     fetchSettings: PropTypes.func.isRequired,
+    fetchLastWeekLoggedIssues: PropTypes.func.isRequired,
   }
 
   componentWillReceiveProps(nextProps) {
@@ -51,6 +41,7 @@ export default class App extends Component {
         );
     }
     if (!this.props.currentProject.equals(nextProps.currentProject)) {
+      // this.props.fetchLastWeekLoggedIssues();
       this.props.fetchIssues();
     }
   }
@@ -63,3 +54,16 @@ export default class App extends Component {
     return view;
   }
 }
+
+function mapStateToProps({ jira, context }) {
+  return {
+    connected: jira.connected,
+    currentProject: context.currentProject,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({ ...jiraActions, ...contextActions, ...issuesActions }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

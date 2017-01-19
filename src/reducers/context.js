@@ -5,6 +5,7 @@ const InitialState = Immutable.Record({
   currentProject: Immutable.Map({}),
   currentProjectId: null,
   issues: Immutable.List([]),
+  recentIssues: Immutable.List([]),
   currentIssue: Immutable.Map({}),
   currentIssueId: null,
   worklogs: Immutable.List([]),
@@ -26,6 +27,8 @@ export default function context(state = initialState, action) {
               .set('currentProjectId', action.projectId);
     case types.GET_ISSUES:
       return state.set('issues', Immutable.fromJS(action.issues));
+    case types.GET_RECENT_ISSUES:
+      return state.set('recentIssues', Immutable.fromJS(action.payload).toList());
     case types.SET_CURRENT_ISSUE:
       return state
               .set('currentIssue', state.issues.find(issue => issue.get('id') === action.issueId))

@@ -3,18 +3,20 @@ import React, { PropTypes } from 'react';
 import Flex from '../../Base/Flex/Flex';
 import SidebarItem from './SidebarItem/SidebarItem';
 import SidebarFilterItem from './SidebarFilterItem/SidebarFilterItem';
+import InfiniteLoadingList from '../../Virtualized/InfiniteLoadingList';
 
 const SidebarItems = ({
-  items, current, onItemClick, tracking, onResolveFilter, refreshIssues,
-  onFilterChange, onFilterClear, filterValue, resolveFilter,
+  items, current, onItemClick, tracking, onResolveFilter, refreshIssues, issuesCount,
+  onFilterChange, onFilterClear, filterValue, resolveFilter, fetchIssues,
 }) => {
-  const sideBarItems = items.map((item, i) => {
+  const sideBarItems = items.map((item) => {
     if (item) {
       let label =
         item.get('displayName') ||
         item.get('name') ||
-        item.get('fields').get('summary') ||
-        item.get('key');
+        item.getIn(['fields', 'summary']) ||
+        item.get('key') ||
+        item.getIn(['issue', 'summary']);
       if (label.length > 25) {
         label = `${label.substr(0, 25)}...`;
       }
@@ -34,7 +36,7 @@ const SidebarItems = ({
   });
 
   return (
-    <Flex column>
+    <Flex column style={{ height: '100%' }}>
       <SidebarFilterItem
         onChange={onFilterChange}
         value={filterValue}
@@ -43,11 +45,26 @@ const SidebarItems = ({
         onResolveFilter={onResolveFilter}
         resolveFilter={resolveFilter}
       />
-      <div className="sidebar-list-wrapper">
-        <ul className="sidebar-list">
-          {sideBarItems}
-        </ul>
-      </div>
+      <InfiniteLoadingList
+        isRowLoaded={({ index }) => !!items.toList().get(index)}
+        loadMoreRows={fetchIssues}
+        rowCount={issuesCount}
+        listProps={{
+          autoSized: true,
+          rowCount: issuesCount,
+          rowHeight: 35,
+          rowRenderer: ({ index, key, style }) => {
+            const item = items.toList().get(index);
+            return (
+              <SidebarItem
+                onClick={onItemClick}
+                item={item}
+                style={style}
+              />
+            );
+          },
+        }}
+      />
     </Flex>
   );
 };
@@ -63,6 +80,8 @@ SidebarItems.propTypes = {
   onFilterChange: PropTypes.func.isRequired,
   onResolveFilter: PropTypes.func.isRequired,
   onItemClick: PropTypes.func.isRequired,
+  fetchIssues: PropTypes.func.isRequired,
+  issuesCount: PropTypes.number,
 };
 
 export default SidebarItems;

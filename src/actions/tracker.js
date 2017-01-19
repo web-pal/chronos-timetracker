@@ -2,8 +2,10 @@ import { remote } from 'electron';
 import fs from 'fs';
 import path from 'path';
 import fetch from 'isomorphic-fetch';
+import moment from 'moment';
+import storage from 'electron-json-storage';
 
-import * as types from '../constants/tracker';
+import * as types from '../constants';
 import { success, fail } from '../helpers/promise';
 import { staticUrl } from '../config/config';
 
@@ -16,23 +18,46 @@ export function tick() {
 export function startTimer(description) {
   return (dispatch, getState) => {
     const { getGlobal } = remote;
-    const currentIssue = getState().get('context').currentIssue.toJS();
+    const appDir = getGlobal('appDir');
+    const worklogsDir = `${appDir}/worklogs`;
+    const worklogId = Date.now();
+    const worklogFile = `${worklogsDir}/${worklogId}.worklog`;
+    const currentIssue = getState().context.currentIssue.toJS();
     const worklog = {
-      issue: {
-        issueId: currentIssue.id,
-        summary: currentIssue.fields.summary,
-      },
+      issue: currentIssue,
+      id: worklogId,
+      started: moment(worklogId).toString(),
       description,
       screenshots: [],
       timeTracked: 0,
       submitted: false,
     };
-    const appDir = getGlobal('appDir');
-    const worklogsDir = `${appDir}/worklogs`;
-    const worklogId = Date.now();
-    const worklogFile = `${worklogsDir}/${worklogId}.worklog`;
     fs.writeFile(worklogFile, JSON.stringify(worklog, null, 2), (err) => {
       if (err) throw err;
+    });
+    storage.has('chronos_recent', (err, hasKey) => {
+      if (hasKey) {
+        storage.get('chronos_recent', (err2, data) => {
+          data.push(worklog);
+          storage.set('chronos_recent', data);
+          dispatch({
+            type: types.GET_RECENT_ISSUES,
+            payload: data,
+          });
+        });
+      } else {
+        const data = {
+          [worklogId]: {
+            started: moment(worklogId).toString(),
+            ...currentIssue,
+          },
+        };
+        storage.set('chronos_recent', data);
+        dispatch({
+          type: types.GET_RECENT_ISSUES,
+          payload: data,
+        });
+      }
     });
     dispatch({
       type: types.START,
@@ -107,9 +132,9 @@ function uploadScreenshot(screenshotPath) {
 
 export function updateWorklog() {
   return (dispatch, getState) => new Promise((resolve) => {
-    const { time, description, trackingIssue, jiraWorklogId } = getState().get('tracker');
-    const token = getState().get('jira').jwt;
-    const jiraClient = getState().get('jira').client;
+    const { time, description, trackingIssue, jiraWorklogId } = getState().tracker;
+    const token = getState().jira.jwt;
+    const jiraClient = getState().jira.client;
     if (jiraWorklogId === null) {
       const url = `${staticUrl}/desktop-tracker/submit-worklog`;
       const opts = {
@@ -152,7 +177,7 @@ export function updateWorklog() {
     } else {
       const url = `${staticUrl}/desktop-tracker/update-worklog`;
       const opts = {
-        worklogId: getState().get('tracker').jiraWorklogId,
+        worklogId: getState().tracker.jiraWorklogId,
         issueId: trackingIssue,
         worklog: {
           comment: description,
@@ -194,8 +219,8 @@ export function acceptScreenshot(screenshotTime, screenshotPath) {
         () => {
           const { getGlobal } = remote;
           const appDir = getGlobal('appDir');
-          const currentWorklogId = getState().get('tracker').currentWorklogId;
-          const lastScreenshotTime = getState().get('tracker').lastScreenshotTime;
+          const currentWorklogId = getState().tracker.currentWorklogId;
+          const lastScreenshotTime = getState().tracker.lastScreenshotTime;
           const worklogsDir = `${appDir}/worklogs`;
           const worklogFile = `${worklogsDir}/${currentWorklogId}.worklog`;
           fs.readFile(worklogFile, (err, file) => {
@@ -204,10 +229,10 @@ export function acceptScreenshot(screenshotTime, screenshotPath) {
               .findIndex(screenshot => screenshot.name === path.basename(screenshotPath));
             worklog.screenshots[screenshotId].uploaded = true;
             fs.writeFile(worklogFile, JSON.stringify(worklog, null, 4));
-            const trackingIssue = getState().get('tracker').trackingIssue;
-            const description = getState().get('tracker').description;
-            const token = getState().get('jira').jwt;
-            const jiraClient = getState().get('jira').client;
+            const trackingIssue = getState().tracker.trackingIssue;
+            const description = getState().tracker.description;
+            const token = getState().jira.jwt;
+            const jiraClient = getState().jira.client;
             if (lastScreenshotTime === null) {
               const url = `${staticUrl}/desktop-tracker/submit-worklog`;
               const opts = {
@@ -254,7 +279,7 @@ export function acceptScreenshot(screenshotTime, screenshotPath) {
             } else {
               const url = `${staticUrl}/desktop-tracker/update-worklog`;
               const opts = {
-                worklogId: getState().get('tracker').jiraWorklogId,
+                worklogId: getState().tracker.jiraWorklogId,
                 issueId: trackingIssue,
                 worklog: {
                   comment: description,

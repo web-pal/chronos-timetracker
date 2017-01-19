@@ -55,7 +55,7 @@ const Header = (props) => {
       </Flex>
       <Dropdown
         options={dropdownOptions}
-        onChange={onProjectChange}
+        onChange={option => onProjectChange(option.value)}
         value={value}
         fetching={fetching}
       />
@@ -64,7 +64,7 @@ const Header = (props) => {
 };
 
 Header.propTypes = {
-  avatarUrl: PropTypes.string.isRequired,
+  avatarUrl: PropTypes.string,
   screenshotsEnabled: PropTypes.bool.isRequired,
   username: PropTypes.string.isRequired,
   projects: PropTypes.object,

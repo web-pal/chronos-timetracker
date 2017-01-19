@@ -1,0 +1,144 @@
+.sidebar-header-wrap {
+  transition: height .5s;
+  position: relative;
+  height: 50px;
+}
+
+.sidebar-header {
+  background: #f5f5f5;
+  width: 100%;
+  height: 100%;
+  font: 400 18px Arial;
+  border-bottom: 1px solid #ebebeb;
+  padding: 0px 11px;
+  position: relative;
+  text-align: center;
+  transition: all .2s;
+  color: rgba(0, 0, 0, .7);
+  cursor: pointer;
+  &.active {
+    color: rgba(0, 0, 0, .9);
+    background: #f2f2f2;
+  }
+  div:not(:last-child) {
+    margin-right: 18px;
+  }
+}
+
+.SidebarWrapper {
+  height: 100%;
+  background: #fff;
+}
+
+.sidebar {
+  word-break: normal;
+  word-wrap: break-word;
+  position: relative;
+  list-style: none;
+  margin: 0;
+  height: ~"calc(100% - 90px)";
+}
+
+.sidebar-nothing-selected {
+  text-align: center;
+  color: rgba(0, 0, 0, 0.67);
+  margin-top: 25px;
+}
+
+.sidebar-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+
+.sidebar__item {
+  border-bottom: 1px dotted #d6d6d6;
+  cursor: pointer;
+  color: rgba(0, 0, 0, .83);
+  position: relative;
+  &:hover {
+    background: rgba(0, 0, 0, .1);
+  }
+  .fa-check {
+    color: #33bb55;
+    position: absolute;
+    right: 0;
+  }
+}
+
+.sidebar-list-wrapper {
+  overflow: auto;
+}
+
+.search-field {
+  padding: 0 10px;
+  position: relative;
+  .aui-icon {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translate(-100%, -50%);
+  }
+}
+
+.sidebar-filter-item {
+  min-height: 25px;
+  padding: 6px 10px;
+  background: #f2f2f2;
+  border-bottom: 1px solid #e6e6e6;
+  position: relative;
+  .fa, .aui-icon {
+    cursor: pointer;
+    &.fa-eye-slash {
+      color: rgba(0, 0, 0, .5);
+    }
+    &.fa-eye {
+      color: rgba(0, 0, 0, .8);
+    }
+    &:hover {
+      .resolved-tooltip {
+        display: block;
+      }
+    }
+    &.fa-refresh {
+      right: 28px;
+      color: rgba(0, 0, 0, .8);
+    }
+  }
+  input {
+    border: 1px solid #d3d3d3;
+    border-radius: 3px;
+    padding: 5px;
+    &:hover, &:focus {
+      box-shadow: 0 0 7px -1px #6666ff;
+      outline: none;
+    }
+
+    &:hover + .aui-icon, &:focus + .aui-icon {
+      color: #6666ff;
+    }
+  }
+}
+
+.sidebar__item--active {
+  background-color: #f0f2f4;
+  border-left: 5px solid #3b7fc6;
+  position: relative;
+}
+
+.sidebar__item--tracking {
+  border-left: 5px solid #ff9977;
+  position: relative;
+  &:after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    background: #ff7777;
+  }
+}

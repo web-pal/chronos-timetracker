@@ -2,9 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Field, reduxForm } from 'redux-form/immutable';
-import fs from 'fs';
-import path from 'path';
-import request from 'request';
 
 import * as jiraActions from '../actions/jira';
 import Flex from '../components/Base/Flex/Flex';
@@ -12,21 +9,8 @@ import Checkbox from '../components/Checkbox/Checkbox';
 
 const spinner = require('../assets/images/ring-alt.svg');
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators(jiraActions, dispatch);
-}
-
-function mapStateToProps(state) {
-  return {
-    initialValues: state.get('jira').credentials,
-    error: state.get('jira').error,
-    fetching: state.get('context').fetching,
-  };
-}
-
 @reduxForm({ form: 'auth' })
-@connect(mapStateToProps, mapDispatchToProps)
-export default class AuthForm extends Component {
+class AuthForm extends Component {
   static propTypes = {
     initialValues: PropTypes.object.isRequired,
     error: PropTypes.object,
@@ -67,9 +51,9 @@ export default class AuthForm extends Component {
     const { handleSubmit, fetching, error } = this.props;
     return (
       <Flex column centered className="occupy-height draggable">
-        {fetching === 'connect' && 
+        {fetching === 'connect' &&
           <div className="connect-fetching">
-            <img src={spinner} />
+            <img src={spinner} alt="" />
           </div>
         }
         <Flex row centered>
@@ -106,3 +90,17 @@ export default class AuthForm extends Component {
     );
   }
 }
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(jiraActions, dispatch);
+}
+
+function mapStateToProps({ jira, context }) {
+  return {
+    initialValues: jira.credentials,
+    error: jira.error,
+    fetching: context.fetching,
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(AuthForm);

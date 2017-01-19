@@ -1,41 +1,7 @@
 import fetch from 'isomorphic-fetch';
 
-import * as types from '../constants/context';
-import { THROW_ERROR } from '../constants/jira';
+import * as types from '../constants';
 import { staticUrl } from '../config/config';
-
-export function fetchIssues() {
-  return (dispatch, getState) => new Promise((resolve, reject) => {
-    dispatch({
-      type: types.START_FETCH,
-      value: 'issues',
-    });
-    const jiraClient = getState().get('jira').client;
-    const currentProject = getState().get('context').currentProject;
-    const currentProjectKey = currentProject.get('key');
-    jiraClient.search.search({
-      jql: `project = ${currentProjectKey}`,
-      maxResults: 1000,
-      fields: ['summary', 'resolution', 'status'],
-    }, (error, response) => {
-      if (error) {
-        dispatch({
-          type: THROW_ERROR,
-          error,
-        });
-        reject(error);
-      }
-      dispatch({
-        type: types.GET_ISSUES,
-        issues: response.issues,
-      });
-      dispatch({
-        type: types.FINISH_FETCH,
-      });
-      resolve('done');
-    });
-  });
-}
 
 export function fetchProjects() {
   return (dispatch, getState) => new Promise((resolve, reject) => {
@@ -43,12 +9,12 @@ export function fetchProjects() {
       type: types.START_FETCH,
       value: 'projects',
     });
-    const jiraClient = getState().get('jira').client;
+    const jiraClient = getState().jira.client;
     const fetchRepedioulsy = setInterval(() => {
       jiraClient.project.getAllProjects({}, (error, response) => {
         if (error) {
           dispatch({
-            type: THROW_ERROR,
+            type: types.THROW_ERROR,
             error,
           });
           reject(error);
@@ -69,7 +35,7 @@ export function fetchProjects() {
 
 export function fetchSettings() {
   return (dispatch, getState) => new Promise((resolve) => {
-    const token = getState().get('jira').get('jwt');
+    const token = getState().jira.jwt;
     const url = `${staticUrl}/api/tracker/settings/desktopApp`;
     const options = {
       headers: {

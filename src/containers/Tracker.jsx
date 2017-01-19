@@ -18,27 +18,7 @@ import * as contextActions from '../actions/context';
 
 let timeRange = 60;
 
-function mapStateToProps(state) {
-  return {
-    self: state.get('jira').get('self'),
-    currentIssue: state.get('context').currentIssue,
-    trackingIssue: getTrackingIssue({ context: state.get('context'), tracker: state.get('tracker') }),
-    time: state.get('tracker').time,
-    running: state.get('tracker').running,
-    paused: state.get('tracker').paused,
-    currentWorklogId: state.get('tracker').currentWorklogId,
-    settings: state.get('context').settings,
-    descriptionPopupOpen: state.get('ui').descriptionPopupOpen,
-    description: state.get('tracker').description,
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ ...trackerActions, ...uiActions, ...contextActions }, dispatch);
-}
-
-@connect(mapStateToProps, mapDispatchToProps)
-export default class Tracker extends Component {
+class Tracker extends Component {
   static propTypes = {
     trackingIssue: PropTypes.object,
     self: PropTypes.object,
@@ -195,3 +175,24 @@ export default class Tracker extends Component {
     );
   }
 }
+
+function mapStateToProps({ jira, context, tracker, ui, issues }) {
+  return {
+    self: jira.self,
+    currentIssue: context.currentIssue,
+    trackingIssue: getTrackingIssue({ context, tracker, issues }),
+    time: tracker.time,
+    running: tracker.running,
+    paused: tracker.paused,
+    currentWorklogId: tracker.currentWorklogId,
+    settings: context.settings,
+    descriptionPopupOpen: ui.descriptionPopupOpen,
+    description: tracker.description,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({ ...trackerActions, ...uiActions, ...contextActions }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Tracker);

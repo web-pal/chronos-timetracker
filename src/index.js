@@ -6,7 +6,7 @@ import { Provider } from 'react-redux';
 import configureStore from './store/configureStore';
 import Base from './components/Base/Base';
 
-const store = configureStore(Immutable.Map({}));
+const store = configureStore();
 
 render(
   <Provider store={store}>

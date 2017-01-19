@@ -7,3 +7,8 @@ export const openDescriptionPopup = () => ({
 export const closeDescriptionPopup = () => ({
   type: types.CLOSE_DESCRIPTION_POPUP,
 });
+
+export const setSidebarType = (value) => ({
+  type: types.SET_SIDEBAR_TYPE,
+  payload: value,
+});

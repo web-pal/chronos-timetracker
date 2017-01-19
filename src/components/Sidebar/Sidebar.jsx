@@ -7,11 +7,11 @@ const spinner = require('../../assets/images/ring-alt.svg');
 
 const Sidebar = ({
   items, tracking, current, currentProjectId, onResolveFilter, fetching, refreshIssues,
-  onItemClick, onFilterChange, onFilterClear, filterValue, resolveFilter,
+  onItemClick, onFilterChange, onFilterClear, filterValue, resolveFilter, fetchIssues, issuesCount,
 }) =>
   <Flex column className="sidebar">
-    {fetching === 'issues' && 
-      <img src={spinner} className="issues-spinner" />
+    {fetching === 'issues' &&
+      <img alt="" src={spinner} className="issues-spinner" />
     }
     {currentProjectId
       ? <SidebarItems
@@ -21,10 +21,12 @@ const Sidebar = ({
         filterValue={filterValue}
         resolveFilter={resolveFilter}
         refreshIssues={refreshIssues}
+        fetchIssues={fetchIssues}
         onFilterChange={onFilterChange}
         onFilterClear={onFilterClear}
         onResolveFilter={onResolveFilter}
         onItemClick={onItemClick}
+        issuesCount={issuesCount}
       />
       : <span className="sidebar-nothing-selected">
         select project from dropdown above
@@ -45,6 +47,7 @@ Sidebar.propTypes = {
   onFilterChange: PropTypes.func.isRequired,
   onResolveFilter: PropTypes.func.isRequired,
   onItemClick: PropTypes.func,
+  issuesCount: PropTypes.number,
 };
 
 export default Sidebar;

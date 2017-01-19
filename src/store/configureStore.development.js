@@ -7,14 +7,19 @@ const logger = createLogger({
   level: 'info',
   collapsed: true,
 });
-
-const enhancer = compose(
+ /* eslint-disable no-underscore-dangle */
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const enhancer = composeEnhancers(
   applyMiddleware(thunk, logger),
-  window.devToolsExtension ? window.devToolsExtension() : noop => noop
 );
+/* eslint-enable */
 
 export default function configureStore(initialState) {
-  const store = createStore(rootReducer, initialState, enhancer);
+  const store = createStore(
+    rootReducer,
+    initialState,
+    enhancer,
+  );
 
   if (module.hot) {
     module.hot.accept('../reducers', () =>
