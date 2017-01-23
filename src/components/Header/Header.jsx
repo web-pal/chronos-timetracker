@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 
 import Avatar from '../Avatar/Avatar';
-import Dropdown from '../Dropdown/Dropdown';
+import ProjectPickerWrapper from '../../containers/ProjectPickerWrapper';
 import Flex from '../Base/Flex/Flex';
 
 const Header = (props) => {
@@ -9,10 +9,8 @@ const Header = (props) => {
     avatarUrl,
     username,
     projects,
-    fetching,
     currentProject,
     currentProjectId,
-    onProjectChange,
     logout,
     screenshotsEnabled,
   } = props;
@@ -53,12 +51,7 @@ const Header = (props) => {
           </a>
         </Flex>
       </Flex>
-      <Dropdown
-        options={dropdownOptions}
-        onChange={option => onProjectChange(option.value)}
-        value={value}
-        fetching={fetching}
-      />
+      <ProjectPickerWrapper />
     </Flex>
   );
 };

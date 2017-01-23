@@ -5,47 +5,39 @@ import { bindActionCreators } from 'redux';
 
 import * as uiActions from '../actions/ui';
 import * as jiraActions from '../actions/jira';
-import * as contextActions from '../actions/context';
 import * as issuesActions from '../actions/issues';
+import * as settingsActions from '../actions/settings';
 
-import { getRecentIssuesWithWorklogs, getFilteredIssues } from '../selectors/';
+import {
+  getRecentWorklogsGroupedByDate,
+  getIssues,
+  getSearchResultIssues,
+  getSelectedIssueId,
+  getSelectedProjectId,
+} from '../selectors/';
 
 import Sidebar from '../components/Sidebar/Sidebar';
-import SidebarHeader from '../components/Sidebar/SidebarHeader/SidebarHeader';
+import SidebarHeaderWrapper from './SidebarHeaderWrapper';
 import Flex from '../components/Base/Flex/Flex';
 
 /* eslint-disable react/prop-types */
 const SidebarWrapper = ({
   items,
   fetching,
-  changeFilter,
-  clearFilter,
-  toggleResolveFilter,
   fetchIssues,
-  fetchSettings,
-  resolveFilter,
   currentProjectId,
   currentIssueId,
   trackingIssue,
-  filterValue,
   selectIssue,
   sidebarType,
   setSidebarType,
   issuesCount,
 }) =>
   <Flex column className="SidebarWrapper">
-    <Flex row className="sidebar-header-wrap">
-      <SidebarHeader
-        active={sidebarType === 'Recent'}
-        label="Recent"
-        onClick={setSidebarType}
-      />
-      <SidebarHeader
-        active={sidebarType === 'Search'}
-        label="Search"
-        onClick={setSidebarType}
-      />
-    </Flex>
+    <SidebarHeaderWrapper
+      sidebarType={sidebarType}
+      setSidebarType={setSidebarType}
+    />
     <Sidebar
       items={items}
       fetching={fetching}
@@ -53,46 +45,40 @@ const SidebarWrapper = ({
       fetchIssues={fetchIssues}
       current={currentIssueId}
       tracking={trackingIssue}
-      filterValue={filterValue}
-      refreshIssues={() => {
-        fetchIssues();
-        fetchSettings();
-      }}
-      onFilterChange={changeFilter}
-      onFilterClear={clearFilter}
       onItemClick={selectIssue}
-      onResolveFilter={toggleResolveFilter}
-      resolveFilter={resolveFilter}
       issuesCount={issuesCount}
+      sidebarType={sidebarType}
     />
   </Flex>;
 
 SidebarWrapper.propTypes = {
   items: PropTypes.object.isRequired,
   fetching: PropTypes.string,
-  changeFilter: PropTypes.func.isRequired,
-  clearFilter: PropTypes.func.isRequired,
-  toggleResolveFilter: PropTypes.func.isRequired,
   fetchIssues: PropTypes.func.isRequired,
   fetchSettings: PropTypes.func.isRequired,
   setSidebarType: PropTypes.func.isRequired,
   selectIssue: PropTypes.func.isRequired,
 };
 
-function mapStateToProps({ issues, worklogs, ui, context, tracker }) {
+function mapStateToProps({ issues, worklogs, projects, ui, tracker, filter }) {
   const sidebarType = ui.sidebarType;
   const items = sidebarType === 'Recent'
-      ? getRecentIssuesWithWorklogs({ issues, worklogs })
-      : getFilteredIssues({ issues });
+    ? getRecentWorklogsGroupedByDate({ worklogs, issues })
+    : filter.value.length > 0
+      ? getSearchResultIssues({ issues })
+      : getIssues({ issues });
+  const issuesCount = sidebarType === 'Recent'
+    ? items.size
+    : filter.value.length > 0
+      ? issues.meta.get('searchResults').size
+      : issues.meta.get('total');
   return {
     items,
-    resolveFilter: context.resolveFilter,
-    currentProjectId: context.currentProjectId,
-    currentIssueId: context.currentIssueId,
+    currentProjectId: getSelectedProjectId({ projects }),
+    currentIssueId: getSelectedIssueId({ issues }),
     trackingIssue: tracker.trackingIssue,
-    filterValue: context.filterValue,
     sidebarType: ui.sidebarType,
-    issuesCount: issues.meta.get('total'),
+    issuesCount,
   };
 }
 
@@ -100,8 +86,8 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     ...uiActions,
     ...jiraActions,
-    ...contextActions,
     ...issuesActions,
+    ...settingsActions,
   }, dispatch);
 }
 

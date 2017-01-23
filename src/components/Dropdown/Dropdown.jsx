@@ -9,8 +9,8 @@ const Dropdown = (props) => {
       name={name}
       options={options}
       value={value}
-      onChange={onChange}
-      isLoading={fetching === 'projects'}
+      onChange={option => onChange(option.value)}
+      isLoading={fetching}
     />
   );
 };
@@ -19,7 +19,7 @@ Dropdown.propTypes = {
   name: PropTypes.string,
   options: PropTypes.array,
   value: PropTypes.object,
-  fetching: PropTypes.string,
+  fetching: PropTypes.bool,
   onChange: PropTypes.func,
 };
 

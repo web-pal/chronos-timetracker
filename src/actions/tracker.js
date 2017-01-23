@@ -22,7 +22,8 @@ export function startTimer(description) {
     const worklogsDir = `${appDir}/worklogs`;
     const worklogId = Date.now();
     const worklogFile = `${worklogsDir}/${worklogId}.worklog`;
-    const currentIssue = getState().context.currentIssue.toJS();
+    const currentIssueId = getState().issues.meta.get('selected');
+    const currentIssue = getState().issues.byId.get(currentIssueId).toJS();
     const worklog = {
       issue: currentIssue,
       id: worklogId,
@@ -34,30 +35,6 @@ export function startTimer(description) {
     };
     fs.writeFile(worklogFile, JSON.stringify(worklog, null, 2), (err) => {
       if (err) throw err;
-    });
-    storage.has('chronos_recent', (err, hasKey) => {
-      if (hasKey) {
-        storage.get('chronos_recent', (err2, data) => {
-          data.push(worklog);
-          storage.set('chronos_recent', data);
-          dispatch({
-            type: types.GET_RECENT_ISSUES,
-            payload: data,
-          });
-        });
-      } else {
-        const data = {
-          [worklogId]: {
-            started: moment(worklogId).toString(),
-            ...currentIssue,
-          },
-        };
-        storage.set('chronos_recent', data);
-        dispatch({
-          type: types.GET_RECENT_ISSUES,
-          payload: data,
-        });
-      }
     });
     dispatch({
       type: types.START,

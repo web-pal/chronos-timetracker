@@ -10,11 +10,11 @@ import Flex from '../components/Base/Flex/Flex';
 import Timer from '../components/Timer/Timer';
 import TrackerHeader from '../components/TrackerHeader/TrackerHeader';
 
-import { getTrackingIssue } from '../selectors/issues';
+import { getTrackingIssue, getSelectedIssue, getSettings } from '../selectors/';
 
 import * as trackerActions from '../actions/tracker';
+import * as issuesActions from '../actions/issues';
 import * as uiActions from '../actions/ui';
-import * as contextActions from '../actions/context';
 
 let timeRange = 60;
 
@@ -39,7 +39,7 @@ class Tracker extends Component {
     tick: PropTypes.func.isRequired,
     closeDescriptionPopup: PropTypes.func.isRequired,
     openDescriptionPopup: PropTypes.func.isRequired,
-    setCurrentIssue: PropTypes.func.isRequired,
+    selectIssue: PropTypes.func.isRequired,
     updateWorklog: PropTypes.func.isRequired,
   }
 
@@ -147,7 +147,7 @@ class Tracker extends Component {
     const {
       running, paused, time, trackingIssue, startTimer, closeDescriptionPopup, description,
       pauseTimer, unpauseTimer, openDescriptionPopup, descriptionPopupOpen, currentIssue,
-      setCurrentIssue,
+      selectIssue,
     } = this.props;
     return (
       <Flex column className="tracker">
@@ -158,7 +158,7 @@ class Tracker extends Component {
           time={time}
           trackingIssue={trackingIssue}
           currentIssue={currentIssue}
-          setCurrentIssue={setCurrentIssue}
+          setCurrentIssue={selectIssue}
           onStart={openDescriptionPopup}
           onPause={pauseTimer}
           description={description}
@@ -176,23 +176,27 @@ class Tracker extends Component {
   }
 }
 
-function mapStateToProps({ jira, context, tracker, ui, issues }) {
+function mapStateToProps({ jira, tracker, ui, issues, settings }) {
   return {
     self: jira.self,
-    currentIssue: context.currentIssue,
-    trackingIssue: getTrackingIssue({ context, tracker, issues }),
+    currentIssue: getSelectedIssue({ issues }),
+    trackingIssue: getTrackingIssue({ tracker, issues }),
     time: tracker.time,
     running: tracker.running,
     paused: tracker.paused,
     currentWorklogId: tracker.currentWorklogId,
-    settings: context.settings,
+    settings: getSettings({ settings }),
     descriptionPopupOpen: ui.descriptionPopupOpen,
     description: tracker.description,
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ ...trackerActions, ...uiActions, ...contextActions }, dispatch);
+  return bindActionCreators({
+    ...trackerActions,
+    ...uiActions,
+    ...issuesActions,
+  }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Tracker);

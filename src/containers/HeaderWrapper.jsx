@@ -5,8 +5,11 @@ import { bindActionCreators } from 'redux';
 import Flex from '../components/Base/Flex/Flex';
 import Header from '../components/Header/Header';
 
-import * as contextActions from '../actions/context';
+import { getProjects, getSelectedProject } from '../selectors/';
+
 import * as jiraActions from '../actions/jira';
+import * as projectsActions from '../actions/projects';
+import * as settingsActions from '../actions/settings';
 
 const HeaderWrapper = ({
   self,
@@ -15,7 +18,7 @@ const HeaderWrapper = ({
   settings,
   currentProject,
   logout,
-  setCurrentProject,
+  selectProject,
 }) => {
   const { screenshotsEnabled, screenshotsEnabledUsers } = settings.toJS();
   const selfKey = self.get('key');
@@ -27,13 +30,13 @@ const HeaderWrapper = ({
   return (
     <Flex className="HeaderWrapper">
       <Header
-        avatarUrl={self.getIn(['avatars', '32x32'])}
+        avatarUrl={self.getIn(['avatarUrls', '32x32'])}
         username={self.get('displayName')}
         projects={projects}
         fetching={fetching}
         screenshotsEnabled={cond1 || cond2 || cond3}
         currentProject={currentProject}
-        onProjectChange={setCurrentProject}
+        onProjectChange={selectProject}
         logout={logout}
       />
     </Flex>
@@ -46,22 +49,25 @@ HeaderWrapper.propTypes = {
   fetching: PropTypes.string,
   settings: PropTypes.object.isRequired,
   currentProject: PropTypes.object.isRequired,
-  setCurrentProject: PropTypes.func.isRequired,
+  selectProject: PropTypes.func.isRequired,
   logout: PropTypes.func.isRequired,
 };
 
-function mapStateToProps({ jira, context }) {
+function mapStateToProps({ jira, settings, projects }) {
   return {
     self: jira.self,
-    projects: context.projects,
-    fetching: context.fetching,
-    currentProject: context.currentProject,
-    settings: context.settings,
+    settings,
+    projects: getProjects({ projects }),
+    currentProject: getSelectedProject({ projects }),
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ ...contextActions, ...jiraActions }, dispatch);
+  return bindActionCreators({
+    ...jiraActions,
+    ...settingsActions,
+    ...projectsActions,
+  }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(HeaderWrapper);

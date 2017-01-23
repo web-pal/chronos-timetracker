@@ -1,6 +1,6 @@
 import io from 'socket.io-client';
 import storage from 'electron-json-storage';
-import * as types from './constants/context';
+import * as types from './constants';
 
 import config from './config';
 
@@ -10,7 +10,7 @@ export default class Socket {
       reconnection: true,
       reconnectionDelay: 200,
       reconnectionDelayMax: 5000,
-      reconnectionAttempts: 99999
+      reconnectionAttempts: 99999,
     });
   }
 

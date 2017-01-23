@@ -31,10 +31,13 @@ function itemsById(state = new Map(), action) {
 
 function meta(state = new Map({
   fetching: false,
+  recent: new OrderedSet(),
 }), action) {
   switch (action.type) {
-    case types.SET_FETCH_WORKLOGS_STATE:
+    case types.SET_WORKLOGS_FETCH_STATE:
       return state.set('fetching', action.payload);
+    case types.FILL_RECENT_WORKLOGS:
+      return state.set('recent', new OrderedSet(action.payload));
     default:
       return state;
   }

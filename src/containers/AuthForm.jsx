@@ -95,11 +95,11 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators(jiraActions, dispatch);
 }
 
-function mapStateToProps({ jira, context }) {
+function mapStateToProps({ jira }) {
   return {
     initialValues: jira.credentials,
     error: jira.error,
-    fetching: context.fetching,
+    fetching: false,
   };
 }
 

@@ -5,11 +5,9 @@ import * as types from '../constants';
 
 function allItems(state = new OrderedSet(), action) {
   switch (action.type) {
-    case types.FILL_ISSUES:
+    case types.FILL_PROJECTS:
       return new OrderedSet(action.payload.ids);
-    case types.ADD_ISSUES:
-      return state.union(action.payload.ids);
-    case types.CLEAR_ISSUES:
+    case types.CLEAR_PROJECTS:
       return new OrderedSet();
     default:
       return state;
@@ -18,11 +16,9 @@ function allItems(state = new OrderedSet(), action) {
 
 function itemsById(state = new Map(), action) {
   switch (action.type) {
-    case types.FILL_ISSUES:
+    case types.FILL_PROJECTS:
       return fromJS(action.payload.map);
-    case types.ADD_ISSUES:
-      return new Map(fromJS(action.payload.map)).merge(state);
-    case types.CLEAR_ISSUES:
+    case types.CLEAR_PROJECTS:
       return new Map();
     default:
       return state;
@@ -31,22 +27,13 @@ function itemsById(state = new Map(), action) {
 
 function meta(state = new Map({
   fetching: false,
-  total: 0,
   selected: null,
-  recent: new OrderedSet(),
-  searchResults: new OrderedSet(),
 }), action) {
   switch (action.type) {
-    case types.SET_FETCH_ISSUES_STATE:
+    case types.SET_PROJECTS_FETCH_STATE:
       return state.set('fetching', action.payload);
-    case types.GET_ISSUES_COUNT:
-      return state.set('total', action.payload);
-    case types.SELECT_ISSUE:
+    case types.SELECT_PROJECT:
       return state.set('selected', action.payload);
-    case types.FILL_RECENT_ISSUES:
-      return state.set('recent', new OrderedSet(action.payload));
-    case types.FILL_SEARCH_ISSUES:
-      return state.set('searchResults', new OrderedSet(action.payload));
     default:
       return state;
   }

@@ -1,14 +1,14 @@
 import React, { PropTypes } from 'react';
 
-import A from '../../../Base/A/A';
+import Flex from '../../../Base/Flex/Flex';
 
 const SidebarItem = ({ onClick, style, item }) => {
-  const { active, tracking, id, resolved } = item ? item.toJS() : {};
-  const label = item && item.get('key');
+  const { active, tracking, id, resolved, key, fields } = item.toJS();
+  const { summary } = fields || {};
   return (
-    <li
-      className={
-        `flex-col flex--center sidebar__item\
+    <Flex
+      row
+      className={`SidebarItem
         ${active ? 'sidebar__item--active' : ''}\
         ${tracking ? 'sidebar__item--tracking' : ''}`
       }
@@ -17,8 +17,9 @@ const SidebarItem = ({ onClick, style, item }) => {
     >
       {!item && 'NOT LOADED YET'}
       {resolved && <span className="fa fa-check" />}
-      <A label={label} />
-    </li>
+      <span className="SidebarItem__key">{key}</span>
+      <span className="SidebarItem__summary">{summary}</span>
+    </Flex>
   );
 };
 

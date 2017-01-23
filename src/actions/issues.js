@@ -11,28 +11,110 @@ function setIssuesFetchState(value) {
   };
 }
 
+function searchIssuesBySummary(query) {
+  return (dispatch, getState) => new Promise((resolve, reject) => {
+    const currentProjectKey = getState().projects.meta.get('selected');
+    const jiraClient = getState().jira.client;
+    const escapedQuery = query.replace('[', '').replace(']', '');
+    jiraClient.search.search({
+      jql: `project = ${currentProjectKey} AND\
+            summary ~ "${escapedQuery}"`,
+      maxResults: 1000,
+      fields: ['summary', 'resolution', 'status', 'worklog'],
+    }, (error, response) => {
+      if (error) reject(error);
+      const issues = response.issues;
+      const normalizedData = normalize(issues, [issueSchema]);
+      dispatch({
+        type: types.ADD_ISSUES,
+        payload: {
+          map: normalizedData.entities.issues,
+          ids: normalizedData.result,
+        },
+      });
+      dispatch({
+        type: types.FILL_SEARCH_ISSUES,
+        payload: normalizedData.result,
+      });
+      dispatch({
+        type: types.ADD_WORKLOGS,
+        payload: {
+          map: normalizedData.entities.worklogs,
+          ids: Object.keys(normalizedData.entities.worklogs),
+        },
+      });
+      dispatch(setIssuesFetchState(false));
+      resolve('done');
+    });
+  });
+}
+
+function searchIssuesByKey(query) {
+  return (dispatch, getState) => new Promise((resolve, reject) => {
+    const currentProjectKey = getState().projects.meta.get('selected');
+    const jiraClient = getState().jira.client;
+    jiraClient.search.search({
+      jql: `project = ${currentProjectKey} AND\
+            issuekey = "${query}"`,
+      maxResults: 1000,
+      fields: ['summary', 'resolution', 'status', 'worklog'],
+    }, (error, response) => {
+      if (error) {
+        reject(error);
+      } else {
+        const issues = response.issues;
+        const normalizedData = normalize(issues, [issueSchema]);
+        dispatch({
+          type: types.ADD_ISSUES,
+          payload: {
+            map: normalizedData.entities.issues,
+            ids: normalizedData.result,
+          },
+        });
+        dispatch({
+          type: types.FILL_SEARCH_ISSUES,
+          payload: normalizedData.result,
+        });
+        dispatch({
+          type: types.ADD_WORKLOGS,
+          payload: {
+            map: normalizedData.entities.worklogs,
+            ids: Object.keys(normalizedData.entities.worklogs),
+          },
+        });
+        dispatch(setIssuesFetchState(false));
+        resolve('done');
+      }
+    });
+  });
+}
+
+export function searchIssues(query) {
+  return (dispatch, getState) => new Promise((resolve, reject) => {
+    dispatch(setIssuesFetchState(true));
+    searchIssuesByKey(query)(dispatch, getState)
+      .catch(
+        err => searchIssuesBySummary(query)(dispatch, getState)
+      );
+  });
+}
+
 export function fetchLastWeekLoggedIssues() {
   return (dispatch, getState) => new Promise((resolve, reject) => {
     dispatch(setIssuesFetchState(true));
     const jiraClient = getState().jira.client;
-    const currentProjectKey = getState().context.currentProject.get('key');
+    const currentProjectKey = getState().projects.meta.get('selected');
     const self = getState().jira.self;
-    const tillDate = moment()
-                      .startOf('day')
-                      .subtract('1', 'week')
-                      .format('Y-M-DD');
     jiraClient.search.search({
       jql: `project = ${currentProjectKey} AND\
-            assignee = ${self.get('key')} AND\
+            worklogAuthor = ${self.get('key')} AND\
             timespent > 0 AND\
-            worklogDate >= ${tillDate}`,
+            worklogDate >= '-1w'`,
       maxResults: 1000,
       fields: ['summary', 'resolution', 'status', 'worklog'],
     }, (error, response) => {
       if (error) throw error;
       const issues = Array.from(response.issues);
-      // eslint-disable-next-line no-param-reassign
-      issues.forEach(issue => issue.recent = true);
       const normalizedData = normalize(issues, [issueSchema]);
       dispatch({
         type: types.FILL_ISSUES,
@@ -48,6 +130,10 @@ export function fetchLastWeekLoggedIssues() {
           ids: Object.keys(normalizedData.entities.worklogs),
         },
       });
+      dispatch({
+        type: types.FILL_RECENT_WORKLOGS,
+        payload: Object.keys(normalizedData.entities.worklogs),
+      });
       dispatch(setIssuesFetchState(false));
     });
   });
@@ -58,8 +144,7 @@ export function fetchIssues(pagination = { startIndex: 0, stopIndex: 1 }) {
   return (dispatch, getState) => new Promise((resolve, reject) => {
     dispatch(setIssuesFetchState(true));
     const jiraClient = getState().jira.client;
-    const currentProject = getState().context.currentProject;
-    const currentProjectKey = currentProject.get('key');
+    const currentProjectKey = getState().projects.meta.get('selected');
     jiraClient.search.search({
       jql: `project = ${currentProjectKey}`,
       maxResults: stopIndex - startIndex + 1,
@@ -99,7 +184,7 @@ export function fetchIssues(pagination = { startIndex: 0, stopIndex: 1 }) {
   });
 }
 
-function selectIssue(issueId) {
+export function selectIssue(issueId) {
   return {
     type: types.SELECT_ISSUE,
     payload: issueId,

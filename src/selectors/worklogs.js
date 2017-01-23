@@ -1,2 +1,24 @@
-export const getWorklogsMap = state => state.worklogs.byId;
-export const getWorklogsIds = state => state.worklogs.allIds;
+import { createSelector } from 'reselect';
+import moment from 'moment';
+
+import { getIssuesMap } from '../selectors/issues';
+
+export const getWorklogsMap = ({ worklogs }) => worklogs.byId;
+export const getWorklogsIds = ({ worklogs }) => worklogs.allIds;
+
+export const getRecentWorklogIds = ({ worklogs }) => worklogs.meta.get('recent');
+
+export const getRecentWorklogs = createSelector(
+  [getRecentWorklogIds, getWorklogsMap],
+  (ids, map) => ids.map(id => map.get(id))
+);
+
+export const getRecentWorklogsWithIssues = createSelector(
+  [getRecentWorklogs, getIssuesMap],
+  (wMap, iMap) => wMap.map(w => w.set('issue', iMap.get(w.get('issueId'))))
+);
+
+export const getRecentWorklogsGroupedByDate = createSelector(
+  [getRecentWorklogsWithIssues],
+  (map) => map.groupBy(w => moment(w.get('updated')).startOf('day')).reverse()
+);

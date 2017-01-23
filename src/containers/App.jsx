@@ -1,69 +1,26 @@
-import React, { Component, PropTypes } from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import fs from 'fs';
-import { remote } from 'electron';
-
-import * as jiraActions from '../actions/jira';
-import * as contextActions from '../actions/context';
-import * as issuesActions from '../actions/issues';
 
 import AuthForm from './AuthForm';
+import FetchWrapper from './FetchWrapper';
 import Main from '../components/Main';
 
-class App extends Component {
-  static propTypes = {
-    connected: PropTypes.bool.isRequired,
-    currentProject: PropTypes.object.isRequired,
-    fetchProjects: PropTypes.func.isRequired,
-    fetchIssues: PropTypes.func.isRequired,
-    fetchSettings: PropTypes.func.isRequired,
-    fetchLastWeekLoggedIssues: PropTypes.func.isRequired,
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (!this.props.connected && nextProps.connected) {
-      const { getGlobal } = remote;
-      const appDir = getGlobal('appDir');
-      fs.access(`${appDir}/screenshots/`, fs.constants.R_OK | fs.constants.W_OK, (err) => {
-        if (err) {
-          fs.mkdirSync(`${appDir}/screenshots/`);
-        }
-      });
-      fs.access(`${appDir}/worklogs/`, fs.constants.R_OK | fs.constants.W_OK, (err) => {
-        if (err) {
-          fs.mkdirSync(`${appDir}/worklogs/`);
-        }
-      });
-      this.props.fetchProjects()
-        .then(
-          () => this.props.fetchSettings(),
-        );
-    }
-    if (!this.props.currentProject.equals(nextProps.currentProject)) {
-      // this.props.fetchLastWeekLoggedIssues();
-      this.props.fetchIssues();
-    }
-  }
-
-  render() {
-    const { connected } = this.props;
-    const view = connected
+const App = ({ connected }) =>
+  <FetchWrapper>
+    {connected
       ? <Main />
-      : <AuthForm />;
-    return view;
-  }
-}
+      : <AuthForm />
+    }
+  </FetchWrapper>;
 
-function mapStateToProps({ jira, context }) {
+App.propTypes = {
+  connected: PropTypes.bool.isRequired,
+};
+
+function mapStateToProps({ jira }) {
   return {
     connected: jira.connected,
-    currentProject: context.currentProject,
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ ...jiraActions, ...contextActions, ...issuesActions }, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps, null)(App);
