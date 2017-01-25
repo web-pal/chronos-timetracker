@@ -35,6 +35,9 @@ const SidebarFilterItem = ({
         />
       }
     </Flex>
+    <Flex column centered>
+      <span className="fa fa-refresh" onClick={refreshIssues} />
+    </Flex>
   </Flex>;
 
 SidebarFilterItem.propTypes = {

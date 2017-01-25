@@ -38,7 +38,7 @@ function recentItems(state = new Map(), action) {
   }
 }
 
-function meta(state = new Map({
+const initialMeta = new Map({
   fetching: false,
   total: 0,
   selected: null,
@@ -46,7 +46,9 @@ function meta(state = new Map({
   recentSelected: null,
   recent: new OrderedSet(),
   searchResults: new OrderedSet(),
-}), action) {
+})
+
+function meta(state = initialMeta, action) {
   switch (action.type) {
     case types.SET_ISSUES_FETCH_STATE:
       return state.set('fetching', action.payload);
@@ -63,7 +65,9 @@ function meta(state = new Map({
     case types.SET_TRACKING_ISSUE:
       return state.set('tracking', action.payload);
     case types.STOP:
-      return state.delete('tracking');
+      return state.set('tracking', null);
+    case types.CLEAR_ISSUES:
+      return initialMeta;
     default:
       return state;
   }

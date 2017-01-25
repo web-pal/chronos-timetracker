@@ -25,15 +25,19 @@ function itemsById(state = new Map(), action) {
   }
 }
 
-function meta(state = new Map({
+const initialMeta = new Map({
   fetching: false,
   selected: null,
-}), action) {
+});
+
+function meta(state = initialMeta, action) {
   switch (action.type) {
     case types.SET_PROJECTS_FETCH_STATE:
       return state.set('fetching', action.payload);
     case types.SELECT_PROJECT:
       return state.set('selected', action.payload);
+    case types.CLEAR_PROJECTS:
+      return initialMeta;
     default:
       return state;
   }

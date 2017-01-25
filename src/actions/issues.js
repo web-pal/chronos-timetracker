@@ -144,8 +144,8 @@ export function fetchLastWeekLoggedIssues() {
           type: types.FILL_RECENT_WORKLOGS,
           payload: Object.keys(normalizedData.entities.worklogs || {}),
         });
-        dispatch(setIssuesFetchState(false));
       }
+      dispatch(setIssuesFetchState(false));
     });
   });
 }
@@ -172,27 +172,29 @@ export function fetchIssues(pagination = { startIndex: 0, stopIndex: -1 }) {
         reject(error);
         return;
       }
-      const issues = response.issues;
-      const normalizedData = normalize(issues, [issueSchema]);
       dispatch({
         type: types.GET_ISSUES_COUNT,
         payload: response.total,
       });
-      dispatch({
-        type: types.ADD_ISSUES,
-        payload: {
-          map: normalizedData.entities.issues,
-          ids: normalizedData.result,
-        },
-      });
-      if (normalizedData.entities.worklogs) {
+      if (response.issues.length) {
+        const issues = response.issues;
+        const normalizedData = normalize(issues, [issueSchema]);
         dispatch({
-          type: types.ADD_WORKLOGS,
+          type: types.ADD_ISSUES,
           payload: {
-            map: normalizedData.entities.worklogs,
-            ids: Object.keys(normalizedData.entities.worklogs || {}),
+            map: normalizedData.entities.issues,
+            ids: normalizedData.result,
           },
         });
+        if (normalizedData.entities.worklogs) {
+          dispatch({
+            type: types.ADD_WORKLOGS,
+            payload: {
+              map: normalizedData.entities.worklogs,
+              ids: Object.keys(normalizedData.entities.worklogs || {}),
+            },
+          });
+        }
       }
       if (stopIndex > 0) {
         dispatch(setIssuesFetchState(false));
@@ -213,5 +215,11 @@ export function selectRecent(recentId) {
   return {
     type: types.SELECT_RECENT,
     payload: recentId,
+  };
+}
+
+export function clearIssues() {
+  return {
+    type: types.CLEAR_ISSUES,
   };
 }

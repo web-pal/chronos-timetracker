@@ -13,7 +13,7 @@ const SidebarItems = ({
 }) =>
   <Flex column style={{ height: '100%' }}>
     <LinearGradientSpinner show={fetching && items.size === 0} takeAllSpace />
-    <NoItems show={!fetching && items.size === 0 && sidebarType === 'Search'} />
+    <NoItems show={!fetching && issuesCount === 0 && sidebarType === 'All'} />
     {sidebarType === 'All'
       ? <InfiniteLoadingList
         isRowLoaded={({ index }) => !!items.toList().get(index)}

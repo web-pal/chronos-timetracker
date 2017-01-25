@@ -33,10 +33,12 @@ function itemsById(state = new Map(), action) {
   }
 }
 
-function meta(state = new Map({
+const initialMeta = new Map({
   fetching: false,
   recent: new OrderedSet(),
-}), action) {
+});
+
+function meta(state = initialMeta, action) {
   switch (action.type) {
     case types.SET_WORKLOGS_FETCH_STATE:
       return state.set('fetching', action.payload);
@@ -44,6 +46,8 @@ function meta(state = new Map({
       return state.set('recent', new OrderedSet(action.payload));
     case types.ADD_RECENT_WORKLOG:
       return state.set('recent', state.get('recent').add(action.payload.id));
+    case types.CLEAR_WORKLOGS:
+      return initialMeta;
     default:
       return state;
   }

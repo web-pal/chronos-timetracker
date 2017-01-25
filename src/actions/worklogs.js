@@ -6,3 +6,9 @@ export function addRecentWorklog(worklog) {
     payload: worklog,
   };
 }
+
+export function clearWorklogs() {
+  return {
+    type: types.CLEAR_WORKLOGS,
+  };
+}

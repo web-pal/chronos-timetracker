@@ -8,6 +8,7 @@ import { bindActionCreators } from 'redux';
 import { getSelectedProjectId } from '../selectors/';
 
 import * as issuesActions from '../actions/issues';
+import * as worklogsActions from '../actions/worklogs';
 import * as projectsActions from '../actions/projects';
 import * as settingsActions from '../actions/settings';
 import * as jiraActions from '../actions/jira';
@@ -59,13 +60,17 @@ class FetchWrapper extends Component {
         );
     }
     if (this.props.currentProject !== nextProps.currentProject) {
+      if (this.props.currentProject) {
+        this.props.clearIssues();
+        this.props.clearWorklogs();
+      }
       this.props.fetchLastWeekLoggedIssues()
         .catch(
-          () => {}
+          (e) => console.log(e)
         );
       this.props.fetchIssues().
         catch(
-          () => {}
+          (e) => console.log(e)
         )
     }
   }
@@ -91,6 +96,7 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     ...jiraActions,
     ...issuesActions,
+    ...worklogsActions,
     ...projectsActions,
     ...settingsActions,
   }, dispatch);
