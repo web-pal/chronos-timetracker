@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import getScreen from 'user-media-screenshot';
 import fs from 'fs';
+import NanoTimer from 'nanotimer';
 import electron, { remote, ipcRenderer } from 'electron';
 
 import Flex from '../components/Base/Flex/Flex';
@@ -13,6 +14,7 @@ import TrackerHeader from '../components/TrackerHeader/TrackerHeader';
 import { getTrackingIssue, getSelectedIssue, getSettings } from '../selectors/';
 
 import * as trackerActions from '../actions/tracker';
+import * as worklogsActions from '../actions/worklogs';
 import * as issuesActions from '../actions/issues';
 import * as uiActions from '../actions/ui';
 
@@ -41,6 +43,7 @@ class Tracker extends Component {
     openDescriptionPopup: PropTypes.func.isRequired,
     selectIssue: PropTypes.func.isRequired,
     updateWorklog: PropTypes.func.isRequired,
+    addRecentWorklog: PropTypes.func.isRequired,
   }
 
   constructor(props) {
@@ -57,19 +60,23 @@ class Tracker extends Component {
         (Number(dispersion) + Number(dispersion))) - Number(dispersion)),
       );
     });
+    this.timer = new NanoTimer();
   }
 
   componentWillReceiveProps(nextProps) {
     if (!this.props.running && nextProps.running) {
-      this.timerLoop = setInterval(() => this.tick(), 1000);
+      this.timer.setInterval(() => this.tick(), '', '1s');
     }
     if (this.props.running && !nextProps.running) {
-      clearInterval(this.timerLoop);
+      this.timer.clearInterval()
     }
   }
 
   handleTimerStop = () => {
-    this.props.updateWorklog();
+    this.props.updateWorklog()
+      .then(
+        worklog => this.props.addRecentWorklog(worklog)
+      )
     this.props.stopTimer();
   }
 
@@ -180,7 +187,7 @@ function mapStateToProps({ jira, tracker, ui, issues, settings }) {
   return {
     self: jira.self,
     currentIssue: getSelectedIssue({ issues }),
-    trackingIssue: getTrackingIssue({ tracker, issues }),
+    trackingIssue: getTrackingIssue({ issues }),
     time: tracker.time,
     running: tracker.running,
     paused: tracker.paused,
@@ -196,6 +203,7 @@ function mapDispatchToProps(dispatch) {
     ...trackerActions,
     ...uiActions,
     ...issuesActions,
+    ...worklogsActions,
   }, dispatch);
 }
 

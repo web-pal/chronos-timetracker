@@ -14,13 +14,14 @@ const SidebarFilterWrapper = ({
   clearFilter,
   changeFilter,
   changeResolveFilter,
-}) => sidebarType === 'Search' &&
+}) =>
   <SidebarFilterItem
     onChange={changeFilter}
     value={filterValue}
     onClear={clearFilter}
     onResolveFilter={changeResolveFilter}
     resolveFilter={resolveFilterValue}
+    hidden={sidebarType === 'Recent'}
   />;
 
 SidebarFilterWrapper.propTypes = {

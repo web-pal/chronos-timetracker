@@ -2,17 +2,17 @@ import React, { PropTypes } from 'react';
 
 import Flex from '../Base/Flex/Flex';
 import SidebarItems from './SidebarItems/SidebarItems';
+import SidebarFilterWrapper from '../../containers/SidebarFilterWrapper';
 
 const spinner = require('../../assets/images/ring-alt.svg');
 
 const Sidebar = ({
   items, tracking, current, currentProjectId, fetching,
   onItemClick, fetchIssues, issuesCount, sidebarType,
+  selectRecent, recentSelected
 }) =>
   <Flex column className="sidebar">
-    {fetching === 'issues' &&
-      <img alt="" src={spinner} className="issues-spinner" />
-    }
+    <SidebarFilterWrapper />
     {currentProjectId
       ? <SidebarItems
         items={items}
@@ -22,6 +22,9 @@ const Sidebar = ({
         onItemClick={onItemClick}
         issuesCount={issuesCount}
         sidebarType={sidebarType}
+        selectRecent={selectRecent}
+        recentSelected={recentSelected}
+        fetching={fetching}
       />
       : <span className="sidebar-nothing-selected">
         select project from dropdown above
@@ -34,11 +37,13 @@ Sidebar.propTypes = {
   tracking: PropTypes.string,
   currentProjectId: PropTypes.string,
   items: PropTypes.object,
-  fetching: PropTypes.string,
   onItemClick: PropTypes.func,
   issuesCount: PropTypes.number,
   sidebarType: PropTypes.string,
   fetchIssues: PropTypes.func.isRequired,
+  fetching: PropTypes.bool.isRequired,
+  selectRecent: PropTypes.func.isRequired,
+  recentSelected: PropTypes.number,
 };
 
 export default Sidebar;

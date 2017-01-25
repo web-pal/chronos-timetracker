@@ -23,9 +23,10 @@ export function startTimer(description) {
     const worklogId = Date.now();
     const worklogFile = `${worklogsDir}/${worklogId}.worklog`;
     const currentIssueId = getState().issues.meta.get('selected');
-    const currentIssue = getState().issues.byId.get(currentIssueId).toJS();
+    const currentIssue = getState().issues.byId.get(currentIssueId) ||
+                         getState().issues.recentById.get(currentIssueId);
     const worklog = {
-      issue: currentIssue,
+      issue: currentIssue.toJS(),
       id: worklogId,
       started: moment(worklogId).toString(),
       description,
@@ -39,8 +40,12 @@ export function startTimer(description) {
     dispatch({
       type: types.START,
       worklogId,
-      issueId: currentIssue.id,
+      issueId: currentIssue.toJS().id,
       description,
+    });
+    dispatch({
+      type: types.SET_TRACKING_ISSUE,
+      payload: currentIssue.toJS().id,
     });
   };
 }
@@ -146,7 +151,7 @@ export function updateWorklog() {
                   type: types.SET_JIRA_WORKLOG_ID,
                   id,
                 });
-                resolve();
+                resolve(response.body);
               }
             },
           );
@@ -180,7 +185,7 @@ export function updateWorklog() {
           .then(
             (res) => {
               if (res.status === 200) {
-                resolve();
+                resolve(response.body);
               }
             },
           );

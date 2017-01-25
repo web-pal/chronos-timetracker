@@ -40,14 +40,21 @@ export const fetchProjects =
     }, 1000);
   });
 
-export const selectProject = projectId => dispatch => {
-  storage.set('lastProject', projectId);
-  dispatch({
-    type: types.SELECT_PROJECT,
-    payload: projectId,
-  });
+export const selectProject = projectId => (dispatch, getState) => {
+  const host = getState().jira.credentials.get('host');
+  storage.get('lastProject', (e, data) => {
+    data[host] = projectId;
+    storage.set('lastProject', data);
+    dispatch({
+      type: types.SELECT_PROJECT,
+      payload: projectId,
+    });
+  })
 };
 
-export const getLastProject = () => dispatch => storage.get('lastProject', (e, data) => {
-  dispatch(selectProject(data));
+export const getLastProject = () => (dispatch, getState) => storage.get('lastProject', (e, data) => {
+  const host = getState().jira.credentials.get('host');
+  if (data[host]) {
+    dispatch(selectProject(data[host]));
+  }
 });

@@ -23,15 +23,17 @@ import Flex from '../components/Base/Flex/Flex';
 /* eslint-disable react/prop-types */
 const SidebarWrapper = ({
   items,
-  fetching,
   fetchIssues,
   currentProjectId,
   currentIssueId,
   trackingIssue,
   selectIssue,
+  selectRecent,
   sidebarType,
   setSidebarType,
   issuesCount,
+  fetching,
+  recentSelected,
 }) =>
   <Flex column className="SidebarWrapper">
     <SidebarHeaderWrapper
@@ -40,24 +42,28 @@ const SidebarWrapper = ({
     />
     <Sidebar
       items={items}
-      fetching={fetching}
       currentProjectId={currentProjectId}
+      fetching={fetching}
       fetchIssues={fetchIssues}
       current={currentIssueId}
       tracking={trackingIssue}
       onItemClick={selectIssue}
       issuesCount={issuesCount}
       sidebarType={sidebarType}
+      selectRecent={selectRecent}
+      recentSelected={recentSelected}
     />
   </Flex>;
 
 SidebarWrapper.propTypes = {
   items: PropTypes.object.isRequired,
-  fetching: PropTypes.string,
+  fetching: PropTypes.bool.isRequired,
   fetchIssues: PropTypes.func.isRequired,
   fetchSettings: PropTypes.func.isRequired,
   setSidebarType: PropTypes.func.isRequired,
   selectIssue: PropTypes.func.isRequired,
+  selectRecent: PropTypes.func.isRequired,
+  recentSelected: PropTypes.number,
 };
 
 function mapStateToProps({ issues, worklogs, projects, ui, tracker, filter }) {
@@ -68,7 +74,7 @@ function mapStateToProps({ issues, worklogs, projects, ui, tracker, filter }) {
       ? getSearchResultIssues({ issues })
       : getIssues({ issues });
   const issuesCount = sidebarType === 'Recent'
-    ? items.size
+    ? items.toList().flatten(1).size
     : filter.value.length > 0
       ? issues.meta.get('searchResults').size
       : issues.meta.get('total');
@@ -76,7 +82,9 @@ function mapStateToProps({ issues, worklogs, projects, ui, tracker, filter }) {
     items,
     currentProjectId: getSelectedProjectId({ projects }),
     currentIssueId: getSelectedIssueId({ issues }),
-    trackingIssue: tracker.trackingIssue,
+    fetching: issues.meta.get('fetching'),
+    recentSelected: issues.meta.get('recentSelected'),
+    trackingIssue: issues.meta.get('tracking'),
     sidebarType: ui.sidebarType,
     issuesCount,
   };

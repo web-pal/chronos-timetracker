@@ -5,13 +5,13 @@ export default {
     loaders: [
       {
         test: /\.jsx?$/,
-        loaders: ['babel-loader'],
+        loader: 'babel-loader',
         exclude: /node_modules/,
       },
       {
         test: /\.json$/,
         loader: 'json-loader',
-      }
+      },
     ],
   },
   output: {

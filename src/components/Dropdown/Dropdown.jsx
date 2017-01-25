@@ -11,6 +11,7 @@ const Dropdown = (props) => {
       value={value}
       onChange={option => onChange(option.value)}
       isLoading={fetching}
+      clearable={false}
     />
   );
 };

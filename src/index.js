@@ -8,6 +8,10 @@ import Base from './components/Base/Base';
 
 const store = configureStore();
 
+if (module.hot) {
+  module.hot.accept();
+}
+
 render(
   <Provider store={store}>
     <Base />

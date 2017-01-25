@@ -9,6 +9,8 @@ function allItems(state = new OrderedSet(), action) {
       return new OrderedSet(action.payload.ids);
     case types.ADD_WORKLOGS:
       return state.union(action.payload.ids);
+    case types.ADD_RECENT_WORKLOG:
+      return state.add(action.payload.id);
     case types.CLEAR_WORKLOGS:
       return new OrderedSet();
     default:
@@ -22,6 +24,8 @@ function itemsById(state = new Map(), action) {
       return fromJS(action.payload.map);
     case types.ADD_WORKLOGS:
       return state.concat(fromJS(action.payload.map));
+    case types.ADD_RECENT_WORKLOG:
+      return state.set(action.payload.id, fromJS(action.payload));
     case types.CLEAR_WORKLOGS:
       return new Map();
     default:
@@ -38,6 +42,8 @@ function meta(state = new Map({
       return state.set('fetching', action.payload);
     case types.FILL_RECENT_WORKLOGS:
       return state.set('recent', new OrderedSet(action.payload));
+    case types.ADD_RECENT_WORKLOG:
+      return state.set('recent', state.get('recent').add(action.payload.id));
     default:
       return state;
   }

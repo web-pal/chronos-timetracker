@@ -59,8 +59,14 @@ class FetchWrapper extends Component {
         );
     }
     if (this.props.currentProject !== nextProps.currentProject) {
-      this.props.fetchLastWeekLoggedIssues();
-      this.props.fetchIssues();
+      this.props.fetchLastWeekLoggedIssues()
+        .catch(
+          () => {}
+        );
+      this.props.fetchIssues().
+        catch(
+          () => {}
+        )
     }
   }
 

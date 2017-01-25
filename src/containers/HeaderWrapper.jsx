@@ -30,7 +30,7 @@ const HeaderWrapper = ({
   return (
     <Flex className="HeaderWrapper">
       <Header
-        avatarUrl={self.getIn(['avatarUrls', '32x32'])}
+        avatarUrls={self.get('avatarUrls')}
         username={self.get('displayName')}
         projects={projects}
         fetching={fetching}

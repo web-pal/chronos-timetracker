@@ -11,7 +11,10 @@ export default merge(baseConfig, {
       'babel-polyfill',
       './src/index',
     ],
-    popup: './src/popup',
+    popup: [
+      'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
+      './src/popup',
+    ],
   },
   output: {
     publicPath: 'http://localhost:3000/dist',
@@ -34,6 +37,8 @@ export default merge(baseConfig, {
     ],
   },
   plugins: [
+    new webpack.IgnorePlugin(/mock-firmata/),
+    new webpack.ContextReplacementPlugin(/bindings$/, /^$/),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin(),
     new webpack.DefinePlugin({

@@ -11,3 +11,5 @@ export const GET_JWT = 'jira/GET_JWT_TOKEN';
 
 export const LOGOUT = 'jira/LOGOUT';
 
+export const SET_CONNECT_FETCH_STATE = 'jira/SET_CONNECT_FETCH_STATE';
+

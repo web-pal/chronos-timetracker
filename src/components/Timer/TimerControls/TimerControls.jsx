@@ -7,18 +7,12 @@ import Flex from '../../Base/Flex/Flex';
 const TimerControls = (props) => {
   const { start, stop, pause, unpause, running, paused } = props;
   return (
-    <Flex row className="timer-controls">
+    <Flex row centered className="timer-controls">
       <button
-        className={`button button-${running ? 'danger' : 'success'}`}
+        className={`button button-${running ? 'stop' : 'play'}`}
         onClick={running ? stop : start}
       >
-        {running ? 'Stop' : 'Start' }
-      </button>
-      <button
-        className={`button pause button-${running ? (paused ? 'info' : 'warning') : 'disabled'}`}
-        onClick={paused ? unpause : pause}
-      >
-        {paused ? 'Unpause' : 'Pause'}
+        {running ? <span className="fa fa-stop" /> : <span className="fa fa-play" /> }
       </button>
     </Flex>
   );

@@ -97,3 +97,30 @@
 .button.pause {
   width: 100px;
 }
+
+.button-stop, .button-play {
+  border-radius: 50%;
+  height: 64px;
+  width: 64px;
+  position: relative;
+  font-size: 2em;
+  .fa.fa-stop, .fa.fa-play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+  }
+  .fa.fa-stop {
+    transform: translate3d(-50%, -45%, 0);
+  }
+  .fa.fa-play {
+    transform: translate3d(-40%, -45%, 0);
+  }
+}
+
+.button-stop {
+  background: @danger;
+}
+
+.button-play {
+  background: @success;
+}

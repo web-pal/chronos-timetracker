@@ -11,7 +11,7 @@
     },
     "development": {
       "presets": ["react-hmre"],
-      "plugins": ["transform-decorators-legacy"]
+      "plugins": ["transform-decorators-legacy", "react-hot-loader/babel"]
     },
     "test": {
       "plugins": [

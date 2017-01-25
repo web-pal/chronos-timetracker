@@ -5,3 +5,6 @@ export const ADD_ISSUES = 'issues/ADD';
 export const SET_ISSUES_FETCH_STATE = 'issues/SET_FETCH_STATE';
 export const GET_ISSUES_COUNT = 'issues/GET_COUNT';
 export const SELECT_ISSUE = 'issues/SELECT';
+export const CLEAR_ISSUES = 'issues/CLEAR';
+export const SELECT_RECENT = 'issues/SELECT_RECENT';
+export const SET_TRACKING_ISSUE = 'issues/SET_TRACKING_ISSUE';

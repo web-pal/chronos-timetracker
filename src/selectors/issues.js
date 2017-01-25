@@ -3,12 +3,14 @@ import { createSelector } from 'reselect';
 export const getIssuesMap = ({ issues }) => issues.byId;
 export const getIssuesIds = ({ issues }) => issues.allIds;
 
+export const getRecentIssuesMap = ({ issues }) => issues.recentById;
+
 export const getIssuesFilter = ({ filter }) => filter.value;
 export const getResolveFilter = ({ filter }) => filter.resolveValue;
 
 export const getSearchResultIssuesIds = ({ issues }) => issues.meta.get('searchResults');
 
-export const getTrackingIssueId = ({ tracker }) => tracker.trackingIssue;
+export const getTrackingIssueId = ({ issues }) => issues.meta.get('tracking');
 
 export const getSelectedIssueId = ({ issues }) => issues.meta.get('selected');
 
@@ -24,10 +26,10 @@ export const getSearchResultIssues = createSelector(
 
 export const getTrackingIssue = createSelector(
   [getIssuesMap, getTrackingIssueId],
-  (issues, id) => issues.find(issue => issue.get('id') === id),
+  (map, id) => map.get(id)
 );
 
 export const getSelectedIssue = createSelector(
-  [getSelectedIssueId, getIssuesMap],
-  (id, map) => map.get(id) || new Immutable.Map({})
+  [getSelectedIssueId, getIssuesMap, getRecentIssuesMap],
+  (id, map, rMap) => map.get(id) || rMap.get(id) || new Map()
 );

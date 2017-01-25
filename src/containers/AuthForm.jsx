@@ -32,10 +32,10 @@ class AuthForm extends Component {
         }
       )
       .then(
-      result => this.props.jwtConnect(result.payload.token)
+        result => this.props.jwtConnect(result.payload.token)
       )
       .then(
-      () => this.props.setAuthSucceeded()
+        () => this.props.setAuthSucceeded()
       );
   }
 
@@ -51,7 +51,7 @@ class AuthForm extends Component {
     const { handleSubmit, fetching, error } = this.props;
     return (
       <Flex column centered className="occupy-height draggable">
-        {fetching === 'connect' &&
+        {fetching &&
           <div className="connect-fetching">
             <img src={spinner} alt="" />
           </div>
@@ -99,7 +99,7 @@ function mapStateToProps({ jira }) {
   return {
     initialValues: jira.credentials,
     error: jira.error,
-    fetching: false,
+    fetching: jira.fetching,
   };
 }
 

@@ -10,8 +10,8 @@ import Socket from '../socket';
 export function jwtConnect(token) {
   return (dispatch, getState) => new Promise((resolve, reject) => {
     dispatch({
-      type: 'context/START_FETCH',
-      value: 'connect',
+      type: types.SET_CONNECT_FETCH_STATE,
+      payload: true,
     });
     const options = {
       headers: {
@@ -31,7 +31,8 @@ export function jwtConnect(token) {
                 error: 'Automatic login failed, please enter your credentials again',
               });
               dispatch({
-                type: 'context/FINISH_FETCH',
+                type: types.SET_CONNECT_FETCH_STATE,
+                payload: false,
               });
               reject(fail('Failed'));
             });
@@ -42,7 +43,8 @@ export function jwtConnect(token) {
                 error: 'Automatic login failed, please enter your credentials again',
               });
               dispatch({
-                type: 'context/FINISH_FETCH',
+                type: types.SET_CONNECT_FETCH_STATE,
+                payload: false,
               });
               reject(fail('Failed'));
             });
@@ -51,7 +53,8 @@ export function jwtConnect(token) {
               error: 'Server error',
             });
             dispatch({
-              type: 'context/FINISH_FETCH',
+              type: types.SET_CONNECT_FETCH_STATE,
+              payload: false,
             });
             reject(fail('Server error'));
           }
@@ -79,7 +82,8 @@ export function jwtConnect(token) {
                 error: 'Something went wrong with JIRA. Please check credentials and try again',
               });
               dispatch({
-                type: 'context/FINISH_FETCH',
+                type: types.SET_CONNECT_FETCH_STATE,
+                payload: false,
               });
               reject(fail(err2));
             } else {
@@ -97,7 +101,8 @@ export function jwtConnect(token) {
                 },
               });
               dispatch({
-                type: 'context/FINISH_FETCH',
+                type: types.SET_CONNECT_FETCH_STATE,
+                payload: false,
               });
               resolve(success());
             }
@@ -110,8 +115,8 @@ export function jwtConnect(token) {
 export function connect(credentials) {
   return (dispatch, getState) => new Promise((resolve, reject) => {
     dispatch({
-      type: 'context/START_FETCH',
-      value: 'connect',
+      type: types.SET_CONNECT_FETCH_STATE,
+      payload: true,
     });
     const { host, username, password, memorize } = credentials.toJS();
     let formatHost = host.startsWith('https://') ? host.slice(8) : host;
@@ -133,7 +138,8 @@ export function connect(credentials) {
           error: 'Cannot authorize to JIRA. Check your credentials and try again',
         });
         dispatch({
-          type: 'context/FINISH_FETCH',
+          type: types.SET_CONNECT_FETCH_STATE,
+          payload: false,
         });
         reject(fail(err));
       } else {
@@ -192,7 +198,8 @@ export function connect(credentials) {
                 });
               }
               dispatch({
-                type: 'context/FINISH_FETCH',
+                type: types.SET_CONNECT_FETCH_STATE,
+                payload: false,
               });
               resolve(success);
             },
@@ -211,7 +218,8 @@ export function getSavedCredentials() {
           error,
         });
         dispatch({
-          type: 'context/FINISH_FETCH',
+          type: types.SET_CONNECT_FETCH_STATE,
+          payload: false,
         });
         reject(fail(error));
       }
@@ -233,7 +241,8 @@ export function getJWT() {
           error,
         });
         dispatch({
-          type: 'context/FINISH_FETCH',
+          type: types.SET_CONNECT_FETCH_STATE,
+          payload: false,
         });
         reject(fail(error));
       }
@@ -248,8 +257,16 @@ export function getJWT() {
 
 
 export function logout() {
-  return {
-    type: types.LOGOUT,
+  return dispatch => {
+    dispatch({
+      type: types.CLEAR_ISSUES,
+    });
+    dispatch({
+      type: types.CLEAR_PROJECTS,
+    });
+    dispatch({
+      type: types.LOGOUT,
+    });
   };
 }
 

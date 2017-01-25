@@ -11,8 +11,8 @@ const SidebarHeaderWrapper = ({ sidebarType, setSidebarType }) =>
       onClick={setSidebarType}
     />
     <SidebarHeader
-      active={sidebarType === 'Search'}
-      label="Search"
+      active={sidebarType === 'All'}
+      label="All"
       onClick={setSidebarType}
     />
   </Flex>;

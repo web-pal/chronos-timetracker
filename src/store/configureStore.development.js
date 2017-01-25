@@ -22,9 +22,11 @@ export default function configureStore(initialState) {
   );
 
   if (module.hot) {
-    module.hot.accept('../reducers', () =>
-      store.replaceReducer(require('../reducers')) // eslint-disable-line global-require
-    );
+    // Enable Webpack hot module replacement for reducers
+    module.hot.accept('../reducers/', () => {
+      const nextRootReducer = require('../reducers/index.js');
+      store.replaceReducer(nextRootReducer);
+    });
   }
 
   return store;
