@@ -103,10 +103,10 @@ class Tracker extends Component {
     const { idleState, setIdleState } = this.props;
     lastIdleTime = idleTime;
     idleTime = system.getIdleTime();
-    if (idleTime > 300000 && !idleState) {
+    if (idleTime > 3000 && !idleState) {
       setIdleState(true);
     }
-    if (idleTime < 300000 && idleState) {
+    if (idleTime < 3000 && idleState) {
       setIdleState(false);
       this.openIdleTimePopup(lastIdleTime);
     }

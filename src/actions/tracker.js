@@ -132,7 +132,7 @@ export function updateWorklog() {
       type: types.SET_WORKLOG_UPLOAD_STATE,
       payload: true
     });
-    const { time, description, trackingIssue, jiraWorklogId } = getState().tracker;
+    const { time, description, trackingIssue, jiraWorklogId, screensShot } = getState().tracker;
     const token = getState().jira.jwt;
     const jiraClient = getState().jira.client;
     if (jiraWorklogId === null) {
@@ -153,6 +153,7 @@ export function updateWorklog() {
               issueId: trackingIssue,
               description,
               timeTracked: time < 60 ? 60 : time,
+              screenshots: screensShot.toJS(),
             },
             id,
           }),
@@ -195,6 +196,7 @@ export function updateWorklog() {
           body: JSON.stringify({
             worklog: {
               timeTracked: time < 60 ? 60 : time,
+              screenshots: screensShot.toJS(),
             },
             id,
           }),
@@ -239,6 +241,7 @@ export function acceptScreenshot(screenshotTime, screenshotPath) {
             dispatch({
               type: types.ACCEPT_SCREENSHOT,
               screenshotTime,
+              screenshotName: path.basename(screenshotPath),
             })
           });
         },

@@ -57,12 +57,6 @@ class IdlePopup extends Component {
           >
             Keep
           </button>
-          <button
-            className="button button-info"
-            onClick={this.dismissAndRestart}
-          >
-            Dismiss and restart
-          </button>
         </Flex>
       </Flex>
     );
