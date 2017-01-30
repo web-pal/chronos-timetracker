@@ -44,6 +44,8 @@ function meta(state = initialMeta, action) {
       return state.set('fetching', action.payload);
     case types.FILL_RECENT_WORKLOGS:
       return state.set('recent', new OrderedSet(action.payload));
+    case types.ADD_RECENT_WORKLOGS:
+      return state.set('recent', state.get('recent').union(new OrderedSet(action.payload)));
     case types.ADD_RECENT_WORKLOG:
       return state.set('recent', state.get('recent').add(action.payload.id));
     case types.CLEAR_WORKLOGS:

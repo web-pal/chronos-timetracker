@@ -5,7 +5,6 @@ import Flex from '../../../Base/Flex/Flex';
 import RecentItem from './RecentItem/RecentItem';
 import RecentEmptyItem from './RecentEmptyItem/RecentEmptyItem';
 import TimestampItem from './TimestampItem/TimestampItem';
-import LinearGradientSpinner from '../../../Spinners/LinearGradientSpinner';
 
 moment.locale('en', {
   calendar: {
@@ -30,12 +29,12 @@ const RecentItems = ({
       <Flex column key={i}>
         <TimestampItem date={item.toList().get(0).get('updated')} index={i} />
         <RecentItem
-          onClick={id => {
+          onClick={(id, ind) => {
             onItemClick(id);
-            selectRecent(i);
+            selectRecent(`${i}_${ind}`);
           }}
           index={i}
-          worklogs={item.groupBy(w => w.getIn(['issue', 'id']))}
+          worklogs={item}
           current={current}
           recentSelected={recentSelected}
           tracking={tracking}
@@ -52,7 +51,7 @@ RecentItems.propTypes = {
   current: PropTypes.string,
   tracking: PropTypes.string,
   selectRecent: PropTypes.func.isRequired,
-  recentSelected: PropTypes.number,
+  recentSelected: PropTypes.string,
 };
 
 export default RecentItems;

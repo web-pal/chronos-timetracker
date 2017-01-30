@@ -63,7 +63,7 @@ SidebarItems.propTypes = {
   issuesCount: PropTypes.number,
   fetching: PropTypes.bool.isRequired,
   selectRecent: PropTypes.func.isRequired,
-  recentSelected: PropTypes.number,
+  recentSelected: PropTypes.string,
 };
 
 export default SidebarItems;

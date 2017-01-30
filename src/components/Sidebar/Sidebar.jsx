@@ -4,12 +4,10 @@ import Flex from '../Base/Flex/Flex';
 import SidebarItems from './SidebarItems/SidebarItems';
 import SidebarFilterWrapper from '../../containers/SidebarFilterWrapper';
 
-const spinner = require('../../assets/images/ring-alt.svg');
-
 const Sidebar = ({
   items, tracking, current, currentProjectId, fetching,
   onItemClick, fetchIssues, issuesCount, sidebarType,
-  selectRecent, recentSelected
+  selectRecent, recentSelected,
 }) =>
   <Flex column className="sidebar">
     <SidebarFilterWrapper />
@@ -43,7 +41,7 @@ Sidebar.propTypes = {
   fetchIssues: PropTypes.func.isRequired,
   fetching: PropTypes.bool.isRequired,
   selectRecent: PropTypes.func.isRequired,
-  recentSelected: PropTypes.number,
+  recentSelected: PropTypes.string,
 };
 
 export default Sidebar;

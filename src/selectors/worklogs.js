@@ -3,14 +3,20 @@ import moment from 'moment';
 
 import { getRecentIssuesMap } from '../selectors/issues';
 
+function dateComparator(a, b) {
+  return moment(a.get('created')).isAfter(b.get('created')) ? 1 : -1;
+}
+
 export const getWorklogsMap = ({ worklogs }) => worklogs.byId;
 export const getWorklogsIds = ({ worklogs }) => worklogs.allIds;
+export const getSelfKey = ({ jira }) => jira.self.get('key');
 
 export const getRecentWorklogIds = ({ worklogs }) => worklogs.meta.get('recent');
 
 export const getRecentWorklogs = createSelector(
-  [getRecentWorklogIds, getWorklogsMap],
-  (ids, map) => ids.map(id => map.get(id))
+  [getRecentWorklogIds, getWorklogsMap, getSelfKey],
+  (ids, map, selfKey) => ids.map(id => map.get(id))
+                   .filter(w => w.getIn(['author', 'key']) === selfKey).sort(dateComparator)
 );
 
 export const getRecentWorklogsWithIssues = createSelector(

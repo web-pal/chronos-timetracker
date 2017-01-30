@@ -12,3 +12,8 @@ export const setSidebarType = (value) => ({
   type: types.SET_SIDEBAR_TYPE,
   payload: value,
 });
+
+export const setIdleState = (value) => ({
+  type: types.SET_IDLE_STATE,
+  payload: value,
+});

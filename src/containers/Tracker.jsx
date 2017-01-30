@@ -18,7 +18,11 @@ import * as worklogsActions from '../actions/worklogs';
 import * as issuesActions from '../actions/issues';
 import * as uiActions from '../actions/ui';
 
+const system = remote.require('@paulcbetts/system-idle-time');
+
 let timeRange = 60;
+let lastIdleTime = 0;
+let idleTime = 0;
 
 class Tracker extends Component {
   static propTypes = {
@@ -44,10 +48,29 @@ class Tracker extends Component {
     selectIssue: PropTypes.func.isRequired,
     updateWorklog: PropTypes.func.isRequired,
     addRecentWorklog: PropTypes.func.isRequired,
+    idleState: PropTypes.bool.isRequired,
+    setIdleState: PropTypes.func.isRequired,
+    dismissIdleTime: PropTypes.func.isRequired,
+    addRecentIssue: PropTypes.func.isRequired,
   }
 
   constructor(props) {
     super(props);
+    ipcRenderer.on('dismissIdleTime', (e, time) => {
+      const seconds = Math.ceil(time / 1000);
+      if (this.props.time > seconds) {
+        this.props.dismissIdleTime(seconds);
+      }
+    });
+    ipcRenderer.on('dismissAndRestart', (e, time) => {
+      const seconds = Math.ceil(time / 1000);
+      const { trackingIssue } = this.props;
+      if (this.props.time > seconds) {
+        this.props.dismissIdleTime(seconds);
+        this.handleTimerStop();
+        this.props.startTimer('', trackingIssue);
+      }
+    });
     ipcRenderer.on('screenshot-reject', () => this.props.rejectScreenshot());
     ipcRenderer.on('screenshot-accept', () => {
       const { getGlobal } = remote;
@@ -61,23 +84,42 @@ class Tracker extends Component {
       );
     });
     this.timer = new NanoTimer();
+    this.activityTimer = new NanoTimer();
   }
 
   componentWillReceiveProps(nextProps) {
     if (!this.props.running && nextProps.running) {
       this.timer.setInterval(() => this.tick(), '', '1s');
+      this.activityTimer.setInterval(() => this.checkActivity(), '', '1s');
     }
     if (this.props.running && !nextProps.running) {
-      this.timer.clearInterval()
+      this.timer.clearInterval();
+      this.activityTimer.clearInterval();
+    }
+  }
+
+  checkActivity = () => {
+    const { idleState, setIdleState } = this.props;
+    lastIdleTime = idleTime;
+    idleTime = system.getIdleTime();
+    if (idleTime > 300000 && !idleState) {
+      setIdleState(true);
+    }
+    if (idleTime < 300000 && idleState) {
+      setIdleState(false);
+      this.openIdleTimePopup(lastIdleTime);
     }
   }
 
   handleTimerStop = () => {
     this.props.updateWorklog()
       .then(
-        worklog => this.props.addRecentWorklog(worklog)
-      )
-    this.props.stopTimer();
+        worklog => {
+          this.props.stopTimer();
+          this.props.addRecentIssue(worklog.issueId);
+          this.props.addRecentWorklog(worklog);
+        }
+      );
   }
 
   tick = () => {
@@ -109,7 +151,6 @@ class Tracker extends Component {
         if (cond1 || cond2 || cond3) {
           this.openScreenShotPopup();
         } else {
-          this.props.updateWorklog();
           timeRange = time + Math.ceil(
             Number(interval) + ((Math.random() *
             (Number(dispersion) + Number(dispersion))) - Number(dispersion)),
@@ -148,6 +189,19 @@ class Tracker extends Component {
         win.loadURL(`file://${dir}/src/popup.html`);
       });
     });
+  }
+
+  openIdleTimePopup = (time) => {
+    const { BrowserWindow, getGlobal } = remote;
+    getGlobal('sharedObj').idleTime = time;
+    const dir = getGlobal('appDir');
+    const options = {
+      width: 300,
+      height: 200,
+      frame: false,
+    };
+    const win = new BrowserWindow(options);
+    win.loadURL(`file://${dir}/src/idlePopup.html`);
   }
 
   render() {
@@ -195,6 +249,7 @@ function mapStateToProps({ jira, tracker, ui, issues, settings }) {
     settings: getSettings({ settings }),
     descriptionPopupOpen: ui.descriptionPopupOpen,
     description: tracker.description,
+    idleState: ui.idleState,
   };
 }
 

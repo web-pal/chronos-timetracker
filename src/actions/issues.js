@@ -1,6 +1,6 @@
 import { normalize } from 'normalizr';
 
-import { issueSchema } from '../schemas/';
+import { issueSchema, worklogSchema } from '../schemas/';
 import * as types from '../constants';
 
 function setIssuesFetchState(value) {
@@ -102,6 +102,31 @@ export function searchIssues(query) {
   });
 }
 
+function fetchAdditionalWorklogs(issues) {
+  return (dispatch, getState) => {
+    const jiraClient = getState().jira.client;
+    for (const issue of issues) {
+      const fuck = setInterval(() => {
+        jiraClient.issue.getWorkLogs({ issueId: issue.id }, (err, response) => {
+          const normalizedData = normalize(response.worklogs, [worklogSchema]);
+          dispatch({
+            type: types.ADD_WORKLOGS,
+            payload: {
+              map: normalizedData.entities.worklogs,
+              ids: normalizedData.result,
+            },
+          });
+          dispatch({
+            type: types.ADD_RECENT_WORKLOGS,
+            payload: normalizedData.result,
+          });
+          clearInterval(fuck);
+        });
+      }, 1000);
+    };
+  };
+}
+
 export function fetchLastWeekLoggedIssues() {
   return (dispatch, getState) => new Promise((resolve, reject) => {
     dispatch(setIssuesFetchState(true));
@@ -125,6 +150,10 @@ export function fetchLastWeekLoggedIssues() {
         return;
       } else if (response.issues.length) {
         const issues = Array.from(response.issues);
+        const incompleteIssues = issues.filter(issue => issue.fields.worklog.total > 20);
+        if (incompleteIssues.length) {
+          dispatch(fetchAdditionalWorklogs(incompleteIssues));
+        }
         const normalizedData = normalize(issues, [issueSchema]);
         dispatch({
           type: types.FILL_RECENT_ISSUES,
@@ -150,12 +179,19 @@ export function fetchLastWeekLoggedIssues() {
   });
 }
 
+let currentPagination = { startIndex: 0, stopIndex: 0 };
+
 export function fetchIssues(pagination = { startIndex: 0, stopIndex: -1 }) {
   const { startIndex, stopIndex } = pagination;
   return (dispatch, getState) => new Promise((resolve, reject) => {
     if (stopIndex > 0) {
       dispatch(setIssuesFetchState(true));
     }
+    if (startIndex < currentPagination.stopIndex) {
+      return;
+    }
+    console.log(startIndex, stopIndex);
+    currentPagination = pagination;
     const jiraClient = getState().jira.client;
     const currentProjectKey = getState().projects.meta.get('selected');
     jiraClient.search.search({
@@ -221,5 +257,18 @@ export function selectRecent(recentId) {
 export function clearIssues() {
   return {
     type: types.CLEAR_ISSUES,
+  };
+}
+
+export function addRecentIssue(issueId) {
+  return (dispatch, getState) => {
+    const issue = getState().issues.byId.get(issueId);
+    dispatch({
+      type: types.ADD_RECENT_ISSUE,
+      payload: {
+        id: issueId,
+        issue,
+      },
+    });
   };
 }

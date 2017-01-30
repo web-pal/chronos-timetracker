@@ -6,3 +6,4 @@ export const STOP = 'timer/STOP';
 export const REJECT_SCREENSHOT = 'timer/REJECT_SCREENSHOT';
 export const ACCEPT_SCREENSHOT = 'timer/ACCEPT_SCREENSHOT';
 export const SET_JIRA_WORKLOG_ID = 'timer/SET_JIRA_WORKLOG_ID';
+export const DISMISS_IDLE_TIME = 'timer/DISMISS_IDLE_TIME';

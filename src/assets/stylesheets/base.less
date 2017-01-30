@@ -6,6 +6,9 @@ body {
 
 .ReactVirtualized__Grid {
   outline: none !important;
+  &::-webkit-scrollbar {
+    width: 2px;
+  }
 }
 
 html, body, #root, .wrapper {
@@ -51,6 +54,18 @@ html, body, #root, .wrapper {
 ::-webkit-scrollbar-track {
     background-color: transparent;
     background-clip: content-box;
+}
+
+::-webkit-scrollbar-track-piece {
+    background: transparent url('../images/transparent.png') repeat-y !important;
+}
+
+::-webkit-scrollbar-track-piece:start {
+    background: transparent url('../images/transparent.png') repeat-y !important;
+}
+
+::-webkit-scrollbar-track-piece:end {
+    background: transparent url('../images/transparent.png') repeat-y !important;
 }
  
 ::-webkit-scrollbar-thumb {

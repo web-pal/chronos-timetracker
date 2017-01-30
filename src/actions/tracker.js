@@ -3,7 +3,6 @@ import fs from 'fs';
 import path from 'path';
 import fetch from 'isomorphic-fetch';
 import moment from 'moment';
-import storage from 'electron-json-storage';
 
 import * as types from '../constants';
 import { success, fail } from '../helpers/promise';
@@ -15,18 +14,27 @@ export function tick() {
   };
 }
 
-export function startTimer(description) {
+export function dismissIdleTime(time) {
+  return {
+    type: types.DISMISS_IDLE_TIME,
+    payload: time,
+  };
+}
+
+export function startTimer(description, trackingIssue) {
   return (dispatch, getState) => {
     const { getGlobal } = remote;
     const appDir = getGlobal('appDir');
     const worklogsDir = `${appDir}/worklogs`;
     const worklogId = Date.now();
     const worklogFile = `${worklogsDir}/${worklogId}.worklog`;
-    const currentIssueId = getState().issues.meta.get('selected');
-    const currentIssue = getState().issues.byId.get(currentIssueId) ||
-                         getState().issues.recentById.get(currentIssueId);
+    const currentIssueId = trackingIssue || getState().issues.meta.get('selected');
+    dispatch({
+      type: types.SET_TRACKING_ISSUE,
+      payload: currentIssueId,
+    });
     const worklog = {
-      issue: currentIssue.toJS(),
+      issueId: currentIssueId,
       id: worklogId,
       started: moment(worklogId).toString(),
       description,
@@ -40,12 +48,12 @@ export function startTimer(description) {
     dispatch({
       type: types.START,
       worklogId,
-      issueId: currentIssue.toJS().id,
+      issueId: currentIssueId,
       description,
     });
     dispatch({
       type: types.SET_TRACKING_ISSUE,
-      payload: currentIssue.toJS().id,
+      payload: currentIssueId,
     });
   };
 }
@@ -115,6 +123,7 @@ function uploadScreenshot(screenshotPath) {
 export function updateWorklog() {
   return (dispatch, getState) => new Promise((resolve) => {
     const { time, description, trackingIssue, jiraWorklogId } = getState().tracker;
+    console.log(time, description, trackingIssue, jiraWorklogId);
     const token = getState().jira.jwt;
     const jiraClient = getState().jira.client;
     if (jiraWorklogId === null) {
@@ -202,7 +211,6 @@ export function acceptScreenshot(screenshotTime, screenshotPath) {
           const { getGlobal } = remote;
           const appDir = getGlobal('appDir');
           const currentWorklogId = getState().tracker.currentWorklogId;
-          const lastScreenshotTime = getState().tracker.lastScreenshotTime;
           const worklogsDir = `${appDir}/worklogs`;
           const worklogFile = `${worklogsDir}/${currentWorklogId}.worklog`;
           fs.readFile(worklogFile, (err, file) => {
@@ -211,86 +219,6 @@ export function acceptScreenshot(screenshotTime, screenshotPath) {
               .findIndex(screenshot => screenshot.name === path.basename(screenshotPath));
             worklog.screenshots[screenshotId].uploaded = true;
             fs.writeFile(worklogFile, JSON.stringify(worklog, null, 4));
-            const trackingIssue = getState().tracker.trackingIssue;
-            const description = getState().tracker.description;
-            const token = getState().jira.jwt;
-            const jiraClient = getState().jira.client;
-            if (lastScreenshotTime === null) {
-              const url = `${staticUrl}/desktop-tracker/submit-worklog`;
-              const opts = {
-                issueId: trackingIssue,
-                worklog: {
-                  comment: description,
-                  timeSpentSeconds: lastScreenshotTime < 60 ? 60 : lastScreenshotTime,
-                },
-              };
-              jiraClient.issue.addWorkLog(opts, (e, status, response) => {
-                const { id } = response.body;
-                const options = {
-                  method: 'POST',
-                  body: JSON.stringify({
-                    worklog: {
-                      issueId: trackingIssue,
-                      description,
-                      screenshots: worklog.screenshots,
-                      timeTracked: lastScreenshotTime < 60 ? 60 : lastScreenshotTime,
-                    },
-                    id,
-                  }),
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                  },
-                };
-                fetch(url, options)
-                  .then(
-                    (res) => {
-                      if (res.status === 200) {
-                        dispatch({
-                          type: types.ACCEPT_SCREENSHOT,
-                          screenshotTime,
-                        });
-                        dispatch({
-                          type: types.SET_JIRA_WORKLOG_ID,
-                          id,
-                        });
-                      }
-                    },
-                  );
-              });
-            } else {
-              const url = `${staticUrl}/desktop-tracker/update-worklog`;
-              const opts = {
-                worklogId: getState().tracker.jiraWorklogId,
-                issueId: trackingIssue,
-                worklog: {
-                  comment: description,
-                  timeSpentSeconds: lastScreenshotTime < 60 ? 60 : lastScreenshotTime,
-                },
-              };
-              jiraClient.issue.updateWorkLog(opts, (e, status, response) => {
-                const { id } = response.body;
-                const options = {
-                  method: 'POST',
-                  body: JSON.stringify({ worklog, id }),
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                  },
-                };
-                fetch(url, options)
-                  .then(
-                    (res) => {
-                      if (res.status === 200) {
-                        dispatch({
-                          type: types.ACCEPT_SCREENSHOT,
-                          screenshotTime,
-                        });
-                      }
-                    },
-                  );
-              });
-            }
           });
         },
       );

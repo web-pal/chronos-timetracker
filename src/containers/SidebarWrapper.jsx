@@ -63,13 +63,13 @@ SidebarWrapper.propTypes = {
   setSidebarType: PropTypes.func.isRequired,
   selectIssue: PropTypes.func.isRequired,
   selectRecent: PropTypes.func.isRequired,
-  recentSelected: PropTypes.number,
+  recentSelected: PropTypes.string,
 };
 
-function mapStateToProps({ issues, worklogs, projects, ui, tracker, filter }) {
+function mapStateToProps({ issues, worklogs, projects, ui, filter, jira }) {
   const sidebarType = ui.sidebarType;
   const items = sidebarType === 'Recent'
-    ? getRecentWorklogsGroupedByDate({ worklogs, issues })
+    ? getRecentWorklogsGroupedByDate({ worklogs, issues, jira })
     : filter.value.length > 0
       ? getSearchResultIssues({ issues })
       : getIssues({ issues });

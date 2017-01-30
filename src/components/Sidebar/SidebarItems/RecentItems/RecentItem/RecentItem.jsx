@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
+import moment from 'moment';
 
-import { stj } from '../../../../../helpers/time';
 import Flex from '../../../../Base/Flex/Flex';
 
 function formatSummary(summary) {
@@ -16,36 +16,39 @@ const RecentItem = ({
   index,
 }) =>
   <Flex column className="RecentItems__list">
-    {worklogs.toList().map((wGroup, i) => {
-      const issue = wGroup.toList().getIn([0, 'issue']);
-      const timeSpent = wGroup.toList().reduce((val, w) => val + w.get('timeSpentSeconds'), 0);
+    {worklogs.toList().reverse().map((w, i) => {
+      const issue = w.get('issue');
       const { id, key } = issue.toJS();
       const summary = issue.getIn(['fields', 'summary']);
+      const timeSpent = w.get('timeSpent') === '1m' ? '<1m' : w.get('timeSpent');
       return (
         <Flex
           row
           key={i}
           className={`
             RecentItem\
-            ${current === id && recentSelected === index ? 'active' : ''}\
+            ${current === id && recentSelected === `${index}_${i}` ? 'active' : ''}\
             ${tracking === id ? 'tracking' : ''}\
           `}
-          onClick={() => onClick(id)}
+          onClick={() => onClick(id, i)}
         >
           <span className="RecentItem__key">{key}</span>
           <span className="RecentItem__summary">{formatSummary(summary)}</span>
-          <span className="RecentItem__time flex-item--end">{stj(timeSpent, 'h[h] m[m]')}</span>
+          <span className="RecentItem__time flex-item--end">{timeSpent}</span>
+          <span className="RecentItem__timest">{moment(w.get('created')).format('HH:mm:ss')}</span>
         </Flex>
-      )}
+      );
+    }
     )}
-  </Flex>
+  </Flex>;
 
 RecentItem.propTypes = {
   worklogs: PropTypes.object.isRequired,
   current: PropTypes.string,
   tracking: PropTypes.string,
-  recentSelected: PropTypes.number,
+  recentSelected: PropTypes.string,
   index: PropTypes.number.isRequired,
+  onClick: PropTypes.func.isRequired,
 };
 
 export default RecentItem;

@@ -6,8 +6,11 @@
 
 .RecentItems {
   height: 100%;
-  overflow-y: auto;
+  overflow-y: overlay;
   overflow-x: hidden;
+  &::-webkit-scrollbar {
+    width: 2px;
+  }
   .RecentItems__timestamp {
     height: 20px;
     padding-right: 5px;
@@ -26,6 +29,16 @@
   align-items: center;
   &:hover {
     background: #f2f2f2;
+    .RecentItem__key {
+      background: #fff;
+    }
+    .RecentItem__time {
+      background: #fff;
+    }
+    .RecentItem__timest {
+      background: #fff;
+      width: 45px;
+    }
   }
   &.active {
     background-color: #f2f2f2;
@@ -50,7 +63,8 @@
     text-align: center;
     font-weight: bold;
   }
-  .SidebarItem__summary {
+  .SidebarItem__summary, .RecentItem__summary {
+    white-space: nowrap;
     overflow: hidden;
   }
   .RecentItem__time {
@@ -63,6 +77,19 @@
     border-top-left-radius: 6px;
     border: 1px solid #e6e6e6;
     border-right: none;
+    text-align: center;
+  }
+  .RecentItem__timest {
+    width: 0px;
+    transition: width .2s;
+    color: rgba(0, 0, 0, .7);
+    background: #eee;
+    padding: 3px;
+    white-space: nowrap;
+    font-size: .8em;
+    border: 1px solid #e6e6e6;
+    border-right: none;
+    border-left: none;
     text-align: center;
   }
 }

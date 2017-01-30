@@ -39,6 +39,8 @@ export default function tracker(state = initialState, action) {
       return state.set('lastScreenshotTime', action.screenshotTime);
     case types.SET_JIRA_WORKLOG_ID:
       return state.set('jiraWorklogId', action.id);
+    case types.DISMISS_IDLE_TIME:
+      return state.set('time', state.time - action.payload);
     default:
       return state;
   }

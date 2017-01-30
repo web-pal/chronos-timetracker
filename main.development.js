@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import { app, Tray, BrowserWindow, ipcMain, Menu } from 'electron';
+import log from 'electron-log';
 import path from 'path';
 
 global.appDir = __dirname;
@@ -7,6 +8,7 @@ global.sharedObj = {
   lastScreenshotPath: '',
   screenshotTime: null,
   currentWorklogId: null,
+  idleTime: 0,
 };
 
 if (process.env.NODE_ENV === 'production') {
@@ -18,8 +20,12 @@ if (process.env.NODE_ENV === 'development') {
   require('electron-debug')(); // eslint-disable-line
 }
 
-process.on('uncaughtExecption', () => {
-  console.error('Uncaught exception in main process');
+process.on('uncaughtExecption', (err) => {
+  console.error('Uncaught exception in main process', err);
+});
+
+process.on('exit', (code) => {
+  console.log(`About to exit with code: ${code}`);
 });
 
 app.on('window-all-closed', () => {
@@ -81,6 +87,18 @@ ipcMain.on('screenshot-reject', () => {
 
 ipcMain.on('screenshot-accept', () => {
   mainWindow.webContents.send('screenshot-accept');
+});
+
+ipcMain.on('errorInWindow', (e, error) => {
+  log.error(`${error[0]} @ ${error[1]} ${error[2]}:${error[3]}`);
+});
+
+ipcMain.on('dismissIdleTime', (e, time) => {
+  mainWindow.webContents.send('dismissIdleTime', time);
+});
+
+ipcMain.on('dismissAndRestart', (e, time) => {
+  mainWindow.webContents.send('dismissAndRestart', time);
 });
 
 let tray = null;

@@ -15,6 +15,10 @@ export default merge(baseConfig, {
       'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
       './src/popup',
     ],
+    idleTimePopup: [
+      'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
+      './src/idlePopup',
+    ],
   },
   output: {
     publicPath: 'http://localhost:3000/dist',
