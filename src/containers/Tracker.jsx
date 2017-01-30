@@ -52,6 +52,7 @@ class Tracker extends Component {
     setIdleState: PropTypes.func.isRequired,
     dismissIdleTime: PropTypes.func.isRequired,
     addRecentIssue: PropTypes.func.isRequired,
+    uploading: PropTypes.bool.isRequired,
   }
 
   constructor(props) {
@@ -112,12 +113,14 @@ class Tracker extends Component {
   }
 
   handleTimerStop = () => {
+    this.props.stopTimer();
     this.props.updateWorklog()
       .then(
         worklog => {
-          this.props.stopTimer();
+          this.props.clearTrackingIssue();
           this.props.addRecentIssue(worklog.issueId);
           this.props.addRecentWorklog(worklog);
+          this.props.resetTimer();
         }
       );
   }
@@ -143,6 +146,7 @@ class Tracker extends Component {
         const {
           screenshotsEnabled, screenshotsEnabledUsers, interval, dispersion,
         } = settings.toJS();
+        console.log(settings.toJS());
         const cond1 = screenshotsEnabled === 'everyone';
         const cond2 = screenshotsEnabled === 'forUsers' &&
           screenshotsEnabledUsers.includes(selfKey);
@@ -208,13 +212,14 @@ class Tracker extends Component {
     const {
       running, paused, time, trackingIssue, startTimer, closeDescriptionPopup, description,
       pauseTimer, unpauseTimer, openDescriptionPopup, descriptionPopupOpen, currentIssue,
-      selectIssue,
+      selectIssue, uploading,
     } = this.props;
     return (
       <Flex column className="tracker">
         <TrackerHeader currentIssue={currentIssue} />
         <Timer
           running={running}
+          uploading={uploading}
           paused={paused}
           time={time}
           trackingIssue={trackingIssue}
@@ -250,6 +255,7 @@ function mapStateToProps({ jira, tracker, ui, issues, settings }) {
     descriptionPopupOpen: ui.descriptionPopupOpen,
     description: tracker.description,
     idleState: ui.idleState,
+    uploading: tracker.uploading,
   };
 }
 

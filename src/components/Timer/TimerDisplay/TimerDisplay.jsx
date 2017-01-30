@@ -13,13 +13,14 @@ ${addLeadingZero(time.minutes())}:\
 ${addLeadingZero(time.seconds())}`;
   return (
     <div className="timer-display">
-      {timeString}
+      {props.uploading ? <span className="uploading">Uploading</span> : timeString}
     </div>
   );
 };
 
 TimerDisplay.propTypes = {
   time: PropTypes.number.isRequired,
+  uploading: PropTypes.bool.isRequired,
 };
 
 export default TimerDisplay;

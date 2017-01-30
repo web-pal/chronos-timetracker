@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import Flex from '../components/Base/Flex/Flex';
 import Header from '../components/Header/Header';
 
-import { getProjects, getSelectedProject } from '../selectors/';
+import { getProjects, getSelectedProject, getSettings } from '../selectors/';
 
 import * as jiraActions from '../actions/jira';
 import * as projectsActions from '../actions/projects';
@@ -56,7 +56,7 @@ HeaderWrapper.propTypes = {
 function mapStateToProps({ jira, settings, projects }) {
   return {
     self: jira.self,
-    settings,
+    settings: getSettings({ settings }),
     projects: getProjects({ projects }),
     currentProject: getSelectedProject({ projects }),
   };

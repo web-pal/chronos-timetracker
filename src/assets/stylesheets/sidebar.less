@@ -26,6 +26,7 @@
   height: 40px;
   border-bottom: 1px solid rgba(0, 0, 0, .1);
   cursor: pointer;
+  overflow: hidden;
   align-items: center;
   &:hover {
     background: #f2f2f2;
@@ -38,6 +39,7 @@
     .RecentItem__timest {
       background: #fff;
       width: 45px;
+      color: rgba(0, 0, 0, .7);
     }
   }
   &.active {
@@ -82,7 +84,7 @@
   .RecentItem__timest {
     width: 0px;
     transition: width .2s;
-    color: rgba(0, 0, 0, .7);
+    color: transparent;
     background: #eee;
     padding: 3px;
     white-space: nowrap;

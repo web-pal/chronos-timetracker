@@ -10,6 +10,7 @@ const config = merge(baseConfig, {
   entry: {
     main: './src/index.js',
     popup: './src/popup.js',
+    idlePopup: './src/idlePopup.js',
   },
 
   output: {

@@ -8,7 +8,7 @@ import TimerControls from './TimerControls/TimerControls';
 const Timer = (props) => {
   const {
     time, running, paused, onStart, onStop, onPause, onUnPause, currentIssue, setCurrentIssue,
-    descPopupOpen, onDescPopupClose, onDescPopupConfirm, description, trackingIssue,
+    descPopupOpen, onDescPopupClose, onDescPopupConfirm, description, trackingIssue, uploading
   } = props;
   return (
     <Flex column centered className="timer">
@@ -44,7 +44,7 @@ const Timer = (props) => {
               onClose={onDescPopupClose}
               onConfirm={onDescPopupConfirm}
             />
-            <TimerDisplay time={time} />
+            <TimerDisplay time={time} uploading={uploading} />
             <TimerControls
               running={running}
               paused={paused}
@@ -88,6 +88,7 @@ Timer.propTypes = {
   onUnPause: PropTypes.func.isRequired,
   onDescPopupClose: PropTypes.func.isRequired,
   onDescPopupConfirm: PropTypes.func.isRequired,
+  uploading: PropTypes.bool.isRequired,
 };
 
 export default Timer;

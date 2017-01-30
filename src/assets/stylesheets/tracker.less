@@ -60,13 +60,15 @@
 }
 
 .timer-display {
+  max-width: 110px;
+  min-width: 110px;
   text-align: center;
   font-size: 2em;
   font-weight: bold;
   background: #e6e6e6;
   margin-bottom: 8px;
-  border-radius: 3px;
-  padding: 10px;
+  border-radius: 50%;
+  padding: 55px 20px;
   box-shadow: inset 0 0 10px rgba(0, 0, 0, .2);
 }
 
@@ -99,5 +101,31 @@
   .tracker-header__status {
     -webkit-app-region: no-drag;
     font-size: .8em;
+  }
+}
+
+.uploading {
+  font-size: .8em;
+  position: relative;
+  &:after {
+    content: ' ';
+    position: absolute;
+    bottom: 0;
+    animation: uploading .6s infinite ease-out;
+  }
+}
+
+@keyframes uploading {
+  0% {
+    content: '';
+  }
+  33% {
+    content: '.';
+  }
+  66% {
+    content: '..';
+  }
+  99% {
+    content: '...'
   }
 }

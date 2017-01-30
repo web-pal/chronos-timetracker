@@ -26,7 +26,7 @@ const SidebarFilterWrapper = ({
     resolveFilter={resolveFilterValue}
     refreshIssues={() => {
       clearIssues();
-      fetchIssues({ startIndex: 0, stopIndex: 20 });
+      fetchIssues({ startIndex: 0, stopIndex: 20 }, true);
     }}
     hidden={sidebarType === 'Recent'}
   />;

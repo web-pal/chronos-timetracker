@@ -68,9 +68,8 @@ function meta(state = initialMeta, action) {
       return state.set('recentSelected', action.payload);
     case types.SET_TRACKING_ISSUE:
       return state.set('tracking', action.payload);
-    case types.STOP: {
+    case types.CLEAR_TRACKING_ISSUE:
       return state.set('tracking', null);
-    }
     case types.CLEAR_ISSUES:
       return initialMeta;
     default:

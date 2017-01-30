@@ -181,16 +181,15 @@ export function fetchLastWeekLoggedIssues() {
 
 let currentPagination = { startIndex: 0, stopIndex: 0 };
 
-export function fetchIssues(pagination = { startIndex: 0, stopIndex: -1 }) {
+export function fetchIssues(pagination = { startIndex: 0, stopIndex: -1 }, force = false) {
   const { startIndex, stopIndex } = pagination;
   return (dispatch, getState) => new Promise((resolve, reject) => {
     if (stopIndex > 0) {
       dispatch(setIssuesFetchState(true));
     }
-    if (startIndex < currentPagination.stopIndex) {
+    if (startIndex < currentPagination.stopIndex && !force) {
       return;
     }
-    console.log(startIndex, stopIndex);
     currentPagination = pagination;
     const jiraClient = getState().jira.client;
     const currentProjectKey = getState().projects.meta.get('selected');
@@ -262,7 +261,7 @@ export function clearIssues() {
 
 export function addRecentIssue(issueId) {
   return (dispatch, getState) => {
-    const issue = getState().issues.byId.get(issueId);
+    const issue = getState().issues.byId.get(issueId) || getState().issues.recentById.get(issueId);
     dispatch({
       type: types.ADD_RECENT_ISSUE,
       payload: {
@@ -270,5 +269,11 @@ export function addRecentIssue(issueId) {
         issue,
       },
     });
+  };
+}
+
+export function clearTrackingIssue() {
+  return {
+    type: types.CLEAR_TRACKING_ISSUE,
   };
 }

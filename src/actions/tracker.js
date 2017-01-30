@@ -76,6 +76,12 @@ export function stopTimer() {
   };
 }
 
+export function resetTimer() {
+  return {
+    type: types.RESET,
+  };
+}
+
 export function rejectScreenshot(lastScreenshotTime) {
   return {
     type: types.REJECT_SCREENSHOT,
@@ -122,8 +128,11 @@ function uploadScreenshot(screenshotPath) {
 
 export function updateWorklog() {
   return (dispatch, getState) => new Promise((resolve) => {
+    dispatch({
+      type: types.SET_WORKLOG_UPLOAD_STATE,
+      payload: true
+    });
     const { time, description, trackingIssue, jiraWorklogId } = getState().tracker;
-    console.log(time, description, trackingIssue, jiraWorklogId);
     const token = getState().jira.jwt;
     const jiraClient = getState().jira.client;
     if (jiraWorklogId === null) {
@@ -161,6 +170,10 @@ export function updateWorklog() {
                   id,
                 });
                 resolve(response.body);
+                dispatch({
+                  type: types.SET_WORKLOG_UPLOAD_STATE,
+                  payload: false
+                });
               }
             },
           );
@@ -195,6 +208,10 @@ export function updateWorklog() {
             (res) => {
               if (res.status === 200) {
                 resolve(response.body);
+                dispatch({
+                  type: types.SET_WORKLOG_UPLOAD_STATE,
+                  payload: false
+                });
               }
             },
           );
@@ -219,6 +236,10 @@ export function acceptScreenshot(screenshotTime, screenshotPath) {
               .findIndex(screenshot => screenshot.name === path.basename(screenshotPath));
             worklog.screenshots[screenshotId].uploaded = true;
             fs.writeFile(worklogFile, JSON.stringify(worklog, null, 4));
+            dispatch({
+              type: types.ACCEPT_SCREENSHOT,
+              screenshotTime,
+            })
           });
         },
       );

@@ -9,6 +9,7 @@ const InitialState = Immutable.Record({
   lastScreenshotTime: null,
   description: null,
   jiraWorklogId: null,
+  uploading: false,
 });
 
 const initialState = new InitialState();
@@ -28,6 +29,8 @@ export default function tracker(state = initialState, action) {
         .set('description', action.description);
     }
     case types.STOP:
+      return state.set('running', false);
+    case types.RESET:
       return initialState;
     case types.PAUSE:
       return state.set('paused', true);
@@ -41,6 +44,8 @@ export default function tracker(state = initialState, action) {
       return state.set('jiraWorklogId', action.id);
     case types.DISMISS_IDLE_TIME:
       return state.set('time', state.time - action.payload);
+    case types.SET_WORKLOG_UPLOAD_STATE:
+      return state.set('uploading', action.payload);
     default:
       return state;
   }
