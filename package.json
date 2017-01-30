@@ -73,6 +73,7 @@
     "nanotimer": "^0.3.14",
     "normalizr": "^3.1.0",
     "react": "15.4.2",
+    "react-addons-shallow-compare": "^15.4.2",
     "react-dom": "15.4.2",
     "react-redux": "5.0.2",
     "react-select": "1.0.0-rc.2",

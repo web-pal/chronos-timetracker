@@ -23,4 +23,7 @@ export default {
     extensions: ['', '.js', '.jsx'],
     packageMains: ['webpack', 'browser', 'web', 'browserify', ['jam', 'main'], 'main'],
   },
+  externals: [
+    '@paulcbetts/system-idle-time',
+  ],
 };
