@@ -103,10 +103,10 @@ class Tracker extends Component {
     const { idleState, setIdleState } = this.props;
     lastIdleTime = idleTime;
     idleTime = system.getIdleTime();
-    if (idleTime > 3000 && !idleState) {
+    if (idleTime > 300000 && !idleState) {
       setIdleState(true);
     }
-    if (idleTime < 3000 && idleState) {
+    if (idleTime < 300000 && idleState) {
       setIdleState(false);
       this.openIdleTimePopup(lastIdleTime);
     }
@@ -146,7 +146,6 @@ class Tracker extends Component {
         const {
           screenshotsEnabled, screenshotsEnabledUsers, interval, dispersion,
         } = settings.toJS();
-        console.log(settings.toJS());
         const cond1 = screenshotsEnabled === 'everyone';
         const cond2 = screenshotsEnabled === 'forUsers' &&
           screenshotsEnabledUsers.includes(selfKey);

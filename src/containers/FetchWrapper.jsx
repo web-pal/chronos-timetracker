@@ -68,8 +68,8 @@ class FetchWrapper extends Component {
         .catch(
           (e) => console.log(e)
         );
-      this.props.fetchIssues().
-        catch(
+      this.props.fetchIssues({ startIndex: 0, stopIndex: -1 }, true)
+        .catch(
           (e) => console.log(e)
         )
     }

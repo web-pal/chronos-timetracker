@@ -182,6 +182,7 @@ export function fetchLastWeekLoggedIssues() {
 let currentPagination = { startIndex: 0, stopIndex: 0 };
 
 export function fetchIssues(pagination = { startIndex: 0, stopIndex: -1 }, force = false) {
+  console.log(pagination, force);
   const { startIndex, stopIndex } = pagination;
   return (dispatch, getState) => new Promise((resolve, reject) => {
     if (stopIndex > 0) {
