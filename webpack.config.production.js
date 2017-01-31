@@ -1,4 +1,5 @@
 import webpack from 'webpack';
+import BabiliPlugin from 'babili-webpack-plugin';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
 import path from 'path';
 import merge from 'webpack-merge';
@@ -46,16 +47,14 @@ const config = merge(baseConfig, {
   plugins: [
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.optimize.DedupePlugin(),
+    new BabiliPlugin({
+      // Disable deadcode until https://github.com/babel/babili/issues/385 fixed
+      deadcode: false,
+    }),
+    new ExtractTextPlugin('style.css'),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
-    new webpack.optimize.UglifyJsPlugin({
-      compressor: {
-        screw_ie8: true,
-        warnings: false
-      }
-    }),
-    new ExtractTextPlugin('style.css'),
     new webpack.ProvidePlugin({
       Immutable: 'immutable',
     }),
