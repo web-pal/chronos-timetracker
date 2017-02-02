@@ -8,9 +8,7 @@ function addLeadingZero(s) {
 const TimerDisplay = (props) => {
   const time = moment.duration(props.time * 1000);
   const timeString =
-    `${addLeadingZero(time.hours())}:\
-${addLeadingZero(time.minutes())}:\
-${addLeadingZero(time.seconds())}`;
+    `${addLeadingZero(time.hours())}:${addLeadingZero(time.minutes())}:${addLeadingZero(time.seconds())}`;
   return (
     <div className="timer-display">
       {props.uploading ? <span className="uploading">Uploading</span> : timeString}

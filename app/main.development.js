@@ -50,7 +50,7 @@ function createWindow() {
     ...noFrameOption,
   });
 
-  mainWindow.loadURL(`file://${__dirname}/src/index.html`);
+  mainWindow.loadURL(`file://${__dirname}/index.html`);
 
   mainWindow.on('closed', () => {
     mainWindow = null;
@@ -105,7 +105,7 @@ let tray = null;
 
 app.on('ready', async () => {
   await installExtensions();
-  tray = new Tray(path.join(__dirname, './src/assets/images/clock.png'));
+  tray = new Tray(path.join(__dirname, './assets/images/clock.png'));
   tray.setToolTip('Open chronos tracker');
   tray.on('click', () => mainWindow.show());
   createWindow();

@@ -1,11 +1,12 @@
 import * as types from '../constants';
+import Immutable from 'immutable';
 
 const InitialState = new Immutable.Record({
   value: '',
   resolveValue: false,
 });
 
-const initialState = new InitialState();
+export const initialState = new InitialState();
 
 export default function filter(state = initialState, action) {
   switch (action.type) {

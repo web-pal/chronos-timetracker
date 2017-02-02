@@ -1,11 +1,17 @@
+/**
+ * Build config for electron 'Main Process' file
+ */
+
 import webpack from 'webpack';
+import validate from 'webpack-validator';
 import merge from 'webpack-merge';
+import BabiliPlugin from 'babili-webpack-plugin';
 import baseConfig from './webpack.config.base';
 
-export default merge(baseConfig, {
+export default validate(merge(baseConfig, {
   devtool: 'source-map',
 
-  entry: ['babel-polyfill', './main.development'],
+  entry: ['babel-polyfill', './app/main.development'],
 
   output: {
     path: __dirname,
@@ -13,15 +19,14 @@ export default merge(baseConfig, {
   },
 
   plugins: [
-    new webpack.optimize.UglifyJsPlugin({
-      compressor: {
-        warnings: false,
-      },
+    /**
+     * Babli is an ES6+ aware minifier based on the Babel toolchain (beta)
+     */
+    new BabiliPlugin({
+      // Disable deadcode until https://github.com/babel/babili/issues/385 fixed
+      deadcode: false,
     }),
-    new webpack.BannerPlugin(
-      'require("source-map-support").install();',
-      { raw: true, entryOnly: false }
-    ),
+
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: JSON.stringify('production'),
@@ -35,11 +40,4 @@ export default merge(baseConfig, {
     __dirname: false,
     __filename: false,
   },
-
-  externals: [
-    'font-awesome',
-    'source-map-support',
-    'request',
-    'bindings',
-  ],
-});
+}));

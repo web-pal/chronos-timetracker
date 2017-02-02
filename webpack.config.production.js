@@ -9,9 +9,9 @@ const config = merge(baseConfig, {
   devtool: 'cheap-source-map',
 
   entry: {
-    main: './src/index.js',
-    popup: './src/popup.js',
-    idleTimePopup: './src/idlePopup.js',
+    main: './app/index.js',
+    popup: './app/popup.js',
+    idleTimePopup: './app/idlePopup.js',
   },
 
   output: {

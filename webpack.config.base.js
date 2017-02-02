@@ -1,11 +1,16 @@
-import path from 'path';
+/**
+ * Base webpack config used across other specific configs
+ */
 
-export default {
+import path from 'path';
+import validate from 'webpack-validator';
+
+export default validate({
   module: {
     loaders: [
       {
         test: /\.jsx?$/,
-        loader: 'babel-loader',
+        loaders: ['babel-loader'],
         exclude: /node_modules/,
       },
       {
@@ -14,16 +19,26 @@ export default {
       },
     ],
   },
+
   output: {
-    path: path.join(__dirname, 'dist'),
+    path: path.join(__dirname, 'app'),
     filename: 'bundle.js',
+
+    // https://github.com/webpack/webpack/issues/1114
     libraryTarget: 'commonjs2',
   },
+
+  /**
+   * Determine the array of extensions that should be used to resolve modules.
+   */
   resolve: {
-    extensions: ['', '.js', '.jsx'],
+    extensions: ['', '.js', '.jsx', '.json'],
     packageMains: ['webpack', 'browser', 'web', 'browserify', ['jam', 'main'], 'main'],
   },
+
+  plugins: [],
+
   externals: [
     '@paulcbetts/system-idle-time',
   ],
-};
+});
