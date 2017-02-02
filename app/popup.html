@@ -7,7 +7,7 @@
       if (!process.env.HOT) {
         const link = document.createElement('link');
         link.rel = 'stylesheet';
-        link.href = '../dist/style.css';
+        link.href = './dist/style.css';
         document.write(link.outerHTML);
       }
     }());
@@ -19,7 +19,7 @@
       (function() {
         const script = document.createElement('script');
         //script.async = true;
-        script.src = (process.env.HOT) ? 'http://localhost:3000/dist/popup-bundle.js' : '../dist/popup-bundle.js';
+        script.src = (process.env.HOT) ? 'http://localhost:3000/dist/popup-bundle.js' : './dist/popup-bundle.js';
         let s0 = document.getElementsByTagName('script')[0];
         s0.parentNode.insertBefore(script, s0);
       }());

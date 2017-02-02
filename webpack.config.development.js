@@ -22,10 +22,12 @@ export default validate(merge(baseConfig, {
     ],
     popup: [
       'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
+      'babel-polyfill',
       './app/popup',
     ],
     idleTimePopup: [
       'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
+      'babel-polyfill',
       './app/idlePopup',
     ],
   },

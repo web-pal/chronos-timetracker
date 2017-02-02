@@ -2,7 +2,7 @@
   "name": "Chronos",
   "version": "1.0.0",
   "description": "Full functionality time tracking software with direct JIRA integration",
-  "main": "main.js",
+  "main": "./app/main.js",
   "scripts": {
     "hot": "cross-env HOT=1 NODE_ENV=development electron --enable-transparent-visuals --disable-gpu --ignore-certificate-errors -r babel-register -r babel-polyfill ./app/main.development",
     "hot-server": "cross-env NODE_ENV=development node --max_old_space_size=2096 -r babel-register server.js",
@@ -14,7 +14,7 @@
     "build-main": "cross-env NODE_ENV=production node -r babel-register ./node_modules/webpack/bin/webpack --config ./webpack.config.electron.js --progress --profile --colors",
     "build-renderer": "cross-env NODE_ENV=production node -r babel-register ./node_modules/webpack/bin/webpack --config ./webpack.config.production.js --progress --profile --colors",
     "build": "npm run build-main && npm run build-renderer",
-    "start": "cross-env NODE_ENV=production electron ./",
+    "start": "cross-env NODE_ENV=production electron ./app/",
     "dev": "concurrently -p \"{name}\" -n \"RENDERER|>,    MAIN|>\" --kill-others \"npm run hot\" \"npm run hot-server\"",
     "test": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 mocha --retries 2 --compilers js:babel-register --recursive --require ./test/index.js test/**/*.spec.js"
   },
@@ -44,27 +44,21 @@
         }
       ]
     },
-    "files": [
-      "dist/",
-      "node_modules/",
-      "app.html",
-      "main.js",
-      "main.js.map",
-      "package.json"
-    ],
     "win": {
       "target": "nsis"
     },
     "linux": {
-      "target": [
-        "deb",
-        "AppImage"
-      ]
+      "target": []
     },
     "directories": {
       "buildResources": "resources",
       "output": "release"
-    }
+    },
+    "files": [
+      "**/*",
+      "worklogs/",
+      "screenshots/"
+    ]
   },
   "bin": {
     "electron": "./node_modules/.bin/electron"
@@ -81,8 +75,10 @@
     "babel-plugin-add-module-exports": "0.2.1",
     "babel-plugin-dev-expression": "0.2.1",
     "babel-plugin-transform-decorators-legacy": "1.3.4",
+    "babel-plugin-transform-es2015-template-literals": "^6.22.0",
     "babel-plugin-webpack-loaders": "^0.8.0",
     "babel-polyfill": "6.22.0",
+    "babel-preset-babili": "0.0.10",
     "babel-preset-env": "^1.1.8",
     "babel-preset-es2015": "6.22.0",
     "babel-preset-es2016": "6.22.0",
@@ -91,29 +87,31 @@
     "babel-preset-react-optimize": "1.0.1",
     "babel-preset-stage-0": "6.22.0",
     "babel-register": "6.22.0",
+    "chai": "^3.5.0",
     "chai-immutable": "^1.6.0",
     "concurrently": "3.1.0",
     "cross-env": "3.1.4",
     "css-loader": "0.26.1",
     "del": "2.2.2",
     "electron": "1.4.15",
+    "electron-builder": "^11.4.4",
     "electron-debug": "1.1.0",
     "electron-devtools-installer": "2.1.0",
-    "electron-builder": "^11.4.4",
     "electron-packager": "8.5.1",
     "electron-rebuild": "^1.5.7",
     "eslint": "^3.14.0",
-    "eslint-plugin-import": "^2.2.0",
     "eslint-config-airbnb": "14.0.0",
+    "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jsx-a11y": "3.0.2",
     "eslint-plugin-react": "6.9.0",
     "express": "4.14.0",
     "extract-text-webpack-plugin": "1.0.1",
-    "file-loader": "0.9.0",
     "fbjs-scripts": "^0.7.1",
+    "file-loader": "0.9.0",
     "json-loader": "0.5.4",
     "less": "2.7.2",
     "less-loader": "2.2.3",
+    "mocha": "^3.2.0",
     "react-hot-loader": "3.0.0-beta.6",
     "redux-logger": "2.7.4",
     "style-loader": "0.13.1",
@@ -121,12 +119,11 @@
     "webpack-dev-middleware": "1.9.0",
     "webpack-hot-middleware": "2.15.0",
     "webpack-merge": "2.5.0",
-    "chai": "^3.5.0",
-    "mocha": "^3.2.0",
     "webpack-validator": "^2.3.0"
   },
   "dependencies": {
     "@paulcbetts/system-idle-time": "git+https://github.com/paulcbetts/node-system-idle-time.git",
+    "babel-preset-latest": "^6.22.0",
     "babili-webpack-plugin": "^0.0.9",
     "bindings": "^1.2.1",
     "bufferutil": "^1.3.0",
@@ -158,8 +155,10 @@
     "reselect": "2.5.4",
     "socket.io-client": "^1.7.2",
     "source-map-support": "0.4.10",
+    "url-loader": "^0.5.7",
     "user-media-screenshot": "1.0.2",
-    "utf-8-validate": "^2.0.0"
+    "utf-8-validate": "^2.0.0",
+    "x11": "^2.2.0"
   },
   "devEngines": {
     "node": ">=6.x",

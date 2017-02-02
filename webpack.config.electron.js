@@ -15,7 +15,7 @@ export default validate(merge(baseConfig, {
 
   output: {
     path: __dirname,
-    filename: './main.js',
+    filename: './app/main.js',
   },
 
   plugins: [

@@ -16,8 +16,8 @@ function searchIssuesBySummary(query) {
     const jiraClient = getState().jira.client;
     const escapedQuery = query.replace('[', '').replace(']', '');
     jiraClient.search.search({
-      jql: `project = ${currentProjectKey} AND\
-            summary ~ "${escapedQuery}"`,
+      jql: `project = ${currentProjectKey} AND
+ summary ~ "${escapedQuery}"`,
       maxResults: 1000,
       fields: ['summary', 'resolution', 'status', 'worklog'],
     }, (error, response) => {
@@ -55,8 +55,8 @@ function searchIssuesByKey(query) {
     const currentProjectKey = getState().projects.meta.get('selected');
     const jiraClient = getState().jira.client;
     jiraClient.search.search({
-      jql: `project = ${currentProjectKey} AND\
-            issuekey = "${query}"`,
+      jql: `project = ${currentProjectKey} AND
+ issuekey = "${query}"`,
       maxResults: 1000,
       fields: ['summary', 'resolution', 'status', 'worklog'],
     }, (error, response) => {
@@ -134,10 +134,10 @@ export function fetchLastWeekLoggedIssues() {
     const currentProjectKey = getState().projects.meta.get('selected');
     const self = getState().jira.self;
     jiraClient.search.search({
-      jql: `project = ${currentProjectKey} AND\
-            worklogAuthor = ${self.get('key')} AND\
-            timespent > 0 AND\
-            worklogDate >= '-4w'`,
+      jql: `project = ${currentProjectKey} AND
+ worklogAuthor = ${self.get('key')} AND
+ timespent > 0 AND
+ worklogDate >= '-4w'`,
       maxResults: 1000,
       fields: ['summary', 'resolution', 'status', 'worklog'],
     }, (error, response) => {
