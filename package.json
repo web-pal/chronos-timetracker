@@ -48,7 +48,10 @@
       "target": "nsis"
     },
     "linux": {
-      "target": []
+      "target": [
+        "deb",
+        "AppImage"
+      ]
     },
     "directories": {
       "buildResources": "resources",
