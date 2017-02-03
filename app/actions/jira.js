@@ -7,6 +7,12 @@ import * as types from '../constants';
 import { staticUrl } from '../config/config';
 import Socket from '../socket';
 
+export function installUpdate() {
+  return {
+    type: types.INSTALL_UPDATE,
+  };
+}
+
 export function jwtConnect(token) {
   return (dispatch, getState) => new Promise((resolve, reject) => {
     dispatch({

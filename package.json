@@ -1,6 +1,6 @@
 {
-  "name": "Chronos",
-  "version": "1.0.0",
+  "name": "chronos",
+  "version": "0.0.1",
   "description": "Full functionality time tracking software with direct JIRA integration",
   "main": "./app/main.js",
   "scripts": {
@@ -24,9 +24,14 @@
     "url": "https://github.com/web-pal"
   },
   "license": "ISC",
+  "updater": {
+    "url": "https://raw.githubusercontent.com/web-pal/Chronos/master/updates.json",
+    "autoDownload": false,
+    "disabled": false
+  },
   "build": {
-    "productName": "Chronos",
-    "appId": "com.web-pal.Chronos",
+    "productName": "chronos",
+    "appId": "com.web-pal.chronos",
     "category": "public.app-category.Utility",
     "copyright": "Copyright © 2017 Webpal",
     "dmg": {
@@ -49,7 +54,6 @@
     },
     "linux": {
       "target": [
-        "deb",
         "AppImage"
       ]
     },
@@ -61,14 +65,18 @@
       "**/*",
       "worklogs/",
       "screenshots/"
-    ]
+    ],
+    "publish": {
+      "provider": "github",
+      "token": "3500cc48fc33870c8fac27848b998906b7d14307"
+    }
   },
   "bin": {
     "electron": "./node_modules/.bin/electron"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/web-pal/chronos-app-jira.git"
+    "url": "git+https://github.com/web-pal/Chronos.git"
   },
   "devDependencies": {
     "7zip": "0.0.6",
@@ -132,6 +140,7 @@
     "bufferutil": "^1.3.0",
     "electron-json-storage": "3.0.0",
     "electron-log": "^1.3.0",
+    "electron-simple-updater": "^1.2.0",
     "electron-updater": "^1.3.2",
     "font-awesome": "^4.7.0",
     "immutable": "3.8.1",

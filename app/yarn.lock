@@ -13,6 +13,21 @@ bindings@~1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/bindings/-/bindings-1.2.1.tgz#14ad6113812d2d37d72e67b4cacb4bb726505f11"
 
+electron-simple-updater@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/electron-simple-updater/-/electron-simple-updater-1.2.0.tgz#c63f24453483cf6fd63df4c70507b59ea75a02a0"
+  dependencies:
+    httpreq "^0.4.22"
+    semver "*"
+
+httpreq@^0.4.22:
+  version "0.4.22"
+  resolved "https://registry.yarnpkg.com/httpreq/-/httpreq-0.4.22.tgz#27097c8ad95ea9679190530c9c0f66b8c7aafb18"
+
 nan@^2.0.0:
   version "2.5.1"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.5.1.tgz#d5b01691253326a97a2bbee9e61c55d8d60351e2"
+
+semver@*:
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-5.3.0.tgz#9b2ce5d3de02d17c6012ad326aa6b4d0cf54f94f"

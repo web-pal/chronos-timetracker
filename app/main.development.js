@@ -2,9 +2,14 @@
 import { app, Tray, BrowserWindow, ipcMain, Menu } from 'electron';
 import log from 'electron-log';
 import path from 'path';
+import updater from 'electron-simple-updater';
+
+updater.init({
+  checkUpdateOnStart: false,
+  autoDownload: false,
+});
 
 global.appDir = app.getPath('userData');
-console.log(global.appDir);
 global.sharedObj = {
   lastScreenshotPath: '',
   screenshotTime: null,

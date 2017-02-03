@@ -21,6 +21,8 @@ class AuthForm extends Component {
     getSavedCredentials: PropTypes.func.isRequired,
     getJWT: PropTypes.func.isRequired,
     initialize: PropTypes.func.isRequired,
+    updateAvailable: PropTypes.object,
+    updateFetching: PropTypes.bool.isRequired,
   }
 
   componentDidMount() {
@@ -48,7 +50,7 @@ class AuthForm extends Component {
   }
 
   render() {
-    const { handleSubmit, fetching, error } = this.props;
+    const { handleSubmit, fetching, error, updateAvailable, updateFetching, downloadingUpdate } = this.props;
     return (
       <Flex column centered className="occupy-height draggable">
         {fetching &&
@@ -86,6 +88,15 @@ class AuthForm extends Component {
             </Flex>
           </form>
         </Flex>
+        {updateFetching &&
+          <Flex row className="flex-item--end checkingForUpdates">checking for updates...</Flex>
+        }
+        {!downloadingUpdate && updateAvailable &&
+          <Flex row className="flex-item--end checkingForUpdates">New version is available ({updateAvailable.version}) <a onClick={this.props.installUpdate}>install</a></Flex>
+        }
+        {downloadingUpdate &&
+          <Flex row className="flex-item--end checkingForUpdates">loading update...</Flex>
+        }
       </Flex>
     );
   }
@@ -95,8 +106,11 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators(jiraActions, dispatch);
 }
 
-function mapStateToProps({ jira }) {
+function mapStateToProps({ jira, ui }) {
   return {
+    updateAvailable: ui.updateAvailable,
+    updateFetching: ui.updateFetching,
+    downloadingUpdate: ui.downloadingUpdate,
     initialValues: jira.credentials,
     error: jira.error,
     fetching: jira.fetching,
