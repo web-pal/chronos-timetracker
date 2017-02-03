@@ -3,7 +3,8 @@ import { app, Tray, BrowserWindow, ipcMain, Menu } from 'electron';
 import log from 'electron-log';
 import path from 'path';
 
-global.appDir = __dirname;
+global.appDir = app.getPath('userData');
+console.log(global.appDir);
 global.sharedObj = {
   lastScreenshotPath: '',
   screenshotTime: null,
