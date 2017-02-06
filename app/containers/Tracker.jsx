@@ -10,6 +10,7 @@ import electron, { remote, ipcRenderer } from 'electron';
 import Flex from '../components/Base/Flex/Flex';
 import Timer from '../components/Timer/Timer';
 import TrackerHeader from '../components/TrackerHeader/TrackerHeader';
+import Updater from './Updater';
 
 import { getTrackingIssue, getSelectedIssue, getSettings } from '../selectors/';
 
@@ -236,6 +237,7 @@ class Tracker extends Component {
             startTimer(desc);
           }}
         />
+        <Updater />
       </Flex>
     );
   }

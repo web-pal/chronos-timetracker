@@ -246,7 +246,7 @@ asn1@0.1.11:
   version "0.1.11"
   resolved "https://registry.yarnpkg.com/asn1/-/asn1-0.1.11.tgz#559be18376d08a4ec4dbe80877d27818639b2df7"
 
-asn1@~0.2.0, asn1@~0.2.3:
+asn1@~0.2.3:
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/asn1/-/asn1-0.2.3.tgz#dac8787713c9966849fc8180777ebe9c1ddf3b86"
 
@@ -2492,14 +2492,6 @@ electron-rebuild@^1.5.7:
     spawn-rx "^2.0.7"
     yargs "^3.31.0"
 
-electron-simple-publisher@^0.2.6:
-  version "0.2.6"
-  resolved "https://registry.yarnpkg.com/electron-simple-publisher/-/electron-simple-publisher-0.2.6.tgz#3c32beb2820fe819eb302709455a7715fb201ae3"
-  dependencies:
-    httpreq "^0.4.22"
-    minimist "^1.2.0"
-    node-ssh "^3.0.1"
-
 electron-simple-updater@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/electron-simple-updater/-/electron-simple-updater-1.2.0.tgz#c63f24453483cf6fd63df4c70507b59ea75a02a0"
@@ -4662,16 +4654,6 @@ node-pre-gyp@^0.6.29:
     tar "~2.2.1"
     tar-pack "~3.3.0"
 
-node-ssh@^3.0.1:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/node-ssh/-/node-ssh-3.1.0.tgz#097eae247b0a86f7ae63fae039d1c01ad9c70c5f"
-  dependencies:
-    mkdirp "^0.5.1"
-    sb-promisify "^2.0.1"
-    sb-scandir "^1.0.0"
-    shell-escape "^0.2.0"
-    ssh2 "^0.5.0"
-
 node-status-codes@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/node-status-codes/-/node-status-codes-1.0.0.tgz#5ae5541d024645d32a58fcddc9ceecea7ae3ac2f"
@@ -5490,6 +5472,10 @@ react-input-autosize@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/react-input-autosize/-/react-input-autosize-1.1.0.tgz#3fe1ac832387d8abab85f6051ceab1c9e5570853"
 
+react-pace-progress@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/react-pace-progress/-/react-pace-progress-1.0.0.tgz#9cc483996c8a63426f194a0e727380d0930bed12"
+
 react-proxy@^1.1.7:
   version "1.1.8"
   resolved "https://registry.yarnpkg.com/react-proxy/-/react-proxy-1.1.8.tgz#9dbfd9d927528c3aa9f444e4558c37830ab8c26a"
@@ -5959,20 +5945,6 @@ sax@~1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/sax/-/sax-1.2.1.tgz#7b8e656190b228e81a66aea748480d828cd2d37a"
 
-sb-promisify@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/sb-promisify/-/sb-promisify-1.3.0.tgz#3af6f1fa9ffc833f14de86916eefc1f559b1b051"
-
-sb-promisify@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/sb-promisify/-/sb-promisify-2.0.1.tgz#86c6cb4e1780c9b38c6fbe7e7873f8ab9677ce2a"
-
-sb-scandir@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/sb-scandir/-/sb-scandir-1.0.0.tgz#102b4666c7b644f4287f0d33ceb4374fac1bfa15"
-  dependencies:
-    sb-promisify "^1.3.0"
-
 semver-diff@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/semver-diff/-/semver-diff-2.1.0.tgz#4bbb8437c8d37e4b0cf1a68fd726ec6d645d6d36"
@@ -6051,10 +6023,6 @@ setprototypeof@1.0.2:
 sha.js@2.2.6:
   version "2.2.6"
   resolved "https://registry.yarnpkg.com/sha.js/-/sha.js-2.2.6.tgz#17ddeddc5f722fb66501658895461977867315ba"
-
-shell-escape@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/shell-escape/-/shell-escape-0.2.0.tgz#68fd025eb0490b4f567a027f0bf22480b5f84133"
 
 shelljs@0.7.0:
   version "0.7.0"
@@ -6194,20 +6162,6 @@ sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
 
-ssh2-streams@~0.1.15:
-  version "0.1.16"
-  resolved "https://registry.yarnpkg.com/ssh2-streams/-/ssh2-streams-0.1.16.tgz#ac9d3ce9e062f8cf08fcce5b3a274b6d5cecdc54"
-  dependencies:
-    asn1 "~0.2.0"
-    semver "^5.1.0"
-    streamsearch "~0.1.2"
-
-ssh2@^0.5.0:
-  version "0.5.4"
-  resolved "https://registry.yarnpkg.com/ssh2/-/ssh2-0.5.4.tgz#1bf6b6b28c96eaef267f4d6c46a5a2517a599e27"
-  dependencies:
-    ssh2-streams "~0.1.15"
-
 sshpk@^1.7.0:
   version "1.10.2"
   resolved "https://registry.yarnpkg.com/sshpk/-/sshpk-1.10.2.tgz#d5a804ce22695515638e798dbe23273de070a5fa"
@@ -6251,10 +6205,6 @@ stream-http@^2.3.1:
     readable-stream "^2.1.0"
     to-arraybuffer "^1.0.0"
     xtend "^4.0.0"
-
-streamsearch@~0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/streamsearch/-/streamsearch-0.1.2.tgz#808b9d0e56fc273d809ba57338e929919a1a9f1a"
 
 strict-uri-encode@^1.0.0:
   version "1.1.0"

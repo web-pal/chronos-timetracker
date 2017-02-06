@@ -26,36 +26,7 @@ class FetchWrapper extends Component {
     fetchSettings: PropTypes.func.isRequired,
     fetchLastWeekLoggedIssues: PropTypes.func.isRequired,
     getLastProject: PropTypes.func.isRequired,
-    installUpdate: PropTypes.bool.isRequired,
-    setUpdateFetchState: PropTypes.func.isRequired,
-    notifyUpdateAvailable: PropTypes.func.isRequired,
   };
-
-  componentDidMount() {
-    this.updater = remote.require('electron-simple-updater');
-
-    this.updater.on('cheking-for-update', () => {
-      this.props.setUpdateFetchState(true);
-    });
-
-    this.updater.on('update-available', (meta) => {
-      this.props.setUpdateFetchState(false);
-      this.props.notifyUpdateAvailable(meta);
-    });
-
-    this.updater.on('update-downloading', () => {
-      this.props.setUpdateDownloadState(true);
-    });
-
-    this.updater.on('update-downloaded', () => {
-      this.props.setUpdateDownloadState(false);
-      if(window.confirm('App updated, restart now?')) {
-        this.updater.quitAndInstall();
-      }
-    });
-
-    this.updater.checkForUpdates();
-  }
 
   componentWillReceiveProps(nextProps) {
     const currentFilterValue = this.props.filterValue;
@@ -64,13 +35,6 @@ class FetchWrapper extends Component {
     const currentConnected = this.props.connected;
     const nextConnected = nextProps.connected;
     
-    const installUpdate = this.props.installUpdate;
-    const nextInstallUpdate = nextProps.installUpdate;
-
-    if(installUpdate !== nextInstallUpdate && nextInstallUpdate) {
-      this.updater.downloadUpdate();
-    }
-
     if (currentFilterValue !== nextFilterValue) {
       this.props.searchIssues(nextFilterValue);
     }
@@ -125,7 +89,6 @@ function mapStateToProps({ filter, jira, projects }) {
   return {
     filterValue: filter.value,
     connected: jira.connected,
-    installUpdate: jira.installUpdate,
     currentProject: getSelectedProjectId({ projects }),
   };
 }
