@@ -35,7 +35,6 @@ class FetchWrapper extends Component {
     this.updater = remote.require('electron-simple-updater');
 
     this.updater.on('cheking-for-update', () => {
-      console.log('CHECKING FOR UPDATES');
       this.props.setUpdateFetchState(true);
     });
 
@@ -46,14 +45,15 @@ class FetchWrapper extends Component {
 
     this.updater.on('update-downloading', () => {
       this.props.setUpdateDownloadState(true);
-    })
+    });
 
     this.updater.on('update-downloaded', () => {
       this.props.setUpdateDownloadState(false);
-      this.updater.quitAndInstall();
-    })
+      if(window.confirm('App updated, restart now?')) {
+        this.updater.quitAndInstall();
+      }
+    });
 
-    console.log('STARTING UPDATE CHECK');
     this.updater.checkForUpdates();
   }
 

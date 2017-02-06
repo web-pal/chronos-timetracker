@@ -7,9 +7,9 @@ import * as types from '../constants';
 import { staticUrl } from '../config/config';
 import Socket from '../socket';
 
-export function installUpdate() {
+export function installUpdates() {
   return {
-    type: types.INSTALL_UPDATE,
+    type: types.INSTALL_UPDATES,
   };
 }
 

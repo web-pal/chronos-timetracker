@@ -13,5 +13,5 @@ export const LOGOUT = 'jira/LOGOUT';
 
 export const SET_CONNECT_FETCH_STATE = 'jira/SET_CONNECT_FETCH_STATE';
 
-export const INSTALL_UPDATE = 'jira/INSTALL_UPDATE';
+export const INSTALL_UPDATES = 'jira/INSTALL_UPDATES';
 

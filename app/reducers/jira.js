@@ -33,7 +33,7 @@ function deleteToken() {
 
 export default function jira(state = initialState, action) {
   switch (action.type) {
-    case types.INSTALL_UPDATE:
+    case types.INSTALL_UPDATES:
       return state.set('installUpdate', true);
     case types.CONNECT:
       return state

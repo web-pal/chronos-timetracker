@@ -23,6 +23,7 @@ class AuthForm extends Component {
     initialize: PropTypes.func.isRequired,
     updateAvailable: PropTypes.object,
     updateFetching: PropTypes.bool.isRequired,
+    installUpdate: PropTypes.func.isRequired,
   }
 
   componentDidMount() {
@@ -50,7 +51,15 @@ class AuthForm extends Component {
   }
 
   render() {
-    const { handleSubmit, fetching, error, updateAvailable, updateFetching, downloadingUpdate } = this.props;
+    const {
+      handleSubmit,
+      fetching,
+      error,
+      updateAvailable,
+      updateFetching,
+      downloadingUpdate,
+      installUpdates,
+    } = this.props;
     return (
       <Flex column centered className="occupy-height draggable">
         {fetching &&
@@ -88,15 +97,17 @@ class AuthForm extends Component {
             </Flex>
           </form>
         </Flex>
-        {updateFetching &&
-          <Flex row className="flex-item--end checkingForUpdates">checking for updates...</Flex>
-        }
-        {!downloadingUpdate && updateAvailable &&
-          <Flex row className="flex-item--end checkingForUpdates">New version is available ({updateAvailable.version}) <a onClick={this.props.installUpdate}>install</a></Flex>
-        }
-        {downloadingUpdate &&
-          <Flex row className="flex-item--end checkingForUpdates">loading update...</Flex>
-        }
+        <Flex row>
+          {updateFetching &&
+            <Flex row className="flex-item--end checkingForUpdates">checking for updates...</Flex>
+          }
+          {!downloadingUpdate && updateAvailable &&
+            <Flex row className="flex-item--end checkingForUpdates">New version is available ({updateAvailable.version}) <a onClick={installUpdates}>&nbsp;install</a></Flex>
+          }
+          {downloadingUpdate &&
+            <Flex row className="flex-item--end checkingForUpdates">loading update...</Flex>
+          }
+        </Flex>
       </Flex>
     );
   }
