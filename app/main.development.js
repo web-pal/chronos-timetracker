@@ -11,6 +11,7 @@ updater.init({
 });
 
 global.appDir = app.getPath('userData');
+global.appSrcDir = __dirname;
 global.sharedObj = {
   lastScreenshotPath: '',
   screenshotTime: null,

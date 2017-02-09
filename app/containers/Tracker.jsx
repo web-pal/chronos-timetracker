@@ -168,6 +168,7 @@ class Tracker extends Component {
     const { BrowserWindow, getGlobal } = remote;
     const { currentWorklogId, time } = this.props;
     const dir = getGlobal('appDir');
+    const srcDir = getGlobal('appSrcDir');
     const screenshotTime = time;
     getScreen((image) => {
       const validImage = image.replace(/^data:image\/jpeg;base64,/, '');
@@ -190,7 +191,7 @@ class Tracker extends Component {
           alwaysOnTop: true,
         };
         const win = new BrowserWindow(options);
-        win.loadURL(`file://${dir}/src/popup.html`);
+        win.loadURL(`file://${srcDir}/popup.html`);
       });
     });
   }
@@ -198,14 +199,14 @@ class Tracker extends Component {
   openIdleTimePopup = (time) => {
     const { BrowserWindow, getGlobal } = remote;
     getGlobal('sharedObj').idleTime = time;
-    const dir = getGlobal('appDir');
+    const dir = getGlobal('appSrcDir');
     const options = {
       width: 300,
       height: 200,
       frame: false,
     };
     const win = new BrowserWindow(options);
-    win.loadURL(`file://${dir}/src/idlePopup.html`);
+    win.loadURL(`file://${dir}/idlePopup.html`);
   }
 
   render() {

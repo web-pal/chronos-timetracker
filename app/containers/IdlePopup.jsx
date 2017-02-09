@@ -40,7 +40,7 @@ class IdlePopup extends Component {
         <Flex row centered>
           <span>
             You was inactive for {stj(idleTime / 1000, 'h[h] m[m] s[s]')} <br />
-            From {date.clone().subtract(idleTime, 'ms').format('HH:mm:ss')} to
+            From {date.clone().subtract(idleTime, 'ms').format('HH:mm')} to
             {date.format('HH:mm:ss')}
           </span>
         </Flex>

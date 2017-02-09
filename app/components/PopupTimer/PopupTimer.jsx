@@ -4,7 +4,9 @@ const PopupTimer = (props) => {
   const { time } = props;
   return (
     <div className="popup-timer">
-      {time}
+      <span>
+        {time}
+      </span>
     </div>
   );
 };
