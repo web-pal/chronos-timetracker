@@ -18,7 +18,7 @@ const SidebarItem = ({ onClick, style, item, current, tracking }) => {
         ${active ? 'sidebar__item--active' : ''}\
         ${tracking && tracking === id ? 'sidebar__item--tracking' : ''}`
       }
-      onClick={() => onClick(id)}
+      onClick={() => onClick(item)}
       style={style}
     >
       <span className="SidebarItem__key">{key}</span>

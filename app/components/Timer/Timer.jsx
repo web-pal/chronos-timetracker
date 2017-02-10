@@ -15,7 +15,7 @@ const Timer = (props) => {
       {currentIssue.size
         ? <Flex row centered>
           <Flex column>
-            {trackingIssue &&
+            {trackingIssue.size !== 0 &&
                 <Flex
                   column
                   className={`current-tracking\
@@ -32,7 +32,7 @@ const Timer = (props) => {
                 <Flex row centered>
                   <span
                     className="current-tracking__link"
-                    onClick={() => setCurrentIssue(trackingIssue.get('id'))}
+                    onClick={() => setCurrentIssue(trackingIssue)}
                   >
                     Jump to issue
                   </span>

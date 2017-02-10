@@ -35,6 +35,8 @@ function recentItems(state = new Map(), action) {
       return fromJS(action.payload.map) || new Map();
     case types.ADD_RECENT_ISSUE:
       return state.set(action.payload.id, action.payload.issue);
+    case types.SELECT_ISSUE:
+      return state.set(action.payload.get('id'), action.payload);
     default:
       return state;
   }
@@ -57,7 +59,7 @@ function meta(state = initialMeta, action) {
     case types.GET_ISSUES_COUNT:
       return state.set('total', action.payload);
     case types.SELECT_ISSUE:
-      return state.set('selected', action.payload);
+      return state.set('selected', action.payload.get('id'));
     case types.FILL_RECENT_ISSUES:
       return state.set('recent', new OrderedSet(action.payload.ids));
     case types.ADD_RECENT_ISSUE:
@@ -67,7 +69,7 @@ function meta(state = initialMeta, action) {
     case types.SELECT_RECENT:
       return state.set('recentSelected', action.payload);
     case types.SET_TRACKING_ISSUE:
-      return state.set('tracking', action.meta);
+      return state.set('tracking', action.payload);
     case types.CLEAR_TRACKING_ISSUE:
       return state.set('tracking', null);
     case types.CLEAR_ISSUES:

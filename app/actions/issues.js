@@ -240,10 +240,10 @@ export function fetchIssues(pagination = { startIndex: 0, stopIndex: -1 }, force
   });
 }
 
-export function selectIssue(issueId) {
+export function selectIssue(issue) {
   return {
     type: types.SELECT_ISSUE,
-    payload: issueId,
+    payload: issue,
   };
 }
 
