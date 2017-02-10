@@ -29,9 +29,9 @@ const RecentItems = ({
       <Flex column key={i}>
         <TimestampItem date={item.toList().get(0).get('updated')} index={i} />
         <RecentItem
-          onClick={(id, ind) => {
-            onItemClick(id);
-            selectRecent(`${i}_${ind}`);
+          onClick={(issue, ind) => {
+            onItemClick(issue);
+            selectRecent(`${issue.get('id')}_${ind}`);
           }}
           index={i}
           worklogs={item}

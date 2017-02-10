@@ -27,10 +27,10 @@ const RecentItem = ({
           key={i}
           className={`
             RecentItem\
-            ${current === id && recentSelected === `${index}_${i}` ? 'active' : ''}\
+            ${current === id && recentSelected === `${id}_${i}` ? 'active' : ''}\
             ${tracking === id ? 'tracking' : ''}\
           `}
-          onClick={() => onClick(id, i)}
+          onClick={() => onClick(issue, i)}
         >
           <span className="RecentItem__key">{key}</span>
           <span className="RecentItem__summary">{formatSummary(summary)}</span>
