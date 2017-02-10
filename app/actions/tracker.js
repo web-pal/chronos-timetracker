@@ -29,7 +29,9 @@ export function startTimer(description, trackingIssue) {
     const worklogId = Date.now();
     const worklogFile = `${worklogsDir}/${worklogId}.worklog`;
     const currentIssueId = trackingIssue || getState().issues.meta.get('selected');
-    const currentIssue = getState().issues.byId.get(currentIssueId);
+    const currentIssue =
+      getState().issues.byId.get(currentIssueId) ||
+      getState().issues.recentById.get(currentIssueId);
     const worklog = {
       issueId: currentIssueId,
       id: worklogId,

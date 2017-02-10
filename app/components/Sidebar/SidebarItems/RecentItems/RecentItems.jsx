@@ -31,7 +31,7 @@ const RecentItems = ({
         <RecentItem
           onClick={(issue, ind) => {
             onItemClick(issue);
-            selectRecent(`${issue.get('id')}_${ind}`);
+            selectRecent(`${i}_${ind}`);
           }}
           index={i}
           worklogs={item}

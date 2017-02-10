@@ -27,7 +27,7 @@ const RecentItem = ({
           key={i}
           className={`
             RecentItem\
-            ${current === id && recentSelected === `${id}_${i}` ? 'active' : ''}\
+            ${current === id && recentSelected === `${index}_${i}` ? 'active' : ''}\
             ${tracking === id ? 'tracking' : ''}\
           `}
           onClick={() => onClick(issue, i)}
