@@ -3,6 +3,7 @@ import { app, Tray, BrowserWindow, ipcMain, Menu } from 'electron';
 import log from 'electron-log';
 import path from 'path';
 import updater from 'electron-simple-updater';
+import storage from 'electron-json-storage';
 
 updater.init({
   logger: log,
@@ -32,17 +33,17 @@ process.on('uncaughtExecption', (err) => {
   console.error('Uncaught exception in main process', err);
 });
 
-process.on('exit', (code) => {
-  console.log(`About to exit with code: ${code}`);
-});
-
-app.on('window-all-closed', () => {
-  if (process.platform === 'darwin') app.quit();
-});
 
 let menu;
 let mainWindow;
 let template;
+let tray = null;
+
+app.on('window-all-closed', () => {
+  if (process.platform === 'darwin') app.quit();
+  tray.destroy();
+});
+
 
 function createWindow() {
   // disabling chrome frames differ on OSX and other platforms
@@ -51,25 +52,46 @@ function createWindow() {
     ? { titleBarStyle: 'hidden' }
     : { frame: false };
 
-  mainWindow = new BrowserWindow({
-    show: false,
-    width: 575,
-    height: 475,
-    ...noFrameOption,
-  });
 
-  mainWindow.loadURL(`file://${__dirname}/index.html`);
-
-  mainWindow.on('closed', () => {
-    mainWindow = null;
-  });
-
-  mainWindow.on('ready-to-show', () => {
-    if (process.env.NODE_ENV === 'development') {
-      mainWindow.webContents.openDevTools();
+  storage.get('lastWindowSize', (err, data) => {
+    if (err) {
+      console.log(err);
     }
-    mainWindow.show();
-    mainWindow.focus();
+    const lastWindowSize = data;
+    mainWindow = new BrowserWindow({
+      show: false,
+      width: lastWindowSize.width || 575,
+      height: lastWindowSize.height || 475,
+      ...noFrameOption,
+    });
+
+    mainWindow.loadURL(`file://${__dirname}/index.html`);
+    mainWindow.on('closed', () => {
+      mainWindow = null;
+    });
+
+    mainWindow.on('ready-to-show', () => {
+      if (process.env.NODE_ENV === 'development') {
+        mainWindow.webContents.openDevTools();
+      }
+      mainWindow.show();
+      mainWindow.focus();
+    });
+
+    mainWindow.on('close', (e) => {
+      const contentSize = mainWindow.getContentSize();
+      const lastWindowSize = {
+        width: contentSize[0],
+        height: contentSize[1],
+      };
+      storage.set('lastWindowSize', lastWindowSize, (err) => {
+        if (err) {
+          console.log('error saving last window size', err);
+        } else {
+          console.log('saved last window size');
+        }
+      })
+    });
   });
 }
 
@@ -109,7 +131,6 @@ ipcMain.on('dismissAndRestart', (e, time) => {
   mainWindow.webContents.send('dismissAndRestart', time);
 });
 
-let tray = null;
 
 app.on('ready', async () => {
   await installExtensions();
@@ -229,3 +250,6 @@ app.on('activate', () => {
   }
 });
 
+process.on('exit', (code) => {
+  console.log(`About to exit with code: ${code}`);
+});

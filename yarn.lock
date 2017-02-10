@@ -3935,6 +3935,15 @@ joi@9.0.0-0:
     moment "2.x.x"
     topo "2.x.x"
 
+joi@^10.2.1:
+  version "10.2.1"
+  resolved "https://registry.yarnpkg.com/joi/-/joi-10.2.1.tgz#f3a5f6a492d311735f17b109487646c2194aa92d"
+  dependencies:
+    hoek "4.x.x"
+    isemail "2.x.x"
+    items "2.x.x"
+    topo "2.x.x"
+
 js-base64@^2.1.9:
   version "2.1.9"
   resolved "https://registry.yarnpkg.com/js-base64/-/js-base64-2.1.9.tgz#f0e80ae039a4bd654b5f281fc93f04a914a7fcce"

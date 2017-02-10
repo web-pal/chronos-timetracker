@@ -131,7 +131,7 @@ export function connect(credentials) {
       ? formatHost.slice(0, formatHost.length - 1)
       : formatHost;
     const jiraClient = new JiraClient({
-      host: formatHost,
+      host: `${formatHost}.atlassian.net`,
       basic_auth: {
         username,
         password,

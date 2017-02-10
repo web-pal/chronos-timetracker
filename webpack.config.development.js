@@ -12,20 +12,23 @@ import baseConfig from './webpack.config.base';
 export default validate(merge(baseConfig, {
   debug: true,
 
-  devtool: 'inline-source-map',
+  devtool: 'eval',
 
   entry: {
     main: [
+      'react-hot-loader/patch',
       'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
       'babel-polyfill',
       './app/index',
     ],
     popup: [
+      'react-hot-loader/patch',
       'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
       'babel-polyfill',
       './app/popup',
     ],
     idleTimePopup: [
+      'react-hot-loader/patch',
       'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
       'babel-polyfill',
       './app/idlePopup',

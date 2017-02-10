@@ -147,6 +147,7 @@
     "immutable": "3.8.1",
     "isomorphic-fetch": "2.2.1",
     "jira-connector": "2.6.0",
+    "joi": "^10.2.1",
     "jwt-simple": "0.5.1",
     "lesshat": "4.1.0",
     "moment": "2.17.1",
