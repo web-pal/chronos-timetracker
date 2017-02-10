@@ -11,6 +11,7 @@ export const getResolveFilter = ({ filter }) => filter.resolveValue;
 export const getSearchResultIssuesIds = ({ issues }) => issues.meta.get('searchResults');
 
 export const getTrackingIssueId = ({ issues }) => issues.meta.get('tracking');
+export const getTrackingIssue = ({ issues }) => issues.meta.get('trackingIssue');
 
 export const getSelectedIssueId = ({ issues }) => issues.meta.get('selected');
 
@@ -22,11 +23,6 @@ export const getIssues = createSelector(
 export const getSearchResultIssues = createSelector(
   [getSearchResultIssuesIds, getIssuesMap],
   (ids, map) => ids.map(id => map.get(id))
-);
-
-export const getTrackingIssue = createSelector(
-  [getIssuesMap, getTrackingIssueId],
-  (map, id) => map.get(id)
 );
 
 export const getSelectedIssue = createSelector(

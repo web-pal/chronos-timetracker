@@ -29,10 +29,7 @@ export function startTimer(description, trackingIssue) {
     const worklogId = Date.now();
     const worklogFile = `${worklogsDir}/${worklogId}.worklog`;
     const currentIssueId = trackingIssue || getState().issues.meta.get('selected');
-    dispatch({
-      type: types.SET_TRACKING_ISSUE,
-      payload: currentIssueId,
-    });
+    const currentIssue = getState().issues.byId.get(currentIssueId);
     const worklog = {
       issueId: currentIssueId,
       id: worklogId,
@@ -53,8 +50,15 @@ export function startTimer(description, trackingIssue) {
     });
     dispatch({
       type: types.SET_TRACKING_ISSUE,
-      payload: currentIssueId,
+      payload: currentIssueId
     });
+    dispatch({
+      type: types.ADD_RECENT_ISSUE,
+      payload: {
+        id: currentIssueId,
+        issue: currentIssue,
+      },
+    })
   };
 }
 

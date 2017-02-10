@@ -57,7 +57,7 @@ function createWindow() {
     if (err) {
       console.log(err);
     }
-    const lastWindowSize = data;
+    const lastWindowSize = data || {};
     mainWindow = new BrowserWindow({
       show: false,
       width: lastWindowSize.width || 575,

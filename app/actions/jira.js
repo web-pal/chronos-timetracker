@@ -127,9 +127,6 @@ export function connect(credentials) {
     const { host, username, password, memorize } = credentials.toJS();
     let formatHost = host.startsWith('https://') ? host.slice(8) : host;
     formatHost = formatHost.startsWith('http://') ? formatHost.slice(7) : formatHost;
-    formatHost = formatHost[formatHost.length - 1] === '/'
-      ? formatHost.slice(0, formatHost.length - 1)
-      : formatHost;
     const jiraClient = new JiraClient({
       host: `${formatHost}.atlassian.net`,
       basic_auth: {
@@ -139,6 +136,7 @@ export function connect(credentials) {
     });
     jiraClient.myself.getMyself({}, (err, response) => {
       if (err) {
+        console.log(err);
         dispatch({
           type: types.THROW_ERROR,
           error: 'Cannot authorize to JIRA. Check your credentials and try again',
@@ -160,7 +158,7 @@ export function connect(credentials) {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            baseUrl: formatHost,
+            baseUrl: `${formatHost}.atlassian.net`,
             username,
             password,
           }),
