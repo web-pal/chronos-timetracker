@@ -1,10 +1,11 @@
 import React, { PropTypes } from 'react';
 
+import getStatusColor from '../../../../helpers/jiraColors';
 import Flex from '../../../Base/Flex/Flex';
 import SidebarItemLoader from '../../../Spinners/SidebarItemLoader';
 
 function formatSummary(summary) {
-  return summary && summary.length > 25 ? `${summary.substr(0, 25)}...` : summary;
+  return summary && summary.length > 20 ? `${summary.substr(0, 20)}...` : summary;
 }
 
 const SidebarItem = ({ onClick, style, item, current, tracking }) => {
@@ -21,7 +22,22 @@ const SidebarItem = ({ onClick, style, item, current, tracking }) => {
       onClick={() => onClick(item)}
       style={style}
     >
-      <span className="SidebarItem__key">{key}</span>
+      <span
+        className="SidebarItem__key"
+        style={{
+          backgroundColor: getStatusColor(item.getIn(['fields', 'status', 'statusCategory', 'colorName'])),
+        }}
+      >
+        {key}
+      </span>
+      <img
+        className="priorityImg"
+        src={item.getIn(['fields', 'priority', 'iconUrl'])}
+      />
+      <img
+        className="priorityImg"
+        src={item.getIn(['fields', 'issuetype', 'iconUrl'])}
+      />
       <span className="SidebarItem__summary">{formatSummary(summary)}</span>
       <SidebarItemLoader show={item.size === 0} />
     </Flex>

@@ -59,6 +59,10 @@ export default class Updater extends Component {
     });
   }
 
+  componentWillUnmount() {
+    this.electronUpdater.removeAllListeners();
+  }
+
   installUpdates = () => this.electronUpdater.downloadUpdate(); 
 
   render() {

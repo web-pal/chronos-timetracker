@@ -21,9 +21,6 @@ const Header = ({ avatarUrls, username, logout, screenshotsEnabled }) =>
           <span
             className={`fa fa-camera ${screenshotsEnabled ? 'enabled' : 'disabled'}`}
           />
-          {!screenshotsEnabled &&
-            <span className="intersect" />
-          }
         </a>
         <a
           className="flex-item--end"

@@ -1,6 +1,8 @@
 import React, { PropTypes, Component } from 'react';
 import fs from 'fs';
 import { remote } from 'electron';
+import { normalize, schema } from 'normalizr';
+import { issueSchema } from '../schemas/issue';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -29,6 +31,14 @@ class FetchWrapper extends Component {
   };
 
   componentWillReceiveProps(nextProps) {
+    const {
+      fetchProjectStatuses,
+      fetchLastWeekLoggedIssues,
+      fetchIssues,
+      clearIssues,
+      clearWorklogs,
+    } = this.props;
+
     const currentFilterValue = this.props.filterValue;
     const nextFilterValue = nextProps.filterValue;
 
@@ -52,28 +62,32 @@ class FetchWrapper extends Component {
           fs.mkdirSync(`${appDir}/worklogs/`);
         }
       });
-      this.props.fetchProjects()
-        .then(
-          () => {
-            this.props.getLastProject();
-            this.props.fetchSettings();
-          },
-        );
+      this.initialize();
     }
     if (this.props.currentProject !== nextProps.currentProject) {
       if (this.props.currentProject) {
-        this.props.clearIssues();
-        this.props.clearWorklogs();
+        clearIssues();
+        clearWorklogs();
       }
-      this.props.fetchLastWeekLoggedIssues()
-        .catch(
-          (e) => console.log(e)
-        );
-      this.props.fetchIssues({ startIndex: 0, stopIndex: -1 }, true)
-        .catch(
-          (e) => console.log(e)
-        )
+      fetchLastWeekLoggedIssues();
+      fetchIssues();
     }
+  }
+
+  initialize = () => {
+    const {
+      fetchProjects,
+      getLastProject,
+      fetchSettings,
+    } = this.props;
+
+    fetchProjects()
+      .then(
+        () =>  getLastProject()
+      )
+      .then(
+        () => fetchSettings()
+      )
   }
 
   render() {

@@ -1,4 +1,4 @@
-import { normalize } from 'normalizr';
+import { normalize, schema } from 'normalizr';
 
 import { issueSchema, worklogSchema } from '../schemas/';
 import * as types from '../constants';
@@ -141,41 +141,48 @@ export function fetchLastWeekLoggedIssues() {
  timespent > 0 AND
  worklogDate >= '-4w'`,
       maxResults: 1000,
-      fields: ['summary', 'resolution', 'status', 'worklog'],
+      fields: [
+        'issuetype',
+        'labels',
+        'priority',
+        'status',
+        'resolution',
+        'summary',
+        'reporter',
+        'assignee',
+        'description',
+        'worklog',
+        'timeestimate',
+        'timespent',
+      ],
     }, (error, response) => {
-      if (error) {
-        dispatch({
-          type: types.THROW_ERROR,
-          error,
-        });
-        reject(error);
-        return;
-      } else if (response.issues.length) {
-        const issues = Array.from(response.issues);
-        const incompleteIssues = issues.filter(issue => issue.fields.worklog.total > 20);
-        if (incompleteIssues.length) {
-          dispatch(fetchAdditionalWorklogs(incompleteIssues));
-        }
-        const normalizedData = normalize(issues, [issueSchema]);
-        dispatch({
-          type: types.FILL_RECENT_ISSUES,
-          payload: {
-            map: normalizedData.entities.issues,
-            ids: normalizedData.result,
-          },
-        });
-        dispatch({
-          type: types.FILL_WORKLOGS,
-          payload: {
-            map: normalizedData.entities.worklogs,
-            ids: Object.keys(normalizedData.entities.worklogs || {}),
-          },
-        });
-        dispatch({
-          type: types.FILL_RECENT_WORKLOGS,
-          payload: Object.keys(normalizedData.entities.worklogs || {}),
-        });
+      if (error) reject(error);
+      const issues = response.issues;
+      const incompleteIssues = issues.filter(issue => issue.fields.worklog.total > 20);
+      if (incompleteIssues.length) {
+        dispatch(fetchAdditionalWorklogs(incompleteIssues));
       }
+      const normalizedData = normalize(issues, [issueSchema]);
+      console.log(normalizedData);
+      dispatch({
+        type: types.FILL_RECENT_ISSUES,
+        payload: {
+          map: normalizedData.entities.issues,
+          ids: normalizedData.result,
+        },
+      });
+      dispatch({
+        type: types.FILL_WORKLOGS,
+        payload: {
+          map: normalizedData.entities.worklogs,
+          ids: Object.keys(normalizedData.entities.worklogs || {}),
+        },
+      });
+      dispatch({
+        type: types.FILL_RECENT_WORKLOGS,
+        payload: Object.keys(normalizedData.entities.worklogs || {}),
+      }); 
+      resolve(response);
       dispatch(setIssuesFetchState(false));
     });
   });
@@ -184,7 +191,6 @@ export function fetchLastWeekLoggedIssues() {
 let currentPagination = { startIndex: 0, stopIndex: 0 };
 
 export function fetchIssues(pagination = { startIndex: 0, stopIndex: -1 }, force = false) {
-  console.log(pagination, force);
   const { startIndex, stopIndex } = pagination;
   return (dispatch, getState) => new Promise((resolve, reject) => {
     if (stopIndex > 0) {
@@ -200,44 +206,48 @@ export function fetchIssues(pagination = { startIndex: 0, stopIndex: -1 }, force
       jql: `project = ${currentProjectKey}`,
       maxResults: stopIndex - startIndex + 1,
       startAt: startIndex,
-      fields: ['summary', 'resolution', 'status', 'worklog'],
+      fields: [
+        'issuetype',
+        'labels',
+        'priority',
+        'status',
+        'resolution',
+        'summary',
+        'reporter',
+        'assignee',
+        'description',
+        'worklog',
+        'timeestimate',
+        'timespent',
+      ],
     }, (error, response) => {
-      if (error) {
-        dispatch({
-          type: types.THROW_ERROR,
-          error,
-        });
-        reject(error);
-        return;
-      }
+      if (error) reject(error);
       dispatch({
         type: types.GET_ISSUES_COUNT,
         payload: response.total,
       });
-      if (response.issues.length) {
-        const issues = response.issues;
-        const normalizedData = normalize(issues, [issueSchema]);
+      const issues = response.issues;
+      const normalizedData = normalize(issues, [issueSchema]);
+      dispatch({
+        type: types.ADD_ISSUES,
+        payload: {
+          map: normalizedData.entities.issues,
+          ids: normalizedData.result,
+        },
+      });
+      if (normalizedData.entities.worklogs) {
         dispatch({
-          type: types.ADD_ISSUES,
+          type: types.ADD_WORKLOGS,
           payload: {
-            map: normalizedData.entities.issues,
-            ids: normalizedData.result,
+            map: normalizedData.entities.worklogs,
+            ids: Object.keys(normalizedData.entities.worklogs || {}),
           },
         });
-        if (normalizedData.entities.worklogs) {
-          dispatch({
-            type: types.ADD_WORKLOGS,
-            payload: {
-              map: normalizedData.entities.worklogs,
-              ids: Object.keys(normalizedData.entities.worklogs || {}),
-            },
-          });
-        }
-      }
+      } 
+      resolve(response);
       if (stopIndex > 0) {
         dispatch(setIssuesFetchState(false));
       }
-      resolve('done');
     });
   });
 }
@@ -280,3 +290,4 @@ export function clearTrackingIssue() {
     type: types.CLEAR_TRACKING_ISSUE,
   };
 }
+
