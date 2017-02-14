@@ -152,7 +152,7 @@ class Tracker extends Component {
           screenshotsEnabledUsers.includes(selfKey);
         const cond3 = screenshotsEnabled === 'excludingUsers' &&
           !screenshotsEnabledUsers.includes(selfKey);
-        if (cond1 || cond2 || cond3) {
+        if ((cond1 || cond2 || cond3) && !this.props.idleState) {
           this.openScreenShotPopup();
         } else {
           timeRange = time + Math.ceil(
