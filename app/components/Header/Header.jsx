@@ -12,7 +12,12 @@ const Header = ({ avatarUrls, username, logout, screenshotsEnabled }) =>
         <span className="username">
           {username}
         </span>
-        <a title={`screenshots ${screenshotsEnabled ? 'enabled' : 'disabled'}`}>
+      </Flex>
+      <Flex row className="header__icons flex-item--end">
+        <a
+          className="flex-item--end"
+          title={`screenshots ${screenshotsEnabled ? 'enabled' : 'disabled'}`}
+        >
           <span
             className={`fa fa-camera ${screenshotsEnabled ? 'enabled' : 'disabled'}`}
           />
@@ -20,7 +25,10 @@ const Header = ({ avatarUrls, username, logout, screenshotsEnabled }) =>
             <span className="intersect" />
           }
         </a>
-        <a title="logout">
+        <a
+          className="flex-item--end"
+          title="logout"
+        >
           <span
             className="fa fa-sign-out" onClick={logout}
           />

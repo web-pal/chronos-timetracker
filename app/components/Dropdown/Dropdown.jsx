@@ -3,12 +3,13 @@ import Select from 'react-select';
 import 'react-select/dist/react-select.css';
 
 const Dropdown = (props) => {
-  const { name, options, value, onChange, fetching } = props;
+  const { name, options, value, onChange, fetching, placeholder } = props;
   return (
     <Select
       name={name}
       options={options}
       value={value}
+      placeholder={placeholder}
       onChange={option => onChange(option.value)}
       isLoading={fetching}
       clearable={false}
@@ -22,6 +23,7 @@ Dropdown.propTypes = {
   value: PropTypes.object,
   fetching: PropTypes.bool,
   onChange: PropTypes.func,
+  placeholder: PropTypes.string,
 };
 
 export default Dropdown;

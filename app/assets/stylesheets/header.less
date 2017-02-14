@@ -1,20 +1,18 @@
 .avatar {
-  width: 64px;
-  height: 64px;
+  width: 32px;
+  height: 32px;
   overflow: hidden;
-  border: 2px solid @primary;
+  border: 1px solid @primary;
   border-radius: 50%;
   img {
-    width: 64px;
-    height: 64px;
+    width: 32px;
+    height: 32px;
   }
 }
 
 .header {
   padding: 8px;
-  padding-top: 25px;
   border-bottom: 1px solid #b6b6b6;
-  min-height: 120px;
   z-index: 1;
   background: #fff;
   position: relative;
@@ -30,8 +28,8 @@ span {
 }
 
 .username {
-  font-size: 1.5em;
-  margin-left: 20px;
+  font-size: 1.2em;
+  margin-left: 10px;
   color: rgba(0, 0, 0, .83);
 }
 
@@ -52,6 +50,12 @@ span {
   }
 }
 
+.header__icons {
+  a+a {
+    padding: 0px 6px;
+  }
+}
+
 .fa-camera {
   color: rgba(0, 0, 0, 1);
   &:before {
@@ -61,9 +65,6 @@ span {
     color: rgba(0, 0, 0, .33);
   }
   cursor: help;
-  position: absolute;
-  top: 4px;
-  right: 24px;
 }
 
 .fa-sign-out {
@@ -75,9 +76,6 @@ span {
   &:hover {
     color: #000;
   }
-  position: absolute;
-  top: 4px;
-  right: 4px;
 }
 
 .Select {

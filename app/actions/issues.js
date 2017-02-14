@@ -105,6 +105,7 @@ export function searchIssues(query) {
 function fetchAdditionalWorklogs(issues) {
   return (dispatch, getState) => {
     const jiraClient = getState().jira.client;
+    dispatch(setIssuesFetchState(true));
     for (const issue of issues) {
       const fuck = setInterval(() => {
         jiraClient.issue.getWorkLogs({ issueId: issue.id }, (err, response) => {
@@ -120,6 +121,7 @@ function fetchAdditionalWorklogs(issues) {
             type: types.ADD_RECENT_WORKLOGS,
             payload: normalizedData.result,
           });
+          dispatch(setIssuesFetchState(false));
           clearInterval(fuck);
         });
       }, 1000);
