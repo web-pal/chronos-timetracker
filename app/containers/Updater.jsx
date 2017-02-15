@@ -68,23 +68,17 @@ export default class Updater extends Component {
   render() {
     const { checking, downloading, available, updateAvailable } = this.state;
     return (
-      <Flex row className="Updater">
-        {checking &&
-          <Flex row className="UpdaterChecking">
-            <span className="flex-item--center">
-              Checking for updates
-            </span>
-            <Pace color="#5454ee" height={20} />
-          </Flex>
-        }
-        {!downloading && available &&
-          <Flex row className="UpdaterAvailable">
-            <span className="flex-item--center">
-              New version is available ({updateAvailable.version})
-              <a onClick={this.installUpdates}>&nbsp;install</a>
-            </span>
-          </Flex>
-        }
+      <div className="Updater section">
+          <div className="UpdaterAvailable">
+            <a title={`${!available ? 'latest version' : 'update available'}`}>
+              <span className={`fa fa-code-fork ${available ? 'available' : 'latest'}`} />
+            </a>
+            {available &&
+              <span className="flex-item--center">
+                ({UpdaterAvailable.version}) is out! <a onClick={this.installUpdates}>&nbsp;update</a>
+              </span>
+            }
+          </div>
         {downloading &&
           <Flex row className="flex-item--end UpdaterDownloading">
             <span className="flex-item--center">
@@ -94,7 +88,7 @@ export default class Updater extends Component {
             {performance.getEntriesByType('resources').map(item => <span>{item}</span>)}
           </Flex>
         }
-      </Flex>
+      </div>
     );
   }
 }

@@ -1,6 +1,7 @@
 import fetch from 'isomorphic-fetch';
 import JiraClient from 'jira-connector';
 import storage from 'electron-json-storage';
+import isOnline from 'is-online';
 
 import { success, fail } from '../helpers/promise';
 import * as types from '../constants';
@@ -11,6 +12,18 @@ export function installUpdates() {
   return {
     type: types.INSTALL_UPDATES,
   };
+}
+
+export function checkConnection() {
+  return dispatch => {
+    isOnline()
+      .then(
+        online => dispatch({
+          type: types.SET_CONNECTION_STATUS,
+          payload: online,
+        })
+      );
+  }
 }
 
 export function jwtConnect(token) {

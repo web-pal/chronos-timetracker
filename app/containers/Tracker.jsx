@@ -11,6 +11,7 @@ import Flex from '../components/Base/Flex/Flex';
 import Timer from '../components/Timer/Timer';
 import TrackerHeader from '../components/TrackerHeader/TrackerHeader';
 import Updater from './Updater';
+import StatusBar from './StatusBar';
 
 import { getTrackingIssue, getSelectedIssue, getSettings } from '../selectors/';
 
@@ -54,6 +55,7 @@ class Tracker extends Component {
     dismissIdleTime: PropTypes.func.isRequired,
     addRecentIssue: PropTypes.func.isRequired,
     uploading: PropTypes.bool.isRequired,
+    screensShot: PropTypes.object.isRequired,
   }
 
   constructor(props) {
@@ -114,14 +116,36 @@ class Tracker extends Component {
   }
 
   handleTimerStop = () => {
-    this.props.stopTimer();
-    this.props.updateWorklog()
+    const {
+      stopTimer,
+      updateWorklog,
+      clearTrackingIssue,
+      addRecentIssue,
+      addRecentWorklog,
+      resetTimer,
+      time,
+      description,
+      trackingIssue,
+      screensShot,
+    } = this.props;
+
+    stopTimer();
+    updateWorklog({
+      time,
+      description,
+      issueId: trackingIssue.get('id'),
+      screensShot: screensShot.toJS(),
+    })
       .then(
         worklog => {
-          this.props.clearTrackingIssue();
-          this.props.addRecentIssue(worklog.issueId);
-          this.props.addRecentWorklog(worklog);
-          this.props.resetTimer();
+          clearTrackingIssue();
+          addRecentIssue(worklog.issueId);
+          addRecentWorklog(worklog);
+          resetTimer();
+        },
+        (err) => {
+          clearTrackingIssue();
+          resetTimer();
         }
       );
   }
@@ -238,7 +262,7 @@ class Tracker extends Component {
             startTimer(desc);
           }}
         />
-        <Updater />
+        <StatusBar />
       </Flex>
     );
   }
@@ -249,6 +273,7 @@ function mapStateToProps({ jira, tracker, ui, issues, settings }) {
     self: jira.self,
     currentIssue: getSelectedIssue({ issues }),
     trackingIssue: getTrackingIssue({ issues }),
+    screensShot: tracker.screensShot,
     time: tracker.time,
     running: tracker.running,
     paused: tracker.paused,

@@ -52,7 +52,6 @@ function createWindow() {
     ? { titleBarStyle: 'hidden' }
     : { frame: false };
 
-
   storage.get('lastWindowSize', (err, data) => {
     if (err) {
       console.log(err);
@@ -134,7 +133,7 @@ ipcMain.on('dismissAndRestart', (e, time) => {
 
 app.on('ready', async () => {
   await installExtensions();
-  tray = new Tray(path.join(__dirname, './assets/images/clock.png'));
+  tray = new Tray(path.join(__dirname, './assets/images/icon.png'));
   tray.setToolTip('Open chronos tracker');
   tray.on('click', () => mainWindow.show());
   createWindow();

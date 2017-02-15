@@ -10,6 +10,7 @@ const InitialState = Immutable.Record({
   credentials: Immutable.Map({}),
   jwt: null,
   fetching: false,
+  online: false,
   installUpdate: false,
 });
 
@@ -60,6 +61,8 @@ export default function jira(state = initialState, action) {
       return state.set('connected', true);
     case types.SET_CONNECT_FETCH_STATE:
       return state.set('fetching', action.payload);
+    case types.SET_CONNECTION_STATUS:
+      return state.set('online', action.payload);
     default:
       return state;
   }

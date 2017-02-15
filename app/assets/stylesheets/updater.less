@@ -1,25 +1,11 @@
 .Updater {
-  color: rgba(0, 0, 0, .7);
-  background: rgba(255, 255, 255, .5);
-  height: 15px;
-  line-height: 15px;
-  font-size: .8em;
-  &>.flex-row {
-    width: 100%;
-  }
-  .UpdaterChecking, .UpdaterDownloading {
-    &>div>div {
-      background-color: rgba(169, 169, 255, 0.5) !important;
+  .fa.fa-code-fork {
+    &.latest {
+      color: fadeout(@jira-green, 20%);
     }
-    span {
-      z-index: 7;
+    &.available {
+      color: fadeout(@jira-warm-red, 20%);
     }
-  }
-  .UpdaterAvailable {
-    a {
-      cursor: pointer;
-    }
-    animation: blink .5s 3;
   }
 }
 

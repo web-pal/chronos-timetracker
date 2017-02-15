@@ -79,6 +79,7 @@ class FetchWrapper extends Component {
       fetchProjects,
       getLastProject,
       fetchSettings,
+      checkConnection,
     } = this.props;
 
     fetchProjects()
@@ -88,6 +89,12 @@ class FetchWrapper extends Component {
       .then(
         () => fetchSettings()
       )
+    checkConnection();
+    this.checkConnectionInterval = setInterval(() => checkConnection, 10000);
+  }
+
+  componentWillMount() {
+    clearInterval(this.checkConnectionInterval);
   }
 
   render() {
