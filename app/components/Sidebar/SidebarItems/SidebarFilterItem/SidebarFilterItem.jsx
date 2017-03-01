@@ -17,7 +17,7 @@ const SidebarFilterItem = ({
       <span className="aui-icon aui-icon-small aui-iconfont-search flex-item--start" />
     </Flex>
     <Flex column centered className="search-field">
-      <Debounce time="700" handler="onChange">
+      <Debounce time="300" handler="onChange">
         <input
           className="text"
           type="text"

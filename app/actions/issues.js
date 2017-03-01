@@ -3,6 +3,21 @@ import { normalize, schema } from 'normalizr';
 import { issueSchema, worklogSchema } from '../schemas/';
 import * as types from '../constants';
 
+const requiredFields = [
+  'issuetype',
+  'labels',
+  'priority',
+  'status',
+  'resolution',
+  'summary',
+  'reporter',
+  'assignee',
+  'description',
+  'worklog',
+  'timeestimate',
+  'timespent',
+];
+
 function setIssuesFetchState(value) {
   return {
     type: types.SET_ISSUES_FETCH_STATE,
@@ -19,7 +34,7 @@ function searchIssuesBySummary(query) {
       jql: `project = ${currentProjectKey} AND
  summary ~ "${escapedQuery}"`,
       maxResults: 1000,
-      fields: ['summary', 'resolution', 'status', 'worklog'],
+      fields: requiredFields,
     }, (error, response) => {
       if (error) reject(error);
       const issues = response.issues;
@@ -58,7 +73,7 @@ function searchIssuesByKey(query) {
       jql: `project = ${currentProjectKey} AND
  issuekey = "${query}"`,
       maxResults: 1000,
-      fields: ['summary', 'resolution', 'status', 'worklog'],
+      fields: requiredFields,
     }, (error, response) => {
       if (error) {
         reject(error);
@@ -141,20 +156,7 @@ export function fetchLastWeekLoggedIssues() {
  timespent > 0 AND
  worklogDate >= '-4w'`,
       maxResults: 1000,
-      fields: [
-        'issuetype',
-        'labels',
-        'priority',
-        'status',
-        'resolution',
-        'summary',
-        'reporter',
-        'assignee',
-        'description',
-        'worklog',
-        'timeestimate',
-        'timespent',
-      ],
+      fields: requiredFields,
     }, (error, response) => {
       if (error) reject(error);
       const issues = response.issues;
@@ -206,20 +208,7 @@ export function fetchIssues(pagination = { startIndex: 0, stopIndex: -1 }, force
       jql: `project = ${currentProjectKey}`,
       maxResults: stopIndex - startIndex + 1,
       startAt: startIndex,
-      fields: [
-        'issuetype',
-        'labels',
-        'priority',
-        'status',
-        'resolution',
-        'summary',
-        'reporter',
-        'assignee',
-        'description',
-        'worklog',
-        'timeestimate',
-        'timespent',
-      ],
+      fields: requiredFields,
     }, (error, response) => {
       if (error) reject(error);
       dispatch({

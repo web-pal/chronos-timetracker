@@ -12,18 +12,18 @@ const TrackerHeader = ({ currentIssue }) => {
   const remaining = estimate - logged < 0 ? 0 : estimate - logged;
 
   return currentIssue.size ?
-    <Flex column className="tracker-header">
-      <Flex row>
+    <Flex column className="tracker-header" spaceBetween>
+      <Flex row style={{ marginBottom: 10 }}>
         <Flex column>
-          <Flex
-            row
-            style={{
-              minHeight: 20
-            }}
-          >
+          <Flex row className="issueName">
             <span className="tracker-header__issuekey">
               {currentIssue.get('key')}
             </span>
+            <div className="tracker-header__summary">
+              <span>
+                {currentIssue.getIn(['fields', 'summary'])}
+              </span>
+            </div>
             <img
               className="priorityImg"
               src={currentIssue.getIn(['fields', 'priority', 'iconUrl'])}
@@ -32,32 +32,34 @@ const TrackerHeader = ({ currentIssue }) => {
               className="priorityImg"
               src={currentIssue.getIn(['fields', 'issuetype', 'iconUrl'])}
             />
+            <div className="tracker-header__status" >
+              <span
+                style={{
+                  backgroundColor: getStatusColor(currentIssue.getIn(['fields', 'status', 'statusCategory', 'colorName']))
+                }}
+              >
+                {currentIssue.getIn(['fields', 'status', 'name'])}
+              </span>
+            </div>
           </Flex>
-          <span className="tracker-header__summary">
-            {currentIssue.getIn(['fields', 'summary'])}
-          </span>
         </Flex>
         <Flex column>
-          <span className="tracker-header__reporter">
-            Reporter: {currentIssue.getIn(['fields', 'reporter', 'displayName'])}
-          </span>
-          <span className="tracker-header__assignee">
-            Assignee: {currentIssue.getIn(['fields', 'assignee', 'displayName']) || 'unassigned'}
-          </span>
+          <div className="tracker-header__reporter">
+            <span>
+              Reporter: {currentIssue.getIn(['fields', 'reporter', 'displayName'])}
+            </span>
+          </div>
+          <div className="tracker-header__assignee">
+            <span>
+              Assignee: {currentIssue.getIn(['fields', 'assignee', 'displayName']) || 'unassigned'}
+            </span>
+          </div>
         </Flex>
-        <span
-          className="tracker-header__status"
-          style={{
-            backgroundColor: getStatusColor(currentIssue.getIn(['fields', 'status', 'statusCategory', 'colorName']))
-          }}
-        >
-          {currentIssue.getIn(['fields', 'status', 'name'])}
-        </span>
       </Flex>
       {currentIssue.getIn(['fields', 'description']) &&
-        <span className="tracker-header__description">
+        <div className="tracker-header__description">
           <Markdown source= {currentIssue.getIn(['fields', 'description'])} />
-        </span>
+        </div>
       }
       <Flex row className="tracker-header__times flex-item--end">
         <span className="estimate">

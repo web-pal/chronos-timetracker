@@ -81,20 +81,20 @@
   position: relative;
   z-index: 20;
   .tracker-header__issuekey {
+    white-space: nowrap;
     -webkit-app-region: no-drag;
-    height: 20px;
     font-size: 1em;
     font-weight: bold;
     color: rgba(0, 0, 0, .87);
   }
   .tracker-header__summary {
+    white-space: nowrap;
     -webkit-app-region: no-drag;
     font-size: .9em;
-    height: 20px;
+    margin-left: 6px;
     color: rgba(0, 0, 0, .67);
   }
   .tracker-header__times {
-    min-height: 25px;
     color: rgba(0, 0, 0, .7);
     .estimate {
       padding: 3px 6px;
@@ -120,16 +120,24 @@
       border-bottom-right-radius: 8px;
     }
   }
+  .issueName {
+    min-height: 2.2em;
+    max-height: 2.2em;
+    img {
+      transform: translateY(2px);
+    }
+  }
   .tracker-header__description  {
     -webkit-app-region: no-drag;
     font-size: .8em;
     overflow: auto;
+    overflow-x: hidden;
     word-break: break-all;
     padding: 5px;
-    margin: 10px 0px;
     border: 1px solid rgba(0, 0, 0, .1);
     border-radius: 2px;
     color: rgba(0, 0, 0, .6);
+    margin-bottom: 10px;
   }
   .tracker-header__reporter, .tracker-header__assignee {
     font-size: .9em;
@@ -148,13 +156,14 @@
     }
   }
   .tracker-header__status {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    padding: 3px;
-    border-radius: 6px;
-    -webkit-app-region: no-drag;
-    font-size: .8em;
+    span {
+      white-space: nowrap;
+      margin-left: 3px;
+      padding: 3px;
+      border-radius: 6px;
+      -webkit-app-region: no-drag;
+      font-size: .8em;
+    }
   }
 }
 
