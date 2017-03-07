@@ -4,6 +4,9 @@ import Avatar from '../Avatar/Avatar';
 import ProjectPickerWrapper from '../../containers/ProjectPickerWrapper';
 import Flex from '../Base/Flex/Flex';
 
+import cameraIcon from '../../assets/images/camera.png';
+import logoutIcon from '../../assets/images/logout.png';
+
 const Header = ({ avatarUrls, username, logout, screenshotsEnabled }) =>
   <Flex column className="header">
     <Flex row>
@@ -15,19 +18,20 @@ const Header = ({ avatarUrls, username, logout, screenshotsEnabled }) =>
       </Flex>
       <Flex row className="header__icons flex-item--end">
         <a
-          className="flex-item--end"
+          className="CameraIcon"
           title={`screenshots ${screenshotsEnabled ? 'enabled' : 'disabled'}`}
         >
-          <span
-            className={`fa fa-camera ${screenshotsEnabled ? 'enabled' : 'disabled'}`}
+          <img
+            src={cameraIcon}
           />
         </a>
         <a
-          className="flex-item--end"
+          className="flex-item--end logout"
           title="logout"
         >
-          <span
-            className="fa fa-sign-out" onClick={logout}
+          <img
+            src={logoutIcon}
+            onClick={logout}
           />
         </a>
       </Flex>

@@ -20,6 +20,7 @@ const ProjectPickerWrapper = ({
     placeholder="Select project"
     value={selectedProject}
     fetching={projectsFetching}
+    className="ProjectPicker"
   />;
 
 ProjectPickerWrapper.propTypes = {

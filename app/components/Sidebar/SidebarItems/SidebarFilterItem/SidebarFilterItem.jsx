@@ -2,6 +2,8 @@ import React, { PropTypes } from 'react';
 import { Debounce } from 'react-throttle';
 
 import Flex from '../../../Base/Flex/Flex';
+import searchIcon from '../../../../assets/images/search.png';
+import refreshIcon from '../../../../assets/images/refresh.png';
 
 const SidebarFilterItem = ({
   onChange,
@@ -12,11 +14,11 @@ const SidebarFilterItem = ({
   resolveFilter,
   hidden,
 }) =>
-  <Flex row centered className={`sidebar-filter-item ${hidden ? 'hidden' : ''}`}>
-    <Flex column centered>
-      <span className="aui-icon aui-icon-small aui-iconfont-search flex-item--start" />
-    </Flex>
+  <Flex row className={`sidebar-filter-item ${hidden ? 'hidden' : ''}`}>
     <Flex column centered className="search-field">
+      <Flex column centered>
+        <img src={searchIcon} />
+      </Flex>
       <Debounce time="300" handler="onChange">
         <input
           className="text"
@@ -36,7 +38,7 @@ const SidebarFilterItem = ({
       }
     </Flex>
     <Flex column centered>
-      <span className="fa fa-refresh" onClick={refreshIssues} />
+      <img src={refreshIcon} onClick={refreshIssues} />
     </Flex>
   </Flex>;
 

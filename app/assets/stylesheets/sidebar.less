@@ -1,7 +1,9 @@
 .sidebar-header-wrap {
-  transition: height .5s;
+  /* transition: height .5s; */
   position: relative;
-  height: 50px;
+  height: 41px;
+  padding: 0px 11px;
+  border-bottom: 1px solid #cdcdcd;
 }
 
 .RecentItems {
@@ -11,87 +13,104 @@
   &::-webkit-scrollbar {
     width: 2px;
   }
-  .RecentItems__timestamp {
-    height: 20px;
-    padding-right: 5px;
-    background: #f9f9f9;
+  &__block {
+    &:last-child {
+      padding-bottom: 0;
+    }
+    padding: 15px 0;
+  }
+  &__timestamp {
+    height: 24px;
+    padding: 0px 13px;
+    background: #fff;
     text-align: right;
     color: rgba(0, 0, 0, .7);
-    border-bottom: 1px solid #eeeeee;
+    margin-bottom: 8px;
+    span {
+      border-radius: 17px;
+      padding: 0px 13px;
+      line-height: 24px;
+      background: #e8e8e8;
+      color:  #808080;
+      font-size: 13px;/* Приближение из-за подстановки шрифтов */
+      font-weight: 300;
+    }
   }
 }
 
 .RecentItem, .SidebarItem {
   box-sizing: border-box;
-  height: 40px;
+  height: 46px;
   border-bottom: 1px solid rgba(0, 0, 0, .1);
   cursor: pointer;
   overflow: hidden;
   align-items: center;
   &:hover {
     background: #f2f2f2;
-    .RecentItem__key {
+    &__key {
       background: #fff;
     }
     .RecentItem__time {
       background: #fff;
+      border-top-left-radius: 6px;
+      border-bottom-left-radius: 6px;
+      border: 1px solid #a7a7a7;
     }
     .RecentItem__timest {
+      border: 1px solid #a7a7a7;
+      border-left-color: transparent;
+      border-right-color: transparent;
       background: #fff;
-      width: 45px;
-      color: rgba(0, 0, 0, .7);
+      width: 65px;
     }
   }
   &.active {
-    background-color: #f2f2f2;
-    border-left: 5px solid #3b7fc6;
-    .RecentItem__key, .SidebarItem__key {
+    background-color: rgba(111, 193, 251, 0.2);
+    &__key {
       min-width: 60px;
       width: 60px;
       background: #fff;
     }
   }
-  .RecentItem__key, .SidebarItem__key {
-    width: 65px;
-    min-width: 65px;
+  &__key {
+    width: 59px;
+    min-width: 59px;
     min-height: 20px;
     white-space: nowrap;
     font-size: .8em;
     line-height: 2em;
     margin: 5px;
-    margin-right: 1px;
-    border-radius: 6px;
-    background: #eeeeee;
-    border: 1px solid #e6e6e6;
+    margin-left: 16px;
+    border-radius: 3px;
+    background: #fff !important;
+    border: 1px solid #3572b0;
+    color: #3572b0;
     text-align: center;
     font-weight: bold;
   }
-  .SidebarItem__summary, .RecentItem__summary {
+  &__summary {
     margin-left: 3px;
     white-space: nowrap;
     overflow: hidden;
   }
-  .RecentItem__time {
-    color: rgba(0, 0, 0, .7);
-    background: #eee;
+  &__time {
+    color: #878787;
+    font-weight: 600;
     padding: 3px;
     white-space: nowrap;
-    font-size: .8em;
-    border-bottom-left-radius: 6px;
-    border-top-left-radius: 6px;
-    border: 1px solid #e6e6e6;
+    font-size: 14px;
     border-right: none;
     text-align: center;
   }
-  .RecentItem__timest {
+  &__timest {
     width: 0px;
     transition: width .2s;
     color: transparent;
-    background: #eee;
     padding: 3px;
     white-space: nowrap;
-    font-size: .8em;
-    border: 1px solid #e6e6e6;
+    font-size: 14px;
+    color: #878787;
+    font-weight: 600;
     border-right: none;
     border-left: none;
     text-align: center;
@@ -114,22 +133,24 @@
 }
 
 .sidebar-header {
-  background: #f5f5f5;
+  background: #f1f1f1;
   width: 100%;
   height: 100%;
-  font: 400 18px Arial;
-  border-bottom: 1px solid #ebebeb;
+  font: 600 16px Arial;
   padding: 0px 11px;
+  margin: 0px 4px;
   position: relative;
   text-align: center;
   transition: all .2s;
-  color: rgba(0, 0, 0, .7);
+  color: rgba(66, 136, 193, 1);
+  border-radius: 3px;
   cursor: pointer;
   box-sizing: border-box;
   &.active {
-    color: rgba(0, 0, 0, .9);
-    background: #f2f2f2;
-    border-top: 4px solid #9898ff;
+    background: #fff;
+    border: 1px solid #cdcdcd;
+    box-sizing: content-box;
+    border-bottom-color: transparent;
   }
   div:not(:last-child) {
     margin-right: 18px;
@@ -194,9 +215,9 @@
 }
 
 .search-field {
-  padding: 0 10px;
+  padding: 0 15px;
   position: relative;
-  .aui-icon {
+  img {
     position: absolute;
     top: 50%;
     right: 0;
@@ -207,12 +228,11 @@
 .sidebar-filter-item {
   overflow: hidden;
   transition: flex .5s, padding 1s;
-  height: 35px;
-  flex: 0 1 35px;
+  flex: 0 1 78px;
   &.hidden {
     flex: 0 1 0px;
+    border: none;
   }
-  background: #f2f2f2;
   border-bottom: 1px solid #e6e6e6;
   position: relative;
   .fa, .aui-icon {
@@ -234,11 +254,16 @@
     }
   }
   input {
-    border: 1px solid #d3d3d3;
-    border-radius: 3px;
-    padding: 5px;
+    border: 1px solid transparent;
+    background: #e8e8e8;
+    width: 238px;
+    height: 21px;
+    border-radius: 2px;
+    padding: 5px 10px;
+    color: #7f7f7f;
+    font-size: 14px;
     &:hover, &:focus {
-      box-shadow: 0 0 7px -1px #6666ff;
+      box-shadow: 0 0 7px -1px #4288c1;
       outline: none;
     }
 
@@ -249,8 +274,7 @@
 }
 
 .sidebar__item--active {
-  background-color: #f2f2f2;
-  border-left: 5px solid #3b7fc6;
+  background-color: rgba(111, 193, 251, 0.2);
   .SidebarItem__key {
     width: 60px;
     min-width: 60px;

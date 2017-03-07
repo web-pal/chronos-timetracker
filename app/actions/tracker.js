@@ -179,6 +179,7 @@ export function updateWorklog(worklog, params = { sync: false }) {
 
 function uploadWorklog(params) {
   return new Promise((resolve) => {
+    console.log(params);
     const { jiraClient, worklog, token } = params;
     const { time, description, issueId } = worklog;
     const jiraWorklog = {

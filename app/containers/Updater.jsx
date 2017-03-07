@@ -18,7 +18,7 @@ export default class Updater extends Component {
 
   componentWillMount() {
     this.electronUpdater = remote.require('electron-simple-updater');
-    this.electronUpdater.on('cheking-for-update', () => {
+    this.electronUpdater.on('checking-for-update', () => {
       this.setUpdateFetchState(true);
     });
 

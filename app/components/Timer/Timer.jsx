@@ -44,7 +44,6 @@ const Timer = (props) => {
               onClose={onDescPopupClose}
               onConfirm={onDescPopupConfirm}
             />
-            <TimerDisplay time={time} uploading={uploading} />
             <TimerControls
               running={running}
               paused={paused}
@@ -53,6 +52,7 @@ const Timer = (props) => {
               pause={onPause}
               unpause={onUnPause}
             />
+            <TimerDisplay time={time} uploading={uploading} />
             {description &&
               <Flex column centered>
                 <Flex row centered className="description__label">

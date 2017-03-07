@@ -2,18 +2,28 @@ import React, { PropTypes } from 'react';
 
 import Flex from '../../Base/Flex/Flex';
 
+import buttonDecoration from '../../../assets/images/button-surrounding.png';
+import playIcon from '../../../assets/images/play.png';
+import stopIcon from '../../../assets/images/stop.png';
+
 /* eslint-disable no-nested-ternary */
 
 const TimerControls = (props) => {
   const { start, stop, pause, unpause, running, paused } = props;
   return (
-    <Flex row centered className="timer-controls">
-      <button
-        className={`button button-${running ? 'stop' : 'play'}`}
-        onClick={running ? stop : start}
-      >
-        {running ? <span className="fa fa-stop" /> : <span className="fa fa-play" /> }
+    <Flex row centered className="TimerControls">
+      <div className="TimerControls__button">
+        <img src={buttonDecoration} className="button-decoration" />
+        <button
+          className={`button button-${running ? 'stop' : 'play'}`}
+          onClick={running ? stop : start}
+        >
+          {running
+            ? <img src={stopIcon} />
+            : <img src={playIcon} />
+          }
       </button>
+      </div>
     </Flex>
   );
 };

@@ -1,18 +1,17 @@
 .avatar {
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   overflow: hidden;
-  border: 1px solid @primary;
   border-radius: 50%;
   img {
-    width: 32px;
-    height: 32px;
+    width: 100%;
+    height: 100%;
   }
 }
 
 .header {
-  padding: 8px;
-  border-bottom: 1px solid #b6b6b6;
+  height: 103px;
+  padding: 13px 15px 16px 15px;
   z-index: 1;
   background: #fff;
   position: relative;
@@ -28,9 +27,13 @@ span {
 }
 
 .username {
-  font-size: 1.2em;
   margin-left: 10px;
   color: rgba(0, 0, 0, .83);
+  color:  #313234;
+  font-size: 16px;/* Приближение из-за подстановки шрифтов */
+  font-weight: 300;
+  line-height: 40px;/* Приближение из-за подстановки шрифтов */
+  text-align: left;
 }
 
 .intersect {
@@ -78,6 +81,49 @@ span {
   }
 }
 
-.Select {
-  margin-top: 15px;
+.Select.ProjectPicker {
+  margin-top: 17px;
+  .Select-control {
+    background-color: #e8e8e8;
+    height: 43px;
+    border-radius: 2px;
+    border-color: transparent;
+  }
+  .Select-value-label {
+    color: rgba(0, 0, 0, .7) !important;
+    font-size: 16px;/* Приближение из-за подстановки шрифтов */
+    font-weight: 300;
+    line-height: 40px;/* Приближение из-за подстановки шрифтов */
+    text-align: left;
+  }
+  .Select-arrow {
+    border-color: #3572b0 transparent transparent;
+    border-width: 6px 4px 2.5px;
+  }
+}
+
+.logout {
+  background: #6fc1fb;
+  border-radius: 50%;
+  position: relative;
+  height: 28px;
+  width: 16px;
+  img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.CameraIcon {
+  margin-right: 13px;
+  position: relative;
+  width: 20px;
+  img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
 }

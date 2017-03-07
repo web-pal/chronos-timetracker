@@ -3,6 +3,7 @@ import moment from 'moment';
 
 import getStatusColor from '../../../../../helpers/jiraColors';
 import Flex from '../../../../Base/Flex/Flex';
+import { jts } from '../../../../../helpers/time';
 
 function formatSummary(summary) {
   return summary.length > 20 ? `${summary.substr(0, 20)}...` : summary;
