@@ -10,8 +10,8 @@ const TimestampItem = ({ date, index, items }) =>
       {moment(date).calendar()}&nbsp;
     </span>
     <span className="flex-item--end">
-      Total&nbsp;
       {stj(items.reduce((total, item) => total + item.get('timeSpentSeconds'), 0), 'h[h] m[m]')}
+      &nbsp;Total
     </span>
   </Flex>;
 

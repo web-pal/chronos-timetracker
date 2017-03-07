@@ -61,8 +61,10 @@ function createWindow() {
     const lastWindowSize = data || {};
     mainWindow = new BrowserWindow({
       show: false,
-      width: lastWindowSize.width || 575,
-      height: lastWindowSize.height || 475,
+      width: lastWindowSize.width || 810,
+      height: lastWindowSize.height || 575,
+      minWidth: 710,
+      minHeight: 400,
       ...noFrameOption,
     });
 

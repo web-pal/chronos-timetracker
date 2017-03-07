@@ -32,11 +32,17 @@ const SidebarItem = ({ onClick, style, item, current, tracking }) => {
       </span>
       <img
         className="priorityImg"
-        src={item.getIn(['fields', 'priority', 'iconUrl'])}
+        src={
+          item.getIn(['fields', 'priority', 'iconUrl']) ||
+          'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
+        }
       />
       <img
         className="priorityImg"
-        src={item.getIn(['fields', 'issuetype', 'iconUrl'])}
+        src={
+          item.getIn(['fields', 'issuetype', 'iconUrl']) ||
+          'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
+        }
       />
       <span className="SidebarItem__summary">{formatSummary(summary)}</span>
       <SidebarItemLoader show={item.size === 0} />

@@ -11,11 +11,19 @@
 
 .header {
   height: 103px;
-  padding: 13px 15px 16px 15px;
+  padding: 20px 15px 16px 15px;
   z-index: 1;
   background: #fff;
   position: relative;
   -webkit-app-region: drag;
+}
+
+@media screen and (max-width: 800px) {
+  .IssueInfo {
+    span {
+      font-size: .8em !important;
+    }
+  }
 }
 
 .Select {
