@@ -59,26 +59,9 @@ span {
   }
 }
 
-.fa-camera {
-  color: rgba(0, 0, 0, 1);
-  &:before {
-    -webkit-app-region: no-drag;
-  }
-  &.disabled {
-    color: rgba(0, 0, 0, .33);
-  }
+.CameraIcon {
+  -webkit-app-region: no-drag;
   cursor: help;
-}
-
-.fa-sign-out {
-  color: rgba(0, 0, 0, .63);
-  cursor: pointer;
-  &:before {
-    -webkit-app-region: no-drag;
-  }
-  &:hover {
-    color: #000;
-  }
 }
 
 .Select.ProjectPicker {
@@ -103,6 +86,11 @@ span {
 }
 
 .logout {
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+  &:hover {
+    background: darken(#6fc1fb, 10%);
+  }
   background: #6fc1fb;
   border-radius: 50%;
   position: relative;

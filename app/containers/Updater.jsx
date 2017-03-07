@@ -73,6 +73,8 @@ export default class Updater extends Component {
             <a title={`${!available ? 'latest version' : 'update available'}`}>
               <span className={`fa fa-code-fork ${available ? 'available' : 'latest'}`} />
             </a>
+            <span>
+            </span>
             {available &&
               <span className="flex-item--center">
                 ({UpdaterAvailable.version}) is out! <a onClick={this.installUpdates}>&nbsp;update</a>
@@ -85,7 +87,6 @@ export default class Updater extends Component {
               Downloading update
             </span>
             <Pace color="#5454ee" height={20} />
-            {performance.getEntriesByType('resources').map(item => <span>{item}</span>)}
           </Flex>
         }
       </div>

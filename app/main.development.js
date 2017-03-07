@@ -25,7 +25,9 @@ if (process.env.NODE_ENV === 'production') {
   sourceMapSupport.install();
 }
 
+if (process.env.NODE_ENV === 'development') {
   require('electron-debug')(); // eslint-disable-line
+}
 
 process.on('uncaughtExecption', (err) => {
   console.error('Uncaught exception in main process', err);
@@ -38,8 +40,10 @@ let template;
 let tray = null;
 
 app.on('window-all-closed', () => {
-  if (process.platform === 'darwin') app.quit();
-  tray.destroy();
+  if (process.platform !== 'darwin') {
+    app.quit();
+    tray.destroy();
+  } 
 });
 
 
@@ -68,7 +72,9 @@ function createWindow() {
     });
 
     mainWindow.on('ready-to-show', () => {
+      if (process.env.NODE_ENV === 'development') {
         mainWindow.webContents.openDevTools();
+      }
       mainWindow.show();
       mainWindow.focus();
     });
@@ -138,27 +144,27 @@ app.on('ready', async () => {
       label: 'Chronos',
       submenu: [{
         label: 'About Chronos',
-        selector: 'orderFrontStandardAboutPanel:',
+        role: 'about',
       }, {
         type: 'separator',
       }, {
-        label: 'Hide DBGlass',
+        label: 'Hide Chronos',
         accelerator: 'Command+H',
-        selector: 'hide:',
+        role: 'hide',
       }, {
         label: 'Hide Others',
         accelerator: 'Command+Shift+H',
-        selector: 'hideOtherApplications:',
+        role: 'hideothers',
       }, {
         label: 'Show All',
-        selector: 'unhideAllApplications:',
+        role: 'unhide',
       }, {
         type: 'separator',
       }, {
         label: 'Quit',
         accelerator: 'Command+Q',
         click() {
-          app.hide();
+          app.quit();
         },
       }],
     }, {
