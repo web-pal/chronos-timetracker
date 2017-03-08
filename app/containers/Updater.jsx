@@ -77,7 +77,7 @@ export default class Updater extends Component {
             </span>
             {available &&
               <span className="flex-item--center">
-                ({UpdaterAvailable.version}) is out! <a onClick={this.installUpdates}>&nbsp;update</a>
+                ({updateAvailable.version}) is out! <a onClick={this.installUpdates}>&nbsp;update</a>
               </span>
             }
           </div>

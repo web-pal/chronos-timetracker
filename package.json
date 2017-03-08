@@ -1,6 +1,6 @@
 {
   "name": "Chronos",
-  "version": "0.0.5",
+  "version": "0.0.4",
   "description": "Full functionality time tracking software with direct JIRA integration",
   "main": "./app/main.js",
   "scripts": {
