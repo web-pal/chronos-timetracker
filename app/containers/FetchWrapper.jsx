@@ -46,6 +46,7 @@ class FetchWrapper extends Component {
     const nextConnected = nextProps.connected;
     
     if (currentFilterValue !== nextFilterValue) {
+      console.log(`Search. query: ${nextFilterValue}`)
       this.props.searchIssues(nextFilterValue);
     }
 

@@ -17,6 +17,15 @@ const SidebarFilterItem = ({
   <Flex row className={`sidebar-filter-item ${hidden ? 'hidden' : ''}`}>
     <Flex column centered className="search-field">
       <Flex column centered>
+        {value !== '' &&
+          <span
+            className="aui-icon aui-icon-small aui-iconfont-remove-label"
+            onClick={() => {
+              onChange('');
+              document.getElementById('search').value = '';
+            }}
+          />
+        }
         <img src={searchIcon} />
       </Flex>
       <Debounce time="300" handler="onChange">
@@ -27,15 +36,6 @@ const SidebarFilterItem = ({
           onChange={e => onChange(e.target.value)}
         />
       </Debounce>
-      {value !== '' &&
-        <span
-          className="aui-icon aui-icon-small aui-iconfont-remove-label"
-          onClick={() => {
-            onChange('');
-            document.getElementById('search').value = '';
-          }}
-        />
-      }
     </Flex>
     <Flex column centered>
       <img src={refreshIcon} onClick={refreshIssues} />

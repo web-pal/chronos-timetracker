@@ -66,7 +66,7 @@ function meta(state = initialMeta, action) {
     case types.FILL_RECENT_ISSUES:
       return state.set('recent', new OrderedSet(action.payload.ids));
     case types.ADD_RECENT_ISSUE:
-      return state.set('recent', state.get('recent').add(action.payload.id));
+      return state.set('recent', state.recent.add(action.payload.id));
     case types.FILL_SEARCH_ISSUES:
       return state.set('searchResults', new OrderedSet(action.payload));
     case types.SELECT_RECENT:
@@ -74,9 +74,11 @@ function meta(state = initialMeta, action) {
     case types.SET_TRACKING_ISSUE:
       return state.set('tracking', action.payload);
     case types.CLEAR_TRACKING_ISSUE:
-      return state.set('tracking', null);
+      return state.delete('tracking');
     case types.CLEAR_ISSUES:
       return state.set('total', 0).delete('currentPagination');
+    case types.CLEAR_SEARCH_RESULTS:
+      return state.delete('searchResults');
     case types.SET_CURRENT_PAGINATION:
       return state.set('currentPagination', action.payload);
     default:

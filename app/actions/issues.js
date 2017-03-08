@@ -27,41 +27,56 @@ function setIssuesFetchState(value) {
 
 function searchIssuesBySummary(query) {
   return (dispatch, getState) => new Promise((resolve, reject) => {
+    console.log('searching by summary');
     const currentProjectKey = getState().projects.meta.get('selected');
     const jiraClient = getState().jira.client;
     const escapedQuery = query.replace('[', '').replace(']', '');
+    let promiseResolved = false;
     jiraClient.search.search({
       jql: `project = ${currentProjectKey} AND
  summary ~ "${escapedQuery}"`,
       maxResults: 1000,
       fields: requiredFields,
-    }, (error, response) => {
-      if (error) reject(error);
-      const issues = response.issues;
-      const normalizedData = normalize(issues, [issueSchema]);
-      dispatch({
-        type: types.ADD_ISSUES,
-        payload: {
-          map: normalizedData.entities.issues,
-          ids: normalizedData.result,
+    })
+      .then(
+        (response) => {
+          promiseResolved = true;
+          const issues = response.issues;
+          console.log(issues);
+          const normalizedData = normalize(issues, [issueSchema]);
+          dispatch({
+            type: types.ADD_ISSUES,
+            payload: {
+              map: normalizedData.entities.issues,
+              ids: normalizedData.result,
+            },
+          });
+          dispatch({
+            type: types.FILL_SEARCH_ISSUES,
+            payload: normalizedData.result,
+          });
+          if (normalizedData.entities.worklogs) {
+            dispatch({
+              type: types.ADD_WORKLOGS,
+              payload: {
+                map: normalizedData.entities.worklogs,
+                ids: Object.keys(normalizedData.entities.worklogs),
+              },
+            });
+          }
+          dispatch(setIssuesFetchState(false));
+          resolve('done');
         },
-      });
-      dispatch({
-        type: types.FILL_SEARCH_ISSUES,
-        payload: normalizedData.result,
-      });
-      if (normalizedData.entities.worklogs) {
-        dispatch({
-          type: types.ADD_WORKLOGS,
-          payload: {
-            map: normalizedData.entities.worklogs,
-            ids: Object.keys(normalizedData.entities.worklogs),
-          },
-        });
+        error => {
+          console.error('Search by summary failed', error)
+          reject(error);
+        }
+      );
+    setTimeout(() => {
+      if (!promiseResolved) {
+        searchIssuesBySummary(query)(dispatch, getState);
       }
-      dispatch(setIssuesFetchState(false));
-      resolve('done');
-    });
+    }, 5000);
   });
 }
 
@@ -76,6 +91,7 @@ function searchIssuesByKey(query) {
       fields: requiredFields,
     }, (error, response) => {
       if (error) {
+        console.error('Search by key failed', error);
         reject(error);
       } else {
         const issues = response.issues;
@@ -109,9 +125,15 @@ export function searchIssues(query) {
   return (dispatch, getState) => new Promise((resolve, reject) => {
     if (query.length) {
       dispatch(setIssuesFetchState(true));
+      dispatch({
+        type: types.CLEAR_SEARCH_RESULTS,
+      });
       searchIssuesByKey(query)(dispatch, getState)
         .catch(
           err => searchIssuesBySummary(query)(dispatch, getState)
+        )
+        .catch(
+          err => dispatch(setIssuesFetchState(false))
         );
     }
   });
