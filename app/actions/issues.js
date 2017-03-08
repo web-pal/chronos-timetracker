@@ -166,31 +166,33 @@ export function fetchLastWeekLoggedIssues() {
       }
       const normalizedData = normalize(issues, [issueSchema]);
       console.log(normalizedData);
-      dispatch({
-        type: types.FILL_RECENT_ISSUES,
-        payload: {
-          map: normalizedData.entities.issues,
-          ids: normalizedData.result,
-        },
-      });
-      dispatch({
-        type: types.FILL_WORKLOGS,
-        payload: {
-          map: normalizedData.entities.worklogs,
-          ids: Object.keys(normalizedData.entities.worklogs || {}),
-        },
-      });
-      dispatch({
-        type: types.FILL_RECENT_WORKLOGS,
-        payload: Object.keys(normalizedData.entities.worklogs || {}),
-      }); 
+      if (normalizedData.entities.issues) {
+        dispatch({
+          type: types.FILL_RECENT_ISSUES,
+          payload: {
+            map: normalizedData.entities.issues,
+            ids: normalizedData.result,
+          },
+        });
+      }
+      if (normalizedData.entities.worklogs) {
+        dispatch({
+          type: types.FILL_WORKLOGS,
+          payload: {
+            map: normalizedData.entities.worklogs,
+            ids: Object.keys(normalizedData.entities.worklogs || {}),
+          },
+        });
+        dispatch({
+          type: types.FILL_RECENT_WORKLOGS,
+          payload: Object.keys(normalizedData.entities.worklogs || {}),
+        }); 
+      }
       resolve(response);
       dispatch(setIssuesFetchState(false));
     });
   });
 }
-
-let currentPagination = { startIndex: 0, stopIndex: 0 };
 
 export function fetchIssues(pagination = { startIndex: 0, stopIndex: -1 }, force = false) {
   const { startIndex, stopIndex } = pagination;
@@ -198,10 +200,14 @@ export function fetchIssues(pagination = { startIndex: 0, stopIndex: -1 }, force
     if (stopIndex > 0) {
       dispatch(setIssuesFetchState(true));
     }
+    const currentPagination = getState().issues.meta.currentPagination;
     if (startIndex < currentPagination.stopIndex && !force) {
       return;
     }
-    currentPagination = pagination;
+    dispatch({
+      type: types.SET_CURRENT_PAGINATION,
+      payload: pagination,
+    });
     const jiraClient = getState().jira.client;
     const currentProjectKey = getState().projects.meta.get('selected');
     jiraClient.search.search({

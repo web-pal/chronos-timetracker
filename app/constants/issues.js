@@ -10,3 +10,4 @@ export const CLEAR_ISSUES = 'issues/CLEAR';
 export const SELECT_RECENT = 'issues/SELECT_RECENT';
 export const SET_TRACKING_ISSUE = 'issues/SET_TRACKING_ISSUE';
 export const CLEAR_TRACKING_ISSUE = 'issues/CLEAR_TRACKING_ISSUE';
+export const SET_CURRENT_PAGINATION = 'issues/SET_CURRENT_PAGINATION';

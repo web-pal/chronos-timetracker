@@ -31,7 +31,7 @@
     "disabled": false
   },
   "build": {
-    "productName": "chronos",
+    "productName": "Chronos",
     "appId": "com.web-pal.chronos",
     "category": "public.app-category.Utility",
     "copyright": "Copyright © 2017 Webpal",

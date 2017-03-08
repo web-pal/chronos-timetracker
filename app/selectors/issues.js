@@ -9,11 +9,11 @@ export const getRecentIssuesMap = ({ issues }) => issues.recentById;
 export const getIssuesFilter = ({ filter }) => filter.value;
 export const getResolveFilter = ({ filter }) => filter.resolveValue;
 
-export const getSearchResultIssuesIds = ({ issues }) => issues.meta.get('searchResults');
+export const getSearchResultIssuesIds = ({ issues }) => issues.meta.searchResults;
 
-export const getTrackingIssueId = ({ issues }) => issues.meta.get('tracking');
+export const getTrackingIssueId = ({ issues }) => issues.meta.tracking;
 
-export const getSelectedIssueId = ({ issues }) => issues.meta.get('selected');
+export const getSelectedIssueId = ({ issues }) => issues.meta.selected;
 
 export const getIssues = createSelector(
   [getIssuesIds, getIssuesMap],

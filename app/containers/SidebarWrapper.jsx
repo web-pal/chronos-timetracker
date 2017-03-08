@@ -76,15 +76,15 @@ function mapStateToProps({ issues, worklogs, projects, ui, filter, jira }) {
   const issuesCount = sidebarType === 'Recent'
     ? items.toList().flatten(1).size
     : filter.value.length > 0
-      ? issues.meta.get('searchResults').size
-      : issues.meta.get('total');
+      ? issues.meta.searchResults.size
+      : issues.meta.total;
   return {
     items,
     currentProjectId: getSelectedProjectId({ projects }),
     currentIssueId: getSelectedIssueId({ issues }),
-    fetching: issues.meta.get('fetching'),
-    recentSelected: issues.meta.get('recentSelected'),
-    trackingIssue: issues.meta.get('tracking'),
+    fetching: issues.meta.fetching,
+    recentSelected: issues.meta.recentSelected,
+    trackingIssue: issues.meta.tracking,
     sidebarType: ui.sidebarType,
     issuesCount,
   };

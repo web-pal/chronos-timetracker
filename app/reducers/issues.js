@@ -42,7 +42,7 @@ function recentItems(state = new Map(), action) {
   }
 }
 
-const initialMeta = new Map({
+const InitialMeta = Immutable.Record({
   fetching: false,
   total: 0,
   selected: null,
@@ -50,7 +50,10 @@ const initialMeta = new Map({
   recentSelected: null,
   recent: new OrderedSet(),
   searchResults: new OrderedSet(),
+  currentPagination: { startIndex: 0, stopIndex: 0 },
 });
+
+const initialMeta = new InitialMeta();
 
 function meta(state = initialMeta, action) {
   switch (action.type) {
@@ -73,7 +76,9 @@ function meta(state = initialMeta, action) {
     case types.CLEAR_TRACKING_ISSUE:
       return state.set('tracking', null);
     case types.CLEAR_ISSUES:
-      return state.set('total', 0);
+      return state.set('total', 0).delete('currentPagination');
+    case types.SET_CURRENT_PAGINATION:
+      return state.set('currentPagination', action.payload);
     default:
       return state;
   }

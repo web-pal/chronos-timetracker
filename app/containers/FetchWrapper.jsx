@@ -90,10 +90,10 @@ class FetchWrapper extends Component {
         () => fetchSettings()
       )
     checkConnection();
-    this.checkConnectionInterval = setInterval(() => checkConnection, 10000);
+    this.checkConnectionInterval = setInterval(() => checkConnection(), 10000);
   }
 
-  componentWillMount() {
+  componentWillUnmount() {
     clearInterval(this.checkConnectionInterval);
   }
 
