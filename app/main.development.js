@@ -84,16 +84,36 @@ function createWindow() {
     });
 
     mainWindow.on('close', (e) => {
+      const contentSize = mainWindow.getContentSize();
+      const lastWindowSize = {
+        width: contentSize[0],
+        height: contentSize[1],
+      };
+      storage.set('lastWindowSize', lastWindowSize, (err) => {
+        if (err) {
+          console.log('error saving last window size', err);
+        } else {
+          console.log('saved last window size');
+        }
+      })
+      if (sharedObj.running) {
+        console.log("RUNNING");
+        mainWindow.webContents.send('force-save');
+        e.preventDefault();
+        shouldQuit = false;
+      }
       if (!shouldQuit) {
         e.preventDefault();
-        mainWindow.hide();
+        if (process.platform === 'darwin') {
+          mainWindow.hide();
+        }
       }
     });
   });
 }
 
 ipcMain.on('ready-to-quit', () => {
-  console.log("READY-TO-QUIT");
+  shouldQuit = true;
   app.quit();
   tray.destroy();
 });
@@ -135,26 +155,8 @@ ipcMain.on('dismissAndRestart', (e, time) => {
 });
 
 app.on('before-quit', (ev) => {
-  if (mainWindow) {
-    const contentSize = mainWindow.getContentSize();
-    const lastWindowSize = {
-      width: contentSize[0],
-      height: contentSize[1],
-    };
-    storage.set('lastWindowSize', lastWindowSize, (err) => {
-      if (err) {
-        console.log('error saving last window size', err);
-      } else {
-        console.log('saved last window size');
-      }
-    })
-    if (sharedObj.running) {
-      mainWindow.webContents.send('force-save');
-      e.preventDefault();
-      shouldQuit = false;
-    } else if (process.platform === 'darwin') {
-      shouldQuit = true;
-    }
+  if (process.platform === 'darwin') {
+    shouldQuit = true;
   }
 })
 
