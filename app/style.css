@@ -99,7 +99,7 @@ body,
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 999;
+  z-index: 9;
   background: #fff;
 }
 .LinearGradientSpinner,
@@ -540,6 +540,7 @@ span {
   position: relative;
 }
 .tracker .current-tracking {
+  z-index: 999;
   position: absolute;
   top: 0;
   left: 0;
@@ -692,7 +693,7 @@ span {
   top: 0;
   left: 0;
   transition: 1s all;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(255, 255, 255, 0.7);
 }
 .description-popup .flex-column {
   width: 70%;

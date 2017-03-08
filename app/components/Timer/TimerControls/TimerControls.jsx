@@ -2,9 +2,9 @@ import React, { PropTypes } from 'react';
 
 import Flex from '../../Base/Flex/Flex';
 
-import buttonDecoration from '../../../assets/images/button-surrounding.png';
-import playIcon from '../../../assets/images/play.png';
-import stopIcon from '../../../assets/images/stop.png';
+import buttonDecoration from '../../../assets/images/button-surrounding@2x.png';
+import playIcon from '../../../assets/images/play@2x.png';
+import stopIcon from '../../../assets/images/stop@2x.png';
 
 /* eslint-disable no-nested-ternary */
 
@@ -19,8 +19,8 @@ const TimerControls = (props) => {
           onClick={running ? stop : start}
         >
           {running
-            ? <img src={stopIcon} />
-            : <img src={playIcon} />
+            ? <img src={stopIcon} width={33} height={33} />
+            : <img src={playIcon} width={32} height={39} />
           }
       </button>
       </div>

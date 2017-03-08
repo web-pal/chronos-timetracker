@@ -4,8 +4,8 @@ import Avatar from '../Avatar/Avatar';
 import ProjectPickerWrapper from '../../containers/ProjectPickerWrapper';
 import Flex from '../Base/Flex/Flex';
 
-import cameraIcon from '../../assets/images/camera.png';
-import logoutIcon from '../../assets/images/logout.png';
+import cameraIcon from '../../assets/images/camera@2x.png';
+import logoutIcon from '../../assets/images/logout@2x.png';
 
 const Header = ({ avatarUrls, username, logout, screenshotsEnabled }) =>
   <Flex column className="header">
@@ -23,6 +23,8 @@ const Header = ({ avatarUrls, username, logout, screenshotsEnabled }) =>
         >
           <img
             src={cameraIcon}
+            width={20}
+            height={16}
           />
         </a>
         <a
@@ -31,6 +33,8 @@ const Header = ({ avatarUrls, username, logout, screenshotsEnabled }) =>
         >
           <img
             src={logoutIcon}
+            width={13}
+            height={14}
             onClick={logout}
           />
         </a>

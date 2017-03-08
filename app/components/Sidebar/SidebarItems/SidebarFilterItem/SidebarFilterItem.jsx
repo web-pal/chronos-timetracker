@@ -2,8 +2,8 @@ import React, { PropTypes } from 'react';
 import { Debounce } from 'react-throttle';
 
 import Flex from '../../../Base/Flex/Flex';
-import searchIcon from '../../../../assets/images/search.png';
-import refreshIcon from '../../../../assets/images/refresh.png';
+import searchIcon from '../../../../assets/images/search@2x.png';
+import refreshIcon from '../../../../assets/images/refresh@2x.png';
 
 const SidebarFilterItem = ({
   onChange,
@@ -26,7 +26,7 @@ const SidebarFilterItem = ({
             }}
           />
         }
-        <img src={searchIcon} />
+        <img src={searchIcon} width={18} height={18} />
       </Flex>
       <Debounce time="300" handler="onChange">
         <input
@@ -38,7 +38,7 @@ const SidebarFilterItem = ({
       </Debounce>
     </Flex>
     <Flex column centered>
-      <img src={refreshIcon} onClick={refreshIssues} />
+      <img className="refreshIcon" src={refreshIcon} onClick={refreshIssues} width={20} height={19} />
     </Flex>
   </Flex>;
 
