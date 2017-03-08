@@ -66,8 +66,6 @@ class Tracker extends Component {
           .then(
             () => ipcRenderer.send('ready-to-quit')
           );
-      } else {
-        ipcRenderer.send('ready-to-quit');
       }
     });
     ipcRenderer.on('dismissIdleTime', (e, time) => {

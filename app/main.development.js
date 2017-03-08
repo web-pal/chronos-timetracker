@@ -48,6 +48,27 @@ app.on('window-all-closed', () => {
   }
 });
 
+function checkRunning(e) {
+  const contentSize = mainWindow.getContentSize();
+  const lastWindowSize = {
+    width: contentSize[0],
+    height: contentSize[1],
+  };
+  storage.set('lastWindowSize', lastWindowSize, (err) => {
+    if (err) {
+      console.log('error saving last window size', err);
+    } else {
+      console.log('saved last window size');
+    }
+  })
+  if (sharedObj.running) {
+    console.log("RUNNING");
+    mainWindow.webContents.send('force-save');
+    e.preventDefault();
+    shouldQuit = false;
+  }
+}
+
 
 function createWindow() {
   // disabling chrome frames differ on OSX and other platforms
@@ -84,29 +105,16 @@ function createWindow() {
     });
 
     mainWindow.on('close', (e) => {
-      const contentSize = mainWindow.getContentSize();
-      const lastWindowSize = {
-        width: contentSize[0],
-        height: contentSize[1],
-      };
-      storage.set('lastWindowSize', lastWindowSize, (err) => {
-        if (err) {
-          console.log('error saving last window size', err);
-        } else {
-          console.log('saved last window size');
-        }
-      })
-      if (sharedObj.running) {
-        console.log("RUNNING");
-        mainWindow.webContents.send('force-save');
-        e.preventDefault();
-        shouldQuit = false;
+      if (process.platform !== 'darwin') {
+        checkRunning(e);
       }
       if (!shouldQuit) {
         e.preventDefault();
         if (process.platform === 'darwin') {
           mainWindow.hide();
         }
+      } else if (process.platform === 'darwin') {
+        checkRunning(e);
       }
     });
   });
