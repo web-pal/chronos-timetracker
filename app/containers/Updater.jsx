@@ -33,7 +33,7 @@ export default class Updater extends Component {
 
     this.electronUpdater.on('update-downloaded', () => {
       this.setUpdateDownloadState(false);
-      if(window.confirm('App updated, restart now?')) {
+      if (window.confirm('App updated, restart now?')) {
         this.electronUpdater.quitAndInstall();
       }
     });

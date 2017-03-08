@@ -60,6 +60,16 @@ class Tracker extends Component {
 
   constructor(props) {
     super(props);
+    ipcRenderer.on('force-save', (e, time) => {
+      if (window.confirm('Tracking in progress, save worklog before quit?')){
+        this.handleTimerStop()
+          .then(
+            () => ipcRenderer.send('ready-to-quit')
+          );
+      } else {
+        ipcRenderer.send('ready-to-quit');
+      }
+    });
     ipcRenderer.on('dismissIdleTime', (e, time) => {
       const seconds = Math.ceil(time / 1000);
       if (this.props.time > seconds) {
@@ -92,9 +102,11 @@ class Tracker extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    const { getGlobal } = remote;
     if (!this.props.running && nextProps.running) {
       this.timer.setInterval(() => this.tick(), '', '1s');
       this.activityTimer.setInterval(() => this.checkActivity(), '', '1s');
+      getGlobal('sharedObj').running = true;
     }
     if (this.props.running && !nextProps.running) {
       this.timer.clearInterval();
@@ -106,16 +118,16 @@ class Tracker extends Component {
     const { idleState, setIdleState } = this.props;
     lastIdleTime = idleTime;
     idleTime = system.getIdleTime();
-    if (idleTime > 3000 && !idleState) {
+    if (idleTime > 3000000 && !idleState) {
       setIdleState(true);
     }
-    if (idleTime < 3000 && idleState) {
+    if (idleTime < 3000000 && idleState) {
       setIdleState(false);
       this.openIdleTimePopup(lastIdleTime);
     }
   }
 
-  handleTimerStop = () => {
+  handleTimerStop = () => new Promise((resolve) => {
     const {
       stopTimer,
       updateWorklog,
@@ -128,6 +140,8 @@ class Tracker extends Component {
       trackingIssue,
       screensShot,
     } = this.props;
+
+    const { getGlobal } = remote;
 
     stopTimer();
     updateWorklog({
@@ -142,13 +156,17 @@ class Tracker extends Component {
           addRecentIssue(worklog.issueId);
           addRecentWorklog(worklog);
           resetTimer();
+          getGlobal('sharedObj').running = false;
+          resolve();
         },
         (err) => {
           clearTrackingIssue();
           resetTimer();
+          getGlobal('sharedObj').running = false;
+          resolve();
         }
       );
-  }
+  });
 
   tick = () => {
     if (!this.props.paused) {

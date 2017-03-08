@@ -14,6 +14,7 @@ updater.init({
 global.appDir = app.getPath('userData');
 global.appSrcDir = __dirname;
 global.sharedObj = {
+  running: false,
   lastScreenshotPath: '',
   screenshotTime: null,
   currentWorklogId: null,
@@ -94,9 +95,20 @@ function createWindow() {
           console.log('saved last window size');
         }
       })
+      console.log(sharedObj.running);
+      if (sharedObj.running) {
+        mainWindow.webContents.send('force-save');
+        e.preventDefault();
+      }
     });
   });
 }
+
+ipcMain.on('ready-to-quit', () => {
+  console.log("READY-TO-QUIT");
+  app.quit();
+  tray.destroy();
+});
 
 const installExtensions = async () => {
   if (process.env.NODE_ENV === 'development') {
