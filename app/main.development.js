@@ -38,13 +38,14 @@ process.on('uncaughtExecption', (err) => {
 let menu;
 let mainWindow;
 let template;
+let shouldQuit = false;
 let tray = null;
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
     tray.destroy();
-  } 
+  }
 });
 
 
@@ -83,22 +84,9 @@ function createWindow() {
     });
 
     mainWindow.on('close', (e) => {
-      const contentSize = mainWindow.getContentSize();
-      const lastWindowSize = {
-        width: contentSize[0],
-        height: contentSize[1],
-      };
-      storage.set('lastWindowSize', lastWindowSize, (err) => {
-        if (err) {
-          console.log('error saving last window size', err);
-        } else {
-          console.log('saved last window size');
-        }
-      })
-      console.log(sharedObj.running);
-      if (sharedObj.running) {
-        mainWindow.webContents.send('force-save');
+      if (process.platform === 'darwin' && !shouldQuit) {
         e.preventDefault();
+        mainWindow.hide();
       }
     });
   });
@@ -146,6 +134,28 @@ ipcMain.on('dismissAndRestart', (e, time) => {
   mainWindow.webContents.send('dismissAndRestart', time);
 });
 
+app.on('before-quit', (ev) => {
+  if (mainWindow) {
+    const contentSize = mainWindow.getContentSize();
+    const lastWindowSize = {
+      width: contentSize[0],
+      height: contentSize[1],
+    };
+    storage.set('lastWindowSize', lastWindowSize, (err) => {
+      if (err) {
+        console.log('error saving last window size', err);
+      } else {
+        console.log('saved last window size');
+      }
+    })
+    if (sharedObj.running) {
+      mainWindow.webContents.send('force-save');
+      e.preventDefault();
+    } else {
+      shouldQuit = true;
+    }
+  }
+})
 
 app.on('ready', async () => {
   await installExtensions();
@@ -262,6 +272,8 @@ app.on('ready', async () => {
 app.on('activate', () => {
   if (mainWindow === null) {
     createWindow();
+  } else {
+    mainWindow.show()
   }
 });
 
