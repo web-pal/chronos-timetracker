@@ -38,7 +38,7 @@ process.on('uncaughtExecption', (err) => {
 let menu;
 let mainWindow;
 let template;
-let shouldQuit = false;
+let shouldQuit = process.platform !== 'darwin';
 let tray = null;
 
 app.on('window-all-closed', () => {
@@ -84,7 +84,7 @@ function createWindow() {
     });
 
     mainWindow.on('close', (e) => {
-      if (process.platform === 'darwin' && !shouldQuit) {
+      if (!shouldQuit) {
         e.preventDefault();
         mainWindow.hide();
       }
@@ -151,7 +151,8 @@ app.on('before-quit', (ev) => {
     if (sharedObj.running) {
       mainWindow.webContents.send('force-save');
       e.preventDefault();
-    } else {
+      shouldQuit = false;
+    } else if (process.platform === 'darwin') {
       shouldQuit = true;
     }
   }
