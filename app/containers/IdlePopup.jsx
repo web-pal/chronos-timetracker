@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import moment from 'moment';
 import { remote, ipcRenderer as ipc } from 'electron';
+import { stj } from 'time-util';
 
 import Flex from '../components/Base/Flex/Flex';
-import { stj } from '../helpers/time';
 
 import '../assets/stylesheets/main.less';
 

@@ -142,8 +142,9 @@ export function updateWorklog(worklog, params = { sync: false }) {
     const token = getState().jira.jwt;
     const jiraClient = getState().jira.client;
     const online = getState().jira.online;
+    const activity = getState().tracker.activity.toJS();
     if (online) {
-      uploadWorklog({ jiraClient, worklog, token, })
+      uploadWorklog({ jiraClient, worklog, token, activity })
         .then(
           (resWorklog) => {
             dispatch({
@@ -180,7 +181,7 @@ export function updateWorklog(worklog, params = { sync: false }) {
 function uploadWorklog(params) {
   return new Promise((resolve, reject) => {
     console.log(params);
-    const { jiraClient, worklog, token } = params;
+    const { jiraClient, worklog, token, activity } = params;
     const { time, description, issueId } = worklog;
     const jiraWorklog = {
       comment: description,
@@ -200,6 +201,7 @@ function uploadWorklog(params) {
           worklog: {
             ...worklog,
             timeTracked: time,
+            activity,
           },
         }),
         headers: {
@@ -245,5 +247,12 @@ export function acceptScreenshot(screenshotTime, screenshotPath) {
           });
         },
       );
+  };
+}
+
+export function addActivityPercent(percent) {
+  return {
+    type: types.ADD_ACTIVITY_PERCENT,
+    payload: percent,
   };
 }

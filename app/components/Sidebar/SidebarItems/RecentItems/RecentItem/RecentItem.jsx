@@ -1,9 +1,9 @@
 import React, { PropTypes } from 'react';
 import moment from 'moment';
+import { getStatusColor } from 'jiraColors-util';
+import { jts } from 'time-util';
 
-import getStatusColor from '../../../../../helpers/jiraColors';
 import Flex from '../../../../Base/Flex/Flex';
-import { jts } from '../../../../../helpers/time';
 
 function formatSummary(summary) {
   return summary.length > 20 ? `${summary.substr(0, 20)}...` : summary;

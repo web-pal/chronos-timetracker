@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import Markdown from 'react-markdown';
+import { stj } from 'time-util';
 
-import { stj } from '../../helpers/time';
 import Avatar from '../Avatar/Avatar';
 import Flex from '../Base/Flex/Flex';
 import IssueInfo from './IssueInfo';

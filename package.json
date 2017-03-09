@@ -154,6 +154,7 @@
     "moment": "2.17.1",
     "moment-duration-format": "^1.3.0",
     "nanotimer": "^0.3.14",
+    "node-noop": "^1.0.0",
     "normalizr": "^3.1.0",
     "react": "15.4.2",
     "react-addons-shallow-compare": "^15.4.2",

@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
+import { getStatusColor } from 'jiraColors-util';
 
-import getStatusColor from '../../../../helpers/jiraColors';
 import Flex from '../../../Base/Flex/Flex';
 import SidebarItemLoader from '../../../Spinners/SidebarItemLoader';
 

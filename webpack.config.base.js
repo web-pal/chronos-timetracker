@@ -19,6 +19,7 @@ export default validate({
         loader: 'json-loader',
       },
     ],
+    noParse: [/README\.md$/]
   },
 
   output: {
@@ -34,7 +35,7 @@ export default validate({
    */
   resolve: {
     extensions: ['', '.js', '.jsx', '.json'],
-    packageMains: ['webpack', 'browser', 'web', 'browserify', ['jam', 'main'], 'main'],
+    modulesDirectories: ['utils', 'node_modules'],
   },
 
   plugins: [],

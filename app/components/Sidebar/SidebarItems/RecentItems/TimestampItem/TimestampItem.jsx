@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import moment from 'moment';
-import { stj } from '../../../../../helpers/time';
+import { stj } from 'time-util';
 
 import Flex from '../../../../Base/Flex/Flex';
 

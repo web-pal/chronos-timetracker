@@ -6,6 +6,7 @@ import getScreen from 'user-media-screenshot';
 import fs from 'fs';
 import NanoTimer from 'nanotimer';
 import electron, { remote, ipcRenderer } from 'electron';
+import { idleTimeThreshold, activityInterval } from 'config';
 
 import Flex from '../components/Base/Flex/Flex';
 import Timer from '../components/Timer/Timer';
@@ -95,8 +96,14 @@ class Tracker extends Component {
         (Number(dispersion) + Number(dispersion))) - Number(dispersion)),
       );
     });
+    this.state = {
+      idleTime: 0,
+      lastIdleTime: 0,
+      totalIdleTime: 0,
+    };
     this.timer = new NanoTimer();
     this.activityTimer = new NanoTimer();
+    this.activityPercentageTimer = new NanoTimer();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -104,25 +111,48 @@ class Tracker extends Component {
     if (!this.props.running && nextProps.running) {
       this.timer.setInterval(() => this.tick(), '', '1s');
       this.activityTimer.setInterval(() => this.checkActivity(), '', '1s');
+      this.activityPercentageTimer.setInterval(() => this.calculateActiviy(), '', `${activityInterval}s`);
       getGlobal('sharedObj').running = true;
     }
     if (this.props.running && !nextProps.running) {
       this.timer.clearInterval();
       this.activityTimer.clearInterval();
+      this.activityPercentageTimer.clearInterval();
     }
+  }
+
+  calculateActiviy = () => {
+    const { idleTime, totalIdleTime } = this.state;
+    let time = totalIdleTime + idleTime;
+    time = time > activityInterval * 1000 ? activityInterval * 1000 : time;
+    const activityPercent = (1 - (time / (activityInterval * 1000))).toFixed(2) * 100
+    console.log(`${activityPercent}%`)
+    this.props.addActivityPercent(activityPercent);
+    this.setState({
+      totalIdleTime: 0,
+    });
   }
 
   checkActivity = () => {
     const { idleState, setIdleState } = this.props;
+    let { idleTime, lastIdleTime, totalIdleTime } = this.state;
     lastIdleTime = idleTime;
     idleTime = system.getIdleTime();
-    if (idleTime > 3000000 && !idleState) {
+    if (idleTime > idleTimeThreshold * 1000 && !idleState) {
       setIdleState(true);
     }
-    if (idleTime < 3000000 && idleState) {
+    if (idleTime < idleTimeThreshold * 1000 && idleState) {
       setIdleState(false);
       this.openIdleTimePopup(lastIdleTime);
     }
+    if (idleTime < 1000) {
+      totalIdleTime += lastIdleTime;
+    }
+    this.setState({
+      totalIdleTime,
+      idleTime,
+      lastIdleTime,
+    });
   }
 
   handleTimerStop = () => new Promise((resolve) => {

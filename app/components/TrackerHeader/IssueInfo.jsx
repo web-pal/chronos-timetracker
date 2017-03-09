@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
-import getStatusColor from '../../helpers/jiraColors';
+import { getStatusColor } from 'jiraColors-util';
+
 import Flex from '../Base/Flex/Flex';
 
 const IssueInfo = ({ currentIssue }) =>

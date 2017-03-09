@@ -2,10 +2,10 @@ import fetch from 'isomorphic-fetch';
 import JiraClient from 'jira-connector';
 import storage from 'electron-json-storage';
 import isOnline from 'is-online';
+import { staticUrl } from 'config';
 
 import { success, fail } from '../helpers/promise';
 import * as types from '../constants';
-import { staticUrl } from '../config/config';
 import Socket from '../socket';
 
 export function installUpdates() {

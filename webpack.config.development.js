@@ -59,7 +59,7 @@ export default validate(merge(baseConfig, {
   plugins: [
    // https://webpack.github.io/docs/hot-module-replacement-with-webpack.html
     new webpack.HotModuleReplacementPlugin(),
-
+    new webpack.NormalModuleReplacementPlugin(/iconv-loader$/, 'node-noop'),
     /**
      * If you are using the CLI, the webpack process will not exit with an error
      * code by enabling this plugin.
