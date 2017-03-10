@@ -4,7 +4,7 @@ import * as actions from '../../app/actions/filter';
 import * as types from '../constants/';
 
 describe('actions', () => {
-  describe('filter' () => {
+  describe('filter', () => {
     it('should changeFilter should create change action', () => {
       expect(actions.changeFilter('test')).to.deep.equal({
         type: types.CHANGE_FILTER,
