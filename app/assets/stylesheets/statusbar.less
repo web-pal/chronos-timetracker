@@ -1,0 +1,35 @@
+.StatusBar {
+  flex: 1 1 20px;
+  min-height: 20px;
+  height: 20px;
+  justify-content: flex-end;
+  padding: 2px;
+  background: rgba(255, 255, 255, .5);
+  color: rgba(0, 0, 0, .6);
+  z-index: 999;
+  .section {
+    padding: 0px 6px;
+    &:not(:last-child) {
+      border-right: 1px solid #bbb;
+    }
+  }
+  .fa {
+    margin: 0px 3px;
+    cursor: help;
+    text-shadow: 0 0 3px rgba(0, 0, 0, .25);
+  }
+  .fa.fa-bolt {
+    &.online {
+      color: fadeout(@primary, 20%);
+    }
+    &.offline {
+      color: fadeout(@jira-warm-red, 20%);
+    }
+  }
+  .fa.fa-exclamation-triangle {
+    color: fadeout(@jira-yellow, 20%);
+  }
+  .fa.fa-check {
+    color: fadeout(@primary, 20%);
+  }
+}

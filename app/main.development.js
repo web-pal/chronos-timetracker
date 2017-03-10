@@ -2,10 +2,19 @@
 import { app, Tray, BrowserWindow, ipcMain, Menu } from 'electron';
 import log from 'electron-log';
 import path from 'path';
+import updater from 'electron-simple-updater';
+import storage from 'electron-json-storage';
+
+updater.init({
+  logger: log,
+  checkUpdateOnStart: false,
+  autoDownload: false,
+});
 
 global.appDir = app.getPath('userData');
-console.log(global.appDir);
+global.appSrcDir = __dirname;
 global.sharedObj = {
+  running: false,
   lastScreenshotPath: '',
   screenshotTime: null,
   currentWorklogId: null,
@@ -25,17 +34,41 @@ process.on('uncaughtExecption', (err) => {
   console.error('Uncaught exception in main process', err);
 });
 
-process.on('exit', (code) => {
-  console.log(`About to exit with code: ${code}`);
-});
-
-app.on('window-all-closed', () => {
-  if (process.platform === 'darwin') app.quit();
-});
 
 let menu;
 let mainWindow;
 let template;
+let shouldQuit = process.platform !== 'darwin';
+let tray = null;
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+    tray.destroy();
+  }
+});
+
+function checkRunning(e) {
+  const contentSize = mainWindow.getContentSize();
+  const lastWindowSize = {
+    width: contentSize[0],
+    height: contentSize[1],
+  };
+  storage.set('lastWindowSize', lastWindowSize, (err) => {
+    if (err) {
+      console.log('error saving last window size', err);
+    } else {
+      console.log('saved last window size');
+    }
+  })
+  if (sharedObj.running) {
+    console.log("RUNNING");
+    mainWindow.webContents.send('force-save');
+    e.preventDefault();
+    shouldQuit = false;
+  }
+}
+
 
 function createWindow() {
   // disabling chrome frames differ on OSX and other platforms
@@ -44,27 +77,54 @@ function createWindow() {
     ? { titleBarStyle: 'hidden' }
     : { frame: false };
 
-  mainWindow = new BrowserWindow({
-    show: false,
-    width: 575,
-    height: 475,
-    ...noFrameOption,
-  });
-
-  mainWindow.loadURL(`file://${__dirname}/index.html`);
-
-  mainWindow.on('closed', () => {
-    mainWindow = null;
-  });
-
-  mainWindow.on('ready-to-show', () => {
-    if (process.env.NODE_ENV === 'development') {
-      mainWindow.webContents.openDevTools();
+  storage.get('lastWindowSize', (err, data) => {
+    if (err) {
+      console.log(err);
     }
-    mainWindow.show();
-    mainWindow.focus();
+    const lastWindowSize = data || {};
+    mainWindow = new BrowserWindow({
+      show: false,
+      width: lastWindowSize.width || 810,
+      height: lastWindowSize.height || 575,
+      minWidth: 710,
+      minHeight: 400,
+      ...noFrameOption,
+    });
+
+    mainWindow.loadURL(`file://${__dirname}/index.html`);
+    mainWindow.on('closed', () => {
+      mainWindow = null;
+    });
+
+    mainWindow.on('ready-to-show', () => {
+      if (process.env.NODE_ENV === 'development') {
+        mainWindow.webContents.openDevTools();
+      }
+      mainWindow.show();
+      mainWindow.focus();
+    });
+
+    mainWindow.on('close', (e) => {
+      if (process.platform !== 'darwin') {
+        checkRunning(e);
+      }
+      if (!shouldQuit) {
+        e.preventDefault();
+        if (process.platform === 'darwin') {
+          mainWindow.hide();
+        }
+      } else if (process.platform === 'darwin') {
+        checkRunning(e);
+      }
+    });
   });
 }
+
+ipcMain.on('ready-to-quit', () => {
+  shouldQuit = true;
+  app.quit();
+  tray.destroy();
+});
 
 const installExtensions = async () => {
   if (process.env.NODE_ENV === 'development') {
@@ -102,11 +162,15 @@ ipcMain.on('dismissAndRestart', (e, time) => {
   mainWindow.webContents.send('dismissAndRestart', time);
 });
 
-let tray = null;
+app.on('before-quit', (ev) => {
+  if (process.platform === 'darwin') {
+    shouldQuit = true;
+  }
+})
 
 app.on('ready', async () => {
   await installExtensions();
-  tray = new Tray(path.join(__dirname, './assets/images/clock.png'));
+  tray = new Tray(path.join(__dirname, './assets/images/icon.png'));
   tray.setToolTip('Open chronos tracker');
   tray.on('click', () => mainWindow.show());
   createWindow();
@@ -115,20 +179,20 @@ app.on('ready', async () => {
       label: 'Chronos',
       submenu: [{
         label: 'About Chronos',
-        selector: 'orderFrontStandardAboutPanel:',
+        role: 'about',
       }, {
         type: 'separator',
       }, {
-        label: 'Hide DBGlass',
+        label: 'Hide Chronos',
         accelerator: 'Command+H',
-        selector: 'hide:',
+        role: 'hide',
       }, {
         label: 'Hide Others',
         accelerator: 'Command+Shift+H',
-        selector: 'hideOtherApplications:',
+        role: 'hideothers',
       }, {
         label: 'Show All',
-        selector: 'unhideAllApplications:',
+        role: 'unhide',
       }, {
         type: 'separator',
       }, {
@@ -219,6 +283,11 @@ app.on('ready', async () => {
 app.on('activate', () => {
   if (mainWindow === null) {
     createWindow();
+  } else {
+    mainWindow.show()
   }
 });
 
+process.on('exit', (code) => {
+  console.log(`About to exit with code: ${code}`);
+});

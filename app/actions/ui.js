@@ -1,4 +1,19 @@
-import * as types from '../constants/ui';
+import * as types from '../constants/';
+
+export const setUpdateDownloadState = (payload) => ({
+  type: types.SET_UPDATE_DOWNLOAD_STATE,
+  payload,
+});
+
+export const setUpdateFetchState = (payload) => ({
+    type: types.SET_UPDATE_FETCH_STATE,
+    payload,
+});
+
+export const notifyUpdateAvailable = (payload) => ({
+    type: types.NOTIFY_UPDATE_AVAILABLE,
+    payload,
+});
 
 export const openDescriptionPopup = () => ({
   type: types.OPEN_DESCRIPTION_POPUP,

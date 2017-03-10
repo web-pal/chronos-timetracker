@@ -72,9 +72,9 @@
 
 .button.button-link {
   background: transparent;
-  color: @link;
+  color: @primary;
   &.button-danger {
-    color: @danger;
+    color: @jira-warm-red;
     &:hover {
       background: transparent;
     }
@@ -100,29 +100,29 @@
 
 .button-stop, .button-play {
   border-radius: 50%;
-  height: 64px;
-  width: 64px;
-  position: relative;
+  height: 104px;
+  width: 104px;
   font-size: 2em;
-  .fa.fa-stop, .fa.fa-play {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-  }
-  .fa.fa-stop {
-    transform: translate3d(-50%, -45%, 0);
-  }
-  .fa.fa-play {
-    transform: translate3d(-40%, -45%, 0);
-  }
 }
 
 .button-stop {
-  background: @danger;
+  background: #6fc1fb;
+  img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-44.5%, -48%, 0)
+  }
 }
 
 .button-play {
-  background: @success;
+  background: #235dff;
+  img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-35%, -50%, 0);
+  }
 }
 
 .flex-column {

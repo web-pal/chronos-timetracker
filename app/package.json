@@ -1,9 +1,14 @@
 {
   "name": "Chronos",
   "productName": "Chronos",
-  "version": "1.0.0",
+  "version": "0.0.6",
   "description": "Electron application boilerplate based on React, React Router, Webpack, React Hot Loader for rapid application development",
   "main": "./main.js",
+  "updater": {
+    "url": "https://raw.githubusercontent.com/web-pal/Chronos/master/updates.json",
+    "autoDownload": false,
+    "disabled": false
+  },
   "author": {
     "name": "Webpal",
     "email": "gloosx@gmail.com",
@@ -11,6 +16,7 @@
   },
   "license": "CCL",
   "dependencies": {
-    "@paulcbetts/system-idle-time": "git+https://github.com/paulcbetts/node-system-idle-time.git"
+    "@paulcbetts/system-idle-time": "git+https://github.com/paulcbetts/node-system-idle-time.git",
+    "electron-simple-updater": "^1.2.0"
   }
 }

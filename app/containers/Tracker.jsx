@@ -6,10 +6,13 @@ import getScreen from 'user-media-screenshot';
 import fs from 'fs';
 import NanoTimer from 'nanotimer';
 import electron, { remote, ipcRenderer } from 'electron';
+import { idleTimeThreshold, activityInterval } from 'config';
 
 import Flex from '../components/Base/Flex/Flex';
 import Timer from '../components/Timer/Timer';
 import TrackerHeader from '../components/TrackerHeader/TrackerHeader';
+import Updater from './Updater';
+import StatusBar from './StatusBar';
 
 import { getTrackingIssue, getSelectedIssue, getSettings } from '../selectors/';
 
@@ -53,10 +56,19 @@ class Tracker extends Component {
     dismissIdleTime: PropTypes.func.isRequired,
     addRecentIssue: PropTypes.func.isRequired,
     uploading: PropTypes.bool.isRequired,
+    screensShot: PropTypes.object.isRequired,
   }
 
   constructor(props) {
     super(props);
+    ipcRenderer.on('force-save', (e, time) => {
+      if (window.confirm('Tracking in progress, save worklog before quit?')){
+        this.handleTimerStop()
+          .then(
+            () => ipcRenderer.send('ready-to-quit')
+          );
+      }
+    });
     ipcRenderer.on('dismissIdleTime', (e, time) => {
       const seconds = Math.ceil(time / 1000);
       if (this.props.time > seconds) {
@@ -84,46 +96,105 @@ class Tracker extends Component {
         (Number(dispersion) + Number(dispersion))) - Number(dispersion)),
       );
     });
+    this.state = {
+      idleTime: 0,
+      lastIdleTime: 0,
+      totalIdleTime: 0,
+    };
     this.timer = new NanoTimer();
     this.activityTimer = new NanoTimer();
+    this.activityPercentageTimer = new NanoTimer();
   }
 
   componentWillReceiveProps(nextProps) {
+    const { getGlobal } = remote;
     if (!this.props.running && nextProps.running) {
       this.timer.setInterval(() => this.tick(), '', '1s');
       this.activityTimer.setInterval(() => this.checkActivity(), '', '1s');
+      this.activityPercentageTimer.setInterval(() => this.calculateActiviy(), '', `${activityInterval}s`);
+      getGlobal('sharedObj').running = true;
     }
     if (this.props.running && !nextProps.running) {
       this.timer.clearInterval();
       this.activityTimer.clearInterval();
+      this.activityPercentageTimer.clearInterval();
     }
+  }
+
+  calculateActiviy = () => {
+    const { idleTime, totalIdleTime } = this.state;
+    let time = totalIdleTime + idleTime;
+    time = time > activityInterval * 1000 ? activityInterval * 1000 : time;
+    const activityPercent = (1 - (time / (activityInterval * 1000))).toFixed(2) * 100
+    console.log(`${activityPercent}%`)
+    this.props.addActivityPercent(activityPercent);
+    this.setState({
+      totalIdleTime: 0,
+    });
   }
 
   checkActivity = () => {
     const { idleState, setIdleState } = this.props;
+    let { idleTime, lastIdleTime, totalIdleTime } = this.state;
     lastIdleTime = idleTime;
     idleTime = system.getIdleTime();
-    if (idleTime > 300000 && !idleState) {
+    if (idleTime > idleTimeThreshold * 1000 && !idleState) {
       setIdleState(true);
     }
-    if (idleTime < 300000 && idleState) {
+    if (idleTime < idleTimeThreshold * 1000 && idleState) {
       setIdleState(false);
       this.openIdleTimePopup(lastIdleTime);
     }
+    if (idleTime < 1000) {
+      totalIdleTime += lastIdleTime;
+    }
+    this.setState({
+      totalIdleTime,
+      idleTime,
+      lastIdleTime,
+    });
   }
 
-  handleTimerStop = () => {
-    this.props.stopTimer();
-    this.props.updateWorklog()
+  handleTimerStop = () => new Promise((resolve) => {
+    const {
+      stopTimer,
+      updateWorklog,
+      clearTrackingIssue,
+      addRecentIssue,
+      addRecentWorklog,
+      resetTimer,
+      time,
+      description,
+      trackingIssue,
+      screensShot,
+    } = this.props;
+
+    const { getGlobal } = remote;
+
+    stopTimer();
+    updateWorklog({
+      time,
+      description,
+      issueId: trackingIssue.get('id'),
+      screensShot: screensShot.toJS(),
+    })
       .then(
         worklog => {
-          this.props.clearTrackingIssue();
-          this.props.addRecentIssue(worklog.issueId);
-          this.props.addRecentWorklog(worklog);
-          this.props.resetTimer();
+          clearTrackingIssue();
+          addRecentIssue(worklog.issueId);
+          addRecentWorklog(worklog);
+          resetTimer();
+          getGlobal('sharedObj').running = false;
+          resolve();
+        },
+        (err) => {
+          clearTrackingIssue();
+          resetTimer();
+          getGlobal('sharedObj').running = false;
+          resolve();
         }
       );
-  }
+  });
 
   tick = () => {
     if (!this.props.paused) {
@@ -151,7 +222,7 @@ class Tracker extends Component {
           screenshotsEnabledUsers.includes(selfKey);
         const cond3 = screenshotsEnabled === 'excludingUsers' &&
           !screenshotsEnabledUsers.includes(selfKey);
-        if (cond1 || cond2 || cond3) {
+        if ((cond1 || cond2 || cond3) && !this.props.idleState) {
           this.openScreenShotPopup();
         } else {
           timeRange = time + Math.ceil(
@@ -167,6 +238,7 @@ class Tracker extends Component {
     const { BrowserWindow, getGlobal } = remote;
     const { currentWorklogId, time } = this.props;
     const dir = getGlobal('appDir');
+    const srcDir = getGlobal('appSrcDir');
     const screenshotTime = time;
     getScreen((image) => {
       const validImage = image.replace(/^data:image\/jpeg;base64,/, '');
@@ -189,7 +261,7 @@ class Tracker extends Component {
           alwaysOnTop: true,
         };
         const win = new BrowserWindow(options);
-        win.loadURL(`file://${dir}/src/popup.html`);
+        win.loadURL(`file://${srcDir}/popup.html`);
       });
     });
   }
@@ -197,14 +269,14 @@ class Tracker extends Component {
   openIdleTimePopup = (time) => {
     const { BrowserWindow, getGlobal } = remote;
     getGlobal('sharedObj').idleTime = time;
-    const dir = getGlobal('appDir');
+    const dir = getGlobal('appSrcDir');
     const options = {
       width: 300,
       height: 200,
       frame: false,
     };
     const win = new BrowserWindow(options);
-    win.loadURL(`file://${dir}/src/idlePopup.html`);
+    win.loadURL(`file://${dir}/idlePopup.html`);
   }
 
   render() {
@@ -236,6 +308,7 @@ class Tracker extends Component {
             startTimer(desc);
           }}
         />
+        <StatusBar />
       </Flex>
     );
   }
@@ -246,6 +319,7 @@ function mapStateToProps({ jira, tracker, ui, issues, settings }) {
     self: jira.self,
     currentIssue: getSelectedIssue({ issues }),
     trackingIssue: getTrackingIssue({ issues }),
+    screensShot: tracker.screensShot,
     time: tracker.time,
     running: tracker.running,
     paused: tracker.paused,

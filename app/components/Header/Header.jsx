@@ -4,6 +4,9 @@ import Avatar from '../Avatar/Avatar';
 import ProjectPickerWrapper from '../../containers/ProjectPickerWrapper';
 import Flex from '../Base/Flex/Flex';
 
+import cameraIcon from '../../assets/images/camera@2x.png';
+import logoutIcon from '../../assets/images/logout@2x.png';
+
 const Header = ({ avatarUrls, username, logout, screenshotsEnabled }) =>
   <Flex column className="header">
     <Flex row>
@@ -12,17 +15,27 @@ const Header = ({ avatarUrls, username, logout, screenshotsEnabled }) =>
         <span className="username">
           {username}
         </span>
-        <a title={`screenshots ${screenshotsEnabled ? 'enabled' : 'disabled'}`}>
-          <span
-            className={`fa fa-camera ${screenshotsEnabled ? 'enabled' : 'disabled'}`}
+      </Flex>
+      <Flex row className="header__icons flex-item--end">
+        <a
+          className="CameraIcon"
+          title={`screenshots ${screenshotsEnabled ? 'enabled' : 'disabled'}`}
+        >
+          <img
+            src={cameraIcon}
+            width={20}
+            height={16}
           />
-          {!screenshotsEnabled &&
-            <span className="intersect" />
-          }
         </a>
-        <a title="logout">
-          <span
-            className="fa fa-sign-out" onClick={logout}
+        <a
+          className="flex-item--end logout"
+          title="logout"
+        >
+          <img
+            src={logoutIcon}
+            width={13}
+            height={14}
+            onClick={logout}
           />
         </a>
       </Flex>

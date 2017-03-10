@@ -52,9 +52,27 @@ export const selectProject = projectId => (dispatch, getState) => {
   })
 };
 
-export const getLastProject = () => (dispatch, getState) => storage.get('lastProject', (e, data) => {
-  const host = getState().jira.credentials.get('host');
-  if (data[host]) {
-    dispatch(selectProject(data[host]));
-  }
-});
+export const getLastProject = () => (dispatch, getState) =>
+  new Promise((resolve, reject) => storage.get('lastProject', (e, data) => {
+    const host = getState().jira.credentials.get('host');
+    if (data[host]) {
+      dispatch(selectProject(data[host]));
+      resolve(data[host]);
+    }
+  }));
+
+export const fetchProjectStatuses = projectIdOrKey => (dispatch, getState) =>
+  new Promise((resolve, reject) => {
+    const jiraClient = getState().jira.client;
+    jiraClient.project.getStatuses({ projectIdOrKey }, (err, response) => {
+      if (err) reject(err);
+      console.log('Project statuses', response);
+      resolve(response);
+    });
+  });
+
+// export const fetchProjectAvatars = () => (dispatch, getState) =>
+  // new Promise((resolve, reject) => {
+    // const jiraClient = getState().jira.client;
+    // jiraClient.proje
+  // })

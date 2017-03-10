@@ -1,8 +1,8 @@
 import io from 'socket.io-client';
 import storage from 'electron-json-storage';
-import * as types from './constants';
+import config from 'config';
 
-import config from './config';
+import * as types from './constants';
 
 export default class Socket {
   static connect() {

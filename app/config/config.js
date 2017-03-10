@@ -1,4 +1,4 @@
 export const staticUrl = process.env.NODE_ENV === 'development'
-  ? 'https://chronos-api.web-pal.com'
+  ? 'http://localhost:5000'
   : 'https://chronos-api.web-pal.com';
 

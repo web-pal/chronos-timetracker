@@ -17,6 +17,15 @@
   margin-left: 3px;
 }
 
+label + .error {
+  padding-top: 0px;
+  margin-left: 20px;
+}
+
+input.host {
+  width: 30%;
+}
+
 .error {
   padding-top: 10px;
   font-size: 13px;
@@ -120,4 +129,16 @@ input:checked + .slider:before {
 
 .slider.round:before {
   border-radius: 50%;
+}
+
+.hostPlaceholder {
+  width: 100%;
+  border-left: none !important;
+  border-top-left-radius: 0px !important;
+  border-bottom-left-radius: 0px !important;
+}
+
+.host {
+  border-top-right-radius: 0px !important;
+  border-bottom-right-radius: 0px !important;
 }

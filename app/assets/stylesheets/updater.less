@@ -1,0 +1,16 @@
+.Updater {
+  .fa.fa-code-fork {
+    &.latest {
+      color: fadeout(@primary, 20%);
+    }
+    &.available {
+      color: fadeout(@jira-warm-red, 20%);
+    }
+  }
+}
+
+@keyframes blink {
+  50% {
+    background: rgba(187, 217, 247, 1);
+  }
+}

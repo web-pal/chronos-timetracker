@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 
 import Img from '../Base/Img/Img';
 
-const Avatar = ({ avatarUrls }) =>
+const Avatar = ({ avatarUrls }) => avatarUrls ?
   <span className="avatar">
     <span className="avatar-inner">
       <Img
@@ -15,7 +15,7 @@ const Avatar = ({ avatarUrls }) =>
         }
       />
     </span>
-  </span>;
+  </span> : false;
 
 Avatar.propTypes = {
   avatarUrls: PropTypes.object,

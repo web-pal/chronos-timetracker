@@ -1,4 +1,5 @@
 import { remote } from 'electron';
+import storage from 'electron-json-storage';
 import fs from 'fs';
 import path from 'path';
 import fetch from 'isomorphic-fetch';
@@ -28,11 +29,10 @@ export function startTimer(description, trackingIssue) {
     const worklogsDir = `${appDir}/worklogs`;
     const worklogId = Date.now();
     const worklogFile = `${worklogsDir}/${worklogId}.worklog`;
-    const currentIssueId = trackingIssue || getState().issues.meta.get('selected');
-    dispatch({
-      type: types.SET_TRACKING_ISSUE,
-      payload: currentIssueId,
-    });
+    const currentIssueId = trackingIssue || getState().issues.meta.selected;
+    const currentIssue =
+      getState().issues.byId.get(currentIssueId) ||
+      getState().issues.recentById.get(currentIssueId);
     const worklog = {
       issueId: currentIssueId,
       id: worklogId,
@@ -53,8 +53,15 @@ export function startTimer(description, trackingIssue) {
     });
     dispatch({
       type: types.SET_TRACKING_ISSUE,
-      payload: currentIssueId,
+      payload: currentIssueId
     });
+    dispatch({
+      type: types.ADD_RECENT_ISSUE,
+      payload: {
+        id: currentIssueId,
+        issue: currentIssue,
+      },
+    })
   };
 }
 
@@ -126,99 +133,93 @@ function uploadScreenshot(screenshotPath) {
   });
 }
 
-export function updateWorklog() {
-  return (dispatch, getState) => new Promise((resolve) => {
+export function updateWorklog(worklog, params = { sync: false }) {
+  return (dispatch, getState) => new Promise((resolve, reject) => {
     dispatch({
       type: types.SET_WORKLOG_UPLOAD_STATE,
       payload: true
     });
-    const { time, description, trackingIssue, jiraWorklogId, screensShot } = getState().tracker;
     const token = getState().jira.jwt;
     const jiraClient = getState().jira.client;
-    if (jiraWorklogId === null) {
-      const url = `${staticUrl}/desktop-tracker/submit-worklog`;
-      const opts = {
-        issueId: trackingIssue,
-        worklog: {
-          comment: description,
-          timeSpentSeconds: time < 60 ? 60 : time,
-        },
-      };
-      jiraClient.issue.addWorkLog(opts, (e, status, response) => {
-        const { id } = response.body;
-        const options = {
-          method: 'POST',
-          body: JSON.stringify({
-            worklog: {
-              issueId: trackingIssue,
-              description,
-              timeTracked: time < 60 ? 60 : time,
-              screenshots: screensShot.toJS(),
-            },
-            id,
-          }),
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
+    const online = getState().jira.online;
+    const activity = getState().tracker.activity.toJS();
+    if (online) {
+      uploadWorklog({ jiraClient, worklog, token, activity })
+        .then(
+          (resWorklog) => {
+            dispatch({
+              type: types.SET_WORKLOG_UPLOAD_STATE,
+              payload: false
+            });
+            resolve(resWorklog);
           },
-        };
-        fetch(url, options)
-          .then(
-            (res) => {
-              if (res.status === 200) {
-                dispatch({
-                  type: types.SET_JIRA_WORKLOG_ID,
-                  id,
-                });
-                resolve(response.body);
-                dispatch({
-                  type: types.SET_WORKLOG_UPLOAD_STATE,
-                  payload: false
-                });
-              }
-            },
-          );
-      });
+          (err) => reject(err)
+        );
     } else {
-      const url = `${staticUrl}/desktop-tracker/update-worklog`;
-      const opts = {
-        worklogId: getState().tracker.jiraWorklogId,
-        issueId: trackingIssue,
-        worklog: {
-          comment: description,
-          timeSpentSeconds: time < 60 ? 60 : time,
-        },
-      };
-      jiraClient.issue.updateWorkLog(opts, (e, status, response) => {
-        const { id } = response.body;
-        const options = {
-          method: 'POST',
-          body: JSON.stringify({
-            worklog: {
-              timeTracked: time < 60 ? 60 : time,
-              screenshots: screensShot.toJS(),
-            },
-            id,
-          }),
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        };
-        fetch(url, options)
-          .then(
-            (res) => {
-              if (res.status === 200) {
-                resolve(response.body);
-                dispatch({
-                  type: types.SET_WORKLOG_UPLOAD_STATE,
-                  payload: false
-                });
-              }
-            },
-          );
+      storage.get('offline_worklogs', (err, oldData) => {
+        let newData = oldData;
+        const tempId = `${Date.now()}`;
+        const started = Date.now() - worklog.time;
+        const newLog = {
+          ...worklog,
+          started,
+          tempId,
+        }
+        if (!Array.isArray(newData)) {
+          newData = [];
+          newData.push(newLog);
+        } else {
+          newData.push(newLog);
+        }
+        storage.set('offline_worklogs', newData)
+        reject('No connection')
       });
     }
+  });
+}
+
+function uploadWorklog(params) {
+  return new Promise((resolve, reject) => {
+    console.log(params);
+    const { jiraClient, worklog, token, activity } = params;
+    const { time, description, issueId } = worklog;
+    const jiraWorklog = {
+      comment: description,
+      timeSpentSeconds: time < 60 ? 60 : time,
+    }
+    const opts = {
+      issueId,
+      worklog: jiraWorklog,
+    };
+    jiraClient.issue.addWorkLog(opts, (e, status, response) => {
+      const { id } = response.body;
+      const url = `${staticUrl}/desktop-tracker/submit-worklog`;
+      const options = {
+        method: 'POST',
+        body: JSON.stringify({
+          id,
+          worklog: {
+            ...worklog,
+            timeTracked: time,
+            activity,
+          },
+        }),
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      };
+      fetch(url, options)
+        .then(
+          (res) => {
+            if (res.status === 200) {
+              resolve(response.body);
+            } else {
+              reject(res);
+            }
+          },
+        );
+    });
   });
 }
 
@@ -246,5 +247,12 @@ export function acceptScreenshot(screenshotTime, screenshotPath) {
           });
         },
       );
+  };
+}
+
+export function addActivityPercent(percent) {
+  return {
+    type: types.ADD_ACTIVITY_PERCENT,
+    payload: percent,
   };
 }

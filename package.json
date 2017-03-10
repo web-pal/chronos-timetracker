@@ -1,6 +1,6 @@
 {
   "name": "Chronos",
-  "version": "1.0.0",
+  "version": "0.0.6",
   "description": "Full functionality time tracking software with direct JIRA integration",
   "main": "./app/main.js",
   "scripts": {
@@ -11,6 +11,7 @@
     "package-win": "npm run build && build --win --x64",
     "package-linux": "npm run build && build --linux",
     "package-all": "npm run build && build -mwl",
+    "package-release": "npm run build && build -p always",
     "build-main": "cross-env NODE_ENV=production node -r babel-register ./node_modules/webpack/bin/webpack --config ./webpack.config.electron.js --progress --profile --colors",
     "build-renderer": "cross-env NODE_ENV=production node -r babel-register ./node_modules/webpack/bin/webpack --config ./webpack.config.production.js --progress --profile --colors",
     "build": "npm run build-main && npm run build-renderer",
@@ -24,9 +25,14 @@
     "url": "https://github.com/web-pal"
   },
   "license": "ISC",
+  "updater": {
+    "url": "https://raw.githubusercontent.com/web-pal/Chronos/master/updates.json",
+    "autoDownload": false,
+    "disabled": false
+  },
   "build": {
     "productName": "Chronos",
-    "appId": "com.web-pal.Chronos",
+    "appId": "com.web-pal.chronos",
     "category": "public.app-category.Utility",
     "copyright": "Copyright © 2017 Webpal",
     "dmg": {
@@ -49,7 +55,6 @@
     },
     "linux": {
       "target": [
-        "deb",
         "AppImage"
       ]
     },
@@ -61,14 +66,18 @@
       "**/*",
       "worklogs/",
       "screenshots/"
-    ]
+    ],
+    "publish": {
+      "provider": "github",
+      "token": "3500cc48fc33870c8fac27848b998906b7d14307"
+    }
   },
   "bin": {
-    "electron": "./node_modules/.bin/electron"
+    "electron": "./node_modules/.bin/electron --enable-transparent-visuals --disable-gpu"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/web-pal/chronos-app-jira.git"
+    "url": "git+https://github.com/web-pal/Chronos.git"
   },
   "devDependencies": {
     "7zip": "0.0.6",
@@ -132,23 +141,30 @@
     "bufferutil": "^1.3.0",
     "electron-json-storage": "3.0.0",
     "electron-log": "^1.3.0",
+    "electron-simple-updater": "^1.2.0",
     "electron-updater": "^1.3.2",
     "font-awesome": "^4.7.0",
     "immutable": "3.8.1",
+    "is-online": "^6.1.0",
     "isomorphic-fetch": "2.2.1",
     "jira-connector": "2.6.0",
+    "joi": "^10.2.1",
     "jwt-simple": "0.5.1",
     "lesshat": "4.1.0",
     "moment": "2.17.1",
     "moment-duration-format": "^1.3.0",
     "nanotimer": "^0.3.14",
+    "node-noop": "^1.0.0",
     "normalizr": "^3.1.0",
     "react": "15.4.2",
     "react-addons-shallow-compare": "^15.4.2",
     "react-dom": "15.4.2",
+    "react-markdown": "^2.4.4",
+    "react-pace-progress": "^1.0.0",
     "react-redux": "5.0.2",
     "react-select": "1.0.0-rc.2",
     "react-throttle": "^0.3.0",
+    "react-tooltip": "^3.2.7",
     "react-virtualized": "^8.11.0",
     "redux": "3.6.0",
     "redux-form": "6.5.0",

@@ -1,10 +1,12 @@
 import React, { PropTypes } from 'react';
 import moment from 'moment';
+import { getStatusColor } from 'jiraColors-util';
+import { jts } from 'time-util';
 
 import Flex from '../../../../Base/Flex/Flex';
 
 function formatSummary(summary) {
-  return summary.length > 25 ? `${summary.substr(0, 25)}...` : summary;
+  return summary.length > 20 ? `${summary.substr(0, 20)}...` : summary;
 }
 
 const RecentItem = ({
@@ -30,9 +32,22 @@ const RecentItem = ({
             ${current === id && recentSelected === `${index}_${i}` ? 'active' : ''}\
             ${tracking === id ? 'tracking' : ''}\
           `}
-          onClick={() => onClick(id, i)}
+          onClick={() => onClick(issue, i)}
         >
-          <span className="RecentItem__key">{key}</span>
+          <span
+            className="RecentItem__key"
+            style={{
+              backgroundColor: getStatusColor(issue.getIn(['fields', 'status', 'statusCategory', 'colorName'])),
+            }}
+          >{key}</span>
+          <img
+            className="priorityImg"
+            src={issue.getIn(['fields', 'priority', 'iconUrl'])}
+          />
+          <img
+            className="priorityImg"
+            src={issue.getIn(['fields', 'issuetype', 'iconUrl'])}
+          />
           <span className="RecentItem__summary">{formatSummary(summary)}</span>
           <span className="RecentItem__time flex-item--end">{timeSpent}</span>
           <span className="RecentItem__timest">{moment(w.get('created')).format('HH:mm:ss')}</span>

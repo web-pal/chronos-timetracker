@@ -99,7 +99,7 @@ body,
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 999;
+  z-index: 9;
   background: #fff;
 }
 .LinearGradientSpinner,
@@ -540,6 +540,7 @@ span {
   position: relative;
 }
 .tracker .current-tracking {
+  z-index: 999;
   position: absolute;
   top: 0;
   left: 0;
@@ -603,7 +604,7 @@ span {
   padding: 55px 20px;
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
 }
-.tracker-header {
+.TrackerHeader {
   padding: 8px 15px;
   -webkit-app-region: drag;
   min-height: 137px;
@@ -612,25 +613,25 @@ span {
   position: relative;
   z-index: 20;
 }
-.tracker-header .tracker-header__issuekey {
+.TrackerHeader .TrackerHeader__issuekey {
   -webkit-app-region: no-drag;
   font-size: 1em;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.87);
 }
-.tracker-header .tracker-header__summary {
+.TrackerHeader .TrackerHeader__summary {
   -webkit-app-region: no-drag;
   font-size: .9em;
   color: rgba(0, 0, 0, 0.67);
 }
-.tracker-header .tracker-header__description {
+.TrackerHeader .TrackerHeader__description {
   -webkit-app-region: no-drag;
   font-size: .8em;
   overflow: auto;
   word-break: break-all;
   color: rgba(0, 0, 0, 0.6);
 }
-.tracker-header .tracker-header__status {
+.TrackerHeader .TrackerHeader__status {
   -webkit-app-region: no-drag;
   font-size: .8em;
 }
@@ -692,7 +693,7 @@ span {
   top: 0;
   left: 0;
   transition: 1s all;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(255, 255, 255, 0.7);
 }
 .description-popup .flex-column {
   width: 70%;

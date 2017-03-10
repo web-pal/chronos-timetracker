@@ -11,6 +11,7 @@ const InitialState = Immutable.Record({
   jiraWorklogId: null,
   uploading: false,
   screensShot: Immutable.List(),
+  activity: Immutable.List(),
 });
 
 const initialState = new InitialState();
@@ -48,6 +49,8 @@ export default function tracker(state = initialState, action) {
       return state.set('time', state.time - action.payload);
     case types.SET_WORKLOG_UPLOAD_STATE:
       return state.set('uploading', action.payload);
+    case types.ADD_ACTIVITY_PERCENT:
+      return state.set('activity', state.activity.push(action.payload));
     default:
       return state;
   }

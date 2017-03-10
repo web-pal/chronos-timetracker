@@ -12,20 +12,23 @@ import baseConfig from './webpack.config.base';
 export default validate(merge(baseConfig, {
   debug: true,
 
-  devtool: 'inline-source-map',
+  devtool: 'eval',
 
   entry: {
     main: [
+      'react-hot-loader/patch',
       'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
       'babel-polyfill',
       './app/index',
     ],
     popup: [
+      'react-hot-loader/patch',
       'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
       'babel-polyfill',
       './app/popup',
     ],
     idleTimePopup: [
+      'react-hot-loader/patch',
       'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
       'babel-polyfill',
       './app/idlePopup',
@@ -56,7 +59,7 @@ export default validate(merge(baseConfig, {
   plugins: [
    // https://webpack.github.io/docs/hot-module-replacement-with-webpack.html
     new webpack.HotModuleReplacementPlugin(),
-
+    new webpack.NormalModuleReplacementPlugin(/iconv-loader$/, 'node-noop'),
     /**
      * If you are using the CLI, the webpack process will not exit with an error
      * code by enabling this plugin.

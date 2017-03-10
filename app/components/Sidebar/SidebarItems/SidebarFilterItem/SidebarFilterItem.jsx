@@ -2,6 +2,8 @@ import React, { PropTypes } from 'react';
 import { Debounce } from 'react-throttle';
 
 import Flex from '../../../Base/Flex/Flex';
+import searchIcon from '../../../../assets/images/search@2x.png';
+import refreshIcon from '../../../../assets/images/refresh@2x.png';
 
 const SidebarFilterItem = ({
   onChange,
@@ -12,12 +14,21 @@ const SidebarFilterItem = ({
   resolveFilter,
   hidden,
 }) =>
-  <Flex row centered className={`sidebar-filter-item ${hidden ? 'hidden' : ''}`}>
-    <Flex column centered>
-      <span className="aui-icon aui-icon-small aui-iconfont-search flex-item--start" />
-    </Flex>
+  <Flex row className={`sidebar-filter-item ${hidden ? 'hidden' : ''}`}>
     <Flex column centered className="search-field">
-      <Debounce time="700" handler="onChange">
+      <Flex column centered>
+        {value !== '' &&
+          <span
+            className="aui-icon aui-icon-small aui-iconfont-remove-label"
+            onClick={() => {
+              onChange('');
+              document.getElementById('search').value = '';
+            }}
+          />
+        }
+        <img src={searchIcon} width={18} height={18} />
+      </Flex>
+      <Debounce time="300" handler="onChange">
         <input
           className="text"
           type="text"
@@ -25,18 +36,9 @@ const SidebarFilterItem = ({
           onChange={e => onChange(e.target.value)}
         />
       </Debounce>
-      {value !== '' &&
-        <span
-          className="aui-icon aui-icon-small aui-iconfont-remove-label"
-          onClick={() => {
-            onChange('');
-            document.getElementById('search').value = '';
-          }}
-        />
-      }
     </Flex>
     <Flex column centered>
-      <span className="fa fa-refresh" onClick={refreshIssues} />
+      <img className="refreshIcon" src={refreshIcon} onClick={refreshIssues} width={20} height={19} />
     </Flex>
   </Flex>;
 

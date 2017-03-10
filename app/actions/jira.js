@@ -1,11 +1,30 @@
 import fetch from 'isomorphic-fetch';
 import JiraClient from 'jira-connector';
 import storage from 'electron-json-storage';
+import isOnline from 'is-online';
+import { staticUrl } from 'config';
 
 import { success, fail } from '../helpers/promise';
 import * as types from '../constants';
-import { staticUrl } from '../config/config';
 import Socket from '../socket';
+
+export function installUpdates() {
+  return {
+    type: types.INSTALL_UPDATES,
+  };
+}
+
+export function checkConnection() {
+  return dispatch => {
+    isOnline()
+      .then(
+        online => dispatch({
+          type: types.SET_CONNECTION_STATUS,
+          payload: online,
+        })
+      );
+  }
+}
 
 export function jwtConnect(token) {
   return (dispatch, getState) => new Promise((resolve, reject) => {
@@ -121,11 +140,8 @@ export function connect(credentials) {
     const { host, username, password, memorize } = credentials.toJS();
     let formatHost = host.startsWith('https://') ? host.slice(8) : host;
     formatHost = formatHost.startsWith('http://') ? formatHost.slice(7) : formatHost;
-    formatHost = formatHost[formatHost.length - 1] === '/'
-      ? formatHost.slice(0, formatHost.length - 1)
-      : formatHost;
     const jiraClient = new JiraClient({
-      host: formatHost,
+      host: `${formatHost}.atlassian.net`,
       basic_auth: {
         username,
         password,
@@ -133,6 +149,7 @@ export function connect(credentials) {
     });
     jiraClient.myself.getMyself({}, (err, response) => {
       if (err) {
+        console.log(err);
         dispatch({
           type: types.THROW_ERROR,
           error: 'Cannot authorize to JIRA. Check your credentials and try again',
@@ -154,7 +171,7 @@ export function connect(credentials) {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            baseUrl: formatHost,
+            baseUrl: `${formatHost}.atlassian.net`,
             username,
             password,
           }),

@@ -1,6 +1,8 @@
 import React, { PropTypes, Component } from 'react';
 import fs from 'fs';
 import { remote } from 'electron';
+import { normalize, schema } from 'normalizr';
+import { issueSchema } from '../schemas/issue';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -12,6 +14,7 @@ import * as worklogsActions from '../actions/worklogs';
 import * as projectsActions from '../actions/projects';
 import * as settingsActions from '../actions/settings';
 import * as jiraActions from '../actions/jira';
+import * as uiActions from '../actions/ui';
 
 class FetchWrapper extends Component {
   static propTypes = {
@@ -28,13 +31,22 @@ class FetchWrapper extends Component {
   };
 
   componentWillReceiveProps(nextProps) {
+    const {
+      fetchProjectStatuses,
+      fetchLastWeekLoggedIssues,
+      fetchIssues,
+      clearIssues,
+      clearWorklogs,
+    } = this.props;
+
     const currentFilterValue = this.props.filterValue;
     const nextFilterValue = nextProps.filterValue;
 
     const currentConnected = this.props.connected;
     const nextConnected = nextProps.connected;
-
+    
     if (currentFilterValue !== nextFilterValue) {
+      console.log(`Search. query: ${nextFilterValue}`)
       this.props.searchIssues(nextFilterValue);
     }
 
@@ -51,28 +63,39 @@ class FetchWrapper extends Component {
           fs.mkdirSync(`${appDir}/worklogs/`);
         }
       });
-      this.props.fetchProjects()
-        .then(
-          () => {
-            this.props.getLastProject();
-            this.props.fetchSettings();
-          },
-        );
+      this.initialize();
     }
     if (this.props.currentProject !== nextProps.currentProject) {
       if (this.props.currentProject) {
-        this.props.clearIssues();
-        this.props.clearWorklogs();
+        clearIssues();
+        clearWorklogs();
       }
-      this.props.fetchLastWeekLoggedIssues()
-        .catch(
-          (e) => console.log(e)
-        );
-      this.props.fetchIssues({ startIndex: 0, stopIndex: -1 }, true)
-        .catch(
-          (e) => console.log(e)
-        )
+      fetchLastWeekLoggedIssues();
+      fetchIssues();
     }
+  }
+
+  initialize = () => {
+    const {
+      fetchProjects,
+      getLastProject,
+      fetchSettings,
+      checkConnection,
+    } = this.props;
+
+    fetchProjects()
+      .then(
+        () =>  getLastProject()
+      )
+      .then(
+        () => fetchSettings()
+      )
+    checkConnection();
+    this.checkConnectionInterval = setInterval(() => checkConnection(), 10000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.checkConnectionInterval);
   }
 
   render() {
@@ -99,6 +122,7 @@ function mapDispatchToProps(dispatch) {
     ...worklogsActions,
     ...projectsActions,
     ...settingsActions,
+    ...uiActions,
   }, dispatch);
 }
 

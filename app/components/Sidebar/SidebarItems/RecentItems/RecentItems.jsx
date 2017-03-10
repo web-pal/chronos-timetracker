@@ -26,11 +26,15 @@ const RecentItems = ({
 }) =>
   <div className="RecentItems">
     {items.toList().map((item, i) =>
-      <Flex column key={i}>
-        <TimestampItem date={item.toList().get(0).get('updated')} index={i} />
+      <Flex column className="RecentItems__block" key={i}>
+        <TimestampItem
+          date={item.toList().get(0).get('updated')}
+          index={i}
+          items={item.toList()}
+        />
         <RecentItem
-          onClick={(id, ind) => {
-            onItemClick(id);
+          onClick={(issue, ind) => {
+            onItemClick(issue);
             selectRecent(`${i}_${ind}`);
           }}
           index={i}

@@ -17,8 +17,10 @@ const ProjectPickerWrapper = ({
   <Dropdown
     options={options}
     onChange={selectProject}
+    placeholder="Select project"
     value={selectedProject}
     fetching={projectsFetching}
+    className="ProjectPicker"
   />;
 
 ProjectPickerWrapper.propTypes = {

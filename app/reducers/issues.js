@@ -35,12 +35,14 @@ function recentItems(state = new Map(), action) {
       return fromJS(action.payload.map) || new Map();
     case types.ADD_RECENT_ISSUE:
       return state.set(action.payload.id, action.payload.issue);
+    case types.SELECT_ISSUE:
+      return state.set(action.payload.get('id'), action.payload);
     default:
       return state;
   }
 }
 
-const initialMeta = new Map({
+const InitialMeta = Immutable.Record({
   fetching: false,
   total: 0,
   selected: null,
@@ -48,7 +50,10 @@ const initialMeta = new Map({
   recentSelected: null,
   recent: new OrderedSet(),
   searchResults: new OrderedSet(),
+  currentPagination: { startIndex: 0, stopIndex: 0 },
 });
+
+const initialMeta = new InitialMeta();
 
 function meta(state = initialMeta, action) {
   switch (action.type) {
@@ -57,11 +62,11 @@ function meta(state = initialMeta, action) {
     case types.GET_ISSUES_COUNT:
       return state.set('total', action.payload);
     case types.SELECT_ISSUE:
-      return state.set('selected', action.payload);
+      return state.set('selected', action.payload.get('id'));
     case types.FILL_RECENT_ISSUES:
       return state.set('recent', new OrderedSet(action.payload.ids));
     case types.ADD_RECENT_ISSUE:
-      return state.set('recent', state.get('recent').add(action.payload.id));
+      return state.set('recent', state.recent.add(action.payload.id));
     case types.FILL_SEARCH_ISSUES:
       return state.set('searchResults', new OrderedSet(action.payload));
     case types.SELECT_RECENT:
@@ -69,9 +74,13 @@ function meta(state = initialMeta, action) {
     case types.SET_TRACKING_ISSUE:
       return state.set('tracking', action.payload);
     case types.CLEAR_TRACKING_ISSUE:
-      return state.set('tracking', null);
+      return state.delete('tracking');
     case types.CLEAR_ISSUES:
-      return initialMeta;
+      return state.set('total', 0).delete('currentPagination');
+    case types.CLEAR_SEARCH_RESULTS:
+      return state.delete('searchResults');
+    case types.SET_CURRENT_PAGINATION:
+      return state.set('currentPagination', action.payload);
     default:
       return state;
   }

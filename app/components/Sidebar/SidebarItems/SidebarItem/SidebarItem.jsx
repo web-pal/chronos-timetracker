@@ -1,10 +1,11 @@
 import React, { PropTypes } from 'react';
+import { getStatusColor } from 'jiraColors-util';
 
 import Flex from '../../../Base/Flex/Flex';
 import SidebarItemLoader from '../../../Spinners/SidebarItemLoader';
 
 function formatSummary(summary) {
-  return summary && summary.length > 25 ? `${summary.substr(0, 25)}...` : summary;
+  return summary && summary.length > 20 ? `${summary.substr(0, 20)}...` : summary;
 }
 
 const SidebarItem = ({ onClick, style, item, current, tracking }) => {
@@ -18,10 +19,31 @@ const SidebarItem = ({ onClick, style, item, current, tracking }) => {
         ${active ? 'sidebar__item--active' : ''}\
         ${tracking && tracking === id ? 'sidebar__item--tracking' : ''}`
       }
-      onClick={() => onClick(id)}
+      onClick={() => onClick(item)}
       style={style}
     >
-      <span className="SidebarItem__key">{key}</span>
+      <span
+        className="SidebarItem__key"
+        style={{
+          backgroundColor: getStatusColor(item.getIn(['fields', 'status', 'statusCategory', 'colorName'])),
+        }}
+      >
+        {key}
+      </span>
+      <img
+        className="priorityImg"
+        src={
+          item.getIn(['fields', 'priority', 'iconUrl']) ||
+          'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
+        }
+      />
+      <img
+        className="priorityImg"
+        src={
+          item.getIn(['fields', 'issuetype', 'iconUrl']) ||
+          'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
+        }
+      />
       <span className="SidebarItem__summary">{formatSummary(summary)}</span>
       <SidebarItemLoader show={item.size === 0} />
     </Flex>

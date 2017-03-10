@@ -1,24 +1,29 @@
 .avatar {
-  width: 64px;
-  height: 64px;
+  width: 44px;
+  height: 44px;
   overflow: hidden;
-  border: 2px solid @primary;
   border-radius: 50%;
   img {
-    width: 64px;
-    height: 64px;
+    width: 100%;
+    height: 100%;
   }
 }
 
 .header {
-  padding: 8px;
-  padding-top: 25px;
-  border-bottom: 1px solid #b6b6b6;
-  min-height: 120px;
-  z-index: 1;
+  height: 103px;
+  padding: 20px 15px 16px 15px;
+  z-index: 10;
   background: #fff;
   position: relative;
   -webkit-app-region: drag;
+}
+
+@media screen and (max-width: 800px) {
+  .IssueInfo {
+    span {
+      font-size: .8em !important;
+    }
+  }
 }
 
 .Select {
@@ -30,9 +35,13 @@ span {
 }
 
 .username {
-  font-size: 1.5em;
-  margin-left: 20px;
+  margin-left: 10px;
   color: rgba(0, 0, 0, .83);
+  color:  #313234;
+  font-size: 16px;/* Приближение из-за подстановки шрифтов */
+  font-weight: 300;
+  line-height: 40px;/* Приближение из-за подстановки шрифтов */
+  text-align: left;
 }
 
 .intersect {
@@ -52,34 +61,65 @@ span {
   }
 }
 
-.fa-camera {
-  color: rgba(0, 0, 0, 1);
-  &:before {
-    -webkit-app-region: no-drag;
+.header__icons {
+  a+a {
+    padding: 0px 6px;
   }
-  &.disabled {
-    color: rgba(0, 0, 0, .33);
-  }
+}
+
+.CameraIcon {
+  -webkit-app-region: no-drag;
   cursor: help;
-  position: absolute;
-  top: 4px;
-  right: 24px;
 }
 
-.fa-sign-out {
-  color: rgba(0, 0, 0, .63);
+.Select.ProjectPicker {
+  margin-top: 17px;
+  .Select-control {
+    background-color: #e8e8e8;
+    height: 43px;
+    border-radius: 2px;
+    border-color: transparent;
+  }
+  .Select-value-label {
+    color: rgba(0, 0, 0, .7) !important;
+    font-size: 16px;/* Приближение из-за подстановки шрифтов */
+    font-weight: 300;
+    line-height: 40px;/* Приближение из-за подстановки шрифтов */
+    text-align: left;
+  }
+  .Select-arrow {
+    border-color: #3572b0 transparent transparent;
+    border-width: 6px 4px 2.5px;
+  }
+}
+
+.logout {
   cursor: pointer;
-  &:before {
-    -webkit-app-region: no-drag;
-  }
+  -webkit-app-region: no-drag;
   &:hover {
-    color: #000;
+    background: darken(#6fc1fb, 10%);
   }
-  position: absolute;
-  top: 4px;
-  right: 4px;
+  background: #6fc1fb;
+  border-radius: 50%;
+  position: relative;
+  height: 28px;
+  width: 16px;
+  img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
 }
 
-.Select {
-  margin-top: 15px;
+.CameraIcon {
+  margin-right: 13px;
+  position: relative;
+  width: 20px;
+  img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
 }
