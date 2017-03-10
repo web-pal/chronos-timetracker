@@ -51,6 +51,7 @@ class FetchWrapper extends Component {
     }
 
     if (!currentConnected && nextConnected) {
+      console.log("CONNECTED")
       const { getGlobal } = remote;
       const appDir = getGlobal('appDir');
       fs.access(`${appDir}/screenshots/`, fs.constants.R_OK | fs.constants.W_OK, (err) => {

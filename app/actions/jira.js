@@ -1,4 +1,3 @@
-import fetch from 'isomorphic-fetch';
 import JiraClient from 'jira-connector';
 import storage from 'electron-json-storage';
 import isOnline from 'is-online';
@@ -176,6 +175,7 @@ export function connect(credentials) {
             password,
           }),
         };
+        console.log(staticUrl, options);
         fetch(url, options)
           .then(
             res => res.status === 200 && res.json(),
