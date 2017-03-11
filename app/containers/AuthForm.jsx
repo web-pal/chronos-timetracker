@@ -8,6 +8,8 @@ import * as jiraActions from '../actions/jira';
 import Flex from '../components/Base/Flex/Flex';
 import Checkbox from '../components/Checkbox/Checkbox';
 
+import logo from '../assets/images/logo256x256.png';
+
 const spinner = require('../assets/images/ring-alt.svg');
 
 const validate = values => {
@@ -25,13 +27,13 @@ const validate = values => {
 }
 
 
-const renderField = ({ input, label, type, meta: { touched, error, warning } }) => (
+const renderField = ({ input, label, type, placeholder, meta: { touched, error, warning } }) => (
   <div className={`form-element ${label}`}>
     <Flex row>
       <label htmlFor={label}>{label}</label>
       {touched && error && <span className="error">{error}</span>}
     </Flex>
-    <input {...input} type={type}/>
+    <input {...input} type={type} placeholder={placeholder} />
   </div>
 )
 
@@ -86,20 +88,22 @@ class AuthForm extends Component {
             <img src={spinner} alt="" />
           </div>
         }
+        <Flex row centered className="logo">
+          <img src={logo} height={107}/>
+        </Flex>
         <Flex row centered>
           <form onSubmit={handleSubmit(this.submit)} className="form">
-            <div className="form-element">
-              <label htmlFor="host">JIRA host</label>
+            <div>
               <Flex row className="form-element">
-                <Field name="host" component="input" type="text" className="host" />
+                <Field name="host" placeholder="JIRA host*" component="input" type="text" className="host" />
                 <input disabled value=".atlassian.net" className="hostPlaceholder" />
               </Flex>
             </div>
-            <Field name="username" label="Username" component={renderField} type="text" />
-            <Field name="password" label="Password" component={renderField} type="password" />
+            <Field name="username" placeholder="Username*" component={renderField} type="text" />
+            <Field name="password" placeholder="Password*" component={renderField} type="password" />
             <div className="form-element">
               <Field
-                label="Remember? "
+                label="Remember me "
                 name="memorize"
                 type="checkbox"
                 component={Checkbox}
@@ -111,7 +115,7 @@ class AuthForm extends Component {
                   {jiraError}
                 </span>
               }
-              <button className="button button-success flex-item--end" type="submit">Login</button>
+              <button className="button button-primary" type="submit">Login</button>
             </Flex>
           </form>
         </Flex>

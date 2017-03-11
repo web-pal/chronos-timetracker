@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 
 const Checkbox = ({ input, label, type, disabled }) => (
-  <div className="flex-row flex--end flex--center">
+  <div className="flex-row">
     <label className="checkbox-label">
       {label}
     </label>

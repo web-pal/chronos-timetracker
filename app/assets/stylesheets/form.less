@@ -1,13 +1,16 @@
 .form {
-  width: 80%;
+  width: 42.75%;
   max-width: 600px;
   -webkit-app-region: no-drag;
+  .button.button-primary {
+    width: 100%;
+  }
 }
 
 .form-element {
   display: flex;
   flex-flow: column;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 .form-element > label {
@@ -23,7 +26,7 @@ label + .error {
 }
 
 input.host {
-  width: 30%;
+  width: 67.5%;
 }
 
 .error {
@@ -34,20 +37,30 @@ input.host {
 
 
 .form-element > input {
-  height: 30px;
-  border: 1px solid #d3d3d3;
-  border-radius: 3px;
-  padding: 3px 6px;
+  background-color: #e8e8e8;
+  height: 41px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  padding: 0px 6px;
   &:focus {
-    box-shadow: 0 0 10px #d3d3e6;
-    border: 1px solid #d3d3d3;
+    border: 1px solid #4bade8;
     outline: 0px;
+  }
+  &.hostPlaceholder {
+    margin-left: 15px;
+    padding: 0;
+    color: #8f8f8f;
+    background: white;
+    border: none;
+    width: 30%;
   }
 }
 
 .checkbox-label {
-  margin-right: 5px;
-  margin-top: -2px;
+  color: #323232;
+  font-size: 16px;
+  font-weight: 300;
+  margin-right: 10px;
 }
 
 .slider {
@@ -57,24 +70,27 @@ input.host {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: lighten(@default, 20%);
-  border: 1px solid rgba(0, 0, 0, .2);
+  background-color: #e8e8e8;
   transition: .4s;
 }
 
 .slider:before {
   position: absolute;
   content: "";
-  height: 15px;
-  width: 15px;
-  left: 2px;
-  bottom: 1px;
-  background-color: #00b494;
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: @primary;
   transition: .4s;
 }
 
+.logo {
+  margin-bottom: 26px;
+}
+
 input:checked + .slider {
-  background-color: #fff;
+  background-color: #e8e8e8;
 }
 
 input:focus + .slider {
@@ -82,7 +98,7 @@ input:focus + .slider {
 }
 
 input:checked + .slider:before {
-  transform: translateX(16px);
+  transform: translateX(19px);
 }
 
 /* Hide default HTML checkbox */
@@ -92,8 +108,8 @@ input:checked + .slider:before {
 .switch {
   position: relative;
   display: inline-block;
-  width: 36px;
-  height: 19px;
+  width: 45px;
+  height: 26px;
 }
 
 .custom-radio {
@@ -131,12 +147,6 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 
-.hostPlaceholder {
-  width: 100%;
-  border-left: none !important;
-  border-top-left-radius: 0px !important;
-  border-bottom-left-radius: 0px !important;
-}
 
 .host {
   border-top-right-radius: 0px !important;
