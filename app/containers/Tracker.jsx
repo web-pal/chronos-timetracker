@@ -1,5 +1,6 @@
 /* global window */
 import React, { PropTypes, Component } from 'react';
+import mergeImages from 'merge-images';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import getScreen from 'user-media-screenshot';
@@ -243,32 +244,32 @@ class Tracker extends Component {
     const screenshotTime = time;
     getScreen((images) => {
       const image = images[0];
-      images.forEach(img => {
-        const i = new Image();
-        i.src = img;
-        console.log(i);
-      })
-      const validImage = image.replace(/^data:image\/jpeg;base64,/, '');
-      const imageDir = `${dir}/screenshots/${screenshotTime}_${Date.now()}.jpeg`;
-      fs.writeFile(imageDir, validImage, 'base64', (err) => {
-        getGlobal('sharedObj').lastScreenshotPath = imageDir;
-        getGlobal('sharedObj').currentWorklogId = currentWorklogId;
-        getGlobal('sharedObj').screenshotTime = screenshotTime;
-        if (err) throw err;
-        const { width, height } = electron.screen.getPrimaryDisplay().workAreaSize;
-        const options = {
-          width: 218,
-          height: 212,
-          x: width - 218,
-          y: height - 212,
-          frame: false,
-          resizable: false,
-          movable: false,
-          alwaysOnTop: true,
-        };
-        const win = new BrowserWindow(options);
-        win.loadURL(`file://${srcDir}/popup.html`);
-      });
+      mergeImages(images)
+        .then(
+          (merged) => {
+            const validImage = merged.replace(/^data:image\/png;base64,/, '');
+            const imageDir = `${dir}/screenshots/${screenshotTime}_${Date.now()}.jpeg`;
+            fs.writeFile(imageDir, validImage, 'base64', (err) => {
+              getGlobal('sharedObj').lastScreenshotPath = imageDir;
+              getGlobal('sharedObj').currentWorklogId = currentWorklogId;
+              getGlobal('sharedObj').screenshotTime = screenshotTime;
+              if (err) throw err;
+              const { width, height } = electron.screen.getPrimaryDisplay().workAreaSize;
+              const options = {
+                width: 218,
+                height: 212,
+                x: width - 218,
+                y: height - 212,
+                frame: false,
+                resizable: false,
+                movable: false,
+                alwaysOnTop: true,
+              };
+              const win = new BrowserWindow(options);
+              win.loadURL(`file://${srcDir}/popup.html`);
+            });
+          }
+        )
     });
   }
 
