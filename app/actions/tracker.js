@@ -179,7 +179,6 @@ export function updateWorklog(worklog, params = { sync: false }) {
 
 function uploadWorklog(params) {
   return new Promise((resolve, reject) => {
-    console.log(params);
     const { jiraClient, worklog, token, activity } = params;
     const { time, description, issueId } = worklog;
     const jiraWorklog = {
@@ -192,6 +191,7 @@ function uploadWorklog(params) {
     };
     jiraClient.issue.addWorkLog(opts, (e, status, response) => {
       const { id } = response.body;
+      console.log(response);
       const url = `${staticUrl}/desktop-tracker/submit-worklog`;
       const options = {
         method: 'POST',

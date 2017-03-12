@@ -18,6 +18,16 @@ const requiredFields = [
   'timespent',
 ];
 
+export function updateIssueTime(issueId, time) {
+  return {
+    type: types.UPDATE_ISSUE_TIME,
+    payload: {
+      time,
+      issueId
+    },
+  };
+}
+
 function setIssuesFetchState(value) {
   return {
     type: types.SET_ISSUES_FETCH_STATE,

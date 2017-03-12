@@ -177,7 +177,7 @@
     "socket.io-client": "^1.7.2",
     "source-map-support": "0.4.10",
     "url-loader": "^0.5.7",
-    "user-media-screenshot": "1.0.2",
+    "@Architektor/user-media-screenshot": "git+https://github.com/Architektor/user-media-screenshot.git",
     "utf-8-validate": "^2.0.0",
     "x11": "^2.2.0"
   },

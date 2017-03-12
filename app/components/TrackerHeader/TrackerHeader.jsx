@@ -21,13 +21,13 @@ const TrackerHeader = ({ currentIssue }) => {
       }
       <Flex row centerd spaceBetween className="TrackerHeader__times">
         <span className="estimate">
-          Estimated: <b>{stj(estimate, 'h[h]m[m]')}</b>
+          Estimated: <b>{stj(estimate, 'h[h] m[m]')}</b>
         </span>
         <span className="logged">
-          Logged: <b>{stj(logged, 'h[h]m[m]')}</b>
+          Logged: <b>{stj(logged, 'h[h] m[m]')}</b>
         </span>
         <span className="remaining">
-          Remaining: <b>{stj(remaining, 'h[h]m[m]s[s]')}</b>
+          Remaining: <b>{stj(remaining, 'h[h] m[m] s[s]')}</b>
         </span>
       </Flex>
     </Flex> : false;

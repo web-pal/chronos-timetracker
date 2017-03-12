@@ -3,7 +3,7 @@ import React, { PropTypes, Component } from 'react';
 import mergeImages from 'merge-images';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import getScreen from 'user-media-screenshot';
+import getScreen from '@Architektor/user-media-screenshot';
 import fs from 'fs';
 import NanoTimer from 'nanotimer';
 import electron, { remote, ipcRenderer } from 'electron';
@@ -168,6 +168,7 @@ class Tracker extends Component {
       time,
       description,
       trackingIssue,
+      updateIssueTime,
       screensShot,
     } = this.props;
 
@@ -185,6 +186,7 @@ class Tracker extends Component {
           clearTrackingIssue();
           addRecentIssue(worklog.issueId);
           addRecentWorklog(worklog);
+          updateIssueTime(worklog.issueId, worklog.timeSpentSeconds);
           resetTimer();
           getGlobal('sharedObj').running = false;
           resolve();

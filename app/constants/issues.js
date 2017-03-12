@@ -12,3 +12,4 @@ export const SELECT_ISSUE = 'issues/SELECT';
 export const SELECT_RECENT = 'issues/SELECT_RECENT';
 export const SET_TRACKING_ISSUE = 'issues/SET_TRACKING_ISSUE';
 export const SET_CURRENT_PAGINATION = 'issues/SET_CURRENT_PAGINATION';
+export const UPDATE_ISSUE_TIME = 'issues/UPDATE_ISSUE_TIME';

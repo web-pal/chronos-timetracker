@@ -24,6 +24,11 @@ function itemsById(state = new Map(), action) {
       return state.merge(new Map(fromJS(action.payload.map)));
     case types.CLEAR_ISSUES:
       return new Map();
+    case types.UPDATE_ISSUE_TIME:
+      const issue = state.get(action.payload.issueId);
+      const newIssue = issue &&
+        issue.set('timespent', issue.get('timespent') + action.payload.time);
+      return issue ? state.set(action.payload.issueId, newIssue) : state;
     default:
       return state;
   }
@@ -35,6 +40,12 @@ function recentItems(state = new Map(), action) {
       return fromJS(action.payload.map) || new Map();
     case types.ADD_RECENT_ISSUE:
       return state.set(action.payload.id, action.payload.issue);
+    case types.UPDATE_ISSUE_TIME:
+      const issue = state.get(action.payload.issueId);
+      console.log(issue.toJS(), action.payload.time);
+      const newIssue = issue &&
+        issue.setIn(['fields', 'timespent'], issue.getIn(['fields', 'timespent']) + action.payload.time);
+      return issue ? state.set(action.payload.issueId, newIssue) : state;
     case types.SELECT_ISSUE:
       return state.set(action.payload.get('id'), action.payload);
     default:

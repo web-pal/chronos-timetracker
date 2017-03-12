@@ -42,6 +42,8 @@ const Timer = (props) => {
             {running &&
               <Flex row centered>
                 <input
+                  autoFocus
+                  id="descriptionInput"
                   value={description}
                   className="descriptionInput"
                   onChange={(e) => onDescriptionChange(e.target.value)}
