@@ -245,12 +245,29 @@ class Tracker extends Component {
     const srcDir = getGlobal('appSrcDir');
     const screenshotTime = time;
     getScreen((images) => {
-      const image = images[0];
-      mergeImages(images)
+      let xPointer = 0;
+      let totalWidth = 0;
+      let maxHeight = 0;
+      const imagesWithCords = images.map((image, i) => {
+        const _image = new Image();
+        _image.src = image;
+        const imageObj = {
+          src: image,
+          x: xPointer,
+          y: 0,
+        }
+        xPointer = _image.naturalWidth + xPointer;
+        totalWidth += _image.naturalWidth;
+        maxHeight = _image.naturalHeight > maxHeight ? _image.naturalHeight : maxHeight;
+        return imageObj;
+      })
+      console.log(imagesWithCords);
+      mergeImages(imagesWithCords, { width: totalWidth, height: maxHeight })
         .then(
           (merged) => {
             const validImage = merged.replace(/^data:image\/png;base64,/, '');
-            const imageDir = `${dir}/screenshots/${screenshotTime}_${Date.now()}.jpeg`;
+            const imageDir = `${dir}/screenshots/${screenshotTime}_${Date.now()}.png`;
+            console.log(imageDir);
             fs.writeFile(imageDir, validImage, 'base64', (err) => {
               getGlobal('sharedObj').lastScreenshotPath = imageDir;
               getGlobal('sharedObj').currentWorklogId = currentWorklogId;

@@ -118,7 +118,7 @@ function uploadScreenshot(screenshotPath) {
             const opts = {
               method: 'PUT',
               headers: {
-                'Content-Type': 'image/jpeg',
+                'Content-Type': 'image/png',
               },
               body: image,
             };
