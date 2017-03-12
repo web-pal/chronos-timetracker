@@ -7,7 +7,7 @@ const InitialState = Immutable.Record({
   currentWorklogId: null,
   trackingIssue: null,
   lastScreenshotTime: null,
-  description: null,
+  description: "",
   jiraWorklogId: null,
   uploading: false,
   screensShot: Immutable.List(),
