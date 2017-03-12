@@ -1,7 +1,7 @@
 import fetch from 'isomorphic-fetch';
+import { staticUrl } from 'config';
 
 import * as types from '../constants';
-import { staticUrl } from '../config/config';
 
 export const fetchSettings = () => (dispatch, getState) => new Promise((resolve) => {
   const token = getState().jira.jwt;

@@ -1,8 +1,6 @@
 const {desktopCapturer, screen} = require('electron');
 
 function getScreen(callback) {
-    var _this = this;
-    this.callback = callback;
 
     this.handleStream = (stream) => {
         // console.log('stream',stream);
@@ -23,9 +21,9 @@ function getScreen(callback) {
             // Draw video on canvas
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
             
-            if (_this.callback) {
+            if (callback) {
                 // Save screenshot to jpg - base64
-                _this.callback(canvas.toDataURL('image/jpeg'));
+                callback(canvas.toDataURL('image/jpeg'));
             } else {
                 console.log('Need callback!');
             }

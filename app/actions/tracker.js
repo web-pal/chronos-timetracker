@@ -4,10 +4,10 @@ import fs from 'fs';
 import path from 'path';
 import fetch from 'isomorphic-fetch';
 import moment from 'moment';
+import { staticUrl } from 'config';
 
 import * as types from '../constants';
 import { success, fail } from '../helpers/promise';
-import { staticUrl } from '../config/config';
 
 export function tick() {
   return {
@@ -22,7 +22,7 @@ export function dismissIdleTime(time) {
   };
 }
 
-export function startTimer(description, trackingIssue) {
+export function startTimer(trackingIssue) {
   return (dispatch, getState) => {
     const { getGlobal } = remote;
     const appDir = getGlobal('appDir');
@@ -37,11 +37,11 @@ export function startTimer(description, trackingIssue) {
       issueId: currentIssueId,
       id: worklogId,
       started: moment(worklogId).toString(),
-      description,
       screenshots: [],
       timeTracked: 0,
       submitted: false,
     };
+    console.log(worklog);
     fs.writeFile(worklogFile, JSON.stringify(worklog, null, 2), (err) => {
       if (err) throw err;
     });
@@ -49,7 +49,6 @@ export function startTimer(description, trackingIssue) {
       type: types.START,
       worklogId,
       issueId: currentIssueId,
-      description,
     });
     dispatch({
       type: types.SET_TRACKING_ISSUE,
@@ -255,4 +254,11 @@ export function addActivityPercent(percent) {
     type: types.ADD_ACTIVITY_PERCENT,
     payload: percent,
   };
+}
+
+export function setDescription(description) {
+  return {
+    type: types.SET_DESCRIPTION,
+    payload: description
+  }
 }

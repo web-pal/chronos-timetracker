@@ -28,8 +28,9 @@ export default function tracker(state = initialState, action) {
         .set('running', true)
         .set('currentWorklogId', action.worklogId)
         .set('trackingIssue', action.issueId)
-        .set('description', action.description);
     }
+    case types.SET_DESCRIPTION:
+      return state.set('description', action.payload);
     case types.STOP:
       return state.set('running', false);
     case types.RESET:

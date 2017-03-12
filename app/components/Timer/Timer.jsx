@@ -8,7 +8,7 @@ import TimerControls from './TimerControls/TimerControls';
 const Timer = (props) => {
   const {
     time, running, paused, onStart, onStop, onPause, onUnPause, currentIssue, setCurrentIssue,
-    descPopupOpen, onDescPopupClose, onDescPopupConfirm, description, trackingIssue, uploading
+    description, trackingIssue, uploading, onDescriptionChange
   } = props;
   return (
     <Flex column centered className="timer">
@@ -39,11 +39,16 @@ const Timer = (props) => {
                 </Flex>
               </Flex>
             }
-            <DescriptionPopup
-              open={descPopupOpen}
-              onClose={onDescPopupClose}
-              onConfirm={onDescPopupConfirm}
-            />
+            {running &&
+              <Flex row centered>
+                <input
+                  value={description}
+                  className="descriptionInput"
+                  onChange={(e) => onDescriptionChange(e.target.value)}
+                  placeholder="What are you doing?"
+                />
+              </Flex>
+            }
             <TimerControls
               running={running}
               paused={paused}
@@ -53,16 +58,6 @@ const Timer = (props) => {
               unpause={onUnPause}
             />
             <TimerDisplay time={time} uploading={uploading} />
-            {description &&
-              <Flex column centered>
-                <Flex row centered className="description__label">
-                  D E S C R I P T I O N
-                </Flex>
-                <Flex row centered className="description">
-                  {description}
-                </Flex>
-              </Flex>
-            }
           </Flex>
         </Flex>
       : <Flex row centered>
@@ -79,16 +74,14 @@ Timer.propTypes = {
   time: PropTypes.number.isRequired,
   running: PropTypes.bool.isRequired,
   paused: PropTypes.bool.isRequired,
-  descPopupOpen: PropTypes.bool.isRequired,
   description: PropTypes.string,
   setCurrentIssue: PropTypes.func.isRequired,
   onStart: PropTypes.func.isRequired,
   onPause: PropTypes.func.isRequired,
   onStop: PropTypes.func.isRequired,
   onUnPause: PropTypes.func.isRequired,
-  onDescPopupClose: PropTypes.func.isRequired,
-  onDescPopupConfirm: PropTypes.func.isRequired,
   uploading: PropTypes.bool.isRequired,
+  onDescriptionChange: PropTypes.func.isRequired,
 };
 
 export default Timer;

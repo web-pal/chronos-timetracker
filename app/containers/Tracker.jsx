@@ -2,7 +2,7 @@
 import React, { PropTypes, Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import getScreen from 'screenshot-util';
+import getScreen from 'user-media-screenshot';
 import fs from 'fs';
 import NanoTimer from 'nanotimer';
 import electron, { remote, ipcRenderer } from 'electron';
@@ -57,6 +57,7 @@ class Tracker extends Component {
     addRecentIssue: PropTypes.func.isRequired,
     uploading: PropTypes.bool.isRequired,
     screensShot: PropTypes.object.isRequired,
+    setDescription: PropTypes.func.isRequired,
   }
 
   constructor(props) {
@@ -240,7 +241,13 @@ class Tracker extends Component {
     const dir = getGlobal('appDir');
     const srcDir = getGlobal('appSrcDir');
     const screenshotTime = time;
-    getScreen((image) => {
+    getScreen((images) => {
+      const image = images[0];
+      images.forEach(img => {
+        const i = new Image();
+        i.src = img;
+        console.log(i);
+      })
       const validImage = image.replace(/^data:image\/jpeg;base64,/, '');
       const imageDir = `${dir}/screenshots/${screenshotTime}_${Date.now()}.jpeg`;
       fs.writeFile(imageDir, validImage, 'base64', (err) => {
@@ -250,12 +257,11 @@ class Tracker extends Component {
         if (err) throw err;
         const { width, height } = electron.screen.getPrimaryDisplay().workAreaSize;
         const options = {
-          width: 400,
-          height: 300,
-          x: width - 400,
-          y: height - 300,
+          width: 218,
+          height: 212,
+          x: width - 218,
+          y: height - 212,
           frame: false,
-          transparent: true,
           resizable: false,
           movable: false,
           alwaysOnTop: true,
@@ -271,8 +277,8 @@ class Tracker extends Component {
     getGlobal('sharedObj').idleTime = time;
     const dir = getGlobal('appSrcDir');
     const options = {
-      width: 300,
-      height: 200,
+      width: 250,
+      height: 112,
       frame: false,
     };
     const win = new BrowserWindow(options);
@@ -283,7 +289,7 @@ class Tracker extends Component {
     const {
       running, paused, time, trackingIssue, startTimer, closeDescriptionPopup, description,
       pauseTimer, unpauseTimer, openDescriptionPopup, descriptionPopupOpen, currentIssue,
-      selectIssue, uploading,
+      selectIssue, uploading, setDescription,
     } = this.props;
     return (
       <Flex column className="tracker">
@@ -296,17 +302,12 @@ class Tracker extends Component {
           trackingIssue={trackingIssue}
           currentIssue={currentIssue}
           setCurrentIssue={selectIssue}
-          onStart={openDescriptionPopup}
+          onStart={() => startTimer()}
           onPause={pauseTimer}
           description={description}
           onUnPause={unpauseTimer}
           onStop={this.handleTimerStop}
-          descPopupOpen={descriptionPopupOpen}
-          onDescPopupClose={closeDescriptionPopup}
-          onDescPopupConfirm={(desc) => {
-            closeDescriptionPopup();
-            startTimer(desc);
-          }}
+          onDescriptionChange={setDescription}
         />
         <StatusBar />
       </Flex>

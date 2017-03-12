@@ -78,18 +78,18 @@ export default class Popup extends Component {
     const { lastScreenshotPath, currentTime, maxTime } = this.state;
     return (
       <Flex row centered className="popup">
-        <Flex column centered>
+        <Flex column>
           <Img src={lastScreenshotPath} className="screenshot-preview" />
           <PopupTimer time={maxTime - currentTime} />
           <Flex row centered>
             <button
-              className="button button-success"
+              className="button button-info"
               onClick={this.acceptScreenshot}
             >
               Accept
             </button>
             <button
-              className="button button-warning"
+              className="button button-primary"
               onClick={this.rejectScreenshot}
             >
               Reject

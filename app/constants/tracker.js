@@ -10,3 +10,4 @@ export const SET_JIRA_WORKLOG_ID = 'timer/SET_JIRA_WORKLOG_ID';
 export const DISMISS_IDLE_TIME = 'timer/DISMISS_IDLE_TIME';
 export const SET_WORKLOG_UPLOAD_STATE = 'timer/SET_UPLOAD_STATE';
 export const ADD_ACTIVITY_PERCENT = 'timer/ADD_ACTIVITY_PERCENT';
+export const SET_DESCRIPTION = 'timer/SET_DESCRIPTION';

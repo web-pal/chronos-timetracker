@@ -37,25 +37,27 @@ class IdlePopup extends Component {
     const { idleTime, date } = this.state;
     return (
       <Flex column className="IdlePopup">
-        <Flex row centered>
+        <Flex column>
           <span>
-            You was inactive for {stj(idleTime / 1000, 'h[h] m[m] s[s]')} <br />
-            From {date.clone().subtract(idleTime, 'ms').format('HH:mm')} to
-            {date.format('HH:mm:ss')}
+            You was inactive for <b>{stj(idleTime / 1000, 'h [hours] m [minutes] s [seconds]')}</b>
+          </span>
+          <span>
+            From <b>{date.clone().subtract(idleTime, 'ms').format('HH:mm')}</b> to&nbsp;
+            <b>{date.format('HH:mm')}</b>
           </span>
         </Flex>
-        <Flex column>
-          <button
-            className="button button-info"
-            onClick={this.dismissTime}
-          >
-            Dismiss
-          </button>
+        <Flex row>
           <button
             className="button button-info"
             onClick={this.keepTime}
           >
             Keep
+          </button>
+          <button
+            className="button button-primary"
+            onClick={this.dismissTime}
+          >
+            Dismiss
           </button>
         </Flex>
       </Flex>
