@@ -26,7 +26,9 @@ if (process.env.NODE_ENV === 'production') {
   sourceMapSupport.install();
 }
 
+if (process.env.NODE_ENV === 'development') {
   require('electron-debug')(); // eslint-disable-line
+}
 
 process.on('uncaughtExecption', (err) => {
   console.error('Uncaught exception in main process', err);
@@ -95,7 +97,9 @@ function createWindow() {
     });
 
     mainWindow.on('ready-to-show', () => {
+      if (process.env.NODE_ENV === 'development') {
         mainWindow.webContents.openDevTools();
+      }
       mainWindow.show();
       mainWindow.focus();
     });
