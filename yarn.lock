@@ -26,10 +26,6 @@
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/7zip/-/7zip-0.0.6.tgz#9cafb171af82329490353b4816f03347aa150a30"
 
-"@Architektor/user-media-screenshot@git+https://github.com/Architektor/user-media-screenshot.git":
-  version "1.0.2"
-  resolved "git+https://github.com/Architektor/user-media-screenshot.git#43411e083670e77639d3d352ef374b5eea65d3bc"
-
 "@paulcbetts/system-idle-time@git+https://github.com/paulcbetts/node-system-idle-time.git":
   version "1.0.2"
   resolved "git+https://github.com/paulcbetts/node-system-idle-time.git#8b9ef4e7d7f3dbfeb95abc084cefdb21cef5b866"
@@ -6757,6 +6753,10 @@ user-home@^2.0.0:
   resolved "https://registry.yarnpkg.com/user-home/-/user-home-2.0.0.tgz#9c70bfd8169bc1dcbf48604e0f04b8b49cde9e9f"
   dependencies:
     os-homedir "^1.0.0"
+
+"user-media-screenshot@git+https://github.com/Architektor/user-media-screenshot.git":
+  version "1.0.2"
+  resolved "git+https://github.com/Architektor/user-media-screenshot.git#0e092f955048664ebe4707fd3b130470403f5f38"
 
 utf-8-validate@^2.0.0:
   version "2.0.0"

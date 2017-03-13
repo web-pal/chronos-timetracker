@@ -261,13 +261,11 @@ class Tracker extends Component {
         maxHeight = _image.naturalHeight > maxHeight ? _image.naturalHeight : maxHeight;
         return imageObj;
       })
-      console.log(imagesWithCords);
       mergeImages(imagesWithCords, { width: totalWidth, height: maxHeight })
         .then(
           (merged) => {
             const validImage = merged.replace(/^data:image\/png;base64,/, '');
             const imageDir = `${dir}/screenshots/${screenshotTime}_${Date.now()}.png`;
-            console.log(imageDir);
             fs.writeFile(imageDir, validImage, 'base64', (err) => {
               getGlobal('sharedObj').lastScreenshotPath = imageDir;
               getGlobal('sharedObj').currentWorklogId = currentWorklogId;

@@ -2,7 +2,6 @@ import { remote } from 'electron';
 import storage from 'electron-json-storage';
 import fs from 'fs';
 import path from 'path';
-import fetch from 'isomorphic-fetch';
 import moment from 'moment';
 import { staticUrl } from 'config';
 
@@ -99,6 +98,7 @@ function uploadScreenshot(screenshotPath) {
   return new Promise((resolve, reject) => {
     const fileName = path.basename(screenshotPath);
     const url = `${staticUrl}/desktop-tracker/sign-bucket-url`;
+    console.log(fileName);
     const options = {
       method: 'POST',
       body: JSON.stringify({ fileName }),
@@ -127,7 +127,7 @@ function uploadScreenshot(screenshotPath) {
         },
       )
       .then(
-        () => resolve(success),
+        (res) => { resolve(success) },
       );
   });
 }
