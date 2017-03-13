@@ -201,39 +201,39 @@ class Tracker extends Component {
   });
 
   tick = () => {
-    if (!this.props.paused) {
-      const { tick, time } = this.props;
-      tick();
-      if (time === 1) {
-        const { settings } = this.props;
-        const {
-          interval,
-          dispersion,
-        } = settings.toJS();
-        timeRange = Math.ceil(
+    const { tick, time } = this.props;
+    tick();
+    if (time === 1) {
+      const { settings } = this.props;
+      const {
+        interval,
+        dispersion,
+      } = settings.toJS();
+      console.log(settings.toJS());
+      timeRange = Math.ceil(
+        Number(interval) + ((Math.random() *
+          (Number(dispersion) + Number(dispersion))) - Number(dispersion)),
+      );
+      console.log(timeRange);
+    }
+    if ((time + 1) % timeRange === 0) {
+      const { self, settings } = this.props;
+      const selfKey = self.get('key');
+      const {
+        screenshotsEnabled, screenshotsEnabledUsers, interval, dispersion,
+      } = settings.toJS();
+      const cond1 = screenshotsEnabled === 'everyone';
+      const cond2 = screenshotsEnabled === 'forUsers' &&
+        screenshotsEnabledUsers.includes(selfKey);
+      const cond3 = screenshotsEnabled === 'excludingUsers' &&
+        !screenshotsEnabledUsers.includes(selfKey);
+      if ((cond1 || cond2 || cond3) && !this.props.idleState) {
+        this.openScreenShotPopup();
+      } else {
+        timeRange = time + Math.ceil(
           Number(interval) + ((Math.random() *
-            (Number(dispersion) + Number(dispersion))) - Number(dispersion)),
+          (Number(dispersion) + Number(dispersion))) - Number(dispersion)),
         );
-      }
-      if ((time + 1) % timeRange === 0) {
-        const { self, settings } = this.props;
-        const selfKey = self.get('key');
-        const {
-          screenshotsEnabled, screenshotsEnabledUsers, interval, dispersion,
-        } = settings.toJS();
-        const cond1 = screenshotsEnabled === 'everyone';
-        const cond2 = screenshotsEnabled === 'forUsers' &&
-          screenshotsEnabledUsers.includes(selfKey);
-        const cond3 = screenshotsEnabled === 'excludingUsers' &&
-          !screenshotsEnabledUsers.includes(selfKey);
-        if ((cond1 || cond2 || cond3) && !this.props.idleState) {
-          this.openScreenShotPopup();
-        } else {
-          timeRange = time + Math.ceil(
-            Number(interval) + ((Math.random() *
-            (Number(dispersion) + Number(dispersion))) - Number(dispersion)),
-          );
-        }
       }
     }
   }

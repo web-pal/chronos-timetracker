@@ -18,6 +18,7 @@ export default class Socket {
     this.dispatch = dispatch;
     this.getState = getState;
     this.connect();
+    console.log('Socket login');
 
     this.socket.on('connect', () => {
       setTimeout(() => {
@@ -28,9 +29,10 @@ export default class Socket {
     });
 
     this.socket.on('new settings', (response) => {
+      console.log('new settings', response);
       dispatch({
-        type: types.GET_SETTINGS,
-        settings: response,
+        type: types.FILL_SETTINGS,
+        payload: response.newSetting.desktopApp,
       });
     });
   }
