@@ -74,8 +74,8 @@ ajv-keywords@^1.0.0:
   resolved "https://registry.yarnpkg.com/ajv-keywords/-/ajv-keywords-1.5.1.tgz#314dd0a4b3368fad3dfcdc54ede6171b886daf3c"
 
 ajv@^4.7.0:
-  version "4.11.4"
-  resolved "https://registry.yarnpkg.com/ajv/-/ajv-4.11.4.tgz#ebf3a55d4b132ea60ff5847ae85d2ef069960b45"
+  version "4.11.5"
+  resolved "https://registry.yarnpkg.com/ajv/-/ajv-4.11.5.tgz#b6ee74657b993a01dce44b7944d56f485828d5bd"
   dependencies:
     co "^4.6.0"
     json-stable-stringify "^1.0.1"
@@ -298,14 +298,14 @@ asynckit@^0.4.0:
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
 
 autoprefixer@^6.3.1:
-  version "6.7.6"
-  resolved "https://registry.yarnpkg.com/autoprefixer/-/autoprefixer-6.7.6.tgz#00f05656c7ef73de9d2fd9b4668f6ef6905a855a"
+  version "6.7.7"
+  resolved "https://registry.yarnpkg.com/autoprefixer/-/autoprefixer-6.7.7.tgz#1dbd1c835658e35ce3f9984099db00585c782014"
   dependencies:
-    browserslist "^1.7.5"
-    caniuse-db "^1.0.30000628"
+    browserslist "^1.7.6"
+    caniuse-db "^1.0.30000634"
     normalize-range "^0.1.2"
     num2fraction "^1.2.2"
-    postcss "^5.2.15"
+    postcss "^5.2.16"
     postcss-value-parser "^3.2.3"
 
 aws-sign2@~0.6.0:
@@ -349,8 +349,8 @@ babel-core@6.22.1, babel-core@^6.22.0, babel-core@^6.22.1, babel-core@^6.7.2:
     source-map "^0.5.0"
 
 babel-generator@^6.22.0:
-  version "6.23.0"
-  resolved "https://registry.yarnpkg.com/babel-generator/-/babel-generator-6.23.0.tgz#6b8edab956ef3116f79d8c84c5a3c05f32a74bc5"
+  version "6.24.0"
+  resolved "https://registry.yarnpkg.com/babel-generator/-/babel-generator-6.24.0.tgz#eba270a8cc4ce6e09a61be43465d7c62c1f87c56"
   dependencies:
     babel-messages "^6.23.0"
     babel-runtime "^6.22.0"
@@ -801,17 +801,17 @@ babel-plugin-transform-es2015-literals@^6.22.0, babel-plugin-transform-es2015-li
   dependencies:
     babel-runtime "^6.22.0"
 
-babel-plugin-transform-es2015-modules-amd@^6.22.0, babel-plugin-transform-es2015-modules-amd@^6.8.0:
-  version "6.22.0"
-  resolved "https://registry.yarnpkg.com/babel-plugin-transform-es2015-modules-amd/-/babel-plugin-transform-es2015-modules-amd-6.22.0.tgz#bf69cd34889a41c33d90dfb740e0091ccff52f21"
+babel-plugin-transform-es2015-modules-amd@^6.22.0, babel-plugin-transform-es2015-modules-amd@^6.24.0, babel-plugin-transform-es2015-modules-amd@^6.8.0:
+  version "6.24.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-transform-es2015-modules-amd/-/babel-plugin-transform-es2015-modules-amd-6.24.0.tgz#a1911fb9b7ec7e05a43a63c5995007557bcf6a2e"
   dependencies:
-    babel-plugin-transform-es2015-modules-commonjs "^6.22.0"
+    babel-plugin-transform-es2015-modules-commonjs "^6.24.0"
     babel-runtime "^6.22.0"
     babel-template "^6.22.0"
 
-babel-plugin-transform-es2015-modules-commonjs@^6.22.0, babel-plugin-transform-es2015-modules-commonjs@^6.6.0, babel-plugin-transform-es2015-modules-commonjs@^6.7.0:
-  version "6.23.0"
-  resolved "https://registry.yarnpkg.com/babel-plugin-transform-es2015-modules-commonjs/-/babel-plugin-transform-es2015-modules-commonjs-6.23.0.tgz#cba7aa6379fb7ec99250e6d46de2973aaffa7b92"
+babel-plugin-transform-es2015-modules-commonjs@^6.22.0, babel-plugin-transform-es2015-modules-commonjs@^6.24.0, babel-plugin-transform-es2015-modules-commonjs@^6.6.0, babel-plugin-transform-es2015-modules-commonjs@^6.7.0:
+  version "6.24.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-transform-es2015-modules-commonjs/-/babel-plugin-transform-es2015-modules-commonjs-6.24.0.tgz#e921aefb72c2cc26cb03d107626156413222134f"
   dependencies:
     babel-plugin-transform-strict-mode "^6.22.0"
     babel-runtime "^6.22.0"
@@ -826,11 +826,11 @@ babel-plugin-transform-es2015-modules-systemjs@^6.12.0, babel-plugin-transform-e
     babel-runtime "^6.22.0"
     babel-template "^6.23.0"
 
-babel-plugin-transform-es2015-modules-umd@^6.12.0, babel-plugin-transform-es2015-modules-umd@^6.22.0:
-  version "6.23.0"
-  resolved "https://registry.yarnpkg.com/babel-plugin-transform-es2015-modules-umd/-/babel-plugin-transform-es2015-modules-umd-6.23.0.tgz#8d284ae2e19ed8fe21d2b1b26d6e7e0fcd94f0f1"
+babel-plugin-transform-es2015-modules-umd@^6.12.0, babel-plugin-transform-es2015-modules-umd@^6.22.0, babel-plugin-transform-es2015-modules-umd@^6.24.0:
+  version "6.24.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-transform-es2015-modules-umd/-/babel-plugin-transform-es2015-modules-umd-6.24.0.tgz#fd5fa63521cae8d273927c3958afd7c067733450"
   dependencies:
-    babel-plugin-transform-es2015-modules-amd "^6.22.0"
+    babel-plugin-transform-es2015-modules-amd "^6.24.0"
     babel-runtime "^6.22.0"
     babel-template "^6.23.0"
 
@@ -1137,7 +1137,7 @@ babel-preset-env@^1.1.8:
     electron-to-chromium "^1.1.0"
     invariant "^2.2.2"
 
-babel-preset-es2015@6.22.0, babel-preset-es2015@^6.22.0, babel-preset-es2015@^6.3.13:
+babel-preset-es2015@6.22.0:
   version "6.22.0"
   resolved "https://registry.yarnpkg.com/babel-preset-es2015/-/babel-preset-es2015-6.22.0.tgz#af5a98ecb35eb8af764ad8a5a05eb36dc4386835"
   dependencies:
@@ -1156,6 +1156,35 @@ babel-preset-es2015@6.22.0, babel-preset-es2015@^6.22.0, babel-preset-es2015@^6.
     babel-plugin-transform-es2015-modules-commonjs "^6.22.0"
     babel-plugin-transform-es2015-modules-systemjs "^6.22.0"
     babel-plugin-transform-es2015-modules-umd "^6.22.0"
+    babel-plugin-transform-es2015-object-super "^6.22.0"
+    babel-plugin-transform-es2015-parameters "^6.22.0"
+    babel-plugin-transform-es2015-shorthand-properties "^6.22.0"
+    babel-plugin-transform-es2015-spread "^6.22.0"
+    babel-plugin-transform-es2015-sticky-regex "^6.22.0"
+    babel-plugin-transform-es2015-template-literals "^6.22.0"
+    babel-plugin-transform-es2015-typeof-symbol "^6.22.0"
+    babel-plugin-transform-es2015-unicode-regex "^6.22.0"
+    babel-plugin-transform-regenerator "^6.22.0"
+
+babel-preset-es2015@^6.24.0, babel-preset-es2015@^6.3.13:
+  version "6.24.0"
+  resolved "https://registry.yarnpkg.com/babel-preset-es2015/-/babel-preset-es2015-6.24.0.tgz#c162d68b1932696e036cd3110dc1ccd303d2673a"
+  dependencies:
+    babel-plugin-check-es2015-constants "^6.22.0"
+    babel-plugin-transform-es2015-arrow-functions "^6.22.0"
+    babel-plugin-transform-es2015-block-scoped-functions "^6.22.0"
+    babel-plugin-transform-es2015-block-scoping "^6.22.0"
+    babel-plugin-transform-es2015-classes "^6.22.0"
+    babel-plugin-transform-es2015-computed-properties "^6.22.0"
+    babel-plugin-transform-es2015-destructuring "^6.22.0"
+    babel-plugin-transform-es2015-duplicate-keys "^6.22.0"
+    babel-plugin-transform-es2015-for-of "^6.22.0"
+    babel-plugin-transform-es2015-function-name "^6.22.0"
+    babel-plugin-transform-es2015-literals "^6.22.0"
+    babel-plugin-transform-es2015-modules-amd "^6.24.0"
+    babel-plugin-transform-es2015-modules-commonjs "^6.24.0"
+    babel-plugin-transform-es2015-modules-systemjs "^6.22.0"
+    babel-plugin-transform-es2015-modules-umd "^6.24.0"
     babel-plugin-transform-es2015-object-super "^6.22.0"
     babel-plugin-transform-es2015-parameters "^6.22.0"
     babel-plugin-transform-es2015-shorthand-properties "^6.22.0"
@@ -1209,10 +1238,10 @@ babel-preset-fbjs@^1.0.0:
     object-assign "^4.0.1"
 
 babel-preset-latest@^6.22.0:
-  version "6.22.0"
-  resolved "https://registry.yarnpkg.com/babel-preset-latest/-/babel-preset-latest-6.22.0.tgz#47b800531350a3dc69126e8c375a40655cd1eeff"
+  version "6.24.0"
+  resolved "https://registry.yarnpkg.com/babel-preset-latest/-/babel-preset-latest-6.24.0.tgz#a68d20f509edcc5d7433a48dfaebf7e4f2cd4cb7"
   dependencies:
-    babel-preset-es2015 "^6.22.0"
+    babel-preset-es2015 "^6.24.0"
     babel-preset-es2016 "^6.22.0"
     babel-preset-es2017 "^6.22.0"
 
@@ -1492,7 +1521,7 @@ browserify-zlib@^0.1.4:
   dependencies:
     pako "~0.2.0"
 
-browserslist@^1.0.1, browserslist@^1.4.0, browserslist@^1.5.2, browserslist@^1.7.5:
+browserslist@^1.0.1, browserslist@^1.4.0, browserslist@^1.5.2, browserslist@^1.7.6:
   version "1.7.6"
   resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-1.7.6.tgz#af98589ce6e7ab09618d29451faacb81220bd3ba"
   dependencies:
@@ -1572,7 +1601,7 @@ caniuse-api@^1.5.2:
     lodash.memoize "^4.1.0"
     lodash.uniq "^4.3.0"
 
-caniuse-db@^1.0.30000346, caniuse-db@^1.0.30000628, caniuse-db@^1.0.30000631:
+caniuse-db@^1.0.30000346, caniuse-db@^1.0.30000631, caniuse-db@^1.0.30000634:
   version "1.0.30000634"
   resolved "https://registry.yarnpkg.com/caniuse-db/-/caniuse-db-1.0.30000634.tgz#439f4b95e715b1fd105196d40c681edd7122e622"
 
@@ -2078,8 +2107,8 @@ cssesc@^0.1.0:
     postcss-zindex "^2.0.1"
 
 csso@~2.3.1:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/csso/-/csso-2.3.1.tgz#4f8d91a156f2f1c2aebb40b8fb1b5eb83d94d3b9"
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/csso/-/csso-2.3.2.tgz#ddd52c587033f49e94b71fc55569f252e8ff5f85"
   dependencies:
     clap "^1.0.9"
     source-map "^0.5.3"
@@ -2128,7 +2157,7 @@ debug@2.2.0, debug@~2.2.0:
   dependencies:
     ms "0.7.1"
 
-debug@2.3.3, debug@^2.1.1, debug@^2.2.0:
+debug@2.3.3:
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.3.3.tgz#40c453e67e6e13c901ddec317af8986cda9eff8c"
   dependencies:
@@ -2140,9 +2169,9 @@ debug@2.6.0:
   dependencies:
     ms "0.7.2"
 
-debug@2.6.1, debug@^2.1.3, debug@^2.3.2, debug@^2.4.5, debug@^2.5.1, debug@^2.6.0, debug@^2.6.1:
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.1.tgz#79855090ba2c4e3115cc7d8769491d58f0491351"
+debug@2.6.2, debug@^2.1.1, debug@^2.1.3, debug@^2.2.0, debug@^2.3.2, debug@^2.4.5, debug@^2.5.1, debug@^2.6.0, debug@^2.6.1:
+  version "2.6.2"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.2.tgz#dfa96a861ee9b8c2f29349b3bcc41aa599a71e0f"
   dependencies:
     ms "0.7.2"
 
@@ -2329,11 +2358,11 @@ electron-builder-http@11.5.0, electron-builder-http@~11.5.0:
     debug "2.6.0"
     fs-extra-p "^3.1.0"
 
-electron-builder-http@15.0.1:
-  version "15.0.1"
-  resolved "https://registry.yarnpkg.com/electron-builder-http/-/electron-builder-http-15.0.1.tgz#29c079303acef358c92fbbd1a114038d6b544bef"
+electron-builder-http@~15.3.0:
+  version "15.3.0"
+  resolved "https://registry.yarnpkg.com/electron-builder-http/-/electron-builder-http-15.3.0.tgz#913684c984fcacf4273a2138738b9059650cc38f"
   dependencies:
-    debug "2.6.1"
+    debug "2.6.2"
     fs-extra-p "^4.0.2"
 
 electron-builder-util@11.6.1:
@@ -2520,11 +2549,11 @@ electron-to-chromium@^1.1.0, electron-to-chromium@^1.2.5:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.2.6.tgz#f38ad51d1919b06bc07275c62629db803ddca05a"
 
 electron-updater@^1.3.2:
-  version "1.8.2"
-  resolved "https://registry.yarnpkg.com/electron-updater/-/electron-updater-1.8.2.tgz#f32cfaef984534b7281135d51404f8b02b18d411"
+  version "1.8.3"
+  resolved "https://registry.yarnpkg.com/electron-updater/-/electron-updater-1.8.3.tgz#40eee23c47e41961e8a5425ea62d9ddd097aa63d"
   dependencies:
     bluebird-lst "^1.0.1"
-    electron-builder-http "15.0.1"
+    electron-builder-http "~15.3.0"
     fs-extra-p "^4.0.2"
     js-yaml "^3.8.2"
     semver "^5.3.0"
@@ -3738,8 +3767,8 @@ is-binary-path@^1.0.0:
     binary-extensions "^1.0.0"
 
 is-buffer@^1.0.2:
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/is-buffer/-/is-buffer-1.1.4.tgz#cfc86ccd5dc5a52fa80489111c6920c457e2d98b"
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/is-buffer/-/is-buffer-1.1.5.tgz#1f3b26ef613b214b88cbca23cc6c01d87961eecc"
 
 is-builtin-module@^1.0.0:
   version "1.0.0"
@@ -4773,8 +4802,8 @@ normalize-range@^0.1.2:
   resolved "https://registry.yarnpkg.com/normalize-range/-/normalize-range-0.1.2.tgz#2d10c06bdfd312ea9777695a4d28439456b75942"
 
 normalize-url@^1.4.0:
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/normalize-url/-/normalize-url-1.9.0.tgz#c2bb50035edee62cd81edb2d45da68dc25e3423e"
+  version "1.9.1"
+  resolved "https://registry.yarnpkg.com/normalize-url/-/normalize-url-1.9.1.tgz#2cc0d66b31ea23036458436e3620d85954c66c3c"
   dependencies:
     object-assign "^4.0.1"
     prepend-http "^1.0.0"
@@ -5393,7 +5422,7 @@ postcss-zindex@^2.0.1:
     postcss "^5.0.4"
     uniqs "^2.0.0"
 
-postcss@^5.0.10, postcss@^5.0.11, postcss@^5.0.12, postcss@^5.0.13, postcss@^5.0.14, postcss@^5.0.16, postcss@^5.0.2, postcss@^5.0.4, postcss@^5.0.5, postcss@^5.0.6, postcss@^5.0.8, postcss@^5.2.15:
+postcss@^5.0.10, postcss@^5.0.11, postcss@^5.0.12, postcss@^5.0.13, postcss@^5.0.14, postcss@^5.0.16, postcss@^5.0.2, postcss@^5.0.4, postcss@^5.0.5, postcss@^5.0.6, postcss@^5.0.8, postcss@^5.2.16:
   version "5.2.16"
   resolved "https://registry.yarnpkg.com/postcss/-/postcss-5.2.16.tgz#732b3100000f9ff8379a48a53839ed097376ad57"
   dependencies:
@@ -6409,8 +6438,8 @@ style-loader@0.13.1:
     loader-utils "^0.2.7"
 
 sumchecker@^1.2.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/sumchecker/-/sumchecker-1.3.0.tgz#6e3004d7bf3b5ad5567abf13a828946d8a19911b"
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/sumchecker/-/sumchecker-1.3.1.tgz#79bb3b4456dd04f18ebdbc0d703a1d1daec5105d"
   dependencies:
     debug "^2.2.0"
     es6-promise "^4.0.5"
@@ -7047,8 +7076,8 @@ y18n@^3.2.0, y18n@^3.2.1:
   resolved "https://registry.yarnpkg.com/y18n/-/y18n-3.2.1.tgz#6d15fba884c08679c0d77e88e7759e811e07fa41"
 
 yallist@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/yallist/-/yallist-2.0.0.tgz#306c543835f09ee1a4cb23b7bce9ab341c91cdd4"
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/yallist/-/yallist-2.1.0.tgz#3a0f3b45f42cb60f822c92f69ade2bb88beb1ae0"
 
 yargs-parser@^2.4.0:
   version "2.4.1"

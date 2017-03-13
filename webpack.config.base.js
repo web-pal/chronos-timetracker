@@ -19,7 +19,6 @@ export default validate({
         loader: 'json-loader',
       },
     ],
-    noParse: [/README\.md$/]
   },
 
   output: {

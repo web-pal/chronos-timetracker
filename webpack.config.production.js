@@ -6,7 +6,7 @@ import merge from 'webpack-merge';
 import baseConfig from './webpack.config.base';
 
 const config = merge(baseConfig, {
-  devtool: 'cheap-source-map',
+  devtool: 'source-map',
 
   entry: {
     main: ['babel-polyfill', './app/index.js'],
@@ -48,10 +48,10 @@ const config = merge(baseConfig, {
   plugins: [
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.optimize.DedupePlugin(),
-    new BabiliPlugin({
-      // Disable deadcode until https://github.com/babel/babili/issues/385 fixed
-      deadcode: false,
-    }),
+    // new BabiliPlugin({
+      // // Disable deadcode until https://github.com/babel/babili/issues/385 fixed
+      // deadcode: false,
+    // }),
     new ExtractTextPlugin('style.css'),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production')
