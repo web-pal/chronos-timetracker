@@ -1,5 +1,5 @@
 import React, { PropTypes, Component } from 'react';
-import { remote } from 'electron';
+import { remote, ipcRenderer } from 'electron';
 import Pace from 'react-pace-progress';
 
 import Flex from '../components/Base/Flex/Flex';
@@ -34,12 +34,13 @@ export default class Updater extends Component {
     this.electronUpdater.on('update-downloaded', () => {
       this.setUpdateDownloadState(false);
       if (window.confirm('App updated, restart now?')) {
+        ipcRenderer.send('set-should-quit');
         this.electronUpdater.quitAndInstall();
       }
     });
     this.electronUpdater.checkForUpdates();
   }
-  
+
   setUpdateDownloadState = value => {
     this.setState({
       downloading: value,
@@ -63,7 +64,7 @@ export default class Updater extends Component {
     this.electronUpdater.removeAllListeners();
   }
 
-  installUpdates = () => this.electronUpdater.downloadUpdate(); 
+  installUpdates = () => this.electronUpdater.downloadUpdate();
 
   render() {
     const { checking, downloading, available, updateAvailable } = this.state;
