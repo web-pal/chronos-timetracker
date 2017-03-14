@@ -33,7 +33,12 @@ const renderField = ({ input, label, type, placeholder, meta: { touched, error, 
       <label htmlFor={label}>{label}</label>
       {touched && error && <span className="error">{error}</span>}
     </Flex>
-    <input {...input} type={type} placeholder={placeholder} />
+    <input
+      {...input}
+      type={type}
+      placeholder={placeholder}
+      className={`${error && touched ? 'withError' : ''}`}
+    />
   </div>
 )
 
@@ -64,7 +69,8 @@ class AuthForm extends Component {
       )
       .then(
         () => this.props.setAuthSucceeded()
-      );
+      )
+      .catch(e => {});
   }
 
   submit = (values) => {
@@ -110,13 +116,13 @@ class AuthForm extends Component {
               />
             </div>
             <Flex row>
-              {jiraError &&
-                <span className="error">
-                  {jiraError}
-                </span>
-              }
               <button className="button button-primary" type="submit">Login</button>
             </Flex>
+            {jiraError &&
+              <span className="error">
+                {jiraError}
+              </span>
+            }
           </form>
         </Flex>
       </Flex>

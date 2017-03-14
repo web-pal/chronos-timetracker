@@ -22,15 +22,17 @@
 
 label + .error {
   padding-top: 0px;
-  margin-left: 20px;
+  position: absolute;
+  transform: translate(-110%, 60%);
 }
+
 
 input.host {
   width: 67.5%;
 }
 
+
 .error {
-  padding-top: 10px;
   font-size: 13px;
   color: rgba(255, 90, 90, 0.87);
 }
@@ -53,6 +55,10 @@ input.host {
     background: white;
     border: none;
     width: 30%;
+  }
+
+  &.withError {
+    border: 1px solid rgba(255, 90, 90, 0.87);
   }
 }
 

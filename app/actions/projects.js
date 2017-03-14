@@ -13,8 +13,9 @@ function setProjectsFetchState(value) {
 
 export const fetchProjects =
   () => (dispatch, getState) => new Promise((resolve, reject) => {
-    dispatch(setProjectsFetchState(true));
     const jiraClient = getState().jira.client;
+    if (!jiraClient) return;
+    dispatch(setProjectsFetchState(true));
     const fetchRepedioulsy = setInterval(() => {
       jiraClient.project.getAllProjects({}, (error, response) => {
         if (error) {
@@ -64,6 +65,7 @@ export const getLastProject = () => (dispatch, getState) =>
 export const fetchProjectStatuses = projectIdOrKey => (dispatch, getState) =>
   new Promise((resolve, reject) => {
     const jiraClient = getState().jira.client;
+    if (!jiraClient) return;
     jiraClient.project.getStatuses({ projectIdOrKey }, (err, response) => {
       if (err) reject(err);
       console.log('Project statuses', response);

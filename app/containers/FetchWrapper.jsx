@@ -46,12 +46,10 @@ class FetchWrapper extends Component {
     const nextConnected = nextProps.connected;
     
     if (currentFilterValue !== nextFilterValue) {
-      console.log(`Search. query: ${nextFilterValue}`)
       this.props.searchIssues(nextFilterValue);
     }
 
     if (!currentConnected && nextConnected) {
-      console.log("CONNECTED")
       const { getGlobal } = remote;
       const appDir = getGlobal('appDir');
       fs.access(`${appDir}/screenshots/`, fs.constants.R_OK | fs.constants.W_OK, (err) => {

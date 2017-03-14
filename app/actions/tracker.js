@@ -40,7 +40,6 @@ export function startTimer(trackingIssue) {
       timeTracked: 0,
       submitted: false,
     };
-    console.log(worklog);
     fs.writeFile(worklogFile, JSON.stringify(worklog, null, 2), (err) => {
       if (err) throw err;
     });
@@ -98,7 +97,6 @@ function uploadScreenshot(screenshotPath) {
   return new Promise((resolve, reject) => {
     const fileName = path.basename(screenshotPath);
     const url = `${staticUrl}/desktop-tracker/sign-bucket-url`;
-    console.log(fileName);
     const options = {
       method: 'POST',
       body: JSON.stringify({ fileName }),
@@ -134,12 +132,13 @@ function uploadScreenshot(screenshotPath) {
 
 export function updateWorklog(worklog, params = { sync: false }) {
   return (dispatch, getState) => new Promise((resolve, reject) => {
+    const jiraClient = getState().jira.client;
+    if (!jiraClient) return;
     dispatch({
       type: types.SET_WORKLOG_UPLOAD_STATE,
       payload: true
     });
     const token = getState().jira.jwt;
-    const jiraClient = getState().jira.client;
     const online = getState().jira.online;
     const activity = getState().tracker.activity.toJS();
     if (online) {
@@ -180,6 +179,7 @@ export function updateWorklog(worklog, params = { sync: false }) {
 function uploadWorklog(params) {
   return new Promise((resolve, reject) => {
     const { jiraClient, worklog, token, activity } = params;
+    if (!jiraClient) return;
     const { time, description, issueId } = worklog;
     const jiraWorklog = {
       comment: description,
@@ -191,8 +191,7 @@ function uploadWorklog(params) {
     };
     jiraClient.issue.addWorkLog(opts, (e, status, response) => {
       const { id } = response.body;
-      console.log(response);
-      const url = `${staticUrl}/desktop-tracker/submit-worklog`;
+      const url = `${staticUrl}/api/tracker/worklog`;
       const options = {
         method: 'POST',
         body: JSON.stringify({
@@ -247,6 +246,40 @@ export function acceptScreenshot(screenshotTime, screenshotPath) {
         },
       );
   };
+}
+
+export function submitUnfinishedWorklog(worklog) {
+  return (dispatch, getState) => new Promise((resolve) => {
+    const activity = getState().tracker.activity.toJS();
+    const time = getState().tracker.time;
+    const url = `${staticUrl}/api/tracker/worklog`;
+    const token = getState().jira.jwt;
+    const options = {
+      method: 'POST',
+      body: JSON.stringify({
+        tempId: Date.now(),
+        worklog: {
+          ...worklog,
+          timeTracked: time,
+          activity,
+        },
+      }),
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    };
+    fetch(url, options)
+      .then(
+        (res) => {
+          if (res.status === 200) {
+            console.log(res);
+          } else {
+            console.log(res);
+          }
+        },
+      );
+  });
 }
 
 export function addActivityPercent(percent) {

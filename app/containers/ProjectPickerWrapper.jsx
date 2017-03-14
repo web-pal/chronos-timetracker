@@ -30,7 +30,7 @@ ProjectPickerWrapper.propTypes = {
   selectProject: PropTypes.func.isRequired,
 };
 
-function mapStateToProps({ projects }) {
+function mapStateToProps({ projects, tracker }) {
   const options = getProjectsOptions({ projects });
   const selectedProject = getSelectedProjectOption({ projects });
   return {

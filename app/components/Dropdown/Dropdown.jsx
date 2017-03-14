@@ -3,7 +3,15 @@ import Select from 'react-select';
 import 'react-select/dist/react-select.css';
 
 const Dropdown = (props) => {
-  const { name, options, value, onChange, fetching, placeholder, className } = props;
+  const {
+    name,
+    options,
+    value,
+    onChange,
+    fetching,
+    placeholder,
+    className,
+  } = props;
   return (
     <Select
       name={name}

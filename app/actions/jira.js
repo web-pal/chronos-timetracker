@@ -89,6 +89,7 @@ export function jwtConnect(token) {
               password,
             },
           });
+          if (!jiraClient) return;
           Socket.login(
             dispatch,
             getState
@@ -146,9 +147,9 @@ export function connect(credentials) {
         password,
       },
     });
+    if (!jiraClient) return;
     jiraClient.myself.getMyself({}, (err, response) => {
       if (err) {
-        console.log(err);
         dispatch({
           type: types.THROW_ERROR,
           error: 'Cannot authorize to JIRA. Check your credentials and try again',
@@ -175,7 +176,6 @@ export function connect(credentials) {
             password,
           }),
         };
-        console.log(staticUrl, options);
         fetch(url, options)
           .then(
             res => res.status === 200 && res.json(),

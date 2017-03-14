@@ -37,9 +37,9 @@ function setIssuesFetchState(value) {
 
 function searchIssuesBySummary(query) {
   return (dispatch, getState) => new Promise((resolve, reject) => {
-    console.log('searching by summary');
-    const currentProjectKey = getState().projects.meta.get('selected');
     const jiraClient = getState().jira.client;
+    if (!jiraClient) return;
+    const currentProjectKey = getState().projects.meta.get('selected');
     const escapedQuery = query.replace('[', '').replace(']', '');
     let promiseResolved = false;
     jiraClient.search.search({
@@ -52,7 +52,6 @@ function searchIssuesBySummary(query) {
         (response) => {
           promiseResolved = true;
           const issues = response.issues;
-          console.log(issues);
           const normalizedData = normalize(issues, [issueSchema]);
           dispatch({
             type: types.ADD_ISSUES,
@@ -78,7 +77,6 @@ function searchIssuesBySummary(query) {
           resolve('done');
         },
         error => {
-          console.error('Search by summary failed', error)
           reject(error);
         }
       );
@@ -92,8 +90,9 @@ function searchIssuesBySummary(query) {
 
 function searchIssuesByKey(query) {
   return (dispatch, getState) => new Promise((resolve, reject) => {
-    const currentProjectKey = getState().projects.meta.get('selected');
     const jiraClient = getState().jira.client;
+    if (!jiraClient) return;
+    const currentProjectKey = getState().projects.meta.get('selected');
     jiraClient.search.search({
       jql: `project = ${currentProjectKey} AND
  issuekey = "${query}"`,
@@ -101,7 +100,6 @@ function searchIssuesByKey(query) {
       fields: requiredFields,
     }, (error, response) => {
       if (error) {
-        console.error('Search by key failed', error);
         reject(error);
       } else {
         const issues = response.issues;
@@ -152,6 +150,7 @@ export function searchIssues(query) {
 function fetchAdditionalWorklogs(issues) {
   return (dispatch, getState) => {
     const jiraClient = getState().jira.client;
+    if (!jiraClient) return;
     dispatch(setIssuesFetchState(true));
     for (const issue of issues) {
       const fuck = setInterval(() => {
@@ -178,8 +177,9 @@ function fetchAdditionalWorklogs(issues) {
 
 export function fetchLastWeekLoggedIssues() {
   return (dispatch, getState) => new Promise((resolve, reject) => {
-    dispatch(setIssuesFetchState(true));
     const jiraClient = getState().jira.client;
+    if (!jiraClient) return;
+    dispatch(setIssuesFetchState(true));
     const currentProjectKey = getState().projects.meta.get('selected');
     const self = getState().jira.self;
     jiraClient.search.search({
@@ -197,7 +197,6 @@ export function fetchLastWeekLoggedIssues() {
         dispatch(fetchAdditionalWorklogs(incompleteIssues));
       }
       const normalizedData = normalize(issues, [issueSchema]);
-      console.log(normalizedData);
       if (normalizedData.entities.issues) {
         dispatch({
           type: types.FILL_RECENT_ISSUES,
@@ -229,6 +228,8 @@ export function fetchLastWeekLoggedIssues() {
 export function fetchIssues(pagination = { startIndex: 0, stopIndex: -1 }, force = false) {
   const { startIndex, stopIndex } = pagination;
   return (dispatch, getState) => new Promise((resolve, reject) => {
+    const jiraClient = getState().jira.client;
+    if (!jiraClient) return;
     if (stopIndex > 0) {
       dispatch(setIssuesFetchState(true));
     }
@@ -240,7 +241,6 @@ export function fetchIssues(pagination = { startIndex: 0, stopIndex: -1 }, force
       type: types.SET_CURRENT_PAGINATION,
       payload: pagination,
     });
-    const jiraClient = getState().jira.client;
     const currentProjectKey = getState().projects.meta.get('selected');
     jiraClient.search.search({
       jql: `project = ${currentProjectKey}`,

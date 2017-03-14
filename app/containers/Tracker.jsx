@@ -59,6 +59,7 @@ class Tracker extends Component {
     uploading: PropTypes.bool.isRequired,
     screensShot: PropTypes.object.isRequired,
     setDescription: PropTypes.func.isRequired,
+    submitUnfinishedWorklog: PropTypes.func.isRequired,
   }
 
   constructor(props) {
@@ -125,11 +126,24 @@ class Tracker extends Component {
 
   calculateActiviy = () => {
     const { idleTime, totalIdleTime } = this.state;
-    let time = totalIdleTime + idleTime;
-    time = time > activityInterval * 1000 ? activityInterval * 1000 : time;
-    const activityPercent = (1 - (time / (activityInterval * 1000))).toFixed(2) * 100
-    console.log(`${activityPercent}%`)
-    this.props.addActivityPercent(activityPercent);
+    const {
+      submitUnfinishedWorklog,
+      addActivityPercent,
+      time,
+      description,
+      trackingIssue,
+      screensShot
+    } = this.props;
+    let _time = totalIdleTime + idleTime;
+    _time = _time > activityInterval * 1000 ? activityInterval * 1000 : _time;
+    const activityPercent = (1 - (_time / (activityInterval * 1000))).toFixed(2) * 100
+    addActivityPercent(activityPercent);
+    // submitUnfinishedWorklog({
+      // time,
+      // description,
+      // issueId: trackingIssue.get('id'),
+      // screensShot: screensShot.toJS(),
+    // });
     this.setState({
       totalIdleTime: 0,
     });
@@ -209,12 +223,10 @@ class Tracker extends Component {
         interval,
         dispersion,
       } = settings.toJS();
-      console.log(settings.toJS());
       timeRange = Math.ceil(
         Number(interval) + ((Math.random() *
           (Number(dispersion) + Number(dispersion))) - Number(dispersion)),
       );
-      console.log(timeRange);
     }
     if ((time + 1) % timeRange === 0) {
       const { self, settings } = this.props;
