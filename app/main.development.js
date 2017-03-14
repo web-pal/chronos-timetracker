@@ -120,6 +120,11 @@ function createWindow() {
   });
 }
 
+ipcMain.on('set-should-quit', () => {
+  shouldQuit = true;
+});
+
+
 ipcMain.on('ready-to-quit', () => {
   shouldQuit = true;
   app.quit();
