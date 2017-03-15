@@ -1,5 +1,6 @@
 import React, { PropTypes, Component } from 'react';
 import fs from 'fs';
+import rimraf from 'rimraf';
 import { remote } from 'electron';
 import { normalize, schema } from 'normalizr';
 import { issueSchema } from '../schemas/issue';
@@ -44,7 +45,7 @@ class FetchWrapper extends Component {
 
     const currentConnected = this.props.connected;
     const nextConnected = nextProps.connected;
-    
+
     if (currentFilterValue !== nextFilterValue) {
       this.props.searchIssues(nextFilterValue);
     }
@@ -52,9 +53,15 @@ class FetchWrapper extends Component {
     if (!currentConnected && nextConnected) {
       const { getGlobal } = remote;
       const appDir = getGlobal('appDir');
-      fs.access(`${appDir}/screenshots/`, fs.constants.R_OK | fs.constants.W_OK, (err) => {
+      fs.access(`${appDir}/screens/`, fs.constants.R_OK | fs.constants.W_OK, (err) => {
         if (err) {
-          fs.mkdirSync(`${appDir}/screenshots/`);
+          fs.mkdirSync(`${appDir}/screens/`);
+        }
+      });
+      // Remove legacy dir, after few versions we will remove this code (0.0.9)
+      fs.access(`${appDir}/screenshots/`, fs.constants.R_OK | fs.constants.W_OK, (err) => {
+        if (!err) {
+          rimraf(`${appDir}/screenshots/`, () => console.log('removed old screenshots'));
         }
       });
       fs.access(`${appDir}/worklogs/`, fs.constants.R_OK | fs.constants.W_OK, (err) => {

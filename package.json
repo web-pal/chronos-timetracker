@@ -172,6 +172,7 @@
     "redux-thunk": "2.2.0",
     "request": "2.79.0",
     "reselect": "2.5.4",
+    "rimraf": "^2.6.1",
     "sinon": "^1.17.7",
     "socket.io-client": "^1.7.2",
     "source-map-support": "0.4.10",

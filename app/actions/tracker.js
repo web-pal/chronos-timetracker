@@ -242,6 +242,12 @@ export function acceptScreenshot(screenshotTime, screenshotPath) {
               screenshotTime,
               screenshotName: path.basename(screenshotPath),
             })
+            // Remove screenshot file
+            fs.stat(screenshotPath, (err, stat) => {
+              if(err == null) {
+                fs.unlink(screenshotPath);
+              }
+            });
           });
         },
       );

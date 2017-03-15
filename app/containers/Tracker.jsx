@@ -276,7 +276,7 @@ class Tracker extends Component {
         .then(
           (merged) => {
             const validImage = merged.replace(/^data:image\/png;base64,/, '');
-            const imageDir = `${dir}/screenshots/${screenshotTime}_${Date.now()}.png`;
+            const imageDir = `${dir}/screens/${screenshotTime}_${Date.now()}.png`;
             fs.writeFile(imageDir, validImage, 'base64', (err) => {
               getGlobal('sharedObj').lastScreenshotPath = imageDir;
               getGlobal('sharedObj').currentWorklogId = currentWorklogId;
