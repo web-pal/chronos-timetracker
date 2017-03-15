@@ -49,23 +49,8 @@ export default class Popup extends Component {
   acceptScreenshot = () => {
     if (!acceptLock) {
       acceptLock = true;
-      const { lastScreenshotPath, screenshotTime, currentWorklogId } = this.state;
-      const appDir = getGlobal('appDir');
-      const worklogFile = `${appDir}/worklogs/${currentWorklogId}.worklog`;
-      fs.readFile(worklogFile, (err, file) => {
-        if (err) throw err;
-        const worklog = JSON.parse(file);
-        worklog.screenshots.push({
-          name: path.basename(lastScreenshotPath),
-          uploaded: false,
-        });
-        worklog.timeTracked = screenshotTime;
-        fs.writeFile(worklogFile, JSON.stringify(worklog, null, 4), (err2) => {
-          if (err2) throw err;
-          ipcRenderer.send('screenshot-accept');
-          remote.getCurrentWindow().destroy();
-        });
-      });
+      ipcRenderer.send('screenshot-accept');
+      remote.getCurrentWindow().destroy();
     }
   }
 

@@ -23,26 +23,12 @@ export function dismissIdleTime(time) {
 
 export function startTimer(trackingIssue) {
   return (dispatch, getState) => {
-    const { getGlobal } = remote;
-    const appDir = getGlobal('appDir');
-    const worklogsDir = `${appDir}/worklogs`;
+    // Temporary worklog ID
     const worklogId = Date.now();
-    const worklogFile = `${worklogsDir}/${worklogId}.worklog`;
     const currentIssueId = trackingIssue || getState().issues.meta.selected;
     const currentIssue =
       getState().issues.byId.get(currentIssueId) ||
       getState().issues.recentById.get(currentIssueId);
-    const worklog = {
-      issueId: currentIssueId,
-      id: worklogId,
-      started: moment(worklogId).toString(),
-      screenshots: [],
-      timeTracked: 0,
-      submitted: false,
-    };
-    fs.writeFile(worklogFile, JSON.stringify(worklog, null, 2), (err) => {
-      if (err) throw err;
-    });
     dispatch({
       type: types.START,
       worklogId,
@@ -50,7 +36,7 @@ export function startTimer(trackingIssue) {
     });
     dispatch({
       type: types.SET_TRACKING_ISSUE,
-      payload: currentIssueId
+      payload: currentIssueId,
     });
     dispatch({
       type: types.ADD_RECENT_ISSUE,
@@ -58,7 +44,7 @@ export function startTimer(trackingIssue) {
         id: currentIssueId,
         issue: currentIssue,
       },
-    })
+    });
   };
 }
 
@@ -130,51 +116,6 @@ function uploadScreenshot(screenshotPath) {
   });
 }
 
-export function updateWorklog(worklog, params = { sync: false }) {
-  return (dispatch, getState) => new Promise((resolve, reject) => {
-    const jiraClient = getState().jira.client;
-    if (!jiraClient) return;
-    dispatch({
-      type: types.SET_WORKLOG_UPLOAD_STATE,
-      payload: true
-    });
-    const token = getState().jira.jwt;
-    const online = getState().jira.online;
-    const activity = getState().tracker.activity.toJS();
-    if (online) {
-      uploadWorklog({ jiraClient, worklog, token, activity })
-        .then(
-          (resWorklog) => {
-            dispatch({
-              type: types.SET_WORKLOG_UPLOAD_STATE,
-              payload: false
-            });
-            resolve(resWorklog);
-          },
-          (err) => reject(err)
-        );
-    } else {
-      storage.get('offline_worklogs', (err, oldData) => {
-        let newData = oldData;
-        const tempId = `${Date.now()}`;
-        const started = Date.now() - worklog.time;
-        const newLog = {
-          ...worklog,
-          started,
-          tempId,
-        }
-        if (!Array.isArray(newData)) {
-          newData = [];
-          newData.push(newLog);
-        } else {
-          newData.push(newLog);
-        }
-        storage.set('offline_worklogs', newData)
-        reject('No connection')
-      });
-    }
-  });
-}
 
 function uploadWorklog(params) {
   return new Promise((resolve, reject) => {
@@ -184,7 +125,7 @@ function uploadWorklog(params) {
     const jiraWorklog = {
       comment: description,
       timeSpentSeconds: time < 60 ? 60 : time,
-    }
+    };
     const opts = {
       issueId,
       worklog: jiraWorklog,
@@ -221,36 +162,122 @@ function uploadWorklog(params) {
   });
 }
 
-export function acceptScreenshot(screenshotTime, screenshotPath) {
+export function createWorklog(worklog) {
+  return (dispatch, getState) => new Promise((resolve, reject) => {
+    const jiraClient = getState().jira.client;
+    if (!jiraClient) return;
+    dispatch({
+      type: types.SET_WORKLOG_UPLOAD_STATE,
+      payload: true,
+    });
+    const token = getState().jira.jwt;
+    const online = getState().jira.online;
+    const activity = getState().tracker.activity.toJS();
+    if (online) {
+      uploadWorklog({ jiraClient, worklog, token, activity })
+        .then(
+          (resWorklog) => {
+            dispatch({
+              type: types.SET_WORKLOG_UPLOAD_STATE,
+              payload: false,
+            });
+            resolve(resWorklog);
+          },
+          err => reject(err),
+        );
+    } else {
+      storage.get('offline_worklogs', (err, oldData) => {
+        let newData = oldData;
+        if (!Array.isArray(newData)) {
+          newData = [];
+        }
+        newData.push({ ...worklog, activity });
+        storage.set('offline_worklogs', newData);
+        reject('No connection');
+      });
+    }
+  });
+}
+
+export function checkCurrentOfflineScreenshots() {
+  return (dispatch) => {
+    storage.get('current_offline_screenshots', (err, screenshots) => {
+      console.log(screenshots);
+      if (Array.isArray(screenshots) && screenshots.length) {
+        // TODO: make it syncronyous
+        screenshots.forEach((screen) => {
+          uploadScreenshot(screen)
+            .then(() => {
+              dispatch({
+                type: types.ACCEPT_SCREENSHOT,
+                screenshotName: path.basename(screen),
+              });
+              fs.stat(screen, (error) => {
+                if (error == null) {
+                  fs.unlink(screen);
+                }
+              });
+            });
+        });
+        storage.set('offline_worklogs', []);
+      }
+    });
+  };
+}
+
+
+export function checkCurrentOfflineWorklogs() {
   return (dispatch, getState) => {
-    uploadScreenshot(screenshotPath)
-      .then(
-        () => {
-          const { getGlobal } = remote;
-          const appDir = getGlobal('appDir');
-          const currentWorklogId = getState().tracker.currentWorklogId;
-          const worklogsDir = `${appDir}/worklogs`;
-          const worklogFile = `${worklogsDir}/${currentWorklogId}.worklog`;
-          fs.readFile(worklogFile, (err, file) => {
-            const worklog = JSON.parse(file);
-            const screenshotId = worklog.screenshots
-              .findIndex(screenshot => screenshot.name === path.basename(screenshotPath));
-            worklog.screenshots[screenshotId].uploaded = true;
-            fs.writeFile(worklogFile, JSON.stringify(worklog, null, 4));
+    const jiraClient = getState().jira.client;
+    const token = getState().jira.jwt;
+    if (!jiraClient) return;
+
+    storage.get('offline_worklogs', (err, worklogs) => {
+      if (Array.isArray(worklogs) && worklogs.length) {
+        // TODO: make it syncronyous
+        worklogs.forEach((item) => {
+          const { activity, ...worklog } = item;
+          uploadWorklog({ jiraClient, worklog, token, activity });
+        });
+        storage.set('offline_worklogs', []);
+      }
+    });
+  };
+}
+
+
+export function acceptScreenshot(screenshotTime, screenshotPath) {
+  storage.set('offline_worklogs', []);
+  return (dispatch, getState) => {
+    dispatch({
+      type: types.SAVE_LAST_SCREENSHOT_TIME,
+      payload: screenshotTime,
+    });
+    if (getState().jira.online) {
+      uploadScreenshot(screenshotPath)
+        .then(
+          () => {
             dispatch({
               type: types.ACCEPT_SCREENSHOT,
-              screenshotTime,
               screenshotName: path.basename(screenshotPath),
-            })
-            // Remove screenshot file
-            fs.stat(screenshotPath, (err, stat) => {
-              if(err == null) {
+            });
+            fs.stat(screenshotPath, (err) => {
+              if (err == null) {
                 fs.unlink(screenshotPath);
               }
             });
-          });
-        },
-      );
+          },
+        );
+    } else {
+      storage.get('current_offline_screenshots', (err, oldData) => {
+        let newData = oldData;
+        if (!Array.isArray(newData)) {
+          newData = [];
+        }
+        newData.push(screenshotPath);
+        storage.set('current_offline_screenshots', newData);
+      });
+    }
   };
 }
 
