@@ -6,3 +6,4 @@ export * from './worklogs';
 export * from './filter';
 export * from './projects';
 export * from './settings';
+export * from './loadingBar';
