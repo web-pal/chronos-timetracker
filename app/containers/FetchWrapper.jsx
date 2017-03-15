@@ -15,6 +15,7 @@ import * as worklogsActions from '../actions/worklogs';
 import * as projectsActions from '../actions/projects';
 import * as settingsActions from '../actions/settings';
 import * as jiraActions from '../actions/jira';
+import * as trackerActions from '../actions/tracker';
 import * as uiActions from '../actions/ui';
 
 class FetchWrapper extends Component {
@@ -23,21 +24,25 @@ class FetchWrapper extends Component {
     searchIssues: PropTypes.func.isRequired,
     children: PropTypes.node,
     connected: PropTypes.bool.isRequired,
+    online: PropTypes.bool.isRequired,
     currentProject: PropTypes.string,
     fetchProjects: PropTypes.func.isRequired,
     fetchIssues: PropTypes.func.isRequired,
     fetchSettings: PropTypes.func.isRequired,
     fetchLastWeekLoggedIssues: PropTypes.func.isRequired,
     getLastProject: PropTypes.func.isRequired,
+    checkCurrentOfflineWorklogs: PropTypes.func.isRequired,
+    checkCurrentOfflineScreenshots: PropTypes.func.isRequired
   };
 
   componentWillReceiveProps(nextProps) {
     const {
-      fetchProjectStatuses,
       fetchLastWeekLoggedIssues,
       fetchIssues,
       clearIssues,
       clearWorklogs,
+      checkCurrentOfflineWorklogs,
+      checkCurrentOfflineScreenshots,
     } = this.props;
 
     const currentFilterValue = this.props.filterValue;
@@ -79,6 +84,10 @@ class FetchWrapper extends Component {
       fetchLastWeekLoggedIssues();
       fetchIssues();
     }
+    if (!this.props.online && nextProps.online) {
+      checkCurrentOfflineWorklogs();
+      checkCurrentOfflineScreenshots();
+    }
   }
 
   initialize = () => {
@@ -117,6 +126,7 @@ function mapStateToProps({ filter, jira, projects }) {
   return {
     filterValue: filter.value,
     connected: jira.connected,
+    online: jira.online,
     currentProject: getSelectedProjectId({ projects }),
   };
 }
@@ -124,6 +134,7 @@ function mapStateToProps({ filter, jira, projects }) {
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     ...jiraActions,
+    ...trackerActions,
     ...issuesActions,
     ...worklogsActions,
     ...projectsActions,

@@ -49,7 +49,7 @@ class Tracker extends Component {
     closeDescriptionPopup: PropTypes.func.isRequired,
     openDescriptionPopup: PropTypes.func.isRequired,
     selectIssue: PropTypes.func.isRequired,
-    updateWorklog: PropTypes.func.isRequired,
+    createWorklog: PropTypes.func.isRequired,
     addRecentWorklog: PropTypes.func.isRequired,
     idleState: PropTypes.bool.isRequired,
     setIdleState: PropTypes.func.isRequired,
@@ -173,7 +173,7 @@ class Tracker extends Component {
   handleTimerStop = () => new Promise((resolve) => {
     const {
       stopTimer,
-      updateWorklog,
+      createWorklog,
       clearTrackingIssue,
       addRecentIssue,
       addRecentWorklog,
@@ -188,7 +188,7 @@ class Tracker extends Component {
     const { getGlobal } = remote;
 
     stopTimer();
-    updateWorklog({
+    createWorklog({
       time,
       description,
       issueId: trackingIssue.get('id'),

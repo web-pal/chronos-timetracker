@@ -7,7 +7,7 @@ const InitialState = Immutable.Record({
   currentWorklogId: null,
   trackingIssue: null,
   lastScreenshotTime: null,
-  description: "",
+  description: '',
   jiraWorklogId: null,
   uploading: false,
   screensShot: Immutable.List(),
@@ -27,7 +27,7 @@ export default function tracker(state = initialState, action) {
       return state
         .set('running', true)
         .set('currentWorklogId', action.worklogId)
-        .set('trackingIssue', action.issueId)
+        .set('trackingIssue', action.issueId);
     }
     case types.SET_DESCRIPTION:
       return state.set('description', action.payload);
@@ -41,9 +41,10 @@ export default function tracker(state = initialState, action) {
       return state.delete('paused');
     case types.REJECT_SCREENSHOT:
       return state.set('time', state.lastScreenshotTime);
+    case types.SAVE_LAST_SCREENSHOT_TIME:
+      return state.set('lastScreenshotTime', action.payload);
     case types.ACCEPT_SCREENSHOT:
-      return state.set('lastScreenshotTime', action.screenshotTime)
-                  .set('screensShot', state.screensShot.push({ name: action.screenshotName }));
+      return state.set('screensShot', state.screensShot.push({ name: action.screenshotName }));
     case types.SET_JIRA_WORKLOG_ID:
       return state.set('jiraWorklogId', action.id);
     case types.DISMISS_IDLE_TIME:
