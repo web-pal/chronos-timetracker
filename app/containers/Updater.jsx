@@ -1,11 +1,11 @@
 import React, { PropTypes, Component } from 'react';
 import { remote, ipcRenderer } from 'electron';
-import Pace from 'react-pace-progress';
+import LoadingBar from '../components/LoadingBar/LoadingBar';
 
 import Flex from '../components/Base/Flex/Flex';
-import Spinner from '../components/Spinners/FloatingCircles';
 
-export default class Updater extends Component {
+
+class Updater extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -28,15 +28,18 @@ export default class Updater extends Component {
     });
 
     this.electronUpdater.on('update-downloading', () => {
+      this.props.showLoading();
       this.setUpdateDownloadState(true);
     });
 
     this.electronUpdater.on('update-downloaded', () => {
-      this.setUpdateDownloadState(false);
-      if (window.confirm('App updated, restart now?')) {
-        ipcRenderer.send('set-should-quit');
-        this.electronUpdater.quitAndInstall();
-      }
+      this.props.hideLoading();
+      setTimeout(() => {
+        if (window.confirm('App updated, restart now?')) {
+          ipcRenderer.send('set-should-quit');
+          this.electronUpdater.quitAndInstall();
+        }
+      }, 500);
     });
     this.electronUpdater.checkForUpdates();
   }
@@ -70,30 +73,24 @@ export default class Updater extends Component {
     const { checking, downloading, available, updateAvailable } = this.state;
     return (
       <div className="Updater section">
-          <div className="UpdaterAvailable">
-            <a title={`${!available ? 'latest version' : 'update available'}`}>
-              <span className={`fa fa-code-fork ${available ? 'available' : 'latest'}`} />
-            </a>
-            <span>
-            </span>
-            {available &&
-              <span className="flex-item--center">
-                ({updateAvailable.version}) is out!
-                <a onClick={this.installUpdates} style={{ cursor: 'pointer'}}>
-                  &nbsp;update
-                </a>
-              </span>
-            }
-          </div>
-        {downloading &&
-          <Flex row className="flex-item--end UpdaterDownloading">
+        <div className="UpdaterAvailable">
+          <a title={`${!available ? 'latest version' : 'update available'}`}>
+            <span className={`fa fa-code-fork ${available ? 'available' : 'latest'}`} />
+          </a>
+          <span>
+          </span>
+          {(available && !downloading) &&
             <span className="flex-item--center">
-              Downloading update
+              ({updateAvailable.version}) is out!
+              <a onClick={this.installUpdates} style={{ cursor: 'pointer'}}>
+                &nbsp;update
+              </a>
             </span>
-            <Pace color="#5454ee" height={20} />
-          </Flex>
-        }
+          }
+        </div>
       </div>
     );
   }
 }
+
+export default Updater;

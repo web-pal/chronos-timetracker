@@ -9,6 +9,7 @@ import filter from './filter';
 import worklogs from './worklogs';
 import projects from './projects';
 import settings from './settings';
+import loadingBar from './loadingBar';
 
 const rootReducer = combineReducers({
   jira,
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
   filter,
   projects,
   settings,
+  loadingBar,
   form: formReducer,
 });
 

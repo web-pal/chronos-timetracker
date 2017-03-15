@@ -12,7 +12,6 @@ import { idleTimeThreshold, activityInterval } from 'config';
 import Flex from '../components/Base/Flex/Flex';
 import Timer from '../components/Timer/Timer';
 import TrackerHeader from '../components/TrackerHeader/TrackerHeader';
-import Updater from './Updater';
 import StatusBar from './StatusBar';
 
 import { getTrackingIssue, getSelectedIssue, getSettings } from '../selectors/';
