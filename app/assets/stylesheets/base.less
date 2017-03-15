@@ -5,6 +5,21 @@ body {
   background-color: white;
 }
 
+.WindowsControlButtons {
+  -webkit-app-region: no-drag;
+  position: absolute;
+  z-index: 999;
+  top: 0;
+  right: 0;
+  .fa {
+    color: @primary;
+    cursor: pointer;
+    &:hover {
+      color: darken(@primary, 10%);
+    }
+  }
+}
+
 .ReactVirtualized__Grid {
   outline: none !important;
   &::-webkit-scrollbar {

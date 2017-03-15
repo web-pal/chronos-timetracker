@@ -1,10 +1,18 @@
 import React, { PropTypes } from 'react';
 import { getStatusColor } from 'jiraColors-util';
 
+import WindowsControlButtons from '../WindowsControlButtons/WindowsControlButtons';
 import Flex from '../Base/Flex/Flex';
 
 const IssueInfo = ({ currentIssue }) =>
-  <Flex row spaceBetween className="IssueInfo">
+  <Flex
+    row
+    spaceBetween
+    className="IssueInfo"
+    style={{
+      paddingTop: process.platform !== 'darwin' ? 30 : 15,
+    }}
+  >
     <Flex column>
       <Flex row className="issueName">
         <span className="TrackerHeader__issuekey">
@@ -13,10 +21,12 @@ const IssueInfo = ({ currentIssue }) =>
         <img
           className="priorityImg"
           src={currentIssue.getIn(['fields', 'priority', 'iconUrl'])}
+          alt=""
         />
         <img
           className="priorityImg"
           src={currentIssue.getIn(['fields', 'issuetype', 'iconUrl'])}
+          alt=""
         />
       </Flex>
       <Flex row>
@@ -44,7 +54,7 @@ const IssueInfo = ({ currentIssue }) =>
         <span
           style={{
             borderColor: getStatusColor(currentIssue.getIn(['fields', 'status', 'statusCategory', 'colorName']), 1),
-            color: getStatusColor(currentIssue.getIn(['fields', 'status', 'statusCategory', 'colorName']), 1)
+            color: getStatusColor(currentIssue.getIn(['fields', 'status', 'statusCategory', 'colorName']), 1),
           }}
         >
           {currentIssue.getIn(['fields', 'status', 'name'])}

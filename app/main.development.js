@@ -131,6 +131,24 @@ ipcMain.on('ready-to-quit', () => {
   tray.destroy();
 });
 
+ipcMain.on('minimize', () => {
+  if (mainWindow) {
+    mainWindow.minimize();
+  }
+})
+
+ipcMain.on('maximize', () => {
+  if (mainWindow) {
+    mainWindow.maximize();
+  }
+})
+
+ipcMain.on('unmaximize', () => {
+  if (mainWindow) {
+    mainWindow.unmaximize();
+  }
+})
+
 const installExtensions = async () => {
   if (process.env.NODE_ENV === 'development') {
     const installer = require('electron-devtools-installer'); // eslint-disable-line global-require

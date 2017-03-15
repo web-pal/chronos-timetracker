@@ -1,9 +1,10 @@
-module.exports = {
+{
+  "parser": "babel-eslint",
     "extends": "airbnb",
-    "parser": "babel-eslint",
     "settings": {
       "ecmascript": 6,
-      "jsx": true
+        "jsx": true,
+      "import/resolver": "webpack",
     },
     "plugins": [
       "react",
@@ -11,6 +12,7 @@ module.exports = {
     ],
     "env": {
       "browser": true,
+        "node": true,
     },
     "rules": {
       "jsx-a11y/img-uses-alt": "off",
@@ -18,9 +20,10 @@ module.exports = {
       "jsx-a11y/valid-aria-role": "off",
       "new-cap": "off",
       "no-confusing-arrow": 0,
+      "import/no-extraneous-dependencies": 0,
       "react/forbid-prop-types": 0,
     },
     "globals": {
       "Immutable": true,
-    }
-};
+    },
+}
