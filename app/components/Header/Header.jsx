@@ -30,12 +30,12 @@ const Header = ({ avatarUrls, username, logout, screenshotsEnabled }) =>
         <a
           className="flex-item--end logout"
           title="logout"
+          onClick={logout}
         >
           <img
             src={logoutIcon}
             width={13}
             height={14}
-            onClick={logout}
           />
         </a>
       </Flex>
