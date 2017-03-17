@@ -7,3 +7,6 @@ export * from './filter';
 export * from './projects';
 export * from './settings';
 export * from './loadingBar';
+export * from './profile';
+
+export const CLEAR_ALL_REDUCERS = 'CLEAR_ALL_REDUCERS';
