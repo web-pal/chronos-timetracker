@@ -24,7 +24,7 @@ class Syncer extends Component {
           needSync: true,
           count: data.length,
           worklogs: data,
-        }) 
+        })
       }
     })
   }

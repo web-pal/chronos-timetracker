@@ -1,5 +1,4 @@
 import React from 'react';
-import './assets/stylesheets/main.less';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { ipcRenderer as ipc } from 'electron';
@@ -7,8 +6,12 @@ import { AppContainer } from 'react-hot-loader';
 
 import configureStore from './store/configureStore';
 import Base from './components/Base/Base';
+import rootSaga from './sagas';
+
+import './assets/stylesheets/main.less';
 
 const store = configureStore();
+store.runSaga(rootSaga);
 
 window.onerror = (...argw) => {
   ipc.send('errorInWindow', argw);
@@ -20,7 +23,7 @@ render(
       <Base />
     </Provider>
   </AppContainer>,
-  document.getElementById('root')
+  document.getElementById('root'),
 );
 
 if (module.hot) {

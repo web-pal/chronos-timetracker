@@ -106,12 +106,13 @@ function uploadScreenshot(screenshotPath) {
               },
               body: image,
             };
-            return fetch(signedUrl, opts);
+            fetch(signedUrl, opts).then((res) => {
+              if (res.status === 200) {
+                resolve(success);
+              }
+            });
           });
         },
-      )
-      .then(
-        (res) => { resolve(success) },
       );
   });
 }
@@ -151,6 +152,7 @@ function uploadWorklog(params) {
       fetch(url, options)
         .then(
           (res) => {
+            console.log(res);
             if (res.status === 200) {
               resolve(response.body);
             } else {
@@ -204,7 +206,7 @@ export function checkCurrentOfflineScreenshots() {
     storage.get('current_offline_screenshots', (err, screenshots) => {
       console.log(screenshots);
       if (Array.isArray(screenshots) && screenshots.length) {
-        // TODO: make it syncronyous
+        // TODO: make it syncronyous(later on refactoring using redux-saga)
         screenshots.forEach((screen) => {
           uploadScreenshot(screen)
             .then(() => {
@@ -219,7 +221,7 @@ export function checkCurrentOfflineScreenshots() {
               });
             });
         });
-        storage.set('offline_worklogs', []);
+        storage.set('current_offline_screenshots', []);
       }
     });
   };
@@ -234,7 +236,7 @@ export function checkCurrentOfflineWorklogs() {
 
     storage.get('offline_worklogs', (err, worklogs) => {
       if (Array.isArray(worklogs) && worklogs.length) {
-        // TODO: make it syncronyous
+        // TODO: make it syncronyous(later on refactoring using redux-saga)
         worklogs.forEach((item) => {
           const { activity, ...worklog } = item;
           uploadWorklog({ jiraClient, worklog, token, activity });
@@ -247,7 +249,6 @@ export function checkCurrentOfflineWorklogs() {
 
 
 export function acceptScreenshot(screenshotTime, screenshotPath) {
-  storage.set('offline_worklogs', []);
   return (dispatch, getState) => {
     dispatch({
       type: types.SAVE_LAST_SCREENSHOT_TIME,

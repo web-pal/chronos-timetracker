@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import { reducer as formReducer } from 'redux-form/immutable';
 
+import profile from './profile';
 import jira from './jira';
 import tracker from './tracker';
 import ui from './ui';
@@ -12,6 +13,7 @@ import settings from './settings';
 import loadingBar from './loadingBar';
 
 const rootReducer = combineReducers({
+  profile,
   jira,
   tracker,
   ui,

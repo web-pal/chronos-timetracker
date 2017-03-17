@@ -2,18 +2,20 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Field, reduxForm } from 'redux-form/immutable';
-import Joi from 'joi';
+import storage from 'electron-json-storage';
 
-import * as jiraActions from '../actions/jira';
+import * as profileActions from '../actions/profile';
+
 import Flex from '../components/Base/Flex/Flex';
 import Checkbox from '../components/Checkbox/Checkbox';
 
+import { rememberToken } from '../utils/api/helper';
 import logo from '../assets/images/logo256x256.png';
 
 const spinner = require('../assets/images/ring-alt.svg');
 
-const validate = values => {
-  const errors = {}
+const validate = (values) => {
+  const errors = {};
   if (!values.get('host')) {
     errors.host = 'Requried';
   }
@@ -24,10 +26,12 @@ const validate = values => {
     errors.password = 'Requried';
   }
   return errors;
-}
+};
 
 
-const renderField = ({ input, label, type, placeholder, meta: { touched, error, warning } }) => (
+const renderField = ({
+  input, label, type, placeholder, meta: { touched, error, warning } //eslint-disable-line
+}) => (
   <div className={`form-element ${label}`}>
     <Flex row>
       <label htmlFor={label}>{label}</label>
@@ -40,62 +44,52 @@ const renderField = ({ input, label, type, placeholder, meta: { touched, error, 
       className={`${error && touched ? 'withError' : ''}`}
     />
   </div>
-)
+);
 
 @reduxForm({ form: 'auth', validate })
 class AuthForm extends Component {
   static propTypes = {
-    initialValues: PropTypes.object.isRequired,
-    error: PropTypes.object,
+    loginRequestInProcess: PropTypes.bool.isRequired,
+
+    loginError: PropTypes.string.isRequired,
+
+    login: PropTypes.func.isRequired,
+    checkJWT: PropTypes.func.isRequired,
     handleSubmit: PropTypes.func.isRequired,
-    connect: PropTypes.func.isRequired,
-    jwtConnect: PropTypes.func.isRequired,
-    setAuthSucceeded: PropTypes.func.isRequired,
-    getSavedCredentials: PropTypes.func.isRequired,
-    getJWT: PropTypes.func.isRequired,
     initialize: PropTypes.func.isRequired,
   }
 
   componentDidMount() {
-    this.props.getSavedCredentials()
-      .then(
-        () => {
-          this.props.initialize(this.props.initialValues.toJS());
-          return this.props.getJWT();
-        }
-      )
-      .then(
-        result => this.props.jwtConnect(result.payload.token)
-      )
-      .then(
-        () => this.props.setAuthSucceeded()
-      )
-      .catch(e => {});
+    storage.get('jira_credentials', (err, credentials) => {
+      if (!err && credentials) {
+        this.props.initialize(credentials);
+      }
+    });
+    storage.get('desktop_tracker_jwt', (err, token) => {
+      if (!err && token) {
+        rememberToken(token);
+        this.props.checkJWT();
+      }
+    });
   }
 
-  submit = (values) => {
-    this.props.connect(values)
-      .then(
-        () => this.props.setAuthSucceeded(),
-        err => {},
-      );
-  }
+  submit = values => (
+    new Promise((resolve, reject) => {
+      this.props.login({ values: values.toJS(), resolve, reject });
+    })
+  )
 
   render() {
-    const {
-      handleSubmit,
-      fetching,
-      jiraError,
-    } = this.props;
+    const { handleSubmit, loginRequestInProcess, loginError } = this.props;
     return (
       <Flex column centered className="occupy-height draggable">
-        {fetching &&
+        {loginRequestInProcess &&
           <div className="connect-fetching">
             <img src={spinner} alt="" />
           </div>
         }
         <Flex row centered className="logo">
-          <img src={logo} height={107}/>
+          <img alt="logo" src={logo} height={107} />
         </Flex>
         <Flex row centered>
           <form onSubmit={handleSubmit(this.submit)} className="form">
@@ -116,13 +110,17 @@ class AuthForm extends Component {
               />
             </div>
             <Flex row>
-              <button className="button button-primary" type="submit">Login</button>
+              <button
+                className="button button-primary"
+                type="submit"
+                disabled={loginRequestInProcess}
+              >
+                Login
+              </button>
             </Flex>
-            {jiraError &&
-              <span className="error">
-                {jiraError}
-              </span>
-            }
+            <span className="error">
+              {loginError}
+            </span>
           </form>
         </Flex>
       </Flex>
@@ -131,14 +129,13 @@ class AuthForm extends Component {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(jiraActions, dispatch);
+  return bindActionCreators(profileActions, dispatch);
 }
 
-function mapStateToProps({ jira, ui }) {
+function mapStateToProps({ profile }) {
   return {
-    initialValues: jira.credentials,
-    jiraError: jira.error,
-    fetching: jira.fetching,
+    loginError: profile.loginError,
+    loginRequestInProcess: profile.loginRequestInProcess,
   };
 }
 
