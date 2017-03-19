@@ -21,5 +21,5 @@ export const getSelectedProject = createSelector(
 
 export const getSelectedProjectOption = createSelector(
   [getSelectedProjectId, getProjectsMap],
-  (id, map) => ({ value: id, label: map.getIn([id, 'name']) })
+  (id, map) => (id ? ({ value: id, label: map.getIn([id, 'name']) }) : null),
 );

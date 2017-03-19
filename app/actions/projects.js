@@ -4,42 +4,12 @@ import { normalize } from 'normalizr';
 
 import { projectSchema } from '../schemas/';
 
-function setProjectsFetchState(value) {
+export function fetchProjects(selectLastSelectedProject = false) {
   return {
-    type: types.SET_PROJECTS_FETCH_STATE,
-    payload: value,
+    type: types.FETCH_PROJECTS_REQUEST,
+    selectLastSelectedProject,
   };
 }
-
-export const fetchProjects =
-  () => (dispatch, getState) => new Promise((resolve, reject) => {
-    const jiraClient = getState().jira.client;
-    if (!jiraClient) return;
-    dispatch(setProjectsFetchState(true));
-    const fetchRepedioulsy = setInterval(() => {
-      jiraClient.project.getAllProjects({}, (error, response) => {
-        if (error) {
-          dispatch({
-            type: types.THROW_ERROR,
-            error,
-          });
-          reject(error);
-          return;
-        }
-        const normalizedData = normalize(response, [projectSchema]);
-        dispatch({
-          type: types.FILL_PROJECTS,
-          payload: {
-            map: normalizedData.entities.projects,
-            ids: normalizedData.result,
-          },
-        });
-        dispatch(setProjectsFetchState(false));
-        clearInterval(fetchRepedioulsy);
-        resolve('done');
-      });
-    }, 1000);
-  });
 
 export const selectProject = projectId => (dispatch, getState) => {
   const host = getState().jira.credentials.get('host');
@@ -50,7 +20,7 @@ export const selectProject = projectId => (dispatch, getState) => {
       type: types.SELECT_PROJECT,
       payload: projectId,
     });
-  })
+  });
 };
 
 export const getLastProject = () => (dispatch, getState) =>
@@ -72,9 +42,3 @@ export const fetchProjectStatuses = projectIdOrKey => (dispatch, getState) =>
       resolve(response);
     });
   });
-
-// export const fetchProjectAvatars = () => (dispatch, getState) =>
-  // new Promise((resolve, reject) => {
-    // const jiraClient = getState().jira.client;
-    // jiraClient.proje
-  // })

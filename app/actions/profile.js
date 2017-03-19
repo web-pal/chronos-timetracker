@@ -14,3 +14,9 @@ export function checkJWT() {
     type: types.CHECK_JWT,
   };
 }
+
+export function logout() {
+  return {
+    type: types.LOGOUT_REQUEST,
+  };
+}

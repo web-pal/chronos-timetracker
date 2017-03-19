@@ -61,12 +61,12 @@ class AuthForm extends Component {
 
   componentDidMount() {
     storage.get('jira_credentials', (err, credentials) => {
-      if (!err && credentials) {
+      if (!err && credentials && Object.keys(credentials)) {
         this.props.initialize(credentials);
       }
     });
     storage.get('desktop_tracker_jwt', (err, token) => {
-      if (!err && token) {
+      if (!err && token && Object.keys(token).length) {
         rememberToken(token);
         this.props.checkJWT();
       }
