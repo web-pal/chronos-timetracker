@@ -13,7 +13,6 @@ import { getSelectedProjectId } from '../selectors/';
 import * as issuesActions from '../actions/issues';
 import * as worklogsActions from '../actions/worklogs';
 import * as projectsActions from '../actions/projects';
-import * as settingsActions from '../actions/settings';
 import * as jiraActions from '../actions/jira';
 import * as trackerActions from '../actions/tracker';
 import * as uiActions from '../actions/ui';
@@ -28,7 +27,6 @@ class FetchWrapper extends Component {
     currentProject: PropTypes.string,
     fetchProjects: PropTypes.func.isRequired,
     fetchIssues: PropTypes.func.isRequired,
-    fetchSettings: PropTypes.func.isRequired,
     fetchLastWeekLoggedIssues: PropTypes.func.isRequired,
     getLastProject: PropTypes.func.isRequired,
     checkCurrentOfflineWorklogs: PropTypes.func.isRequired,
@@ -94,16 +92,12 @@ class FetchWrapper extends Component {
     const {
       fetchProjects,
       getLastProject,
-      fetchSettings,
       checkConnection,
     } = this.props;
 
     fetchProjects()
       .then(
         () =>  getLastProject()
-      )
-      .then(
-        () => fetchSettings()
       )
     checkConnection();
     this.checkConnectionInterval = setInterval(() => checkConnection(), 10000);
@@ -138,7 +132,6 @@ function mapDispatchToProps(dispatch) {
     ...issuesActions,
     ...worklogsActions,
     ...projectsActions,
-    ...settingsActions,
     ...uiActions,
   }, dispatch);
 }

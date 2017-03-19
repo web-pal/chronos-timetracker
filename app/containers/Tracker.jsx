@@ -14,7 +14,7 @@ import Timer from '../components/Timer/Timer';
 import TrackerHeader from '../components/TrackerHeader/TrackerHeader';
 import StatusBar from './StatusBar';
 
-import { getTrackingIssue, getSelectedIssue, getSettings } from '../selectors/';
+import { getTrackingIssue, getSelectedIssue } from '../selectors/';
 
 import * as trackerActions from '../actions/tracker';
 import * as worklogsActions from '../actions/worklogs';
@@ -354,7 +354,7 @@ function mapStateToProps({ jira, tracker, ui, issues, settings }) {
     running: tracker.running,
     paused: tracker.paused,
     currentWorklogId: tracker.currentWorklogId,
-    settings: getSettings({ settings }),
+    settings,
     descriptionPopupOpen: ui.descriptionPopupOpen,
     description: tracker.description,
     idleState: ui.idleState,

@@ -4,14 +4,10 @@ import { Provider } from 'react-redux';
 import { ipcRenderer as ipc } from 'electron';
 import { AppContainer } from 'react-hot-loader';
 
-import configureStore from './store/configureStore';
 import Base from './components/Base/Base';
-import rootSaga from './sagas';
+import store from './store';
 
 import './assets/stylesheets/main.less';
-
-const store = configureStore();
-store.runSaga(rootSaga);
 
 window.onerror = (...argw) => {
   ipc.send('errorInWindow', argw);

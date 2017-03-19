@@ -1,8 +1,9 @@
 import React from 'react';
 
-import Flex from './Base/Flex/Flex';
-import Menu from '../containers/Menu';
-import Tracker from '../containers/Tracker';
+import Flex from '../components/Base/Flex/Flex';
+import Tracker from './Tracker';
+import Menu from './Menu';
+
 
 const Main = () =>
   <Flex row className="occupy-height">

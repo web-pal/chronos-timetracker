@@ -1,27 +1,36 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { lifecycle } from 'recompose';
+import Select from 'react-select';
+import 'react-select/dist/react-select.css';
 
 import { getSelectedProjectOption, getProjectsOptions } from '../selectors/';
 
 import * as projectsActions from '../actions/projects';
 
-import Dropdown from '../components/Dropdown/Dropdown';
+const enhance = lifecycle({
+  componentDidMount() {
+    this.props.fetchProjects(true);
+  },
+});
 
-const ProjectPickerWrapper = ({
+const ProjectPickerWrapper = enhance(({
   options,
   selectProject,
   selectedProject,
   projectsFetching,
-}) =>
-  <Dropdown
+}) => (
+  <Select
     options={options}
-    onChange={selectProject}
-    placeholder="Select project"
     value={selectedProject}
-    fetching={projectsFetching}
+    placeholder="Select project"
     className="ProjectPicker"
-  />;
+    onChange={option => selectProject(option.value)}
+    isLoading={projectsFetching}
+    clearable={false}
+  />
+));
 
 ProjectPickerWrapper.propTypes = {
   options: PropTypes.array.isRequired,
@@ -30,7 +39,7 @@ ProjectPickerWrapper.propTypes = {
   selectProject: PropTypes.func.isRequired,
 };
 
-function mapStateToProps({ projects, tracker }) {
+function mapStateToProps({ projects }) {
   const options = getProjectsOptions({ projects });
   const selectedProject = getSelectedProjectOption({ projects });
   return {
@@ -41,7 +50,7 @@ function mapStateToProps({ projects, tracker }) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ ...projectsActions }, dispatch);
+  return bindActionCreators(projectsActions, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProjectPickerWrapper);

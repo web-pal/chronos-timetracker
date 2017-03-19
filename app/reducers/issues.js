@@ -9,7 +9,7 @@ function allItems(state = new OrderedSet(), action) {
       return new OrderedSet(action.payload.ids);
     case types.ADD_ISSUES:
       return state.union(new OrderedSet(action.payload.ids));
-    case types.CLEAR_ISSUES:
+    case types.CLEAR_ALL_REDUCERS:
       return new OrderedSet();
     default:
       return state;
@@ -22,13 +22,13 @@ function itemsById(state = new Map(), action) {
       return fromJS(action.payload.map);
     case types.ADD_ISSUES:
       return state.merge(new Map(fromJS(action.payload.map)));
-    case types.CLEAR_ISSUES:
-      return new Map();
     case types.UPDATE_ISSUE_TIME:
       const issue = state.get(action.payload.issueId);
       const newIssue = issue &&
         issue.set('timespent', issue.get('timespent') + action.payload.time);
       return issue ? state.set(action.payload.issueId, newIssue) : state;
+    case types.CLEAR_ALL_REDUCERS:
+      return new Map();
     default:
       return state;
   }
@@ -48,12 +48,14 @@ function recentItems(state = new Map(), action) {
       return issue ? state.set(action.payload.issueId, newIssue) : state;
     case types.SELECT_ISSUE:
       return state.set(action.payload.get('id'), action.payload);
+    case types.CLEAR_ALL_REDUCERS:
+      return new Map();
     default:
       return state;
   }
 }
 
-const InitialMeta = Immutable.Record({
+const InitialMeta = {
   fetching: false,
   total: 0,
   selected: null,
@@ -62,11 +64,9 @@ const InitialMeta = Immutable.Record({
   recent: new OrderedSet(),
   searchResults: new OrderedSet(),
   currentPagination: { startIndex: 0, stopIndex: 0 },
-});
+};
 
-const initialMeta = new InitialMeta();
-
-function meta(state = initialMeta, action) {
+function meta(state = new Immutable.Record(InitialMeta), action) {
   switch (action.type) {
     case types.SET_ISSUES_FETCH_STATE:
       return state.set('fetching', action.payload);
@@ -86,12 +86,12 @@ function meta(state = initialMeta, action) {
       return state.set('tracking', action.payload);
     case types.CLEAR_TRACKING_ISSUE:
       return state.delete('tracking');
-    case types.CLEAR_ISSUES:
-      return state.set('total', 0).delete('currentPagination');
     case types.CLEAR_SEARCH_RESULTS:
       return state.delete('searchResults');
     case types.SET_CURRENT_PAGINATION:
       return state.set('currentPagination', action.payload);
+    case types.CLEAR_ALL_REDUCERS:
+      return new Immutable.Record(InitialMeta);
     default:
       return state;
   }

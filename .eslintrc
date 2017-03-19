@@ -18,11 +18,13 @@
     "jsx-a11y/img-uses-alt": "off",
     "jsx-a11y/redundant-alt": "off",
     "jsx-a11y/valid-aria-role": "off",
+    "jsx-a11y/no-static-element-interactions": "off",
     "new-cap": "off",
-    "no-confusing-arrow": 0,
+    "no-constant-condition": 0,
     "import/no-extraneous-dependencies": 0,
     "react/forbid-prop-types": 0,
     "import/extensions": 0,
+    "import/prefer-default-export": 0,
     "import/no-unresolved": [1, { ignore: ['api', 'config'] }]
   },
   "globals": {

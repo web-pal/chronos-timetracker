@@ -6,7 +6,6 @@ import { bindActionCreators } from 'redux';
 import * as uiActions from '../actions/ui';
 import * as jiraActions from '../actions/jira';
 import * as issuesActions from '../actions/issues';
-import * as settingsActions from '../actions/settings';
 
 import {
   getRecentWorklogsGroupedByDate,
@@ -59,7 +58,6 @@ SidebarWrapper.propTypes = {
   items: PropTypes.object.isRequired,
   fetching: PropTypes.bool.isRequired,
   fetchIssues: PropTypes.func.isRequired,
-  fetchSettings: PropTypes.func.isRequired,
   setSidebarType: PropTypes.func.isRequired,
   selectIssue: PropTypes.func.isRequired,
   selectRecent: PropTypes.func.isRequired,
@@ -95,7 +93,6 @@ function mapDispatchToProps(dispatch) {
     ...uiActions,
     ...jiraActions,
     ...issuesActions,
-    ...settingsActions,
   }, dispatch);
 }
 
