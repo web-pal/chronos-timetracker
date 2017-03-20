@@ -19,8 +19,20 @@ const requiredFields = [
 export function fetchIssues({ startIndex, stopIndex, currentProject }) {
   return jira.client.search.search({
     jql: `project = ${currentProject}`,
-    maxResults: stopIndex - (startIndex + 1),
+    maxResults: stopIndex - startIndex,
     startAt: startIndex,
+    fields: requiredFields,
+  });
+}
+
+export function fetchRecentIssues({ currentProject, worklogAuthor }) {
+  return jira.client.search.search({
+    jql: [
+      `project = ${currentProject} `,
+      `AND worklogAuthor = ${worklogAuthor} `,
+      'AND timespent > 0 AND worklogDate >= "-4w"',
+    ].join(''),
+    maxResults: 1000,
     fields: requiredFields,
   });
 }

@@ -17,7 +17,8 @@ function allItems(state = new OrderedSet(), action) {
 
 function itemsById(state = new Map(), action) {
   switch (action.type) {
-    case types.FILL_ISSUES_ONLY_MAP:
+    case types.FILL_SEARCH_ISSUES:
+    case types.FILL_RECENT_ISSUES:
     case types.FILL_ISSUES:
       return state.merge(fromJS(action.payload.map));
     case types.UPDATE_ISSUE_TIME:
@@ -57,6 +58,7 @@ const InitialMeta = Immutable.Record({
   fetching: false,
   fetched: false,
   searchFetching: false,
+  recentFetching: false,
   totalCount: 0,
   lastStopIndex: 0,
   selected: null,
@@ -77,6 +79,8 @@ function meta(state = new InitialMeta(), action) {
       return state.set('fetched', action.payload);
     case types.SET_SEARCH_ISSUES_FETCH_STATE:
       return state.set('searchFetching', action.payload);
+    case types.SET_RECENT_ISSUES_FETCH_STATE:
+      return state.set('recentFetching', action.payload);
     case types.SET_ISSUES_COUNT:
       return state.set('totalCount', action.payload);
     case types.SET_LAST_STOP_INDEX:
@@ -90,7 +94,7 @@ function meta(state = new InitialMeta(), action) {
     case types.ADD_RECENT_ISSUE:
       return state.set('recent', state.recent.add(action.payload.id));
     case types.FILL_SEARCH_ISSUES:
-      return state.set('searchResults', new OrderedSet(action.payload));
+      return state.set('searchResults', new OrderedSet(action.payload.ids));
     case types.SELECT_RECENT:
       return state.set('recentSelected', action.payload);
     case types.SET_TRACKING_ISSUE:

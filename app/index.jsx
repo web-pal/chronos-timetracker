@@ -46,14 +46,14 @@ render(
 
 if (module.hot) {
   module.hot.accept('./components/Base/Base', () => {
-    const Base = require('./components/Base/Base');
+    const Base = require('./components/Base/Base'); // eslint-disable-line
     render(
       <AppContainer>
         <Provider store={store}>
           <Base />
         </Provider>
       </AppContainer>,
-      document.getElementById('root')
+      document.getElementById('root'),
     );
   });
 }

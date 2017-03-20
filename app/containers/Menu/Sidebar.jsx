@@ -10,7 +10,7 @@ import SidebarHeader from '../../components/Sidebar/SidebarHeader/SidebarHeader'
 import Flex from '../../components/Base/Flex/Flex';
 import SidebarFilter from './SidebarFilter';
 
-const Sidebar = ({ sidebarType, setSidebarType, currentProjectId }) =>
+const Sidebar = ({ sidebarType, setSidebarType, currentProjectId, projectsFetched }) =>
   <Flex column className="SidebarWrapper">
     <SidebarHeader
       sidebarType={sidebarType}
@@ -21,7 +21,9 @@ const Sidebar = ({ sidebarType, setSidebarType, currentProjectId }) =>
       {currentProjectId ?
         <SidebarItems /> :
         <span className="sidebar-nothing-selected">
-          select project from dropdown above
+          {projectsFetched &&
+            <span>select project from dropdown above</span>
+          }
         </span>
       }
     </Flex>
@@ -31,6 +33,7 @@ Sidebar.propTypes = {
   setSidebarType: PropTypes.func.isRequired,
   sidebarType: PropTypes.string.isRequired,
   currentProjectId: PropTypes.string,
+  projectsFetched: PropTypes.bool.isRequired,
 };
 
 Sidebar.defaultProps = {
@@ -40,6 +43,7 @@ Sidebar.defaultProps = {
 function mapStateToProps({ projects, ui }) {
   return {
     currentProjectId: projects.meta.get('selected'),
+    projectsFetched: projects.meta.get('fetched'),
     sidebarType: ui.sidebarType,
   };
 }

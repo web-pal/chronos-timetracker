@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
- 
-import Flex from '../../../Base/Flex/Flex';
+
+import Flex from '../Base/Flex/Flex';
 
 const NoItems = ({ show }) => show &&
   <Flex column centered className="RecentEmptyItem">

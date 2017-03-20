@@ -70,7 +70,7 @@ function fetchAdditionalWorklogs(issues) {
   };
 }
 
-export function fetchLastWeekLoggedIssues() {
+export function fetchLastWeekLoggedIssuess() {
   return (dispatch, getState) => new Promise((resolve, reject) => {
     const jiraClient = getState().jira.client;
     if (!jiraClient) return;
@@ -120,7 +120,13 @@ export function fetchLastWeekLoggedIssues() {
   });
 }
 
-export function fetchIssues(pagination = { startIndex: 0, stopIndex: 0 }, resolve = false) {
+export function fetchRecentIssues() {
+  return {
+    type: types.FETCH_RECENT_ISSUES_REQUEST,
+  };
+}
+
+export function fetchIssues(pagination = { startIndex: 0, stopIndex: 50 }, resolve = false) {
   return {
     type: types.FETCH_ISSUES_REQUEST,
     pagination,
