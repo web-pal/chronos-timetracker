@@ -27,6 +27,7 @@ function itemsById(state = new Map(), action) {
 
 const initialMeta = Record({
   fetching: false,
+  fetched: false,
   selected: null,
 });
 
@@ -34,6 +35,8 @@ function meta(state = new initialMeta(), action) {
   switch (action.type) {
     case types.SET_PROJECTS_FETCH_STATE:
       return state.set('fetching', action.payload);
+    case types.SET_PROJECTS_FETCHED_STATE:
+      return state.set('fetched', action.payload);
     case types.SELECT_PROJECT:
       return state.set('selected', action.payload);
     case types.CLEAR_ALL_REDUCERS:

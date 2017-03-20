@@ -6,9 +6,8 @@ import * as types from '../constants';
 function allItems(state = new OrderedSet(), action) {
   switch (action.type) {
     case types.FILL_WORKLOGS:
+    case types.FILL_RECENT_WORKLOGS:
       return state.concat(action.payload.ids);
-    case types.ADD_RECENT_WORKLOG:
-      return state.add(action.payload.id);
     case types.CLEAR_WORKLOGS:
       return new OrderedSet();
     default:
@@ -19,9 +18,8 @@ function allItems(state = new OrderedSet(), action) {
 function itemsById(state = new Map(), action) {
   switch (action.type) {
     case types.FILL_WORKLOGS:
+    case types.FILL_RECENT_WORKLOGS:
       return state.merge(fromJS(action.payload.map));
-    case types.ADD_RECENT_WORKLOG:
-      return state.set(action.payload.id, fromJS(action.payload));
     case types.CLEAR_WORKLOGS:
       return new Map();
     default:
@@ -39,7 +37,7 @@ function meta(state = initialMeta, action) {
     case types.SET_WORKLOGS_FETCH_STATE:
       return state.set('fetching', action.payload);
     case types.FILL_RECENT_WORKLOGS:
-      return state.set('recent', new OrderedSet(action.payload));
+      return state.set('recent', new OrderedSet(action.payload.ids));
     case types.ADD_RECENT_WORKLOGS:
       return state.set('recent', state.get('recent').union(new OrderedSet(action.payload)));
     case types.ADD_RECENT_WORKLOG:

@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 
 import InfiniteLoadingList from '../../Virtualized/InfiniteLoadingList';
-import SidebarItem from '../../../components/Sidebar/SidebarAllItems/SidebarItem';
+import SidebarItem from './SidebarItem';
 
 const SidebarAllItems = ({
   totalCount, items, fetchIssues, selectIssue,

@@ -1,8 +1,5 @@
-import * as types from '../constants/';
 import storage from 'electron-json-storage';
-import { normalize } from 'normalizr';
-
-import { projectSchema } from '../schemas/';
+import * as types from '../constants/';
 
 export function fetchProjects(selectLastSelectedProject = false) {
   return {
@@ -13,12 +10,12 @@ export function fetchProjects(selectLastSelectedProject = false) {
 
 export const selectProject = projectId => (dispatch, getState) => {
   const host = getState().profile.host;
+  dispatch({
+    type: types.SELECT_PROJECT,
+    payload: projectId,
+  });
   storage.get('lastProject', (e, data) => {
     storage.set('lastProject', { ...data, [host]: projectId });
-    dispatch({
-      type: types.SELECT_PROJECT,
-      payload: projectId,
-    });
   });
 };
 

@@ -2,7 +2,7 @@ import { fork } from 'redux-saga/effects';
 
 import { loginFlow, checkJWT } from './profile';
 import { getProjects } from './projects';
-import { watchGetIssues, watchSearchIssues } from './issues';
+import { watchGetIssues, watchRecentIssues, watchSearchIssues } from './issues';
 
 
 export default function* root() {
@@ -12,5 +12,6 @@ export default function* root() {
     fork(getProjects),
     fork(watchGetIssues),
     fork(watchSearchIssues),
+    fork(watchRecentIssues),
   ];
 }

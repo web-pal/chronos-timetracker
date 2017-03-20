@@ -12,7 +12,7 @@ import refreshIcon from '../../assets/images/refresh@2x.png';
 
 const SidebarFilter = ({
   searchValue, sidebarType, searchIssues,
-  clearIssues, fetchIssues, setIssuesSearchValue,
+  clearIssues, fetchIssues, fetchRecentIssues, setIssuesSearchValue,
 }) =>
   <Flex row className={`sidebar-filter-item ${sidebarType === 'Recent' ? 'hidden' : ''}`}>
     <Flex column centered className="search-field">
@@ -47,6 +47,7 @@ const SidebarFilter = ({
         src={refreshIcon}
         onClick={() => {
           clearIssues();
+          fetchRecentIssues();
           fetchIssues();
         }}
         width={20}
@@ -60,6 +61,7 @@ SidebarFilter.propTypes = {
   sidebarType: PropTypes.string.isRequired,
   clearIssues: PropTypes.func.isRequired,
   fetchIssues: PropTypes.func.isRequired,
+  fetchRecentIssues: PropTypes.func.isRequired,
   searchIssues: PropTypes.func.isRequired,
   setIssuesSearchValue: PropTypes.func.isRequired,
 };
