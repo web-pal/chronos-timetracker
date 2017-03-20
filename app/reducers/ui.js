@@ -2,7 +2,7 @@ import * as types from '../constants/ui';
 
 const InitialState = Immutable.Record({
   descriptionPopupOpen: false,
-  sidebarType: 'Recent',
+  sidebarType: 'All',
   idleState: false,
   updateAvailable: null,
   updateFetching: false,

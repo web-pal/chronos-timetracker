@@ -1,27 +1,25 @@
 import React, { PropTypes } from 'react';
 
 import Flex from '../../Base/Flex/Flex';
+import SidebarHeaderTab from './SidebarHeaderTab';
 
-const SidebarHeader = ({
-  active,
-  label,
-  onClick,
-}) =>
-  <Flex
-    column
-    centered
-    onClick={() => onClick(label)}
-    className={`sidebar-header ${active ? 'active' : ''}`}
-  >
-    <span className="sidebar-header__label">
-      {label}
-    </span>
+const SidebarHeader = ({ sidebarType, setSidebarType }) =>
+  <Flex row className="sidebar-header-wrap">
+    <SidebarHeaderTab
+      active={sidebarType === 'Recent'}
+      label="Recent"
+      onClick={setSidebarType}
+    />
+    <SidebarHeaderTab
+      active={sidebarType === 'All'}
+      label="All"
+      onClick={setSidebarType}
+    />
   </Flex>;
 
 SidebarHeader.propTypes = {
-  label: PropTypes.string.isRequired,
-  active: PropTypes.bool.isRequired,
-  onClick: PropTypes.func.isRequired,
+  sidebarType: PropTypes.string.isRequired,
+  setSidebarType: PropTypes.func.isRequired,
 };
 
 export default SidebarHeader;

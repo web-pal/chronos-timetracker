@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { Map, OrderedSet, fromJS } from 'immutable';
+import { Record, OrderedSet, fromJS } from 'immutable';
 
 import * as types from '../constants';
 
@@ -25,19 +25,19 @@ function itemsById(state = new Map(), action) {
   }
 }
 
-const initialMeta = {
+const initialMeta = Record({
   fetching: false,
   selected: null,
-};
+});
 
-function meta(state = new Map(initialMeta), action) {
+function meta(state = new initialMeta(), action) {
   switch (action.type) {
     case types.SET_PROJECTS_FETCH_STATE:
       return state.set('fetching', action.payload);
     case types.SELECT_PROJECT:
       return state.set('selected', action.payload);
     case types.CLEAR_ALL_REDUCERS:
-      return new Map(initialMeta);
+      return new initialMeta();
     default:
       return state;
   }

@@ -1,6 +1,6 @@
 import jira from '../jiraClient';
 
 
-export function fetchProjects() { // eslint-disable-line
+export function fetchProjects() {
   return jira.client.project.getAllProjects();
 }

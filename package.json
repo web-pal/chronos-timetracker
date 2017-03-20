@@ -167,7 +167,6 @@
     "react-markdown": "^2.4.4",
     "react-redux": "5.0.2",
     "react-select": "1.0.0-rc.3",
-    "react-throttle": "^0.3.0",
     "react-tooltip": "^3.2.7",
     "react-virtualized": "^8.11.0",
     "recompose": "^0.22.0",

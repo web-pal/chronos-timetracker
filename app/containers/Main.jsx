@@ -2,7 +2,7 @@ import React from 'react';
 
 import Flex from '../components/Base/Flex/Flex';
 import Tracker from './Tracker';
-import Menu from './Menu';
+import Menu from './Menu/Menu';
 
 
 const Main = () =>

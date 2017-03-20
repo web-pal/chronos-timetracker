@@ -14,43 +14,12 @@ const SidebarItems = ({
   <Flex column style={{ height: '100%' }}>
     <LinearGradientSpinner show={fetching && items.size === 0} takeAllSpace />
     <NoItems show={!fetching && issuesCount === 0 && sidebarType === 'All'} />
-    {sidebarType === 'All'
-      ? <InfiniteLoadingList
-        isRowLoaded={({ index }) => !!items.toList().get(index)}
-        minimumBatchSize={50}
-        threshold={20}
-        loadMoreRows={fetchIssues}
-        rowCount={issuesCount}
-        listProps={{
-          autoSized: true,
-          rowCount: issuesCount,
-          rowHeight: 40,
-          // eslint-disable-next-line react/prop-types
-          rowRenderer: ({ index, key, style }) => {
-            const item = items.toList().get(index);
-            return (
-              <SidebarItem
-                key={key}
-                onClick={onItemClick}
-                item={item || Immutable.Map()}
-                style={style}
-                current={current}
-                tracking={tracking}
-              />
-            );
-          },
-        }}
-      />
-        : <RecentItems
-          items={items}
-          current={current}
-          tracking={tracking}
-          onItemClick={onItemClick}
-          fetching={fetching}
-          selectRecent={selectRecent}
-          recentSelected={recentSelected}
-        />
-      }
+    {sidebarType === 'All' &&
+      <AllItems { ...props } />
+    }
+    {sidebarType === 'Recent' &&
+      <RecentItems { ...props } />
+    }
   </Flex>;
 
 SidebarItems.propTypes = {

@@ -1,15 +1,15 @@
 import React, { PropTypes } from 'react';
 import { getStatusColor } from 'jiraColors-util';
 
-import Flex from '../../../Base/Flex/Flex';
-import SidebarItemLoader from '../../../Spinners/SidebarItemLoader';
+import Flex from '../../Base/Flex/Flex';
+import SidebarItemLoader from '../../Spinners/SidebarItemLoader';
 
 function formatSummary(summary) {
   return summary && summary.length > 20 ? `${summary.substr(0, 20)}...` : summary;
 }
 
 const SidebarItem = ({ onClick, style, item, current, tracking }) => {
-  const { id, resolved, key, fields } = item.toJS();
+  const { id, key, fields } = item.toJS();
   const { summary } = fields || {};
   const active = current === id;
   return (
@@ -19,7 +19,7 @@ const SidebarItem = ({ onClick, style, item, current, tracking }) => {
         ${active ? 'sidebar__item--active' : ''}\
         ${tracking && tracking === id ? 'sidebar__item--tracking' : ''}`
       }
-      onClick={() => onClick(item)}
+      onClick={() => onClick(id)}
       style={style}
     >
       <span
