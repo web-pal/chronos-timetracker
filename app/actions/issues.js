@@ -23,7 +23,7 @@ export function updateIssueTime(issueId, time) {
     type: types.UPDATE_ISSUE_TIME,
     payload: {
       time,
-      issueId
+      issueId,
     },
   };
 }
@@ -35,117 +35,12 @@ function setIssuesFetchState(value) {
   };
 }
 
-function searchIssuesBySummary(query) {
-  return (dispatch, getState) => new Promise((resolve, reject) => {
-    const jiraClient = getState().jira.client;
-    if (!jiraClient) return;
-    const currentProjectKey = getState().projects.meta.get('selected');
-    const escapedQuery = query.replace('[', '').replace(']', '');
-    let promiseResolved = false;
-    jiraClient.search.search({
-      jql: `project = ${currentProjectKey} AND
- summary ~ "${escapedQuery}"`,
-      maxResults: 1000,
-      fields: requiredFields,
-    })
-      .then(
-        (response) => {
-          promiseResolved = true;
-          const issues = response.issues;
-          const normalizedData = normalize(issues, [issueSchema]);
-          dispatch({
-            type: types.ADD_ISSUES,
-            payload: {
-              map: normalizedData.entities.issues,
-              ids: normalizedData.result,
-            },
-          });
-          dispatch({
-            type: types.FILL_SEARCH_ISSUES,
-            payload: normalizedData.result,
-          });
-          if (normalizedData.entities.worklogs) {
-            dispatch({
-              type: types.ADD_WORKLOGS,
-              payload: {
-                map: normalizedData.entities.worklogs,
-                ids: Object.keys(normalizedData.entities.worklogs),
-              },
-            });
-          }
-          dispatch(setIssuesFetchState(false));
-          resolve('done');
-        },
-        error => {
-          reject(error);
-        }
-      );
-    setTimeout(() => {
-      if (!promiseResolved) {
-        searchIssuesBySummary(query)(dispatch, getState);
-      }
-    }, 5000);
-  });
+export function searchIssues() {
+  return {
+    type: types.FETCH_SEARCH_ISSUES_REQUEST,
+  };
 }
 
-function searchIssuesByKey(query) {
-  return (dispatch, getState) => new Promise((resolve, reject) => {
-    const jiraClient = getState().jira.client;
-    if (!jiraClient) return;
-    const currentProjectKey = getState().projects.meta.get('selected');
-    jiraClient.search.search({
-      jql: `project = ${currentProjectKey} AND
- issuekey = "${query}"`,
-      maxResults: 1000,
-      fields: requiredFields,
-    }, (error, response) => {
-      if (error) {
-        reject(error);
-      } else {
-        const issues = response.issues;
-        const normalizedData = normalize(issues, [issueSchema]);
-        dispatch({
-          type: types.ADD_ISSUES,
-          payload: {
-            map: normalizedData.entities.issues,
-            ids: normalizedData.result,
-          },
-        });
-        dispatch({
-          type: types.FILL_SEARCH_ISSUES,
-          payload: normalizedData.result,
-        });
-        dispatch({
-          type: types.ADD_WORKLOGS,
-          payload: {
-            map: normalizedData.entities.worklogs,
-            ids: Object.keys(normalizedData.entities.worklogs),
-          },
-        });
-        dispatch(setIssuesFetchState(false));
-        resolve('done');
-      }
-    });
-  });
-}
-
-export function searchIssues(query) {
-  return (dispatch, getState) => new Promise((resolve, reject) => {
-    if (query.length) {
-      dispatch(setIssuesFetchState(true));
-      dispatch({
-        type: types.CLEAR_SEARCH_RESULTS,
-      });
-      searchIssuesByKey(query)(dispatch, getState)
-        .catch(
-          err => searchIssuesBySummary(query)(dispatch, getState)
-        )
-        .catch(
-          err => dispatch(setIssuesFetchState(false))
-        );
-    }
-  });
-}
 
 function fetchAdditionalWorklogs(issues) {
   return (dispatch, getState) => {
@@ -217,7 +112,7 @@ export function fetchLastWeekLoggedIssues() {
         dispatch({
           type: types.FILL_RECENT_WORKLOGS,
           payload: Object.keys(normalizedData.entities.worklogs || {}),
-        }); 
+        });
       }
       resolve(response);
       dispatch(setIssuesFetchState(false));
@@ -225,64 +120,25 @@ export function fetchLastWeekLoggedIssues() {
   });
 }
 
-export function fetchIssues(pagination = { startIndex: 0, stopIndex: -1 }, force = false) {
-  const { startIndex, stopIndex } = pagination;
-  return (dispatch, getState) => new Promise((resolve, reject) => {
-    const jiraClient = getState().jira.client;
-    if (!jiraClient) return;
-    if (stopIndex > 0) {
-      dispatch(setIssuesFetchState(true));
-    }
-    const currentPagination = getState().issues.meta.currentPagination;
-    if (startIndex < currentPagination.stopIndex && !force) {
-      return;
-    }
-    dispatch({
-      type: types.SET_CURRENT_PAGINATION,
-      payload: pagination,
-    });
-    const currentProjectKey = getState().projects.meta.get('selected');
-    jiraClient.search.search({
-      jql: `project = ${currentProjectKey}`,
-      maxResults: stopIndex - startIndex + 1,
-      startAt: startIndex,
-      fields: requiredFields,
-    }, (error, response) => {
-      if (error) reject(error);
-      dispatch({
-        type: types.GET_ISSUES_COUNT,
-        payload: response.total,
-      });
-      const issues = response.issues;
-      const normalizedData = normalize(issues, [issueSchema]);
-      dispatch({
-        type: types.ADD_ISSUES,
-        payload: {
-          map: normalizedData.entities.issues,
-          ids: normalizedData.result,
-        },
-      });
-      if (normalizedData.entities.worklogs) {
-        dispatch({
-          type: types.ADD_WORKLOGS,
-          payload: {
-            map: normalizedData.entities.worklogs,
-            ids: Object.keys(normalizedData.entities.worklogs || {}),
-          },
-        });
-      } 
-      resolve(response);
-      if (stopIndex > 0) {
-        dispatch(setIssuesFetchState(false));
-      }
-    });
-  });
+export function fetchIssues(pagination = { startIndex: 0, stopIndex: 0 }, resolve = false) {
+  return {
+    type: types.FETCH_ISSUES_REQUEST,
+    pagination,
+    resolve,
+  };
 }
 
-export function selectIssue(issue) {
+export function setIssuesSearchValue(value) {
+  return {
+    type: types.SET_ISSUES_SEARCH_VALUE,
+    payload: value,
+  };
+}
+
+export function selectIssue(issueId) {
   return {
     type: types.SELECT_ISSUE,
-    payload: issue,
+    payload: issueId,
   };
 }
 

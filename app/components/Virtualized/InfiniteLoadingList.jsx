@@ -3,8 +3,8 @@ import { InfiniteLoader } from 'react-virtualized';
 
 import AutosizableList from './AutosizableList';
 
-const InfiniteLoadingList = (props) =>
-  <InfiniteLoader {...props}>
+const InfiniteLoadingList = props =>
+  <InfiniteLoader {...props} >
     {({ onRowsRendered, registerChild }) => (
       <AutosizableList
         autoSized={props.listProps.autoSized}

@@ -12,10 +12,9 @@ export function fetchProjects(selectLastSelectedProject = false) {
 }
 
 export const selectProject = projectId => (dispatch, getState) => {
-  const host = getState().jira.credentials.get('host');
+  const host = getState().profile.host;
   storage.get('lastProject', (e, data) => {
-    data[host] = projectId;
-    storage.set('lastProject', data);
+    storage.set('lastProject', { ...data, [host]: projectId });
     dispatch({
       type: types.SELECT_PROJECT,
       payload: projectId,
@@ -24,7 +23,7 @@ export const selectProject = projectId => (dispatch, getState) => {
 };
 
 export const getLastProject = () => (dispatch, getState) =>
-  new Promise((resolve, reject) => storage.get('lastProject', (e, data) => {
+  new Promise(resolve => storage.get('lastProject', (e, data) => {
     const host = getState().jira.credentials.get('host');
     if (data[host]) {
       dispatch(selectProject(data[host]));

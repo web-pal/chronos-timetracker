@@ -17,20 +17,25 @@ export const getSelectedIssueId = ({ issues }) => issues.meta.selected;
 
 export const getIssues = createSelector(
   [getIssuesIds, getIssuesMap],
-  (ids, map) => ids.map(id => map.get(id))
+  (ids, map) => ids.map(id => map.get(id)),
 );
 
 export const getSearchResultIssues = createSelector(
   [getSearchResultIssuesIds, getIssuesMap],
-  (ids, map) => ids.map(id => map.get(id))
+  (ids, map) => ids.map(id => map.get(id)).toList(),
+);
+
+export const getAllIssues = createSelector(
+  [getSearchResultIssuesIds, getIssuesIds, getIssuesMap],
+  (searchIds, ids, map) => ids.map(id => map.get(id)).toList(),
 );
 
 export const getTrackingIssue = createSelector(
   [getTrackingIssueId, getIssuesMap, getRecentIssuesMap],
-  (id, map, rMap) => map.get(id) || rMap.get(id) || new Map()
+  (id, map, rMap) => map.get(id) || rMap.get(id) || new Map(),
 );
 
 export const getSelectedIssue = createSelector(
   [getSelectedIssueId, getIssuesMap, getRecentIssuesMap],
-  (id, map, rMap) => map.get(id) || rMap.get(id) || new Map()
+  (id, map, rMap) => map.get(id) || rMap.get(id) || new Map(),
 );

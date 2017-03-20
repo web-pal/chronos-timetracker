@@ -5,9 +5,9 @@ import { lifecycle } from 'recompose';
 import Select from 'react-select';
 import 'react-select/dist/react-select.css';
 
-import { getSelectedProjectOption, getProjectsOptions } from '../selectors/';
+import { getSelectedProjectOption, getProjectsOptions } from '../../selectors';
 
-import * as projectsActions from '../actions/projects';
+import * as projectsActions from '../../actions/projects';
 
 const enhance = lifecycle({
   componentDidMount() {
@@ -15,7 +15,7 @@ const enhance = lifecycle({
   },
 });
 
-const ProjectPickerWrapper = enhance(({
+const ProjectPicker = enhance(({
   options,
   selectProject,
   selectedProject,
@@ -32,10 +32,10 @@ const ProjectPickerWrapper = enhance(({
   />
 ));
 
-ProjectPickerWrapper.propTypes = {
+ProjectPicker.propTypes = {
   options: PropTypes.array.isRequired,
   projectsFetching: PropTypes.bool.isRequired,
-  selectedProject: PropTypes.object.isRequired,
+  selectedProject: PropTypes.object,
   selectProject: PropTypes.func.isRequired,
 };
 
@@ -53,4 +53,4 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators(projectsActions, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ProjectPickerWrapper);
+export default connect(mapStateToProps, mapDispatchToProps)(ProjectPicker);

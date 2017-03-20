@@ -3,15 +3,15 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 
-import Flex from '../components/Base/Flex/Flex';
-import Avatar from '../components/Avatar/Avatar';
-import ProjectPickerWrapper from './ProjectPickerWrapper';
+import Flex from '../../components/Base/Flex/Flex';
+import Avatar from '../../components/Avatar/Avatar';
+import ProjectPicker from './ProjectPicker';
 
-import cameraIcon from '../assets/images/camera@2x.png';
-import nocameraIcon from '../assets/images/camera-crossed-out@2x.png';
-import logoutIcon from '../assets/images/logout@2x.png';
+import cameraIcon from '../../assets/images/camera@2x.png';
+import nocameraIcon from '../../assets/images/camera-crossed-out@2x.png';
+import logoutIcon from '../../assets/images/logout@2x.png';
 
-import * as profileActions from '../actions/profile';
+import * as profileActions from '../../actions/profile';
 
 const HeaderWrapper = ({
   userData,
@@ -65,7 +65,7 @@ const HeaderWrapper = ({
             </a>
           </Flex>
         </Flex>
-        <ProjectPickerWrapper />
+        <ProjectPicker />
       </Flex>
     </Flex>
   );

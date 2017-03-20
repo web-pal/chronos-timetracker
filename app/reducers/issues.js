@@ -6,9 +6,8 @@ import * as types from '../constants';
 function allItems(state = new OrderedSet(), action) {
   switch (action.type) {
     case types.FILL_ISSUES:
-      return new OrderedSet(action.payload.ids);
-    case types.ADD_ISSUES:
-      return state.union(new OrderedSet(action.payload.ids));
+      return state.concat(action.payload.ids);
+    case types.CLEAR_ISSUES:
     case types.CLEAR_ALL_REDUCERS:
       return new OrderedSet();
     default:
@@ -18,15 +17,15 @@ function allItems(state = new OrderedSet(), action) {
 
 function itemsById(state = new Map(), action) {
   switch (action.type) {
+    case types.FILL_ISSUES_ONLY_MAP:
     case types.FILL_ISSUES:
-      return fromJS(action.payload.map);
-    case types.ADD_ISSUES:
-      return state.merge(new Map(fromJS(action.payload.map)));
+      return state.merge(fromJS(action.payload.map));
     case types.UPDATE_ISSUE_TIME:
       const issue = state.get(action.payload.issueId);
       const newIssue = issue &&
         issue.set('timespent', issue.get('timespent') + action.payload.time);
       return issue ? state.set(action.payload.issueId, newIssue) : state;
+    case types.CLEAR_ISSUES:
     case types.CLEAR_ALL_REDUCERS:
       return new Map();
     default:
@@ -42,7 +41,6 @@ function recentItems(state = new Map(), action) {
       return state.set(action.payload.id, action.payload.issue);
     case types.UPDATE_ISSUE_TIME:
       const issue = state.get(action.payload.issueId);
-      console.log(issue.toJS(), action.payload.time);
       const newIssue = issue &&
         issue.setIn(['fields', 'timespent'], issue.getIn(['fields', 'timespent']) + action.payload.time);
       return issue ? state.set(action.payload.issueId, newIssue) : state;
@@ -55,25 +53,38 @@ function recentItems(state = new Map(), action) {
   }
 }
 
-const InitialMeta = {
+const InitialMeta = Immutable.Record({
   fetching: false,
-  total: 0,
+  fetched: false,
+  searchFetching: false,
+  totalCount: 0,
+  lastStopIndex: 0,
   selected: null,
+  searchValue: '',
+
   tracking: null,
   recentSelected: null,
   recent: new OrderedSet(),
   searchResults: new OrderedSet(),
   currentPagination: { startIndex: 0, stopIndex: 0 },
-};
+});
 
-function meta(state = new Immutable.Record(InitialMeta), action) {
+function meta(state = new InitialMeta(), action) {
   switch (action.type) {
     case types.SET_ISSUES_FETCH_STATE:
       return state.set('fetching', action.payload);
-    case types.GET_ISSUES_COUNT:
-      return state.set('total', action.payload);
+    case types.SET_ISSUES_FETCHED_STATE:
+      return state.set('fetched', action.payload);
+    case types.SET_SEARCH_ISSUES_FETCH_STATE:
+      return state.set('searchFetching', action.payload);
+    case types.SET_ISSUES_COUNT:
+      return state.set('totalCount', action.payload);
+    case types.SET_LAST_STOP_INDEX:
+      return state.set('lastStopIndex', action.payload);
+    case types.SET_ISSUES_SEARCH_VALUE:
+      return state.set('searchValue', action.payload);
     case types.SELECT_ISSUE:
-      return state.set('selected', action.payload.get('id'));
+      return state.set('selected', action.payload);
     case types.FILL_RECENT_ISSUES:
       return state.set('recent', new OrderedSet(action.payload.ids));
     case types.ADD_RECENT_ISSUE:
@@ -86,12 +97,13 @@ function meta(state = new Immutable.Record(InitialMeta), action) {
       return state.set('tracking', action.payload);
     case types.CLEAR_TRACKING_ISSUE:
       return state.delete('tracking');
-    case types.CLEAR_SEARCH_RESULTS:
-      return state.delete('searchResults');
+    case types.CLEAR_ISSUES_SEARCH_RESULTS:
+      return state.set('searchResults', new OrderedSet());
     case types.SET_CURRENT_PAGINATION:
       return state.set('currentPagination', action.payload);
     case types.CLEAR_ALL_REDUCERS:
-      return new Immutable.Record(InitialMeta);
+    case types.CLEAR_ISSUES:
+      return new InitialMeta();
     default:
       return state;
   }
