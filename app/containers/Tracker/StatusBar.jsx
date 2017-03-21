@@ -2,10 +2,9 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import * as loadingBarActions from '../actions/loadingBar';
-import Flex from '../components/Base/Flex/Flex';
-import LoadingBar from '../components/LoadingBar/LoadingBar';
-import Updater from './Updater';
+import Flex from '../../components/Base/Flex/Flex';
+import LoadingBar from '../../components/LoadingBar/LoadingBar';
+import Updater from './../Updater';
 
 const StatusBar = ({ online, showLoading, hideLoading }) =>
   <Flex row className="StatusBar">
@@ -32,14 +31,10 @@ StatusBar.propTypes = {
   online: PropTypes.bool.isRequired,
 };
 
-function mapStateToProps({ jira }) {
+function mapStateToProps() {
   return {
-    online: jira.online
+    online: true,
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators(loadingBarActions, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(StatusBar);
+export default connect(mapStateToProps)(StatusBar);

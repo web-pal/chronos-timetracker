@@ -1,9 +1,8 @@
 export const FILL_WORKLOGS = 'worklogs/FILL';
-export const CLEAR_WORKLOGS = 'worklogs/CLEAR';
 export const FILL_RECENT_WORKLOGS = 'worklogs/FILL_RECENT';
-export const ADD_WORKLOGS = 'worklogs/ADD';
+export const CLEAR_WORKLOGS = 'worklogs/CLEAR';
+
 export const SET_WORKLOGS_FETCH_STATE = 'worklogs/SET_FETCH_STATE';
-export const ADD_RECENT_WORKLOG = 'worklogs/ADD_RECENT';
-export const ADD_RECENT_WORKLOGS = 'worklogs/ADD_RECENT_MULTIPLE';
+
 export const SELECT_WORKLOG_BY_ISSUE_ID = 'worklogs/SELECT_WORKLOG_BY_ISSUE_ID';
 export const SELECT_WORKLOG = 'worklogs/SELECT_WORKLOG';

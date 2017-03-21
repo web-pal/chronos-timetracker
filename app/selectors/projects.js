@@ -2,7 +2,7 @@ import { createSelector } from 'reselect';
 
 export const getProjectsMap = ({ projects }) => projects.byId;
 export const getProjectsIds = ({ projects }) => projects.allIds;
-export const getSelectedProjectId = ({ projects }) => projects.meta.get('selected');
+export const getSelectedProjectId = ({ projects }) => projects.meta.get('selectedProjectId');
 
 export const getProjects = createSelector(
   [getProjectsIds, getProjectsMap],

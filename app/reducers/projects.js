@@ -28,7 +28,7 @@ function itemsById(state = new Map(), action) {
 const initialMeta = Record({
   fetching: false,
   fetched: false,
-  selected: null,
+  selectedProjectId: null,
 });
 
 function meta(state = new initialMeta(), action) {
@@ -38,7 +38,7 @@ function meta(state = new initialMeta(), action) {
     case types.SET_PROJECTS_FETCHED_STATE:
       return state.set('fetched', action.payload);
     case types.SELECT_PROJECT:
-      return state.set('selected', action.payload);
+      return state.set('selectedProjectId', action.payload);
     case types.CLEAR_ALL_REDUCERS:
       return new initialMeta();
     default:

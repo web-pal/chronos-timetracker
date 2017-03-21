@@ -5,12 +5,8 @@ import { getStatusColor } from 'jiraColors-util';
 import Flex from '../../Base/Flex/Flex';
 import SidebarItemLoader from '../../Spinners/SidebarItemLoader';
 
-function formatSummary(summary) {
-  return summary && summary.length > 25 ? `${summary.substr(0, 25)}...` : summary;
-}
-
 const SidebarItem = ({
-  issue, style,
+  issue, style, summary,
   active, onTracking,
   selectIssue, selectWorklogByIssueId,
 }) => (
@@ -55,7 +51,7 @@ const SidebarItem = ({
     />
     {(issue.size > 0) &&
     <span className="SidebarItem__summary">
-      {formatSummary(issue.get('fields').get('summary'))}
+      {summary}
     </span>
     }
     <SidebarItemLoader show={issue.size === 0} />
@@ -67,6 +63,7 @@ SidebarItem.propTypes = {
   selectWorklogByIssueId: PropTypes.func.isRequired,
   style: PropTypes.object.isRequired,
   issue: ImmutablePropTypes.map.isRequired,
+  summary: PropTypes.string.isRequired,
   active: PropTypes.bool.isRequired,
   onTracking: PropTypes.bool.isRequired,
 };

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import Flex from '../components/Base/Flex/Flex';
-import Tracker from './Tracker';
+import Tracker from './Tracker/Tracker';
 import Menu from './Menu/Menu';
 
 

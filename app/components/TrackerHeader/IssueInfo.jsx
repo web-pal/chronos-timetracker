@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
 import { getStatusColor } from 'jiraColors-util';
 
-import WindowsControlButtons from '../WindowsControlButtons/WindowsControlButtons';
 import Flex from '../Base/Flex/Flex';
 
 const IssueInfo = ({ currentIssue }) =>

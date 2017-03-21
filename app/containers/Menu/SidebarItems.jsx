@@ -51,6 +51,7 @@ function mapStateToProps({ issues, worklogs, ui }) {
   const totalCount = searchMode ? items.size : issues.meta.totalCount;
   return {
     sidebarType: ui.sidebarType,
+    selectedIssueIndex: issues.meta.selectedIssueIndex,
     showSpinner,
     totalCount,
     items,

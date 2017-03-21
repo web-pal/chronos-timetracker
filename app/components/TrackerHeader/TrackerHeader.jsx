@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import ImmutablePropTypes from 'react-immutable-proptypes';
 import Markdown from 'react-markdown';
 import { stj } from 'time-util';
 
@@ -10,7 +11,7 @@ const TrackerHeader = ({ currentIssue }) => {
   const logged = currentIssue.getIn(['fields', 'timespent']);
   const remaining = estimate - logged < 0 ? 0 : estimate - logged;
 
-  return currentIssue.size ?
+  return (
     <Flex column className="TrackerHeader">
       <IssueInfo currentIssue={currentIssue} />
       {currentIssue.getIn(['fields', 'description']) &&
@@ -29,11 +30,12 @@ const TrackerHeader = ({ currentIssue }) => {
           Remaining: <b>{stj(remaining, 'h[h] m[m] s[s]')}</b>
         </span>
       </Flex>
-    </Flex> : false;
+    </Flex>
+  );
 };
 
 TrackerHeader.propTypes = {
-  currentIssue: PropTypes.object,
+  currentIssue: ImmutablePropTypes.map.isRequired,
 };
 
 export default TrackerHeader;

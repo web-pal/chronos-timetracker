@@ -1,5 +1,8 @@
 export const TICK = 'timer/TICK';
 export const START = 'timer/START';
+export const START_TIMER = 'timer/START_TIMER';
+export const STOP_TIMER = 'timer/STOP_TIMER';
+export const SET_TIME = 'timer/SET_TIME';
 export const PAUSE = 'timer/PAUSE';
 export const UNPAUSE = 'timer/UNPAUSE';
 export const STOP = 'timer/STOP';
