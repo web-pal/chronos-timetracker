@@ -1,10 +1,30 @@
 import { delay } from 'redux-saga';
-import { throttle, put, call, select } from 'redux-saga/effects';
+import { takeLatest, throttle, put, call, select } from 'redux-saga/effects';
 import { normalize } from 'normalizr';
 import { fetchIssues, fetchSearchIssues, fetchRecentIssues, fetchWorklogs } from 'api';
 import * as types from '../constants/';
 import { issueSchema } from '../schemas/';
 
+
+function* storeIssues({ issues, fillIssuesType, fillWorklogsType }) {
+  const normalizedData = normalize(issues, [issueSchema]);
+  yield put({
+    type: fillIssuesType,
+    payload: {
+      map: normalizedData.entities.issues,
+      ids: normalizedData.result,
+    },
+  });
+  if (normalizedData.entities.worklogs) {
+    yield put({
+      type: fillWorklogsType,
+      payload: {
+        map: normalizedData.entities.worklogs,
+        ids: Object.keys(normalizedData.entities.worklogs || {}),
+      },
+    });
+  }
+}
 
 function* getRecentIssues() {
   yield put({ type: types.SET_RECENT_ISSUES_FETCH_STATE, payload: true });
@@ -33,23 +53,13 @@ function* getRecentIssues() {
       return issue;
     });
   }
-  const normalizedData = normalize(issues, [issueSchema]);
-  yield put({
-    type: types.FILL_RECENT_ISSUES,
-    payload: {
-      map: normalizedData.entities.issues,
-      ids: normalizedData.result,
-    },
+
+  yield storeIssues({
+    issues,
+    fillIssuesType: types.FILL_RECENT_ISSUES,
+    fillWorklogsType: types.FILL_RECENT_WORKLOGS,
   });
-  if (normalizedData.entities.worklogs) {
-    yield put({
-      type: types.FILL_RECENT_WORKLOGS,
-      payload: {
-        map: normalizedData.entities.worklogs,
-        ids: Object.keys(normalizedData.entities.worklogs || {}),
-      },
-    });
-  }
+
   yield put({ type: types.SET_RECENT_ISSUES_FETCH_STATE, payload: false });
 }
 
@@ -62,23 +72,13 @@ function* searchIssues() {
   const searchValue = yield select(state => state.issues.meta.searchValue);
 
   const issues = yield call(fetchSearchIssues, { currentProject, projectKey, searchValue });
-  const normalizedData = normalize(issues, [issueSchema]);
-  yield put({
-    type: types.FILL_SEARCH_ISSUES,
-    payload: {
-      map: normalizedData.entities.issues,
-      ids: normalizedData.result,
-    },
+
+  yield storeIssues({
+    issues,
+    fillIssuesType: types.FILL_SEARCH_ISSUES,
+    fillWorklogsType: types.FILL_WORKLOGS,
   });
-  if (normalizedData.entities.worklogs) {
-    yield put({
-      type: types.FILL_WORKLOGS,
-      payload: {
-        map: normalizedData.entities.worklogs,
-        ids: Object.keys(normalizedData.entities.worklogs || {}),
-      },
-    });
-  }
+
   yield put({ type: types.SET_SEARCH_ISSUES_FETCH_STATE, payload: false });
 }
 
@@ -93,23 +93,12 @@ function* getIssues({ pagination: { stopIndex, resolve } }) {
 
   const response = yield call(fetchIssues, { startIndex, stopIndex: newStopIndex, currentProject });
 
-  const normalizedData = normalize(response.issues, [issueSchema]);
-  yield put({
-    type: types.FILL_ISSUES,
-    payload: {
-      map: normalizedData.entities.issues,
-      ids: normalizedData.result,
-    },
+  yield storeIssues({
+    issues: response.issues,
+    fillIssuesType: types.FILL_ISSUES,
+    fillWorklogsType: types.FILL_WORKLOGS,
   });
-  if (normalizedData.entities.worklogs) {
-    yield put({
-      type: types.FILL_WORKLOGS,
-      payload: {
-        map: normalizedData.entities.worklogs,
-        ids: Object.keys(normalizedData.entities.worklogs || {}),
-      },
-    });
-  }
+
   if (!fetched) {
     yield put({ type: types.SET_ISSUES_FETCHED_STATE, payload: true });
   }
@@ -126,7 +115,7 @@ export function* watchGetIssues() {
 }
 
 export function* watchSearchIssues() {
-  yield throttle(500, types.FETCH_SEARCH_ISSUES_REQUEST, searchIssues);
+  yield takeLatest(types.FETCH_SEARCH_ISSUES_REQUEST, searchIssues);
 }
 
 export function* watchRecentIssues() {

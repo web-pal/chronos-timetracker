@@ -2,7 +2,6 @@ import React, { PropTypes } from 'react';
 import Markdown from 'react-markdown';
 import { stj } from 'time-util';
 
-import Avatar from '../Avatar/Avatar';
 import Flex from '../Base/Flex/Flex';
 import IssueInfo from './IssueInfo';
 
@@ -16,7 +15,7 @@ const TrackerHeader = ({ currentIssue }) => {
       <IssueInfo currentIssue={currentIssue} />
       {currentIssue.getIn(['fields', 'description']) &&
         <div className="TrackerHeader__description">
-          <Markdown source= {currentIssue.getIn(['fields', 'description'])} />
+          <Markdown source={currentIssue.getIn(['fields', 'description'])} />
         </div>
       }
       <Flex row centerd spaceBetween className="TrackerHeader__times">
@@ -31,7 +30,7 @@ const TrackerHeader = ({ currentIssue }) => {
         </span>
       </Flex>
     </Flex> : false;
-}
+};
 
 TrackerHeader.propTypes = {
   currentIssue: PropTypes.object,

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import moment from 'moment';
 import { getStatusColor } from 'jiraColors-util';
@@ -6,11 +6,27 @@ import { getStatusColor } from 'jiraColors-util';
 import Flex from '../../Base/Flex/Flex';
 
 function formatSummary(summary) {
-  return summary.length > 20 ? `${summary.substr(0, 20)}...` : summary;
+  return summary.length > 25 ? `${summary.substr(0, 25)}...` : summary;
 }
 
-const RecentItem = ({ worklog, issue }) =>
-  <Flex row className="RecentItem" >
+const RecentItem = ({
+  worklog, issue,
+  selectIssue, selectWorklog,
+  activeGroup, active, onTracking,
+}) =>
+  <Flex
+    row
+    className={[
+      'RecentItem',
+      `${(activeGroup && !active) ? 'activeGroup' : ''}`,
+      `${active ? 'active' : ''}`,
+      `${onTracking ? 'tracking' : ''}`,
+    ].join(' ')}
+    onClick={() => {
+      selectIssue(issue.get('id'));
+      selectWorklog(worklog.get('id'));
+    }}
+  >
     <span
       className="RecentItem__key"
       style={{
@@ -44,8 +60,13 @@ const RecentItem = ({ worklog, issue }) =>
   </Flex>;
 
 RecentItem.propTypes = {
+  selectIssue: PropTypes.func.isRequired,
+  selectWorklog: PropTypes.func.isRequired,
   worklog: ImmutablePropTypes.map.isRequired,
   issue: ImmutablePropTypes.map.isRequired,
+  active: PropTypes.bool.isRequired,
+  activeGroup: PropTypes.bool.isRequired,
+  onTracking: PropTypes.bool.isRequired,
 };
 
 export default RecentItem;

@@ -2,10 +2,10 @@ import React, { PropTypes } from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 
 import InfiniteLoadingList from '../../Virtualized/InfiniteLoadingList';
-import SidebarItem from './SidebarItem';
+import SidebarItem from '../../../containers/ComponentsWrappers/SidebarItemWrapper';
 
 const SidebarAllItems = ({
-  totalCount, items, fetchIssues, selectIssue,
+  totalCount, items, fetchIssues,
 }) =>
   <InfiniteLoadingList
     isRowLoaded={({ index }) => !!items.get(index)}
@@ -28,9 +28,9 @@ const SidebarAllItems = ({
         return (
           <SidebarItem
             key={key}
-            item={item || new Immutable.Map()}
+            issue={item || new Immutable.Map()}
             style={style}
-            onClick={selectIssue}
+            itemType="All"
           />
         );
       },
@@ -41,7 +41,6 @@ SidebarAllItems.propTypes = {
   totalCount: PropTypes.number.isRequired,
   items: ImmutablePropTypes.list.isRequired,
   fetchIssues: PropTypes.func.isRequired,
-  selectIssue: PropTypes.func.isRequired,
 };
 
 export default SidebarAllItems;

@@ -148,13 +148,6 @@ export function selectIssue(issueId) {
   };
 }
 
-export function selectRecent(recentId) {
-  return {
-    type: types.SELECT_RECENT,
-    payload: recentId,
-  };
-}
-
 export function clearIssues() {
   return {
     type: types.CLEAR_ISSUES,
