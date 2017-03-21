@@ -1,9 +1,10 @@
-import * as types from '../constants/tracker';
+import * as types from '../constants/timer';
 
 const InitialState = Immutable.Record({
   time: 0,
   running: false,
   paused: false,
+
   currentWorklogId: null,
   trackingIssue: null,
   lastScreenshotTime: null,
@@ -18,8 +19,20 @@ const initialState = new InitialState();
 
 export default function tracker(state = initialState, action) {
   switch (action.type) {
+    case types.START_TIMER:
+      return state.set('running', true);
+    case types.STOP_TIMER:
+      return state.set('running', false);
+
+
     case types.TICK:
       return state.set('time', state.time + 1);
+    case types.SET_TIME:
+      return state.set('time', action.payload);
+    case types.START_TIMER:
+      return state.set('running', true);
+    case types.STOP_TIMER:
+      return state.set('running', false);
     case types.START: {
       if (state.paused) {
         return state.set('paused', false);

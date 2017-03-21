@@ -5,7 +5,7 @@ import InfiniteLoadingList from '../../Virtualized/InfiniteLoadingList';
 import SidebarItem from '../../../containers/ComponentsWrappers/SidebarItemWrapper';
 
 const SidebarAllItems = ({
-  totalCount, items, fetchIssues,
+  totalCount, items, fetchIssues, selectedIssueIndex,
 }) =>
   <InfiniteLoadingList
     isRowLoaded={({ index }) => !!items.get(index)}
@@ -20,6 +20,8 @@ const SidebarAllItems = ({
     rowCount={totalCount}
     listProps={{
       autoSized: true,
+      scrollToIndex: selectedIssueIndex,
+      scrollToAlignment: 'center',
       rowCount: totalCount,
       rowHeight: 40,
       // eslint-disable-next-line react/prop-types
@@ -41,6 +43,11 @@ SidebarAllItems.propTypes = {
   totalCount: PropTypes.number.isRequired,
   items: ImmutablePropTypes.list.isRequired,
   fetchIssues: PropTypes.func.isRequired,
+  selectedIssueIndex: PropTypes.number,
+};
+
+SidebarAllItems.defaultProps = {
+  selectedIssueIndex: 0,
 };
 
 export default SidebarAllItems;

@@ -11,7 +11,10 @@ const TimerDisplay = (props) => {
     `${time.hours() ? `${addLeadingZero(time.hours())}:` : ''}${addLeadingZero(time.minutes())}:${addLeadingZero(time.seconds())}`;
   return (
     <div className="timer-display">
-      {props.uploading ? <span className="uploading">Uploading</span> : timeString}
+      {props.uploading ?
+        <span className="uploading">Uploading</span> :
+        timeString
+      }
     </div>
   );
 };

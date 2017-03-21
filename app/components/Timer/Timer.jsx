@@ -2,70 +2,32 @@ import React, { PropTypes } from 'react';
 
 import DescriptionPopup from '../DescriptionPopup/DescriptionPopup';
 import Flex from '../Base/Flex/Flex';
-import TimerDisplay from './TimerDisplay/TimerDisplay';
-import TimerControls from './TimerControls/TimerControls';
+import TimerDisplay from './TimerDisplay';
+import TimerControls from './TimerControls';
 
 const Timer = (props) => {
   const {
     time, running, paused, onStart, onStop, onPause, onUnPause, currentIssue, setCurrentIssue,
-    description, trackingIssue, uploading, onDescriptionChange
+    description, trackingIssue, uploading, onDescriptionChange, startTimer, stopTimer,
   } = props;
   return (
     <Flex column centered className="timer">
-      {currentIssue.size
-        ? <Flex row centered>
-          <Flex column>
-            {trackingIssue.size !== 0 &&
-                <Flex
-                  column
-                  className={`current-tracking\
- ${trackingIssue.get('id') !== currentIssue.get('id') ? 'show' : 'hide'}`}
-                >
-                <Flex row centered>
-                  Currently tracking
-                  <span
-                    className="current-tracking__key"
-                  >
-                    {trackingIssue.get('key')}
-                  </span>
-                </Flex>
-                <Flex row centered>
-                  <span
-                    className="current-tracking__link"
-                    onClick={() => setCurrentIssue(trackingIssue)}
-                  >
-                    Jump to issue
-                  </span>
-                </Flex>
-              </Flex>
-            }
-            {running &&
-              <Flex row centered>
-                <input
-                  autoFocus
-                  id="descriptionInput"
-                  value={description}
-                  className="descriptionInput"
-                  onChange={(e) => onDescriptionChange(e.target.value)}
-                  placeholder="What are you doing?"
-                />
-              </Flex>
-            }
-            <TimerControls
-              running={running}
-              paused={paused}
-              start={onStart}
-              stop={onStop}
-              pause={onPause}
-              unpause={onUnPause}
-            />
-            <TimerDisplay time={time} uploading={uploading} />
-          </Flex>
+      <Flex row centered>
+        <Flex column>
+          <TimerControls
+            running={running}
+            paused={paused}
+            startTimer={startTimer}
+            stopTimer={stopTimer}
+            pause={onPause}
+            unpause={onUnPause}
+          />
+          <TimerDisplay
+            time={time}
+            uploading={uploading}
+          />
         </Flex>
-      : <Flex row centered>
-          select an issue from the list on the left
-        </Flex>
-      }
+      </Flex>
     </Flex>
   );
 };

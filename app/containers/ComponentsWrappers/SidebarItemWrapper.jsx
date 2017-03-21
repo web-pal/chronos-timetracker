@@ -17,6 +17,10 @@ SidebarItemWrapper.propTypes = {
   itemType: PropTypes.string.isRequired,
 };
 
+function formatSummary(summary) {
+  return summary && summary.length > 25 ? `${summary.substr(0, 25)}...` : summary;
+}
+
 function makeMapStateToProps() {
   return ({ issues, worklogs }, { issue, worklog, itemType }) => {
     const id = issue.get('id');
@@ -34,6 +38,7 @@ function makeMapStateToProps() {
       active,
       activeGroup,
       onTracking,
+      summary: issue.size ? formatSummary(issue.get('fields').get('summary')) : '',
     };
   };
 }

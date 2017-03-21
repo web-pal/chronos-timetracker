@@ -10,7 +10,7 @@ function dateComparator(a, b) {
 export const getWorklogsMap = ({ worklogs }) => worklogs.byId;
 export const getWorklogsIds = ({ worklogs }) => worklogs.allIds;
 
-export const getRecentWorklogIds = ({ worklogs }) => worklogs.meta.get('recent');
+export const getRecentWorklogIds = ({ worklogs }) => worklogs.meta.get('recentWorkLogsIds');
 
 export const getRecentWorklogs = createSelector(
   [getRecentWorklogIds, getWorklogsMap],

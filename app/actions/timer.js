@@ -21,7 +21,7 @@ export function dismissIdleTime(time) {
   };
 }
 
-export function startTimer(trackingIssue) {
+export function startTimerr(trackingIssue) {
   return (dispatch, getState) => {
     // Temporary worklog ID
     const worklogId = Date.now();
@@ -48,6 +48,18 @@ export function startTimer(trackingIssue) {
   };
 }
 
+export function startTimer() {
+  return {
+    type: types.START_TIMER,
+  };
+}
+
+export function stopTimer() {
+  return {
+    type: types.STOP_TIMER,
+  };
+}
+
 export function pauseTimer() {
   return {
     type: types.PAUSE,
@@ -57,12 +69,6 @@ export function pauseTimer() {
 export function unpauseTimer() {
   return {
     type: types.UNPAUSE,
-  };
-}
-
-export function stopTimer() {
-  return {
-    type: types.STOP,
   };
 }
 

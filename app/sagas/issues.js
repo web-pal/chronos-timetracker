@@ -3,6 +3,7 @@ import { takeLatest, throttle, put, call, select } from 'redux-saga/effects';
 import { normalize } from 'normalizr';
 import { fetchIssues, fetchSearchIssues, fetchRecentIssues, fetchWorklogs } from 'api';
 import * as types from '../constants/';
+import { getAllIssues } from '../selectors';
 import { issueSchema } from '../schemas/';
 
 
@@ -29,7 +30,7 @@ function* storeIssues({ issues, fillIssuesType, fillWorklogsType }) {
 function* getRecentIssues() {
   yield put({ type: types.SET_RECENT_ISSUES_FETCH_STATE, payload: true });
 
-  const currentProject = yield select(state => state.projects.meta.selected);
+  const currentProject = yield select(state => state.projects.meta.selectedProjectId);
   const worklogAuthor = yield select(state => state.profile.userData.get('key'));
 
   let { issues } = yield call(fetchRecentIssues, { currentProject, worklogAuthor });
@@ -67,7 +68,7 @@ function* searchIssues() {
   yield put({ type: types.SET_SEARCH_ISSUES_FETCH_STATE, payload: true });
   yield call(delay, 500);
 
-  const currentProject = yield select(state => state.projects.meta.selected);
+  const currentProject = yield select(state => state.projects.meta.selectedProjectId);
   const projectKey = yield select(state => state.projects.byId.get(currentProject).get('key'));
   const searchValue = yield select(state => state.issues.meta.searchValue);
 
@@ -85,7 +86,7 @@ function* searchIssues() {
 function* getIssues({ pagination: { stopIndex, resolve } }) {
   yield put({ type: types.SET_ISSUES_FETCH_STATE, payload: true });
 
-  const currentProject = yield select(state => state.projects.meta.selected);
+  const currentProject = yield select(state => state.projects.meta.selectedProjectId);
   const fetched = yield select(state => state.issues.meta.fetched);
   const startIndex = yield select(state => state.issues.meta.lastStopIndex);
   const newStopIndex = stopIndex + 30;
@@ -110,6 +111,15 @@ function* getIssues({ pagination: { stopIndex, resolve } }) {
 }
 
 
+function* findSelectedIndex({ payload }) {
+  if (payload === 'All') {
+    const selectedIssueId = yield select(state => state.issues.meta.selectedIssueId);
+    const allIssues = yield select(getAllIssues);
+    const index = allIssues.findIndex(i => i.get('id') === selectedIssueId);
+    yield put({ type: types.SET_SELECTED_INDEX, payload: index });
+  }
+}
+
 export function* watchGetIssues() {
   yield throttle(2000, types.FETCH_ISSUES_REQUEST, getIssues);
 }
@@ -120,4 +130,8 @@ export function* watchSearchIssues() {
 
 export function* watchRecentIssues() {
   yield throttle(2000, types.FETCH_RECENT_ISSUES_REQUEST, getRecentIssues);
+}
+
+export function* watchChangeSidebar() {
+  yield takeLatest(types.SET_SIDEBAR_TYPE, findSelectedIndex);
 }

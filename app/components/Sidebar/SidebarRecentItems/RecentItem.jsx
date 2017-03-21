@@ -5,12 +5,8 @@ import { getStatusColor } from 'jiraColors-util';
 
 import Flex from '../../Base/Flex/Flex';
 
-function formatSummary(summary) {
-  return summary.length > 25 ? `${summary.substr(0, 25)}...` : summary;
-}
-
 const RecentItem = ({
-  worklog, issue,
+  worklog, issue, summary,
   selectIssue, selectWorklog,
   activeGroup, active, onTracking,
 }) =>
@@ -49,7 +45,7 @@ const RecentItem = ({
       src={issue.getIn(['fields', 'issuetype', 'iconUrl'])}
     />
     <span className="RecentItem__summary">
-      {formatSummary(issue.getIn(['fields', 'summary']))}
+      {summary}
     </span>
     <span className="RecentItem__time flex-item--end">
       {worklog.get('timeSpent') === '1m' ? '<1m' : worklog.get('timeSpent')}
@@ -64,6 +60,7 @@ RecentItem.propTypes = {
   selectWorklog: PropTypes.func.isRequired,
   worklog: ImmutablePropTypes.map.isRequired,
   issue: ImmutablePropTypes.map.isRequired,
+  summary: PropTypes.string.isRequired,
   active: PropTypes.bool.isRequired,
   activeGroup: PropTypes.bool.isRequired,
   onTracking: PropTypes.bool.isRequired,

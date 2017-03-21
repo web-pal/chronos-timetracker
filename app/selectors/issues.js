@@ -4,16 +4,11 @@ import { Map } from 'immutable';
 export const getIssuesMap = ({ issues }) => issues.byId;
 export const getIssuesIds = ({ issues }) => issues.allIds;
 
-export const getRecentIssuesIds = ({ issues }) => issues.meta.recent;
-
-export const getIssuesFilter = ({ filter }) => filter.value;
-export const getResolveFilter = ({ filter }) => filter.resolveValue;
-
-export const getSearchResultIssuesIds = ({ issues }) => issues.meta.searchResults;
-
-export const getTrackingIssueId = ({ issues }) => issues.meta.tracking;
+export const getRecentIssuesIds = ({ issues }) => issues.meta.recentIssuesIds;
+export const getSearchResultIssuesIds = ({ issues }) => issues.meta.searchResultsIds;
 
 export const getSelectedIssueId = ({ issues }) => issues.meta.selectedIssueId;
+export const getTrackingIssueId = ({ issues }) => issues.meta.trackingIssueId;
 
 export const getIssues = createSelector(
   [getIssuesIds, getIssuesMap],
