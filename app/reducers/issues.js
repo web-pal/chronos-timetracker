@@ -45,8 +45,6 @@ function recentItems(state = new Map(), action) {
       const newIssue = issue &&
         issue.setIn(['fields', 'timespent'], issue.getIn(['fields', 'timespent']) + action.payload.time);
       return issue ? state.set(action.payload.issueId, newIssue) : state;
-    case types.SELECT_ISSUE:
-      return state.set(action.payload.get('id'), action.payload);
     case types.CLEAR_ALL_REDUCERS:
       return new Map();
     default:
@@ -61,11 +59,12 @@ const InitialMeta = Immutable.Record({
   recentFetching: false,
   totalCount: 0,
   lastStopIndex: 0,
-  selected: null,
+  selectedIssueId: null,
+  trackingIssueId: null,
   searchValue: '',
 
+  // TODO: remove it
   tracking: null,
-  recentSelected: null,
   recent: new OrderedSet(),
   searchResults: new OrderedSet(),
   currentPagination: { startIndex: 0, stopIndex: 0 },
@@ -88,15 +87,13 @@ function meta(state = new InitialMeta(), action) {
     case types.SET_ISSUES_SEARCH_VALUE:
       return state.set('searchValue', action.payload);
     case types.SELECT_ISSUE:
-      return state.set('selected', action.payload);
+      return state.set('selectedIssueId', action.payload);
     case types.FILL_RECENT_ISSUES:
       return state.set('recent', new OrderedSet(action.payload.ids));
     case types.ADD_RECENT_ISSUE:
       return state.set('recent', state.recent.add(action.payload.id));
     case types.FILL_SEARCH_ISSUES:
       return state.set('searchResults', new OrderedSet(action.payload.ids));
-    case types.SELECT_RECENT:
-      return state.set('recentSelected', action.payload);
     case types.SET_TRACKING_ISSUE:
       return state.set('tracking', action.payload);
     case types.CLEAR_TRACKING_ISSUE:

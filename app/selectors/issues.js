@@ -13,7 +13,7 @@ export const getSearchResultIssuesIds = ({ issues }) => issues.meta.searchResult
 
 export const getTrackingIssueId = ({ issues }) => issues.meta.tracking;
 
-export const getSelectedIssueId = ({ issues }) => issues.meta.selected;
+export const getSelectedIssueId = ({ issues }) => issues.meta.selectedIssueId;
 
 export const getIssues = createSelector(
   [getIssuesIds, getIssuesMap],

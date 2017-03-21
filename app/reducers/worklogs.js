@@ -27,15 +27,18 @@ function itemsById(state = new Map(), action) {
   }
 }
 
-const initialMeta = new Map({
+const initialMeta = Immutable.Record({
   fetching: false,
+  selectedWorklogId: null,
   recent: new OrderedSet(),
 });
 
-function meta(state = initialMeta, action) {
+function meta(state = new initialMeta(), action) {
   switch (action.type) {
     case types.SET_WORKLOGS_FETCH_STATE:
       return state.set('fetching', action.payload);
+    case types.SELECT_WORKLOG:
+      return state.set('selectedWorklogId', action.payload);
     case types.FILL_RECENT_WORKLOGS:
       return state.set('recent', new OrderedSet(action.payload.ids));
     case types.ADD_RECENT_WORKLOGS:
@@ -43,7 +46,7 @@ function meta(state = initialMeta, action) {
     case types.ADD_RECENT_WORKLOG:
       return state.set('recent', state.get('recent').add(action.payload.id));
     case types.CLEAR_WORKLOGS:
-      return initialMeta;
+      return new initialMeta();
     default:
       return state;
   }

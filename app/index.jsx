@@ -11,6 +11,7 @@ import store from './store';
 
 import './assets/stylesheets/main.less';
 
+// TODO: Move it to saga
 // Create directories for screens and worklogs
 const appDir = remote.getGlobal('appDir');
 try {
