@@ -20,3 +20,17 @@ export function selectWorklog(worklogId) {
     payload: worklogId,
   };
 }
+
+export function uploadScreenshot(screenshotInfo) {
+  return {
+    type: types.UPLOAD_SCREENSHOT_REQUEST,
+    screenshotInfo,
+  };
+}
+export function rejectScreenshot(screenshotPath) {
+  return {
+    type: types.REJECT_SCREENSHOT_REQUEST,
+    screenshotPath,
+  };
+}
+

@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { Map, OrderedSet, fromJS } from 'immutable';
+import { Map, OrderedSet, List, fromJS } from 'immutable';
 
 import * as types from '../constants';
 
@@ -33,6 +33,7 @@ const initialMeta = Immutable.Record({
   fetching: false,
   selectedWorklogId: null,
   recentWorkLogsIds: new OrderedSet(),
+  currentWorklogScreenshots: new List(),
 });
 
 function meta(state = new initialMeta(), action) {

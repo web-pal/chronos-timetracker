@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { app, Tray, BrowserWindow, ipcMain, Menu } from 'electron';
+import { app, Tray, BrowserWindow, ipcMain, Menu, screen } from 'electron';
 import log from 'electron-log';
 import path from 'path';
 import updater from 'electron-simple-updater';
@@ -17,7 +17,6 @@ global.sharedObj = {
   running: false,
   lastScreenshotPath: '',
   screenshotTime: null,
-  currentWorklogId: null,
   idleTime: 0,
 };
 
@@ -120,6 +119,24 @@ function createWindow() {
   });
 }
 
+
+ipcMain.on('showScreenPreviewPopup', () => {
+  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+  const options = {
+    width: 218,
+    height: 212,
+    x: width - 218,
+    y: height - 212,
+    frame: false,
+    resizable: false,
+    movable: false,
+    alwaysOnTop: true,
+  };
+  const win = new BrowserWindow(options);
+  win.loadURL(`file://${__dirname}/popup.html`);
+});
+
+
 ipcMain.on('set-should-quit', () => {
   shouldQuit = true;
 });
@@ -135,7 +152,7 @@ ipcMain.on('minimize', () => {
   if (mainWindow) {
     mainWindow.minimize();
   }
-})
+});
 
 ipcMain.on('maximize', () => {
   if (mainWindow) {

@@ -60,6 +60,29 @@ class Tracker extends Component {
     submitUnfinishedWorklog: PropTypes.func.isRequired,
   }
 
+  componentDidMount() {
+    ipcRenderer.on('screenshot-accept', this.acceptScreenshot);
+    ipcRenderer.on('screenshot-reject', this.rejectScreenshot);
+  }
+
+  componentWillUnmount() {
+    ipcRenderer.removeListener('screenshot-accept', this.acceptScreenshot);
+    ipcRenderer.removeListener('screenshot-reject', this.rejectScreenshot);
+  }
+
+  acceptScreenshot = () => {
+    const { getGlobal } = remote;
+    const { screenshotTime, lastScreenshotPath } = getGlobal('sharedObj');
+    this.props.uploadScreenshot({ screenshotTime, lastScreenshotPath });
+  }
+
+  rejectScreenshot = () => {
+    const { getGlobal } = remote;
+    const { lastScreenshotPath } = getGlobal('sharedObj');
+    this.props.rejectScreenshot(lastScreenshotPath);
+  }
+
+
   render() {
     const {
       running, paused, time, trackingIssue, startTimer, closeDescriptionPopup, description,
