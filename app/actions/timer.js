@@ -48,6 +48,12 @@ export function startTimerr(trackingIssue) {
   };
 }
 
+export function setForceQuitFlag() {
+  return {
+    type: types.SET_FORCE_QUIT_FLAG,
+  };
+}
+
 export function startTimer() {
   return {
     type: types.START_TIMER,

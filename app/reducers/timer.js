@@ -6,6 +6,7 @@ const InitialState = Immutable.Record({
   uploading: false,
   lastScreenshotTime: null,
   currentScreenShotsList: Immutable.List(),
+  forceQuit: false,
 
   paused: false,
   currentWorklogId: null,
@@ -32,6 +33,8 @@ export default function timer(state = initialState, action) {
       return state.set('lastScreenshotTime', action.payload);
     case types.SET_WORKLOG_UPLOAD_STATE:
       return state.set('uploading', action.payload);
+    case types.SET_FORCE_QUIT_FLAG:
+      return state.set('forceQuit', true);
 
     case types.REJECT_SCREENSHOT:
       return state.set('time', state.lastScreenshotTime);
@@ -43,6 +46,7 @@ export default function timer(state = initialState, action) {
       );
     case types.CLEAR_CURRENT_SCREENSHOTS_LIST:
       return state.set('currentScreenShotsList', Immutable.List());
+
 
 
     case types.START: {
