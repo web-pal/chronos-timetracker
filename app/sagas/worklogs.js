@@ -30,7 +30,7 @@ export function* uploadWorklog({ issueId, timeSpentSeconds, comment }) {
   yield put({ type: types.SET_WORKLOG_UPLOAD_STATE, payload: true });
   remote.getGlobal('sharedObj').uploading = true;
 
-  const screensShot = yield select(state => state.timer.currentScreenShotsList.toArray());
+  const screensShot = yield select(state => state.worklogs.currentWorklogScreenshots.toArray());
   const { id } = yield call(
     jiraUploadWorklog, { issueId, worklog: { timeSpentSeconds, comment } },
   );

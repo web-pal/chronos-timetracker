@@ -5,7 +5,6 @@ const InitialState = Immutable.Record({
   running: false,
   uploading: false,
   lastScreenshotTime: null,
-  currentScreenShotsList: Immutable.List(),
   forceQuit: false,
 
   paused: false,
@@ -38,15 +37,6 @@ export default function timer(state = initialState, action) {
 
     case types.REJECT_SCREENSHOT:
       return state.set('time', state.lastScreenshotTime);
-
-    case types.ADD_SCREENSHOT_TO_CURRENT_LIST:
-      return state.update(
-        'currentScreenShotsList',
-        list => list.push(action.payload),
-      );
-    case types.CLEAR_CURRENT_SCREENSHOTS_LIST:
-      return state.set('currentScreenShotsList', Immutable.List());
-
 
 
     case types.START: {

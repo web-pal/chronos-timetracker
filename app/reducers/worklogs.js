@@ -44,6 +44,13 @@ function meta(state = new initialMeta(), action) {
       return state.set('selectedWorklogId', action.payload);
     case types.FILL_RECENT_WORKLOGS:
       return state.set('recentWorkLogsIds', new OrderedSet(action.payload.ids));
+    case types.ADD_SCREENSHOT_TO_CURRENT_LIST:
+      return state.update(
+        'currentWorklogScreenshots',
+        list => list.push(action.payload),
+      );
+    case types.CLEAR_CURRENT_SCREENSHOTS_LIST:
+      return state.set('currentWorklogScreenshots', Immutable.List());
     case types.CLEAR_WORKLOGS:
     case types.CLEAR_ALL_REDUCERS:
       return new initialMeta();
