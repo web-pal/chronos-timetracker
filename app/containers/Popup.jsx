@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import { remote, ipcRenderer } from 'electron';
-import fs from 'fs';
-import path from 'path';
 
 import Img from '../components/Base/Img/Img';
 import Flex from '../components/Base/Flex/Flex';
@@ -16,22 +14,18 @@ let acceptLock = false;
 export default class Popup extends Component {
   constructor(props) {
     super(props);
-    const { lastScreenshotPath, screenshotTime, currentWorklogId } = getGlobal('sharedObj');
+    const { lastScreenshotPath, screenshotTime } = getGlobal('sharedObj');
     remote.getCurrentWindow().flashFrame(true);
     this.state = {
       maxTime: 15,
       currentTime: 0,
       lastScreenshotPath,
       screenshotTime,
-      currentWorklogId,
     };
   }
 
-  componentWillMount() {
-    const timer = setInterval(() => this.tick(), 1000);
-    this.setState({
-      timer,
-    });
+  componentDidMount() {
+    this.timer = setInterval(() => this.tick(), 1000);
   }
 
   tick = () => {
@@ -41,7 +35,7 @@ export default class Popup extends Component {
         currentTime: this.state.currentTime + 1,
       });
     } else {
-      clearInterval(this.state.timer);
+      clearInterval(this.timer);
       this.acceptScreenshot();
     }
   }

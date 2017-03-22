@@ -6,7 +6,10 @@ import {
   watchGetIssues, watchRecentIssues,
   watchSearchIssues, watchChangeSidebar,
 } from './issues';
-import { watchSelectWorklogs } from './worklogs';
+import {
+  watchSelectWorklogs, watchUploadScreenshot,
+  watchRejectScreenshot,
+} from './worklogs';
 import { manageTimer } from './timer';
 
 
@@ -15,11 +18,17 @@ export default function* root() {
     fork(loginFlow),
     fork(checkJWT),
     fork(getProjects),
+
     fork(watchGetIssues),
     fork(watchSearchIssues),
     fork(watchRecentIssues),
+
     fork(watchChangeSidebar),
+
     fork(watchSelectWorklogs),
+    fork(watchUploadScreenshot),
+    fork(watchRejectScreenshot),
+
     fork(manageTimer),
   ];
 }

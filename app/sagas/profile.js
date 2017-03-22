@@ -10,7 +10,6 @@ import { login } from '../actions/profile';
 import Socket from '../socket';
 
 
-// ====Login Flow====
 function* loginError(error) {
   yield put({
     type: types.THROW_LOGIN_ERROR,

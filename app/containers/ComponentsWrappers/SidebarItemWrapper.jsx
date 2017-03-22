@@ -29,11 +29,12 @@ function makeMapStateToProps() {
     const trackingIssueId = issues.meta.trackingIssueId;
 
     let active = id !== undefined && selectedIssueId === id;
+    let onTracking = trackingIssueId === id;
     const activeGroup = active;
     if (itemType === 'Recent') {
       active = selectedWorklogId === worklog.get('id');
+      onTracking = trackingIssueId !== null && active;
     }
-    const onTracking = trackingIssueId === id;
     return {
       active,
       activeGroup,
