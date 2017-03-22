@@ -63,11 +63,13 @@ class Tracker extends Component {
   componentDidMount() {
     ipcRenderer.on('screenshot-accept', this.acceptScreenshot);
     ipcRenderer.on('screenshot-reject', this.rejectScreenshot);
+    ipcRenderer.on('force-save', this.forceSave);
   }
 
   componentWillUnmount() {
     ipcRenderer.removeListener('screenshot-accept', this.acceptScreenshot);
     ipcRenderer.removeListener('screenshot-reject', this.rejectScreenshot);
+    ipcRenderer.removeListener('force-save', this.forceSave);
   }
 
   acceptScreenshot = () => {
@@ -82,6 +84,18 @@ class Tracker extends Component {
     this.props.rejectScreenshot(lastScreenshotPath);
   }
 
+  forceSave = () => {
+    const { getGlobal } = remote;
+    const { running, uploading } = getGlobal('sharedObj');
+
+    if (running && window.confirm('Tracking in progress, save worklog before quit?')) {
+      this.props.setForceQuitFlag();
+      this.props.stopTimer();
+    }
+    if (uploading) {
+      window.alert('Currently app in process of saving worklog, wait few seconds please');
+    }
+  }
 
   render() {
     const {

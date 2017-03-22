@@ -15,6 +15,7 @@ global.appDir = app.getPath('userData');
 global.appSrcDir = __dirname;
 global.sharedObj = {
   running: false,
+  uploading: false,
   lastScreenshotPath: '',
   screenshotTime: null,
   idleTime: 0,
@@ -60,7 +61,7 @@ function checkRunning(e) {
       console.log('saved last window size');
     }
   })
-  if (sharedObj.running) {
+  if (sharedObj.running || sharedObj.uploading) {
     console.log("RUNNING");
     mainWindow.webContents.send('force-save');
     e.preventDefault();

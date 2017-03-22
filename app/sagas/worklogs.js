@@ -2,6 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import { take, takeLatest, fork, select, put, call, cps } from 'redux-saga/effects';
 
+import { remote } from 'electron';
+
 import {
   jiraUploadWorklog, chronosBackendUploadWorklog,
   signUploadUrlForS3Bucket, uploadScreenshotOnS3Bucket,
@@ -26,6 +28,8 @@ export function* findAndSelectWorlogByIssueId({ issueId }) {
 
 export function* uploadWorklog({ issueId, timeSpentSeconds, comment }) {
   yield put({ type: types.SET_WORKLOG_UPLOAD_STATE, payload: true });
+  remote.getGlobal('sharedObj').uploading = true;
+
   const screensShot = yield select(state => state.timer.currentScreenShotsList.toArray());
   const { id } = yield call(
     jiraUploadWorklog, { issueId, worklog: { timeSpentSeconds, comment } },
@@ -41,6 +45,7 @@ export function* uploadWorklog({ issueId, timeSpentSeconds, comment }) {
   );
   yield put({ type: types.CLEAR_CURRENT_SCREENSHOTS_LIST });
   yield put({ type: types.SET_WORKLOG_UPLOAD_STATE, payload: false });
+  remote.getGlobal('sharedObj').uploading = false;
 }
 
 export function* watchSelectWorklogs() {
