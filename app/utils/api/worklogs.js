@@ -28,7 +28,7 @@ export function jiraUploadWorklog(opts) {
 
 export function chronosBackendUploadWorklog({
   worklogId, issueId, comment,
-  timeSpentSeconds, screensShot,
+  timeSpentSeconds, screensShot, activity,
 }) {
   return fetch(`${apiUrl}/api/tracker/worklog`, {
     method: 'POST',
@@ -40,6 +40,7 @@ export function chronosBackendUploadWorklog({
         screensShot,
         description: comment,
         timeTracked: timeSpentSeconds,
+        activity,
       },
     }),
   });

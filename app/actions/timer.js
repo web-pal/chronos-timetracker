@@ -21,6 +21,20 @@ export function dismissIdleTime(time) {
   };
 }
 
+
+export function cutIddlesFromLastScreenshot() {
+  return {
+    type: types.CUT_IDDLES_FROM_LAST_SCREENSHOT,
+  };
+}
+
+export function cutIddles(payload) {
+  return {
+    type: types.CUT_IDDLES,
+    payload,
+  };
+}
+
 export function startTimerr(trackingIssue) {
   return (dispatch, getState) => {
     // Temporary worklog ID

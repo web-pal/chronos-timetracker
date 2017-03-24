@@ -30,7 +30,25 @@ export function* uploadWorklog({ issueId, timeSpentSeconds, comment }) {
   yield put({ type: types.SET_WORKLOG_UPLOAD_STATE, payload: true });
   remote.getGlobal('sharedObj').uploading = true;
 
-  const screensShot = yield select(state => state.worklogs.currentWorklogScreenshots.toArray());
+  const currentIdleList = yield select(
+    state => state.timer.currentIdleList,
+  );
+  console.log('currentIdleList', currentIdleList.toJS());
+
+  const activity = [...Array(Math.ceil(timeSpentSeconds / 600)).keys()].map((period) => {
+    console.log('period', period);
+    const idleSec = currentIdleList
+      .slice(period * 10, (period + 1) * 10)
+      .reduce((a, b) => (a + b), 0) / 1000;
+    console.log('idleSec', idleSec);
+
+    return 100 - Math.round((10 * idleSec) / 100);
+  });
+  console.log('activity', activity);
+
+  const screensShot = yield select(
+    state => state.worklogs.meta.currentWorklogScreenshots.toArray(),
+  );
   const { id } = yield call(
     jiraUploadWorklog, { issueId, worklog: { timeSpentSeconds, comment } },
   );
@@ -41,9 +59,11 @@ export function* uploadWorklog({ issueId, timeSpentSeconds, comment }) {
       timeSpentSeconds,
       comment,
       screensShot: screensShot.map(s => ({ name: s })),
+      activity,
     },
   );
   yield put({ type: types.CLEAR_CURRENT_SCREENSHOTS_LIST });
+  yield put({ type: types.CLEAR_CURRENT_IDLE_LIST });
   yield put({ type: types.SET_WORKLOG_UPLOAD_STATE, payload: false });
   remote.getGlobal('sharedObj').uploading = false;
 }

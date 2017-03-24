@@ -10,7 +10,7 @@ import {
   watchSelectWorklogs, watchUploadScreenshot,
   watchRejectScreenshot,
 } from './worklogs';
-import { manageTimer } from './timer';
+import { manageTimer, cutIddlesFromLastScreenshot } from './timer';
 
 
 export default function* root() {
@@ -30,5 +30,6 @@ export default function* root() {
     fork(watchRejectScreenshot),
 
     fork(manageTimer),
+    fork(cutIddlesFromLastScreenshot),
   ];
 }

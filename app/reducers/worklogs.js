@@ -31,6 +31,7 @@ function itemsById(state = new Map(), action) {
 
 const initialMeta = Immutable.Record({
   fetching: false,
+  worklogUploading: false,
   selectedWorklogId: null,
   recentWorkLogsIds: new OrderedSet(),
   currentWorklogScreenshots: new List(),
@@ -40,6 +41,8 @@ function meta(state = new initialMeta(), action) {
   switch (action.type) {
     case types.SET_WORKLOGS_FETCH_STATE:
       return state.set('fetching', action.payload);
+    case types.SET_WORKLOG_UPLOAD_STATE:
+      return state.set('worklogUploading', action.payload);
     case types.SELECT_WORKLOG:
       return state.set('selectedWorklogId', action.payload);
     case types.FILL_RECENT_WORKLOGS:
