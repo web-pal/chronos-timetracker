@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { AutoSizer, List } from 'react-virtualized';
 
-const AutosizableList = (props) =>
+const AutosizableList = props =>
   <AutoSizer
     {...props}
   >
@@ -17,6 +17,10 @@ const AutosizableList = (props) =>
 AutosizableList.propTypes = {
   listProps: PropTypes.object.isRequired,
   autoSized: PropTypes.bool,
+};
+
+AutosizableList.defaultProps = {
+  autoSized: false,
 };
 
 export default AutosizableList;

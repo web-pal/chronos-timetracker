@@ -116,12 +116,14 @@ function* runTimer() {
       chan.close();
       const issueId = yield select(state => state.issues.meta.trackingIssueId);
       const timeSpentSeconds = yield select(state => state.timer.time);
+      const description = yield select(state => state.worklogs.meta.currentDescription);
 
       yield put({ type: types.SET_TIME, payload: 0 });
+      yield put({ type: types.SET_CURRENT_DESCRIPTION, payload: '' });
       if (timeSpentSeconds >= 60) {
         yield call(
           uploadWorklog,
-          { issueId, timeSpentSeconds, comment: '' },
+          { issueId, timeSpentSeconds, comment: description },
         );
       } else {
         // Show alert message that you have to track at least 60 seconds

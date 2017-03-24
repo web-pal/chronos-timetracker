@@ -1,5 +1,5 @@
 export default function getStatusColor(colorName, opacity = '.25') {
-  switch(colorName) {
+  switch (colorName) {
     case 'medium-gray':
       return `rgba(112, 112, 112, ${opacity})`;
     case 'green':

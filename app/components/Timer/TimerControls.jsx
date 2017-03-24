@@ -7,7 +7,7 @@ import playIcon from '../../assets/images/play@2x.png';
 import stopIcon from '../../assets/images/stop@2x.png';
 
 const TimerControls = (props) => {
-  const { startTimer, stopTimer, stop, pause, unpause, running, paused } = props;
+  const { startTimer, stopTimer, running } = props;
   return (
     <Flex row centered className="TimerControls">
       <div className="TimerControls__button">
@@ -31,12 +31,10 @@ const TimerControls = (props) => {
 };
 
 TimerControls.propTypes = {
-  running: PropTypes.bool.isRequired,
-  paused: PropTypes.bool.isRequired,
   startTimer: PropTypes.func.isRequired,
-  pause: PropTypes.func.isRequired,
-  unpause: PropTypes.func.isRequired,
-  stop: PropTypes.func.isRequired,
+  stopTimer: PropTypes.func.isRequired,
+
+  running: PropTypes.bool.isRequired,
 };
 
 export default TimerControls;

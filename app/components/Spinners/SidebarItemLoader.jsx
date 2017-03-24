@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 
-const randWidth = Math.random() * (20) + 50;
+const randWidth = (Math.random() * 20) + 50;
 
 const SidebarItemLoader = ({ show }) => show &&
   <div className="SidebarItemLoaderWrap" style={{ width: `${randWidth}%` }}>

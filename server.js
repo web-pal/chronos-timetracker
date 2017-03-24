@@ -12,8 +12,8 @@ const PORT = 3000;
 const wdm = webpackDevMiddleware(bundler, {
   publicPath: config.output.publicPath,
   stats: {
-    colors: true
-  }
+    colors: true,
+  },
 });
 
 app.use(wdm);

@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 
 import Flex from '../Base/Flex/Flex';
 
-const LinearGradientSpinner = ({ show, label, takeAllSpace, width, height }) => show &&
+const LinearGradientSpinner = ({ show, takeAllSpace, width, height }) => show &&
   <Flex
     column
     centered
@@ -13,7 +13,7 @@ const LinearGradientSpinner = ({ show, label, takeAllSpace, width, height }) => 
     }}
   >
     <div className="LinearGradientSpinner" />
-  </Flex>
+  </Flex>;
 
 LinearGradientSpinner.propTypes = {
   show: PropTypes.bool,

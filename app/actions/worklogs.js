@@ -1,4 +1,4 @@
-import * as types from '../constants/';
+import * as types from '../constants';
 
 
 export function clearWorklogs() {
@@ -27,6 +27,7 @@ export function uploadScreenshot(screenshotInfo) {
     screenshotInfo,
   };
 }
+
 export function rejectScreenshot(screenshotPath) {
   return {
     type: types.REJECT_SCREENSHOT_REQUEST,
@@ -34,3 +35,9 @@ export function rejectScreenshot(screenshotPath) {
   };
 }
 
+export function setDescription(description) {
+  return {
+    type: types.SET_CURRENT_DESCRIPTION,
+    payload: description,
+  };
+}
