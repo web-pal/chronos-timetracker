@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 
 import Img from '../Base/Img/Img';
 
-const Avatar = ({ avatarUrls }) => avatarUrls ?
+const Avatar = ({ avatarUrls }) =>
   <span className="avatar">
     <span className="avatar-inner">
       <Img
@@ -15,10 +15,10 @@ const Avatar = ({ avatarUrls }) => avatarUrls ?
         }
       />
     </span>
-  </span> : false;
+  </span>;
 
 Avatar.propTypes = {
-  avatarUrls: PropTypes.object,
+  avatarUrls: PropTypes.object.isRequired,
 };
 
 export default Avatar;

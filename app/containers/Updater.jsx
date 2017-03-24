@@ -1,11 +1,13 @@
 import React, { PropTypes, Component } from 'react';
 import { remote, ipcRenderer } from 'electron';
-import LoadingBar from '../components/LoadingBar/LoadingBar';
-
-import Flex from '../components/Base/Flex/Flex';
 
 
 class Updater extends Component {
+  static propTypes = {
+    showLoading: PropTypes.func.isRequired,
+    hideLoading: PropTypes.func.isRequired,
+  }
+
   constructor(props) {
     super(props);
     this.state = {
@@ -13,10 +15,10 @@ class Updater extends Component {
       downloading: false,
       available: false,
       updateAvailable: null,
-    }
+    };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.electronUpdater = remote.require('electron-simple-updater');
     this.electronUpdater.on('checking-for-update', () => {
       this.setUpdateFetchState(true);
@@ -44,45 +46,44 @@ class Updater extends Component {
     this.electronUpdater.checkForUpdates();
   }
 
-  setUpdateDownloadState = value => {
+  componentWillUnmount() {
+    this.electronUpdater.removeAllListeners();
+  }
+
+  setUpdateDownloadState = (value) => {
     this.setState({
       downloading: value,
     });
   }
 
-  setUpdateFetchState = value => {
+  setUpdateFetchState = (value) => {
     this.setState({
       checking: value,
     });
   }
 
-  notifyUpdateAvailable = meta => {
+  notifyUpdateAvailable = (meta) => {
     this.setState({
       available: true,
       updateAvailable: meta,
     });
   }
 
-  componentWillUnmount() {
-    this.electronUpdater.removeAllListeners();
-  }
-
   installUpdates = () => this.electronUpdater.downloadUpdate();
 
   render() {
-    const { checking, downloading, available, updateAvailable } = this.state;
+    const { downloading, available, updateAvailable } = this.state;
     return (
       <div className="Updater section">
         <div className="UpdaterAvailable">
           <a title={`${!available ? 'latest version' : 'update available'}`}>
             <span className={`fa fa-code-fork ${available ? 'available' : 'latest'}`} />
           </a>
-          <span>
-          </span>
+          <span />
           {(available && !downloading) &&
             <span className="flex-item--center">
               ({updateAvailable.version}) is out!
-              <a onClick={this.installUpdates} style={{ cursor: 'pointer'}}>
+              <a onClick={this.installUpdates} style={{ cursor: 'pointer' }}>
                 &nbsp;update
               </a>
             </span>

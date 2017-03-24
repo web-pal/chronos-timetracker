@@ -1,5 +1,6 @@
-import { take, put, call, select } from 'redux-saga/effects';
+import { take, put, call, cps, select } from 'redux-saga/effects';
 import { normalize } from 'normalizr';
+import storage from 'electron-json-storage';
 
 import { fetchProjects } from 'api';
 import * as types from '../constants/';
@@ -41,5 +42,14 @@ export function* getProjects() {
     }
     yield put({ type: types.SET_PROJECTS_FETCHED_STATE, payload: true });
     yield put({ type: types.SET_PROJECTS_FETCH_STATE, payload: false });
+  }
+}
+
+export function* onSelectProject() {
+  while (true) {
+    const { payload } = yield take(types.SELECT_PROJECT);
+    const host = yield select(state => state.profile.host);
+    const data = yield cps(storage.get, 'lastProject');
+    storage.set('lastProject', { ...data, [host]: payload });
   }
 }

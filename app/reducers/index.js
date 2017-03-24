@@ -8,6 +8,7 @@ import issues from './issues';
 import worklogs from './worklogs';
 import projects from './projects';
 import settings from './settings';
+import loadingBar from './loadingBar';
 
 const rootReducer = combineReducers({
   profile,
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
   worklogs,
   projects,
   settings,
+  loadingBar,
   form: formReducer,
 });
 

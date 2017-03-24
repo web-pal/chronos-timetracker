@@ -1,11 +1,16 @@
 import React, { PropTypes } from 'react';
 
 const Img = ({ src, className }) =>
-  <img role="presentation" src={src} className={`image ${className}`} />;
+  <img alt="stringForLinter" role="presentation" src={src} className={`image ${className}`} />;
 
 Img.propTypes = {
-  src: PropTypes.string,
-  className: PropTypes.string,
+  src: PropTypes.string.isRequired,
+  className: PropTypes.string.isRequired,
+};
+
+Img.defaultProps = {
+  img: '',
+  className: '',
 };
 
 export default Img;

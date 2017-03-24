@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+/* global sharedObj */
 import { app, Tray, BrowserWindow, ipcMain, Menu, screen } from 'electron';
 import log from 'electron-log';
 import path from 'path';
@@ -60,9 +61,9 @@ function checkRunning(e) {
     } else {
       console.log('saved last window size');
     }
-  })
+  });
   if (sharedObj.running || sharedObj.uploading) {
-    console.log("RUNNING");
+    console.log('RUNNING');
     mainWindow.webContents.send('force-save');
     e.preventDefault();
     shouldQuit = false;
@@ -170,13 +171,13 @@ ipcMain.on('maximize', () => {
   if (mainWindow) {
     mainWindow.maximize();
   }
-})
+});
 
 ipcMain.on('unmaximize', () => {
   if (mainWindow) {
     mainWindow.unmaximize();
   }
-})
+});
 
 const installExtensions = async () => {
   if (process.env.NODE_ENV === 'development') {
@@ -186,9 +187,9 @@ const installExtensions = async () => {
       'REDUX_DEVTOOLS',
     ];
     const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
-    for (const name of extensions) {
+    for (const name of extensions) { // eslint-disable-line
       try {
-        await installer.default(installer[name], forceDownload);
+        await installer.default(installer[name], forceDownload); // eslint-disable-line
       } catch (e) {} // eslint-disable-line
     }
   }
@@ -214,11 +215,11 @@ ipcMain.on('dismissAndRestart', (e, time) => {
   mainWindow.webContents.send('dismissAndRestart', time);
 });
 
-app.on('before-quit', (ev) => {
+app.on('before-quit', () => {
   if (process.platform === 'darwin') {
     shouldQuit = true;
   }
-})
+});
 
 app.on('ready', async () => {
   await installExtensions();
@@ -336,7 +337,7 @@ app.on('activate', () => {
   if (mainWindow === null) {
     createWindow();
   } else {
-    mainWindow.show()
+    mainWindow.show();
   }
 });
 

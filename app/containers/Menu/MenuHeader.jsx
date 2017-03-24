@@ -13,7 +13,7 @@ import logoutIcon from '../../assets/images/logout@2x.png';
 
 import * as profileActions from '../../actions/profile';
 
-const HeaderWrapper = ({
+const MenuHeader = ({
   userData,
   settings,
   logout,
@@ -71,9 +71,9 @@ const HeaderWrapper = ({
   );
 };
 
-HeaderWrapper.propTypes = {
+MenuHeader.propTypes = {
   userData: ImmutablePropTypes.map.isRequired,
-  settings: ImmutablePropTypes.map.isRequired,
+  settings: ImmutablePropTypes.record.isRequired,
   logout: PropTypes.func.isRequired,
 };
 
@@ -88,4 +88,4 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators(profileActions, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(HeaderWrapper);
+export default connect(mapStateToProps, mapDispatchToProps)(MenuHeader);

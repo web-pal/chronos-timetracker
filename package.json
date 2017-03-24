@@ -18,7 +18,7 @@
     "start": "cross-env NODE_ENV=production electron ./app/",
     "dev": "concurrently -p \"{name}\" -n \"RENDERER|>,    MAIN|>\" --kill-others \"npm run hot\" \"npm run hot-server\"",
     "test": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 mocha --retries 2 --compilers js:babel-register --recursive --require ./test/index.js test/**/*.spec.js",
-    "lint": "eslint app *.js *.jsx --ignore-pattern '/dist/' --ignore-pattern '/node_modules/'"
+    "lint": "eslint app *.js *.jsx --ignore-pattern '/dist/' --ignore-pattern '**/node_modules/*'"
   },
   "author": {
     "name": "Webpal",

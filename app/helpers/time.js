@@ -5,7 +5,7 @@ require('moment-duration-format');
 export function jts(jiraTimeString) { // convert JIRA time (e.g 1d 1h 20m) to seconds
   const jiraTimeArray = jiraTimeString.split(' ');
   let resultSeconds = 0;
-  for (const unit of jiraTimeArray) {
+  jiraTimeArray.forEach((unit) => {
     const value = Number(unit.slice(0, -1));
     const postfix = unit[unit.length - 1];
     switch (postfix) {
@@ -24,7 +24,7 @@ export function jts(jiraTimeString) { // convert JIRA time (e.g 1d 1h 20m) to se
       default:
         break;
     }
-  }
+  });
   return resultSeconds;
 }
 

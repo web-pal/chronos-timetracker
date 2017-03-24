@@ -1,63 +1,42 @@
-/* global window */
 import React, { PropTypes, Component } from 'react';
-import mergeImages from 'merge-images';
+import ImmutablePropTypes from 'react-immutable-proptypes';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import getScreen from 'user-media-screenshot';
-import fs from 'fs';
-import NanoTimer from 'nanotimer';
-import electron, { remote, ipcRenderer } from 'electron';
-import { idleTimeThreshold, activityInterval } from 'config';
+
+import { remote, ipcRenderer } from 'electron';
 
 import Flex from '../../components/Base/Flex/Flex';
-import Timer from '../../components/Timer/Timer';
+import TimerControls from '../../components/Timer/TimerControls';
+import TimerDisplay from './TimerDisplay';
 import TrackerHeader from '../../components/TrackerHeader/TrackerHeader';
 import StatusBar from './StatusBar';
 
-import { getTrackingIssue, getSelectedIssue } from '../../selectors';
+import { getSelectedIssue, getTrackingIssue } from '../../selectors';
 
 import * as timerActions from '../../actions/timer';
 import * as worklogsActions from '../../actions/worklogs';
 import * as issuesActions from '../../actions/issues';
-import * as uiActions from '../../actions/ui';
 
-const system = remote.require('@paulcbetts/system-idle-time');
-
-let timeRange = 60;
-let lastIdleTime = 0;
-let idleTime = 0;
 
 class Tracker extends Component {
   static propTypes = {
-    trackingIssue: PropTypes.object,
-    currentIssue: PropTypes.object.isRequired,
-    settings: PropTypes.object.isRequired,
-    currentWorklogId: PropTypes.number,
-    time: PropTypes.number.isRequired,
-    running: PropTypes.bool.isRequired,
-    paused: PropTypes.bool.isRequired,
-    description: PropTypes.string,
-    descriptionPopupOpen: PropTypes.bool.isRequired,
+    uploadScreenshot: PropTypes.func.isRequired,
     rejectScreenshot: PropTypes.func.isRequired,
-    acceptScreenshot: PropTypes.func.isRequired,
-    startTimer: PropTypes.func.isRequired,
-    pauseTimer: PropTypes.func.isRequired,
-    unpauseTimer: PropTypes.func.isRequired,
-    stopTimer: PropTypes.func.isRequired,
-    tick: PropTypes.func.isRequired,
-    closeDescriptionPopup: PropTypes.func.isRequired,
-    openDescriptionPopup: PropTypes.func.isRequired,
-    selectIssue: PropTypes.func.isRequired,
-    createWorklog: PropTypes.func.isRequired,
-    addRecentWorklog: PropTypes.func.isRequired,
-    idleState: PropTypes.bool.isRequired,
-    setIdleState: PropTypes.func.isRequired,
+
+    cutIddlesFromLastScreenshot: PropTypes.func.isRequired,
+    cutIddles: PropTypes.func.isRequired,
     dismissIdleTime: PropTypes.func.isRequired,
-    addRecentIssue: PropTypes.func.isRequired,
-    uploading: PropTypes.bool.isRequired,
-    screensShot: PropTypes.object.isRequired,
+
+    startTimer: PropTypes.func.isRequired,
+    stopTimer: PropTypes.func.isRequired,
+    selectIssue: PropTypes.func.isRequired,
+    setForceQuitFlag: PropTypes.func.isRequired,
     setDescription: PropTypes.func.isRequired,
-    submitUnfinishedWorklog: PropTypes.func.isRequired,
+
+    running: PropTypes.bool.isRequired,
+    currentIssue: ImmutablePropTypes.map.isRequired,
+    currentTrackingIssue: ImmutablePropTypes.map.isRequired,
+    description: PropTypes.string.isRequired,
   }
 
   componentDidMount() {
@@ -84,7 +63,7 @@ class Tracker extends Component {
 
   rejectScreenshot = () => {
     const { getGlobal } = remote;
-    const { screenshotTime, lastScreenshotPath } = getGlobal('sharedObj');
+    const { lastScreenshotPath } = getGlobal('sharedObj');
     this.props.cutIddlesFromLastScreenshot();
     this.props.rejectScreenshot(lastScreenshotPath);
   }
@@ -104,15 +83,14 @@ class Tracker extends Component {
 
   dismissIdleTime = (ev, time) => {
     const seconds = Math.ceil(time / 1000);
-    this.props.cutIddles(Math.ceil(seconds/60));
+    this.props.cutIddles(Math.ceil(seconds / 60));
     this.props.dismissIdleTime(seconds);
   }
 
   render() {
     const {
-      running, paused, time, trackingIssue, startTimer, closeDescriptionPopup, description,
-      pauseTimer, unpauseTimer, openDescriptionPopup, descriptionPopupOpen, currentIssue,
-      selectIssue, uploading, setDescription, stopTimer,
+      startTimer, stopTimer, selectIssue, setDescription,
+      running, currentIssue, currentTrackingIssue, description,
     } = this.props;
 
     if (!currentIssue.size) {
@@ -123,6 +101,7 @@ class Tracker extends Component {
               select an issue from the list on the left
             </Flex>
           </Flex>
+          <StatusBar />
         </Flex>
       );
     }
@@ -130,49 +109,74 @@ class Tracker extends Component {
     return (
       <Flex column className="tracker">
         <TrackerHeader currentIssue={currentIssue} />
-        <Timer
-          running={running}
-          uploading={uploading}
-          paused={paused}
-          time={time}
-          trackingIssue={trackingIssue}
-          currentIssue={currentIssue}
-          setCurrentIssue={selectIssue}
-          startTimer={startTimer}
-          stopTimer={stopTimer}
-          description={description}
-          onUnPause={unpauseTimer}
-          onDescriptionChange={setDescription}
-        />
+        <Flex column centered className="timer">
+          {(currentTrackingIssue.size > 0) &&
+            <Flex
+              column
+              className={[
+                'current-tracking',
+                `${currentTrackingIssue.get('id') !== currentIssue.get('id') ? 'show' : 'hide'}`,
+              ].join(' ')}
+            >
+              <Flex row centered>
+                Currently tracking
+                <span className="current-tracking__key">
+                  {currentTrackingIssue.get('key')}
+                </span>
+              </Flex>
+              <Flex row centered>
+                <span
+                  className="current-tracking__link"
+                  onClick={() => selectIssue(currentTrackingIssue.get('id'))}
+                >
+                  Jump to issue
+                </span>
+              </Flex>
+            </Flex>
+          }
+          {running &&
+            <Flex row centered>
+              <input
+                autoFocus
+                id="descriptionInput"
+                value={description}
+                className="descriptionInput"
+                onChange={e => setDescription(e.target.value)}
+                placeholder="What are you doing?"
+              />
+            </Flex>
+          }
+          <Flex row centered>
+            <Flex column>
+              <TimerControls
+                running={running}
+                startTimer={startTimer}
+                stopTimer={stopTimer}
+              />
+              <TimerDisplay />
+            </Flex>
+          </Flex>
+        </Flex>
         <StatusBar />
       </Flex>
     );
   }
 }
 
-function mapStateToProps({ timer, ui, issues, settings, worklogs }) {
+function mapStateToProps({ timer, issues, worklogs }) {
   return {
-    currentIssue: getSelectedIssue({ issues }),
-    trackingIssue: getTrackingIssue({ issues }),
-    screensShot: timer.screensShot,
-    time: timer.time,
     running: timer.running,
-    paused: timer.paused,
-    currentWorklogId: timer.currentWorklogId,
-    settings,
-    descriptionPopupOpen: ui.descriptionPopupOpen,
-    description: timer.description,
-    idleState: ui.idleState,
-    uploading: worklogs.meta.worklogUploading,
+    currentIssue: getSelectedIssue({ issues }),
+    currentTrackingIssue: getTrackingIssue({ issues }),
+    description: worklogs.meta.currentDescription,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    ...timerActions,
-    ...uiActions,
-    ...issuesActions,
     ...worklogsActions,
+    ...timerActions,
+    ...issuesActions,
   }, dispatch);
 }
 

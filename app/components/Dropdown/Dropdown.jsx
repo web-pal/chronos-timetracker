@@ -28,12 +28,20 @@ const Dropdown = (props) => {
 
 Dropdown.propTypes = {
   name: PropTypes.string,
-  options: PropTypes.array,
-  value: PropTypes.object,
+  options: PropTypes.array.isRequired,
+  value: PropTypes.object.isRequired,
   fetching: PropTypes.bool,
   onChange: PropTypes.func,
   placeholder: PropTypes.string,
   className: PropTypes.string,
+};
+
+Dropdown.defaultProps = {
+  name: '',
+  fetching: false,
+  onChange: null,
+  placeholder: '',
+  className: '',
 };
 
 export default Dropdown;

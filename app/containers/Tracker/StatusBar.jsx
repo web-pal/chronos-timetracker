@@ -6,6 +6,9 @@ import Flex from '../../components/Base/Flex/Flex';
 import LoadingBar from '../../components/LoadingBar/LoadingBar';
 import Updater from './../Updater';
 
+import * as loadingBarActions from '../../actions/loadingBar';
+
+
 const StatusBar = ({ online, showLoading, hideLoading }) =>
   <Flex row className="StatusBar">
     <div style={{ flexGrow: '1' }}>
@@ -19,9 +22,7 @@ const StatusBar = ({ online, showLoading, hideLoading }) =>
     </div>
     <Updater showLoading={showLoading} hideLoading={hideLoading} />
     <div className="Connection section">
-      <a
-        title={`${online ? 'Connected to internet' : 'No internet connection'}`}
-      >
+      <a title={`${online ? 'Connected to internet' : 'No internet connection'}`} >
         <span className={`fa fa-bolt ${online ? 'online' : 'offline'}`} />
       </a>
     </div>
@@ -29,7 +30,14 @@ const StatusBar = ({ online, showLoading, hideLoading }) =>
 
 StatusBar.propTypes = {
   online: PropTypes.bool.isRequired,
+  showLoading: PropTypes.func.isRequired,
+  hideLoading: PropTypes.func.isRequired,
 };
+
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(loadingBarActions, dispatch);
+}
 
 function mapStateToProps() {
   return {
@@ -37,4 +45,4 @@ function mapStateToProps() {
   };
 }
 
-export default connect(mapStateToProps)(StatusBar);
+export default connect(mapStateToProps, mapDispatchToProps)(StatusBar);
