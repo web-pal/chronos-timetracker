@@ -8,9 +8,9 @@ const config = merge(baseConfig, {
   devtool: 'source-map',
 
   entry: {
-    main: ['babel-polyfill', './app/index.js'],
-    screenPopup: ['babel-polyfill', './app/screenPopup.js'],
-    idleTimePopup: ['babel-polyfill', './app/idlePopup.js'],
+    main: ['babel-polyfill', './app/index.jsx'],
+    screenPopup: ['babel-polyfill', './app/screenPopup.jsx'],
+    idleTimePopup: ['babel-polyfill', './app/idlePopup.jsx'],
   },
 
   output: {

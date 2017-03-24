@@ -8,7 +8,7 @@
   "plugins": ["add-module-exports"],
   "env": {
     "production": {
-      "presets": ["react-optimize", "babili"],
+      "presets": ["react-optimize"],
       "plugins": [
         "babel-plugin-dev-expression",
         "transform-decorators-legacy",

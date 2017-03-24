@@ -5,10 +5,10 @@ import InfiniteLoadingList from '../../Virtualized/InfiniteLoadingList';
 import SidebarItem from '../../../containers/ComponentsWrappers/SidebarItemWrapper';
 
 const SidebarAllItems = ({
-  totalCount, items, fetchIssues, selectedIssueIndex,
+  totalCount, allItems, fetchIssues, selectedIssueIndex,
 }) =>
   <InfiniteLoadingList
-    isRowLoaded={({ index }) => !!items.get(index)}
+    isRowLoaded={({ index }) => !!allItems.get(index)}
     minimumBatchSize={50}
     threshold={20}
     loadMoreRows={(data) => {
@@ -26,7 +26,7 @@ const SidebarAllItems = ({
       rowHeight: 40,
       // eslint-disable-next-line react/prop-types
       rowRenderer: ({ index, key, style }) => {
-        const item = items.get(index);
+        const item = allItems.get(index);
         return (
           <SidebarItem
             key={key}
@@ -41,7 +41,7 @@ const SidebarAllItems = ({
 
 SidebarAllItems.propTypes = {
   totalCount: PropTypes.number.isRequired,
-  items: ImmutablePropTypes.list.isRequired,
+  allItems: ImmutablePropTypes.list.isRequired,
   fetchIssues: PropTypes.func.isRequired,
   selectedIssueIndex: PropTypes.number,
 };

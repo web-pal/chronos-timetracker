@@ -10,11 +10,16 @@ function dateComparator(a, b) {
 export const getWorklogsMap = ({ worklogs }) => worklogs.byId;
 export const getWorklogsIds = ({ worklogs }) => worklogs.allIds;
 
+export const getSelfKey = ({ profile }) => profile.userData.get('key');
+
 export const getRecentWorklogIds = ({ worklogs }) => worklogs.meta.get('recentWorkLogsIds');
 
 export const getRecentWorklogs = createSelector(
-  [getRecentWorklogIds, getWorklogsMap],
-  (ids, map) => ids.map(id => map.get(id)).sort(dateComparator),
+  [getRecentWorklogIds, getWorklogsMap, getSelfKey],
+  (ids, map, selfKey) =>
+    ids.map(id => map.get(id))
+        .filter(w => w.getIn(['author', 'key']) === selfKey)
+        .sort(dateComparator),
 );
 
 export const getRecentWorklogsWithIssues = createSelector(
@@ -27,7 +32,7 @@ export const getRecentWorklogsGroupedByDate = createSelector(
   map => map.groupBy(
     w => moment(w.get('updated')).startOf('day'),
   )
+  .map(g => ({ day: moment(g.first().get('updated')).startOf('day').format(), worklogs: g.reverse() }))
   .reverse()
-  .map(g => ({ day: moment(g.first().get('updated')).startOf('day').format(), worklogs: g }))
   .toList(),
 );

@@ -4,6 +4,7 @@ import { apiUrl } from 'config';
 import jira from '../jiraClient';
 import { getHeaders } from './helper';
 
+// Can we fetch only current author worklogs?
 export function fetchWorklogs(issues) {
   return new Promise((resolve) => {
     const promises = issues.map(issue => (
