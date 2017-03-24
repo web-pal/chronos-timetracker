@@ -134,7 +134,18 @@ ipcMain.on('showScreenPreviewPopup', () => {
     alwaysOnTop: true,
   };
   const win = new BrowserWindow(options);
-  win.loadURL(`file://${__dirname}/popup.html`);
+  win.loadURL(`file://${__dirname}/screenPopup.html`);
+});
+
+
+ipcMain.on('showIdlePopup', () => {
+  const options = {
+    width: 250,
+    height: 112,
+    frame: false,
+  };
+  const win = new BrowserWindow(options);
+  win.loadURL(`file://${__dirname}/idlePopup.html`);
 });
 
 

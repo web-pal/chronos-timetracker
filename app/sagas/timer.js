@@ -5,16 +5,12 @@ import { remote, ipcRenderer } from 'electron';
 
 import NanoTimer from 'nanotimer';
 import { makeScreenshot } from 'api';
+import { idleTimeThreshold } from 'config';
 import * as types from '../constants/';
 import { uploadWorklog } from './worklogs';
 
+const system = remote.require('@paulcbetts/system-idle-time');
 
-// TODO: Integrate it with backend(settings)
-// n screenshots for n period
-// Screenshots quantity
-const SQ = 1;
-// Screenshots period
-const SP = 600;
 
 function randomInteger(min, max) {
   const rand = (min - 0.5) + (Math.random() * ((max - min) + 1));
@@ -48,32 +44,89 @@ function timerChannel() {
 
 function* runTimer() {
   const chan = yield call(timerChannel);
-  let periods = [...Array(SQ).keys()].map(() => randomInteger(60, SP)).sort(sortNumber);
+
+  const {
+    screenshotsEnabled, screenshotsEnabledUsers, screenshotsQuantity, screenshotsPeriod,
+  } = yield select(state => state.settings.toJS());
+  const selfKey = yield select(state => state.profile.userData.get('key'));
+
+  const cond1 = screenshotsEnabled === 'everyone';
+  const cond2 = screenshotsEnabled === 'forUsers' &&
+    screenshotsEnabledUsers.includes(selfKey);
+  const cond3 = screenshotsEnabled === 'excludingUsers' &&
+    !screenshotsEnabledUsers.includes(selfKey);
+  const screensShotsAllowed = cond1 || cond2 || cond3;
+
+  let periods = [...Array(screenshotsQuantity).keys()]
+    .map(() => randomInteger(60, screenshotsPeriod)).sort(sortNumber);
+  let idleState = false;
+  let prevIdleTime = 0;
+  let totalIdleTimeDuringOneMinute = 0;
+  let nextPeriod = screenshotsPeriod;
+
   try {
     while (true) {
-      const seconds = yield take(chan);
       yield put({ type: types.TICK });
-      if (seconds === periods[0]) {
-        yield fork(takeScreenshot);
-        periods.shift();
-        console.log('Need to take a screnshot');
+
+      // Idle check
+      const idleTime = system.getIdleTime();
+      if (idleState && idleTime < idleTimeThreshold * 1000) {
+        idleState = false;
+        remote.getGlobal('sharedObj').idleTime = prevIdleTime;
+        ipcRenderer.send('showIdlePopup');
       }
-      if (seconds === SP) {
-        periods = [...Array(SQ).keys()].map(() => randomInteger(60, SP)).sort(sortNumber);
+      if (!idleState && idleTime >= idleTimeThreshold * 1000) {
+        idleState = true;
       }
+      if ((prevIdleTime >= 5 * 1000) && prevIdleTime > idleTime) {
+        totalIdleTimeDuringOneMinute += prevIdleTime;
+        console.log('New totalIdleTimeDuringOneMinute', totalIdleTimeDuringOneMinute);
+      }
+      prevIdleTime = idleTime;
+
+      // Screenshots check
+      const seconds = yield take(chan);
+      if (screensShotsAllowed) {
+        if (seconds === periods[0]) {
+          if (!idleState) {
+            yield fork(takeScreenshot);
+            console.log('Need to take a screnshot');
+          }
+          periods.shift();
+        }
+        if (seconds === nextPeriod) {
+          nextPeriod += screenshotsPeriod;
+          periods = [...Array(screenshotsQuantity).keys()]
+            .map(() => randomInteger(seconds, nextPeriod)).sort(sortNumber); // eslint-disable-line
+        }
+      }
+
+      // Activity check every tracked minute
+      const currentTime = yield select(state => state.timer.time);
+      if (currentTime % 60 === 0) {
+        console.log('Add idle', totalIdleTimeDuringOneMinute);
+        yield put({ type: types.ADD_IDLE, payload: totalIdleTimeDuringOneMinute });
+        totalIdleTimeDuringOneMinute = 0;
+      }
+
       console.log(`timer: ${seconds}`);
     }
   } finally {
     if (yield cancelled()) {
       chan.close();
       const issueId = yield select(state => state.issues.meta.trackingIssueId);
-      const secs = yield select(state => state.timer.time);
-      const timeSpentSeconds = secs >= 60 ? secs : 60;
+      const timeSpentSeconds = yield select(state => state.timer.time);
+
       yield put({ type: types.SET_TIME, payload: 0 });
-      yield call(
-        uploadWorklog,
-        { issueId, timeSpentSeconds, comment: '' },
-      );
+      if (timeSpentSeconds >= 60) {
+        yield call(
+          uploadWorklog,
+          { issueId, timeSpentSeconds, comment: '' },
+        );
+      } else {
+        // Show alert message that you have to track at least 60 seconds
+        console.log('Need to track at least 60 seconds');
+      }
       const forceQuit = yield select(state => state.timer.forceQuit);
       if (forceQuit) {
         ipcRenderer.send('ready-to-quit');
@@ -98,5 +151,17 @@ export function* manageTimer() {
     remote.getGlobal('sharedObj').running = false;
 
     yield put({ type: types.SET_TRACKING_ISSUE, payload: null });
+  }
+}
+
+export function* cutIddlesFromLastScreenshot() {
+  while (true) {
+    yield take(types.CUT_IDDLES_FROM_LAST_SCREENSHOT);
+    const lastScreenshotTime = yield select(state => state.timer.lastScreenshotTime);
+    const currentTime = yield select(state => state.timer.time);
+    yield put({
+      type: types.CUT_IDDLES,
+      payload: Math.ceil(currentTime - lastScreenshotTime) / 60,
+    });
   }
 }

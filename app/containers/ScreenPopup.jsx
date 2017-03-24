@@ -11,7 +11,7 @@ const { getGlobal } = remote;
 let acceptLock = false;
 
 
-export default class Popup extends Component {
+export default class ScreenPopup extends Component {
   constructor(props) {
     super(props);
     const { lastScreenshotPath, screenshotTime } = getGlobal('sharedObj');

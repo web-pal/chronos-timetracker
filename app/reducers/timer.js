@@ -2,17 +2,12 @@ import * as types from '../constants/timer';
 
 const InitialState = Immutable.Record({
   time: 0,
+
   running: false,
-  uploading: false,
-  lastScreenshotTime: null,
   forceQuit: false,
 
-  paused: false,
-  currentWorklogId: null,
-  trackingIssue: null,
-  description: '',
-  jiraWorklogId: null,
-  activity: Immutable.List(),
+  lastScreenshotTime: null,
+  currentIdleList: Immutable.List(),
 });
 
 const initialState = new InitialState();
@@ -28,42 +23,26 @@ export default function timer(state = initialState, action) {
       return state.set('time', state.time + 1);
     case types.SET_TIME:
       return state.set('time', action.payload);
-    case types.SET_LAST_SCREENSHOT_TIME:
-      return state.set('lastScreenshotTime', action.payload);
-    case types.SET_WORKLOG_UPLOAD_STATE:
-      return state.set('uploading', action.payload);
-    case types.SET_FORCE_QUIT_FLAG:
-      return state.set('forceQuit', true);
-
+    case types.DISMISS_IDLE_TIME:
+      return state.set('time', state.time - action.payload);
     case types.REJECT_SCREENSHOT:
       return state.set('time', state.lastScreenshotTime);
 
+    case types.SET_LAST_SCREENSHOT_TIME:
+      return state.set('lastScreenshotTime', action.payload);
+    case types.SET_FORCE_QUIT_FLAG:
+      return state.set('forceQuit', true);
+    case types.ADD_IDLE:
+      return state.update('currentIdleList', list => list.push(action.payload));
+    case types.CUT_IDDLES:
+      return state.withMutations((state) => { // eslint-disable-line
+        [...Array(action.payload).keys()].forEach(() => {
+          state.update('currentIdleList', list => list.pop());
+        });
+      });
+    case types.CLEAR_CURRENT_IDLE_LIST:
+      return state.set('currentIdleList', Immutable.List());
 
-    case types.START: {
-      if (state.paused) {
-        return state.set('paused', false);
-      }
-      return state
-        .set('running', true)
-        .set('currentWorklogId', action.worklogId)
-        .set('trackingIssue', action.issueId);
-    }
-    case types.SET_DESCRIPTION:
-      return state.set('description', action.payload);
-    case types.STOP:
-      return state.set('running', false);
-    case types.RESET:
-      return initialState;
-    case types.PAUSE:
-      return state.set('paused', true);
-    case types.UNPAUSE:
-      return state.delete('paused');
-    case types.SET_JIRA_WORKLOG_ID:
-      return state.set('jiraWorklogId', action.id);
-    case types.DISMISS_IDLE_TIME:
-      return state.set('time', state.time - action.payload);
-    case types.ADD_ACTIVITY_PERCENT:
-      return state.set('activity', state.activity.push(action.payload));
     default:
       return state;
   }

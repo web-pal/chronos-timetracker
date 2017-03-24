@@ -10,7 +10,7 @@ const config = merge(baseConfig, {
 
   entry: {
     main: ['babel-polyfill', './app/index.js'],
-    popup: ['babel-polyfill', './app/popup.js'],
+    screenPopup: ['babel-polyfill', './app/screenPopup.js'],
     idleTimePopup: ['babel-polyfill', './app/idlePopup.js'],
   },
 

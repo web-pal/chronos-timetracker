@@ -63,13 +63,17 @@ class Tracker extends Component {
   componentDidMount() {
     ipcRenderer.on('screenshot-accept', this.acceptScreenshot);
     ipcRenderer.on('screenshot-reject', this.rejectScreenshot);
+
     ipcRenderer.on('force-save', this.forceSave);
+    ipcRenderer.on('dismissIdleTime', this.dismissIdleTime);
   }
 
   componentWillUnmount() {
     ipcRenderer.removeListener('screenshot-accept', this.acceptScreenshot);
     ipcRenderer.removeListener('screenshot-reject', this.rejectScreenshot);
+
     ipcRenderer.removeListener('force-save', this.forceSave);
+    ipcRenderer.removeListener('dismissIdleTime', this.dismissIdleTime);
   }
 
   acceptScreenshot = () => {
@@ -80,7 +84,8 @@ class Tracker extends Component {
 
   rejectScreenshot = () => {
     const { getGlobal } = remote;
-    const { lastScreenshotPath } = getGlobal('sharedObj');
+    const { screenshotTime, lastScreenshotPath } = getGlobal('sharedObj');
+    this.props.cutIddlesFromLastScreenshot();
     this.props.rejectScreenshot(lastScreenshotPath);
   }
 
@@ -95,6 +100,12 @@ class Tracker extends Component {
     if (uploading) {
       window.alert('Currently app in process of saving worklog, wait few seconds please');
     }
+  }
+
+  dismissIdleTime = (ev, time) => {
+    const seconds = Math.ceil(time / 1000);
+    this.props.cutIddles(Math.ceil(seconds/60));
+    this.props.dismissIdleTime(seconds);
   }
 
   render() {
@@ -139,7 +150,7 @@ class Tracker extends Component {
   }
 }
 
-function mapStateToProps({ timer, ui, issues, settings }) {
+function mapStateToProps({ timer, ui, issues, settings, worklogs }) {
   return {
     currentIssue: getSelectedIssue({ issues }),
     trackingIssue: getTrackingIssue({ issues }),
@@ -152,7 +163,7 @@ function mapStateToProps({ timer, ui, issues, settings }) {
     descriptionPopupOpen: ui.descriptionPopupOpen,
     description: timer.description,
     idleState: ui.idleState,
-    uploading: timer.uploading,
+    uploading: worklogs.meta.worklogUploading,
   };
 }
 

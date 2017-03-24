@@ -1,11 +1,11 @@
 import React from 'react';
 import { render } from 'react-dom';
 
-import ScreenshotPopup from './containers/Popup';
+import ScreenPopup from './containers/ScreenPopup';
 
 render(
   <div id="root">
-    <ScreenshotPopup />
+    <ScreenPopup />
   </div>,
   document.getElementById('root')
 );
