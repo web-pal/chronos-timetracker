@@ -84,8 +84,12 @@ function* runTimer() {
       }
       prevIdleTime = idleTime;
 
-      // Screenshots check
       const seconds = yield take(chan);
+      // Check offline screenshots
+      if (seconds % 240 === 0) {
+        yield put({ type: types.CHECK_OFFLINE_SCREENSHOTS });
+      }
+      // Screenshots check
       if (screensShotsAllowed) {
         if (seconds === periods[0]) {
           if (!idleState) {
