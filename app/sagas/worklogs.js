@@ -49,9 +49,10 @@ export function* uploadWorklog({ issueId, timeSpentSeconds, comment }) {
   const screensShot = yield select(
     state => state.worklogs.meta.currentWorklogScreenshots.toArray(),
   );
-  const { id } = yield call(
+  const worklog = yield call(
     jiraUploadWorklog, { issueId, worklog: { timeSpentSeconds, comment } },
   );
+  const { id } = worklog;
   yield call(
     chronosBackendUploadWorklog, {
       worklogId: id,
@@ -65,6 +66,7 @@ export function* uploadWorklog({ issueId, timeSpentSeconds, comment }) {
   yield put({ type: types.CLEAR_CURRENT_SCREENSHOTS_LIST });
   yield put({ type: types.CLEAR_CURRENT_IDLE_LIST });
   yield put({ type: types.SET_WORKLOG_UPLOAD_STATE, payload: false });
+  yield put({ type: types.ADD_RECENT_WORKLOG, payload: worklog });
   remote.getGlobal('sharedObj').uploading = false;
 }
 
