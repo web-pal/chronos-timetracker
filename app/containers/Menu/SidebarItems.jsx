@@ -23,12 +23,15 @@ const SidebarItems = props =>
     <SidebarNoItems
       show={!props.showSpinner && props.totalCount === 0 && props.sidebarType === 'All'}
     />
-    {props.sidebarType === 'All' &&
-      <SidebarAllItems {...props} />
+    {(props.sidebarType === 'All') &&
+      <SidebarAllItems
+        {...props}
+      />
     }
-    {props.sidebarType === 'Recent' &&
-      <SidebarRecentItems {...props} />
-    }
+    <SidebarRecentItems
+      style={{ display: `${props.sidebarType === 'All' ? 'none' : 'block'}` }}
+      {...props}
+    />
   </Flex>;
 
 SidebarItems.propTypes = {
@@ -37,24 +40,24 @@ SidebarItems.propTypes = {
   sidebarType: PropTypes.string.isRequired,
 };
 
-function mapStateToProps({ issues, worklogs, ui }) {
-  let items = new Immutable.List();
+function mapStateToProps({ issues, worklogs, ui, profile }) {
   let showSpinner = true;
   const searchMode = issues.meta.searchValue.length > 0;
+  const allItems = searchMode ? getSearchResultIssues({ issues }) : getAllIssues({ issues });
+  const recentItems = getRecentWorklogsGroupedByDate({ issues, worklogs, profile });
   if (ui.sidebarType === 'All') {
     showSpinner = (issues.meta.fetching && !issues.meta.fetched) || issues.meta.searchFetching;
-    items = searchMode ? getSearchResultIssues({ issues }) : getAllIssues({ issues });
   } else {
     showSpinner = issues.meta.recentFetching;
-    items = getRecentWorklogsGroupedByDate({ issues, worklogs });
   }
-  const totalCount = searchMode ? items.size : issues.meta.totalCount;
+  const totalCount = searchMode ? allItems.size : issues.meta.totalCount;
   return {
     sidebarType: ui.sidebarType,
     selectedIssueIndex: issues.meta.selectedIssueIndex,
     showSpinner,
     totalCount,
-    items,
+    allItems,
+    recentItems,
   };
 }
 

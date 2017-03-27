@@ -15,9 +15,9 @@ moment.locale('en', {
   },
 });
 
-const SidebarRecentItems = ({ items, showSpinner }) =>
-  <div className="RecentItems">
-    {items.map(item =>
+const SidebarRecentItems = ({ recentItems, showSpinner, style }) =>
+  <div className="RecentItems" style={style}>
+    {recentItems.map(item =>
       <Flex key={item.day} column className="RecentItems__block">
         <TimestampItem
           date={item.day}
@@ -35,7 +35,7 @@ const SidebarRecentItems = ({ items, showSpinner }) =>
         </Flex>
       </Flex>,
     )}
-    {items.size === 0 && !showSpinner &&
+    {recentItems.size === 0 && !showSpinner &&
       <Flex column centered className="RecentEmptyItem">
         Nothing has been tracked recently
       </Flex>
@@ -43,8 +43,9 @@ const SidebarRecentItems = ({ items, showSpinner }) =>
   </div>;
 
 SidebarRecentItems.propTypes = {
-  items: ImmutablePropTypes.list.isRequired,
+  recentItems: ImmutablePropTypes.list.isRequired,
   showSpinner: PropTypes.bool.isRequired,
+  style: PropTypes.object.isRequired,
 };
 
 export default SidebarRecentItems;

@@ -174,7 +174,6 @@
     "redux-form": "6.5.0",
     "redux-immutable": "3.0.10",
     "redux-saga": "^0.14.3",
-    "redux-thunk": "2.2.0",
     "request": "2.79.0",
     "reselect": "2.5.4",
     "rimraf": "^2.6.1",
