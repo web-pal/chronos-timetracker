@@ -8,6 +8,8 @@ function allItems(state = new OrderedSet(), action) {
     case types.FILL_WORKLOGS:
     case types.FILL_RECENT_WORKLOGS:
       return state.concat(action.payload.ids);
+    case types.ADD_RECENT_WORKLOG:
+      return state.add(action.payload.id);
     case types.CLEAR_WORKLOGS:
     case types.CLEAR_ALL_REDUCERS:
       return new OrderedSet();
@@ -21,6 +23,8 @@ function itemsById(state = new Map(), action) {
     case types.FILL_WORKLOGS:
     case types.FILL_RECENT_WORKLOGS:
       return state.merge(fromJS(action.payload.map));
+    case types.ADD_RECENT_WORKLOG:
+      return state.set(action.payload.id, fromJS(action.payload));
     case types.CLEAR_WORKLOGS:
     case types.CLEAR_ALL_REDUCERS:
       return new Map();
@@ -53,6 +57,8 @@ function meta(state = new initialMeta(), action) {
       return state.set('selectedWorklogId', action.payload);
     case types.FILL_RECENT_WORKLOGS:
       return state.set('recentWorkLogsIds', new OrderedSet(action.payload.ids));
+    case types.ADD_RECENT_WORKLOG:
+      return state.set('recentWorkLogsIds', state.recentWorkLogsIds.add(action.payload.id))
     case types.ADD_SCREENSHOT_TO_CURRENT_LIST:
       return state.update(
         'currentWorklogScreenshots',
