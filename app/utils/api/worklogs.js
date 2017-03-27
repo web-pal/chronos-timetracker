@@ -1,5 +1,3 @@
-import path from 'path';
-
 import { apiUrl } from 'config';
 import jira from '../jiraClient';
 import { getHeaders } from './helper';
@@ -47,15 +45,20 @@ export function chronosBackendUploadWorklog({
   });
 }
 
-export function signUploadUrlForS3Bucket(screenshotPath) {
-  const fileName = path.basename(screenshotPath);
+export function signUploadUrlForS3Bucket(fileName) {
   const url = `${apiUrl}/desktop-tracker/sign-bucket-url`;
   const options = {
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify({ fileName }),
   };
-  return fetch(url, options).then(res => res.json());
+  return fetch(url, options)
+    .then((res) => {
+      if (res.ok) {
+        return res.json();
+      }
+      throw Error(res.statusText);
+    });
 }
 
 export function uploadScreenshotOnS3Bucket({ url, image }) {

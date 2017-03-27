@@ -19,6 +19,11 @@ try {
 } catch (err) {
   fs.mkdirSync(`${appDir}/screens/`);
 }
+try {
+  fs.accessSync(`${appDir}/offline_screens/`, fs.constants.R_OK | fs.constants.W_OK); // eslint-disable-line
+} catch (err) {
+  fs.mkdirSync(`${appDir}/offline_screens/`);
+}
 // Remove legacy dir, after few versions we will remove this code (0.0.9)
 try {
   fs.accessSync(`${appDir}/screenshots/`, fs.constants.R_OK | fs.constants.W_OK) // eslint-disable-line

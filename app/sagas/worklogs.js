@@ -76,18 +76,56 @@ export function* watchSelectWorklogs() {
 }
 
 export function* uploadScreenshot({ screenshotTime, lastScreenshotPath }) {
-  yield put({ type: types.SET_LAST_SCREENSHOT_TIME, payload: screenshotTime });
+  const isOffline = lastScreenshotPath.includes('offline_screens');
+  if (!isOffline) {
+    yield put({ type: types.SET_LAST_SCREENSHOT_TIME, payload: screenshotTime });
+  }
 
-  const { url } = yield call(signUploadUrlForS3Bucket, lastScreenshotPath);
+  const fileName = path.basename(lastScreenshotPath);
   const image = yield cps(fs.readFile, lastScreenshotPath);
+  let error = false;
 
-  yield uploadScreenshotOnS3Bucket({ url, image });
+  try {
+    const { url } = yield call(signUploadUrlForS3Bucket, fileName);
+    yield uploadScreenshotOnS3Bucket({ url, image });
+  } catch (err) {
+    // Most likely there is no internet
+    console.log(err);
+    error = true;
+  }
 
-  yield put({
-    type: types.ADD_SCREENSHOT_TO_CURRENT_LIST,
-    payload: path.basename(lastScreenshotPath),
-  });
-  yield cps(fs.unlink, lastScreenshotPath);
+  if (!isOffline) {
+    yield put({
+      type: types.ADD_SCREENSHOT_TO_CURRENT_LIST,
+      payload: fileName,
+    });
+  }
+
+  if (error) {
+    if (!isOffline) {
+      fs.rename(lastScreenshotPath, `${remote.getGlobal('appDir')}/offline_screens/${fileName}`);
+    }
+  } else {
+    yield cps(fs.unlink, lastScreenshotPath);
+  }
+  return error;
+}
+
+export function* uploadOfflineScreenshots() {
+  while (true) {
+    yield take(types.CHECK_OFFLINE_SCREENSHOTS);
+    yield put({ type: types.SET_STATE_CHECK_OFFLINE_SCREENSHOTS, payload: true });
+    const images = yield cps(fs.readdir, `${remote.getGlobal('appDir')}/offline_screens/`);
+    for (const image of images.filter(i => i.split('.').slice(-1)[0] === 'png')) { // eslint-disable-line
+      const error = yield uploadScreenshot(
+        { lastScreenshotPath: `${remote.getGlobal('appDir')}/offline_screens/${image}` },
+      );
+      if (error) {
+        break;
+      }
+    }
+    yield put({ type: types.SET_STATE_CHECK_OFFLINE_SCREENSHOTS, payload: false });
+  }
 }
 
 export function* watchUploadScreenshot() {

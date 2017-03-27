@@ -81,6 +81,7 @@ export function* loginFlow() {
       yield put({ type: types.SET_CURRENT_HOST, payload: values.host });
       yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: false });
       yield put({ type: types.SET_AUTH_STATE, payload: true });
+      yield put({ type: types.CHECK_OFFLINE_SCREENSHOTS });
       Socket.login();
       yield take(types.LOGOUT_REQUEST);
       storage.remove('desktop_tracker_jwt');
