@@ -37,6 +37,7 @@ const initialMeta = Immutable.Record({
   fetching: false,
   worklogUploading: false,
   checkOfflineScreenshots: false,
+  checkOfflineWorklogs: false,
   selectedWorklogId: null,
   recentWorkLogsIds: new OrderedSet(),
   currentWorklogScreenshots: new List(),
@@ -53,12 +54,14 @@ function meta(state = new initialMeta(), action) {
       return state.set('currentDescription', action.payload);
     case types.SET_STATE_CHECK_OFFLINE_SCREENSHOTS:
       return state.set('checkOfflineScreenshots', action.payload);
+    case types.SET_STATE_CHECK_OFFLINE_WORKLOGS:
+      return state.set('checkOfflineWorklogs', action.payload);
     case types.SELECT_WORKLOG:
       return state.set('selectedWorklogId', action.payload);
     case types.FILL_RECENT_WORKLOGS:
       return state.set('recentWorkLogsIds', new OrderedSet(action.payload.ids));
     case types.ADD_RECENT_WORKLOG:
-      return state.set('recentWorkLogsIds', state.recentWorkLogsIds.add(action.payload.id))
+      return state.set('recentWorkLogsIds', state.recentWorkLogsIds.add(action.payload.id));
     case types.ADD_SCREENSHOT_TO_CURRENT_LIST:
       return state.update(
         'currentWorklogScreenshots',

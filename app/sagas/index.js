@@ -8,7 +8,7 @@ import {
 } from './issues';
 import {
   watchSelectWorklogs, watchUploadScreenshot,
-  watchRejectScreenshot, uploadOfflineScreenshots,
+  watchRejectScreenshot, uploadOfflineScreenshots, uploadOfflineWorklogs
 } from './worklogs';
 import { manageTimer, cutIddlesFromLastScreenshot } from './timer';
 
@@ -31,6 +31,7 @@ export default function* root() {
     fork(watchUploadScreenshot),
     fork(watchRejectScreenshot),
     fork(uploadOfflineScreenshots),
+    fork(uploadOfflineWorklogs),
 
     fork(manageTimer),
     fork(cutIddlesFromLastScreenshot),
