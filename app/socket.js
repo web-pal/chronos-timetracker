@@ -3,6 +3,7 @@ import storage from 'electron-json-storage';
 import config from 'config';
 
 import * as types from './constants';
+import store from './store.js';
 
 export default class Socket {
   static connect() {
@@ -14,9 +15,7 @@ export default class Socket {
     });
   }
 
-  static login(dispatch, getState) {
-    this.dispatch = dispatch;
-    this.getState = getState;
+  static login() {
     this.connect();
     console.log('Socket login');
 
@@ -30,7 +29,7 @@ export default class Socket {
 
     this.socket.on('new settings', (response) => {
       console.log('new settings', response);
-      dispatch({
+      store.dispatch({
         type: types.FILL_SETTINGS,
         payload: response.newSetting.desktopApp,
       });

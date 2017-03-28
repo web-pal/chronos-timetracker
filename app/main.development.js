@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
-import { app, Tray, BrowserWindow, ipcMain, Menu } from 'electron';
+/* global sharedObj */
+import { app, Tray, BrowserWindow, ipcMain, Menu, screen } from 'electron';
 import log from 'electron-log';
 import path from 'path';
 import updater from 'electron-simple-updater';
@@ -15,9 +16,9 @@ global.appDir = app.getPath('userData');
 global.appSrcDir = __dirname;
 global.sharedObj = {
   running: false,
+  uploading: false,
   lastScreenshotPath: '',
   screenshotTime: null,
-  currentWorklogId: null,
   idleTime: 0,
 };
 
@@ -60,9 +61,9 @@ function checkRunning(e) {
     } else {
       console.log('saved last window size');
     }
-  })
-  if (sharedObj.running) {
-    console.log("RUNNING");
+  });
+  if (sharedObj.running || sharedObj.uploading) {
+    console.log('RUNNING');
     mainWindow.webContents.send('force-save');
     e.preventDefault();
     shouldQuit = false;
@@ -120,6 +121,39 @@ function createWindow() {
   });
 }
 
+
+ipcMain.on('showScreenPreviewPopup', () => {
+  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+  const options = {
+    width: 218,
+    height: 212,
+    x: width - 218,
+    y: height - 212,
+    frame: false,
+    resizable: false,
+    movable: false,
+    alwaysOnTop: true,
+    show: false,
+  };
+  const win = new BrowserWindow(options);
+  win.loadURL(`file://${__dirname}/screenPopup.html`);
+  win.once('ready-to-show', () => {
+    win.show();
+  });
+});
+
+
+ipcMain.on('showIdlePopup', () => {
+  const options = {
+    width: 250,
+    height: 112,
+    frame: false,
+  };
+  const win = new BrowserWindow(options);
+  win.loadURL(`file://${__dirname}/idlePopup.html`);
+});
+
+
 ipcMain.on('set-should-quit', () => {
   shouldQuit = true;
 });
@@ -135,19 +169,19 @@ ipcMain.on('minimize', () => {
   if (mainWindow) {
     mainWindow.minimize();
   }
-})
+});
 
 ipcMain.on('maximize', () => {
   if (mainWindow) {
     mainWindow.maximize();
   }
-})
+});
 
 ipcMain.on('unmaximize', () => {
   if (mainWindow) {
     mainWindow.unmaximize();
   }
-})
+});
 
 const installExtensions = async () => {
   if (process.env.NODE_ENV === 'development') {
@@ -157,9 +191,9 @@ const installExtensions = async () => {
       'REDUX_DEVTOOLS',
     ];
     const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
-    for (const name of extensions) {
+    for (const name of extensions) { // eslint-disable-line
       try {
-        await installer.default(installer[name], forceDownload);
+        await installer.default(installer[name], forceDownload); // eslint-disable-line
       } catch (e) {} // eslint-disable-line
     }
   }
@@ -185,11 +219,11 @@ ipcMain.on('dismissAndRestart', (e, time) => {
   mainWindow.webContents.send('dismissAndRestart', time);
 });
 
-app.on('before-quit', (ev) => {
+app.on('before-quit', () => {
   if (process.platform === 'darwin') {
     shouldQuit = true;
   }
-})
+});
 
 app.on('ready', async () => {
   await installExtensions();
@@ -307,7 +341,7 @@ app.on('activate', () => {
   if (mainWindow === null) {
     createWindow();
   } else {
-    mainWindow.show()
+    mainWindow.show();
   }
 });
 

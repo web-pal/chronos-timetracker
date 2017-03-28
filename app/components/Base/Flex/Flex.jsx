@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react';
 
-/* eslint-disable no-nested-ternary */
 const Flex =
   ({
     children,
@@ -16,14 +15,15 @@ const Flex =
     id,
   }) =>
     <div
-      className={
-        `flex-${row ? 'row' : column ? 'column' : ''} \
-${wrap ? 'wrap' : ''} \
-${centered ? 'flex--center' : ''} \
-${spaceBetween ? 'flex--s-between' : ''} \
-${spaceAround ? 'flex--s-around' : ''} \
-${className || ''}`
-      }
+      className={[
+        `${row && 'flex-row'}`,
+        `${column && 'flex-column'}`,
+        `${wrap && 'wrap'}`,
+        `${centered && 'flex--center'}`,
+        `${spaceBetween && 'flex--s-between'}`,
+        `${spaceAround && 'flex--s-around'}`,
+        `${className}`,
+      ].join(' ')}
       onClick={onClick}
       style={style}
       id={id}
@@ -34,7 +34,7 @@ ${className || ''}`
 Flex.propTypes = {
   row: PropTypes.bool,
   column: PropTypes.bool,
-  children: PropTypes.node,
+  children: PropTypes.node.isRequired,
   wrap: PropTypes.bool,
   style: PropTypes.object,
   id: PropTypes.string,
@@ -44,5 +44,19 @@ Flex.propTypes = {
   centered: PropTypes.bool,
   onClick: PropTypes.func,
 };
+
+Flex.defaultProps = {
+  row: false,
+  column: false,
+  wrap: false,
+  style: {},
+  id: '',
+  spaceBetween: false,
+  spaceAround: false,
+  className: '',
+  centered: false,
+  onClick: null,
+};
+
 
 export default Flex;

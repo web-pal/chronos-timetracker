@@ -28,11 +28,6 @@ class IdlePopup extends Component {
     remote.getCurrentWindow().destroy();
   }
 
-  dismissAndRestart = () => {
-    ipc.send('dismissAndRestart', this.state.idleTime);
-    remote.getCurrentWindow().destroy();
-  }
-
   render() {
     const { idleTime, date } = this.state;
     return (

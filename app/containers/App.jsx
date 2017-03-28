@@ -3,28 +3,27 @@ import { connect } from 'react-redux';
 
 import WindowsControlButtons from '../components/WindowsControlButtons/WindowsControlButtons';
 import AuthForm from './AuthForm';
-import FetchWrapper from './FetchWrapper';
-import Main from '../components/Main';
+import Main from '../containers/Main';
 
-const App = ({ connected }) =>
-  <FetchWrapper>
+const App = ({ isAuthorized }) =>
+  <div className="wrapper">
     {process.platform !== 'darwin' &&
       <WindowsControlButtons />
     }
-    {connected
+    {isAuthorized
       ? <Main />
       : <AuthForm />
     }
-  </FetchWrapper>;
+  </div>;
 
 App.propTypes = {
-  connected: PropTypes.bool.isRequired,
+  isAuthorized: PropTypes.bool.isRequired,
 };
 
-function mapStateToProps({ jira }) {
+function mapStateToProps({ profile }) {
   return {
-    connected: jira.connected,
+    isAuthorized: profile.isAuthorized,
   };
 }
 
-export default connect(mapStateToProps, null)(App);
+export default connect(mapStateToProps)(App);

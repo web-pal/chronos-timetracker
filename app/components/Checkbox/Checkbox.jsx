@@ -17,10 +17,15 @@ const Checkbox = ({ input, label, type, disabled }) => (
 );
 
 Checkbox.propTypes = {
-  input: PropTypes.object,
+  input: PropTypes.object.isRequired,
+  type: PropTypes.string.isRequired,
   label: PropTypes.string,
-  type: PropTypes.string,
   disabled: PropTypes.bool,
+};
+
+Checkbox.defaultProps = {
+  label: '',
+  disabled: false,
 };
 
 export default Checkbox;

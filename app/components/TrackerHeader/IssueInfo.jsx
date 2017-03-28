@@ -1,8 +1,16 @@
 import React, { PropTypes } from 'react';
+import { shell } from 'electron';
 import { getStatusColor } from 'jiraColors-util';
 
-import WindowsControlButtons from '../WindowsControlButtons/WindowsControlButtons';
 import Flex from '../Base/Flex/Flex';
+
+function openIssueInBrowser(issue) {
+  return (ev) => {
+    ev.preventDefault();
+    const urlArr = issue.get('self').split('/');
+    shell.openExternal(`${urlArr[0]}//${urlArr[2]}/browse/${issue.get('key')}`);
+  };
+}
 
 const IssueInfo = ({ currentIssue }) =>
   <Flex
@@ -15,6 +23,16 @@ const IssueInfo = ({ currentIssue }) =>
   >
     <Flex column>
       <Flex row className="issueName">
+        <span
+          onClick={openIssueInBrowser(currentIssue)}
+          className="fa fa-external-link"
+          style={{
+            transform: 'translateY(5px)',
+            marginRight: '4px',
+            color: '#235dff',
+            cursor: 'pointer',
+          }}
+        />
         <span className="TrackerHeader__issuekey">
           {currentIssue.get('key')}
         </span>

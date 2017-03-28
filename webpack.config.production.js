@@ -1,5 +1,4 @@
 import webpack from 'webpack';
-import BabiliPlugin from 'babili-webpack-plugin';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
 import path from 'path';
 import merge from 'webpack-merge';
@@ -9,9 +8,9 @@ const config = merge(baseConfig, {
   devtool: 'source-map',
 
   entry: {
-    main: ['babel-polyfill', './app/index.js'],
-    popup: ['babel-polyfill', './app/popup.js'],
-    idleTimePopup: ['babel-polyfill', './app/idlePopup.js'],
+    main: ['babel-polyfill', './app/index.jsx'],
+    screenPopup: ['babel-polyfill', './app/screenPopup.jsx'],
+    idleTimePopup: ['babel-polyfill', './app/idlePopup.jsx'],
   },
 
   output: {
@@ -25,24 +24,24 @@ const config = merge(baseConfig, {
       {
         test: /\.jsx?$/,
         loaders: ['babel-loader'],
-        exclude: /node_modules/
+        exclude: /node_modules/,
       },
       {
         test: /\.less$/,
         loader: ExtractTextPlugin.extract(
           'style-loader',
-          'css-loader!less-loader'
-        )
+          'css-loader!less-loader',
+        ),
       },
       {
         test: /\.css$/,
-        loader: 'style-loader!css-loader'
+        loader: 'style-loader!css-loader',
       },
       {
         test: /\.jpe?g$|\.gif$|\.png$|\.ico|\.svg(\?v=.*)?$|\.otf|\.woff(\?v=.*)?$|\.ttf(\?v=.*)?$|\.eot(\?v=.*)?$|\.woff?2(\?v=.*)?|\.html/, // eslint-disable-line max-len
         loader: 'url-loader',
-      }
-    ]
+      },
+    ],
   },
 
   plugins: [
@@ -54,14 +53,14 @@ const config = merge(baseConfig, {
     // }),
     new ExtractTextPlugin('style.css'),
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('production')
+      'process.env.NODE_ENV': JSON.stringify('production'),
     }),
     new webpack.ProvidePlugin({
       Immutable: 'immutable',
     }),
   ],
 
-  target: 'electron-renderer'
+  target: 'electron-renderer',
 });
 
 export default config;

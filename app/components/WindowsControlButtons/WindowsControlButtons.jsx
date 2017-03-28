@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
 import { ipcRenderer, remote } from 'electron';
 
 import Flex from '../Base/Flex/Flex';
@@ -22,7 +22,7 @@ function sendUnMaximizeSignal() {
   ipcRenderer.send('unmaximize');
 }
 
-const WindowsControlButtons = ({}) =>
+const WindowsControlButtons = () =>
   <Flex row className="WindowsControlButtons flex--end">
     <span
       className="fa fa-window-minimize"

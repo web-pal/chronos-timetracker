@@ -21,11 +21,11 @@ export default validate(merge(baseConfig, {
       'babel-polyfill',
       './app/index',
     ],
-    popup: [
+    screenPopup: [
       'react-hot-loader/patch',
       'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
       'babel-polyfill',
-      './app/popup',
+      './app/screenPopup',
     ],
     idleTimePopup: [
       'react-hot-loader/patch',
@@ -77,9 +77,9 @@ export default validate(merge(baseConfig, {
      * development checks
      */
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('development')
+      'process.env.NODE_ENV': JSON.stringify('development'),
     }),
-    // Define global vars 
+    // Define global vars
     new webpack.ProvidePlugin({
       Immutable: 'immutable',
     }),

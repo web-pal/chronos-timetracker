@@ -4,33 +4,52 @@ import { Map } from 'immutable';
 export const getIssuesMap = ({ issues }) => issues.byId;
 export const getIssuesIds = ({ issues }) => issues.allIds;
 
-export const getRecentIssuesMap = ({ issues }) => issues.recentById;
+export const getRecentIssuesIds = ({ issues }) => issues.meta.recentIssuesIds;
+export const getSearchResultIssuesIds = ({ issues }) => issues.meta.searchResultsIds;
 
-export const getIssuesFilter = ({ filter }) => filter.value;
-export const getResolveFilter = ({ filter }) => filter.resolveValue;
+export const getSelectedIssueId = ({ issues }) => issues.meta.selectedIssueId;
+export const getTrackingIssueId = ({ issues }) => issues.meta.trackingIssueId;
 
-export const getSearchResultIssuesIds = ({ issues }) => issues.meta.searchResults;
-
-export const getTrackingIssueId = ({ issues }) => issues.meta.tracking;
-
-export const getSelectedIssueId = ({ issues }) => issues.meta.selected;
+const getWorklogsMap = ({ worklogs }) => worklogs.byId;
+const getSelfKey = ({ profile }) => profile.userData.get('key');
 
 export const getIssues = createSelector(
   [getIssuesIds, getIssuesMap],
-  (ids, map) => ids.map(id => map.get(id))
+  (ids, map) => ids.map(id => map.get(id)),
+);
+
+export const getRecentIssues = createSelector(
+  [getRecentIssuesIds, getIssuesMap],
+  (ids, map) => ids.map(id => map.get(id)),
 );
 
 export const getSearchResultIssues = createSelector(
   [getSearchResultIssuesIds, getIssuesMap],
-  (ids, map) => ids.map(id => map.get(id))
+  (ids, map) => ids.map(id => map.get(id)).toList(),
+);
+
+export const getAllIssues = createSelector(
+  [getSearchResultIssuesIds, getIssuesIds, getIssuesMap],
+  (searchIds, ids, map) => ids.map(id => map.get(id)).toList(),
 );
 
 export const getTrackingIssue = createSelector(
-  [getTrackingIssueId, getIssuesMap, getRecentIssuesMap],
-  (id, map, rMap) => map.get(id) || rMap.get(id) || new Map()
+  [getTrackingIssueId, getIssuesMap],
+  (id, map) => map.get(id) || new Map(),
 );
 
 export const getSelectedIssue = createSelector(
-  [getSelectedIssueId, getIssuesMap, getRecentIssuesMap],
-  (id, map, rMap) => map.get(id) || rMap.get(id) || new Map()
+  [getSelectedIssueId, getIssuesMap],
+  (id, map) => map.get(id) || new Map(),
+);
+
+export const getIssueLoggedByUser = createSelector(
+  [getSelectedIssue, getWorklogsMap, getSelfKey],
+  (issue, worklogs, selfKey) => {
+    const worklogsIds = issue.getIn(['fields', 'worklog', 'worklogs']) || Immutable.List([]);
+    return worklogsIds
+      .map(w => worklogs.get(w))
+      .filter(worklog => worklog.get('issueId') === issue.get('id') && worklog.getIn(['author', 'key']) === selfKey)
+      .reduce((prevValue, i) => i.get('timeSpentSeconds') + prevValue, 0);
+  },
 );
