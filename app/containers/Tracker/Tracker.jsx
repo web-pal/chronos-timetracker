@@ -11,7 +11,7 @@ import TimerDisplay from './TimerDisplay';
 import TrackerHeader from '../../components/TrackerHeader/TrackerHeader';
 import StatusBar from './StatusBar';
 
-import { getSelectedIssue, getTrackingIssue } from '../../selectors';
+import { getSelectedIssue, getTrackingIssue, getIssueLoggedByUser } from '../../selectors';
 
 import * as timerActions from '../../actions/timer';
 import * as worklogsActions from '../../actions/worklogs';
@@ -37,6 +37,7 @@ class Tracker extends Component {
     currentIssue: ImmutablePropTypes.map.isRequired,
     currentTrackingIssue: ImmutablePropTypes.map.isRequired,
     description: PropTypes.string.isRequired,
+    currentIssueSelfLogged: PropTypes.number.isRequired,
   }
 
   componentDidMount() {
@@ -90,7 +91,7 @@ class Tracker extends Component {
   render() {
     const {
       startTimer, stopTimer, selectIssue, setDescription,
-      running, currentIssue, currentTrackingIssue, description,
+      running, currentIssue, currentTrackingIssue, description, currentIssueSelfLogged,
     } = this.props;
 
     if (!currentIssue.size) {
@@ -108,7 +109,7 @@ class Tracker extends Component {
 
     return (
       <Flex column className="tracker">
-        <TrackerHeader currentIssue={currentIssue} />
+        <TrackerHeader currentIssue={currentIssue} selfLogged={currentIssueSelfLogged} />
         <Flex column centered className="timer">
           {(currentTrackingIssue.size > 0) &&
             <Flex
@@ -163,11 +164,12 @@ class Tracker extends Component {
   }
 }
 
-function mapStateToProps({ timer, issues, worklogs }) {
+function mapStateToProps({ timer, issues, worklogs, profile }) {
   return {
     running: timer.running,
     currentIssue: getSelectedIssue({ issues }),
-    currentTrackingIssue: getTrackingIssue({ issues }),
+    currentIssueSelfLogged: getIssueLoggedByUser({ issues, worklogs, profile }),
+    currentTrackingIssue: getTrackingIssue({ issues, worklogs }),
     description: worklogs.meta.currentDescription,
   };
 }

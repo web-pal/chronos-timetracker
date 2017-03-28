@@ -1,7 +1,11 @@
 import { delay } from 'redux-saga';
-import { takeLatest, throttle, put, call, select } from 'redux-saga/effects';
+import { takeLatest, take, fork, throttle, put, call, select } from 'redux-saga/effects';
 import { normalize } from 'normalizr';
-import { fetchIssues, fetchSearchIssues, fetchRecentIssues, fetchWorklogs } from 'api';
+import {
+  fetchIssues, fetchIssue,
+  fetchSearchIssues, fetchRecentIssues,
+  fetchWorklogs,
+} from 'api';
 import * as types from '../constants/';
 import { getAllIssues } from '../selectors';
 import { issueSchema } from '../schemas/';
@@ -111,6 +115,24 @@ function* getIssues({ pagination: { stopIndex, resolve } }) {
 }
 
 
+function* getIssue(issueId) {
+  try {
+    const response = yield call(fetchIssue, issueId);
+    yield put({
+      type: types.FILL_ISSUES,
+      payload: {
+        map: {
+          [response.id]: response,
+        },
+        ids: [response.id],
+      },
+    });
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+
 function* findSelectedIndex({ payload }) {
   if (payload === 'All') {
     const selectedIssueId = yield select(state => state.issues.meta.selectedIssueId);
@@ -120,8 +142,16 @@ function* findSelectedIndex({ payload }) {
   }
 }
 
+
 export function* watchGetIssues() {
   yield throttle(2000, types.FETCH_ISSUES_REQUEST, getIssues);
+}
+
+export function* watchGetIssue() {
+  while (true) {
+    const { payload } = yield take(types.FETCH_ISSUE_REQUEST);
+    yield fork(getIssue, payload);
+  }
 }
 
 export function* watchSearchIssues() {

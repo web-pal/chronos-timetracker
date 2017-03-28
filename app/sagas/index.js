@@ -3,12 +3,12 @@ import { fork } from 'redux-saga/effects';
 import { loginFlow, checkJWT } from './profile';
 import { getProjects, onSelectProject } from './projects';
 import {
-  watchGetIssues, watchRecentIssues,
+  watchGetIssues, watchGetIssue, watchRecentIssues,
   watchSearchIssues, watchChangeSidebar,
 } from './issues';
 import {
   watchSelectWorklogs, watchUploadScreenshot,
-  watchRejectScreenshot, uploadOfflineScreenshots, uploadOfflineWorklogs
+  watchRejectScreenshot, uploadOfflineScreenshots, uploadOfflineWorklogs,
 } from './worklogs';
 import { manageTimer, cutIddlesFromLastScreenshot } from './timer';
 
@@ -22,6 +22,7 @@ export default function* root() {
     fork(onSelectProject),
 
     fork(watchGetIssues),
+    fork(watchGetIssue),
     fork(watchSearchIssues),
     fork(watchRecentIssues),
 

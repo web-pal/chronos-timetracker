@@ -133,9 +133,13 @@ ipcMain.on('showScreenPreviewPopup', () => {
     resizable: false,
     movable: false,
     alwaysOnTop: true,
+    show: false,
   };
   const win = new BrowserWindow(options);
   win.loadURL(`file://${__dirname}/screenPopup.html`);
+  win.once('ready-to-show', () => {
+    win.show();
+  });
 });
 
 

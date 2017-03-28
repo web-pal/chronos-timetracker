@@ -25,6 +25,14 @@ export function fetchIssues({ startIndex, stopIndex, currentProject }) {
   });
 }
 
+export function fetchIssue(issueId) {
+  return jira.client.issue.getIssue({
+    issueId,
+    fields: requiredFields,
+  });
+}
+
+
 export function fetchRecentIssues({ currentProject, worklogAuthor }) {
   return jira.client.search.search({
     jql: [
