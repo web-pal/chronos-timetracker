@@ -6,7 +6,7 @@ const InitialState = Immutable.Record({
   running: false,
   forceQuit: false,
 
-  lastScreenshotTime: null,
+  lastScreenshotTime: 0,
   currentIdleList: Immutable.List(),
 });
 

@@ -118,6 +118,7 @@ export function* uploadWorklog({
     yield put({ type: types.CLEAR_CURRENT_SCREENSHOTS_LIST });
     yield put({ type: types.CLEAR_CURRENT_IDLE_LIST });
     yield put({ type: types.SET_WORKLOG_UPLOAD_STATE, payload: false });
+    yield put({ type: types.FETCH_ISSUE_REQUEST, payload: issueId });
   }
   // Maybe we need to have temporary id
   if (!offlineMode && worklog) {

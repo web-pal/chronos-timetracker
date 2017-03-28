@@ -7,7 +7,7 @@ const InitialState = Immutable.Record({
   dispersion: '0',
   interval: '600',
 
-  screenshotsPeriod: 70,
+  screenshotsPeriod: 600,
   screenshotsQuantity: 1,
 
   screenshotsEnabled: '',

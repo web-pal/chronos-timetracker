@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 import moment from 'moment';
 
-import { getIssuesMap } from '../selectors/issues';
+import { getIssuesMap } from './issues';
 
 function dateComparator(a, b) {
   return moment(a.get('created')).isAfter(b.get('created')) ? 1 : -1;

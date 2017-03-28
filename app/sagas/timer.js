@@ -17,9 +17,15 @@ function randomInteger(min, max) {
   return Math.round(rand);
 }
 
-function sortNumber(a, b) {
-  return a - b;
+function randomPeriods(periodsQty, min, max) {
+  const averageMax = max / periodsQty;
+  let prevPeriod = min;
+  return [...Array(periodsQty).keys()].map((i) => {
+    prevPeriod = randomInteger(prevPeriod + 20, averageMax * (i + 1));
+    return prevPeriod;
+  });
 }
+
 // TODO: Move all saga's selectors to selectors module
 
 
@@ -57,8 +63,7 @@ function* runTimer() {
     !screenshotsEnabledUsers.includes(selfKey);
   const screensShotsAllowed = cond1 || cond2 || cond3;
 
-  let periods = [...Array(screenshotsQuantity).keys()]
-    .map(() => randomInteger(60, screenshotsPeriod)).sort(sortNumber);
+  let periods = randomPeriods(screenshotsQuantity, 0, screenshotsPeriod);
   let idleState = false;
   let prevIdleTime = 0;
   let totalIdleTimeDuringOneMinute = 0;
@@ -92,6 +97,7 @@ function* runTimer() {
       }
       // Screenshots check
       if (screensShotsAllowed) {
+        console.log(periods);
         if (seconds === periods[0]) {
           if (!idleState) {
             yield fork(takeScreenshot);
@@ -101,8 +107,7 @@ function* runTimer() {
         }
         if (seconds === nextPeriod) {
           nextPeriod += screenshotsPeriod;
-          periods = [...Array(screenshotsQuantity).keys()]
-            .map(() => randomInteger(seconds, nextPeriod)).sort(sortNumber); // eslint-disable-line
+          periods = randomPeriods(screenshotsQuantity, seconds, nextPeriod);
         }
       }
 
@@ -168,7 +173,7 @@ export function* cutIddlesFromLastScreenshot() {
     const currentTime = yield select(state => state.timer.time);
     yield put({
       type: types.CUT_IDDLES,
-      payload: Math.ceil(currentTime - lastScreenshotTime) / 60,
+      payload: Math.ceil((currentTime - lastScreenshotTime) / 60),
     });
   }
 }
