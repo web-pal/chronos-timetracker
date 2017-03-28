@@ -88,6 +88,7 @@ function* runTimer() {
       // Check offline screenshots
       if (seconds % 240 === 0) {
         yield put({ type: types.CHECK_OFFLINE_SCREENSHOTS });
+        yield put({ type: types.CHECK_OFFLINE_WORKLOGS });
       }
       // Screenshots check
       if (screensShotsAllowed) {
