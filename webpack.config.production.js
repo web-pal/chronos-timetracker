@@ -1,8 +1,10 @@
 import webpack from 'webpack';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
+import SentryPlugin from 'webpack-sentry-plugin';
 import path from 'path';
 import merge from 'webpack-merge';
 import baseConfig from './webpack.config.base';
+import pjson from './package.json';
 
 const config = merge(baseConfig, {
   devtool: 'source-map',
@@ -47,16 +49,18 @@ const config = merge(baseConfig, {
   plugins: [
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.optimize.DedupePlugin(),
-    // new BabiliPlugin({
-      // // Disable deadcode until https://github.com/babel/babili/issues/385 fixed
-      // deadcode: false,
-    // }),
     new ExtractTextPlugin('style.css'),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production'),
     }),
     new webpack.ProvidePlugin({
       Immutable: 'immutable',
+    }),
+    new SentryPlugin({
+      organisation: 'webpal',
+      project: 'chronos-desktop',
+      apiKey: '9eacb1fa468a41b29bd005a1a46c039644fe1ca5ea614540b9e6b03db719a5ee',
+      release: `${pjson.version}_${process.platform}`,
     }),
   ],
 

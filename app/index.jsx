@@ -1,3 +1,4 @@
+import Raven from 'raven-js';
 import fs from 'fs';
 import rimraf from 'rimraf';
 import React from 'react';
@@ -5,11 +6,22 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { remote, ipcRenderer as ipc } from 'electron';
 import { AppContainer } from 'react-hot-loader';
+import { useSentry } from 'config';
 
 import Base from './components/Base/Base';
 import store from './store';
+import pjson from './package.json';
 
 import './assets/stylesheets/main.less';
+
+Raven.addPlugin(require('./raven-electron-plugin')); // eslint-disable-line
+if (useSentry) {
+  Raven
+    .config('https://60a0dae4681d47d29a4cd77703472a29@sentry.io/153064', {
+      release: `${pjson.version}_${process.platform}`,
+    })
+    .install();
+}
 
 // TODO: Move it to saga
 // Create directories for screens and worklogs
