@@ -60,7 +60,7 @@ const config = merge(baseConfig, {
       organisation: 'webpal',
       project: 'chronos-desktop',
       apiKey: '9eacb1fa468a41b29bd005a1a46c039644fe1ca5ea614540b9e6b03db719a5ee',
-      release: pjson.version,
+      release: `${pjson.version}_${process.platform}`,
     }),
   ],
 

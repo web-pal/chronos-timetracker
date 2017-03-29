@@ -18,7 +18,7 @@ Raven.addPlugin(require('./raven-electron-plugin')); // eslint-disable-line
 if (useSentry) {
   Raven
     .config('https://60a0dae4681d47d29a4cd77703472a29@sentry.io/153064', {
-      release: pjson.version,
+      release: `${pjson.version}_${process.platform}`,
     })
     .install();
 }
