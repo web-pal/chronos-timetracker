@@ -1,6 +1,6 @@
 {
   "name": "Chronos",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Full functionality time tracking software with direct JIRA integration",
   "main": "./app/main.js",
   "scripts": {
@@ -129,6 +129,7 @@
     "webpack-dev-middleware": "1.9.0",
     "webpack-hot-middleware": "2.15.0",
     "webpack-merge": "2.5.0",
+    "webpack-sentry-plugin": "^1.9.0",
     "webpack-validator": "^2.3.0"
   },
   "dependencies": {
@@ -160,6 +161,7 @@
     "nanotimer": "^0.3.14",
     "node-noop": "^1.0.0",
     "normalizr": "^3.1.0",
+    "raven-js": "^3.13.1",
     "react": "15.4.2",
     "react-addons-shallow-compare": "^15.4.2",
     "react-dom": "15.4.2",

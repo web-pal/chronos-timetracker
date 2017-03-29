@@ -118,14 +118,10 @@ function* getIssues({ pagination: { stopIndex, resolve } }) {
 function* getIssue(issueId) {
   try {
     const response = yield call(fetchIssue, issueId);
-    yield put({
-      type: types.FILL_ISSUES,
-      payload: {
-        map: {
-          [response.id]: response,
-        },
-        ids: [response.id],
-      },
+    yield storeIssues({
+      issues: [response],
+      fillIssuesType: types.FILL_ISSUES,
+      fillWorklogsType: types.FILL_WORKLOGS,
     });
   } catch (err) {
     console.log(err);
