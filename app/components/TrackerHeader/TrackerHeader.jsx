@@ -27,7 +27,7 @@ const TrackerHeader = ({ currentIssue, selfLogged }) => {
           You logged: <b>{stj(selfLogged, 'h[h] m[m]')}</b>
         </span>
         <span className="logged">
-          Total logged: <b>{stj(logged, 'h[h] m[m]')}</b>
+          Total logged: <b>{stj(ogged, 'h[h] m[m]')}</b>
         </span>
         <span className="remaining">
           Remaining: <b>{stj(remaining, 'h[h] m[m] s[s]')}</b>
