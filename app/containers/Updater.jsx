@@ -20,34 +20,40 @@ class Updater extends Component {
 
   componentDidMount() {
     this.electronUpdater = remote.require('electron-simple-updater');
-    this.electronUpdater.on('checking-for-update', () => {
-      this.setUpdateFetchState(true);
-    });
 
-    this.electronUpdater.on('update-available', (meta) => {
-      this.setUpdateFetchState(false);
-      this.notifyUpdateAvailable(meta);
-    });
-
-    this.electronUpdater.on('update-downloading', () => {
-      this.props.showLoading();
-      this.setUpdateDownloadState(true);
-    });
-
-    this.electronUpdater.on('update-downloaded', () => {
-      this.props.hideLoading();
-      setTimeout(() => {
-        if (window.confirm('App updated, restart now?')) {
-          ipcRenderer.send('set-should-quit');
-          this.electronUpdater.quitAndInstall();
-        }
-      }, 500);
-    });
+    this.electronUpdater.on('checking-for-update', this.onCheckingForUpdate);
+    this.electronUpdater.on('update-available', this.onUpdateAvailable);
+    this.electronUpdater.on('update-downloading', this.onUpdateDownloading);
+    this.electronUpdater.on('update-downloaded', this.onUpdateDownloaded);
     this.electronUpdater.checkForUpdates();
   }
 
   componentWillUnmount() {
     this.electronUpdater.removeAllListeners();
+  }
+
+  onCheckingForUpdate = () => {
+    this.setUpdateFetchState(true);
+  }
+
+  onUpdateAvailable = (meta) => {
+    this.setUpdateFetchState(false);
+    this.notifyUpdateAvailable(meta);
+  }
+
+  onUpdateDownloading = () => {
+    this.props.showLoading();
+    this.setUpdateDownloadState(true);
+  }
+
+  onUpdateDownloaded = () => {
+    this.props.hideLoading();
+    setTimeout(() => {
+      if (window.confirm('App updated, restart now?')) {
+        ipcRenderer.send('set-should-quit');
+        this.electronUpdater.quitAndInstall();
+      }
+    }, 500);
   }
 
   setUpdateDownloadState = (value) => {
