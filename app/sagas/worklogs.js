@@ -1,7 +1,8 @@
 import fs from 'fs';
 import path from 'path';
-import storage from 'electron-json-storage';
 import { take, takeLatest, fork, select, put, call, cps } from 'redux-saga/effects';
+import storage from 'electron-json-storage';
+import Raven from 'raven-js';
 
 import { remote } from 'electron';
 
@@ -45,8 +46,6 @@ export function* uploadWorklog({
     const currentIdleList = yield select(
       state => state.timer.currentIdleList,
     );
-    console.log('currentIdleList', currentIdleList.toJS());
-
     activity = [...Array(Math.ceil(timeSpentSeconds / 600)).keys()].map((period) => {
       console.log('period', period);
       const idleSec = currentIdleList
@@ -80,6 +79,7 @@ export function* uploadWorklog({
       worklogId = worklog.id;
     } catch (err) {
       console.log(err);
+      Raven.captureException(err);
       let offlineWorklogs = yield cps(storage.get, 'offlineWorklogs');
       if (Object.prototype.toString.call(offlineWorklogs) !== '[object Array]') {
         offlineWorklogs = [];
@@ -106,6 +106,7 @@ export function* uploadWorklog({
       yield call(chronosBackendUploadWorklog, chronosWorklogData);
     } catch (err) {
       console.log(err);
+      Raven.captureException(err);
       let offlineWorklogs = yield cps(storage.get, 'offlineWorklogs');
       if (Object.prototype.toString.call(offlineWorklogs) !== '[object Array]') {
         offlineWorklogs = [];
@@ -148,8 +149,8 @@ export function* uploadScreenshot({ screenshotTime, lastScreenshotPath }) {
     const { url } = yield call(signUploadUrlForS3Bucket, fileName);
     yield uploadScreenshotOnS3Bucket({ url, image });
   } catch (err) {
-    // Most likely there is no internet
     console.log(err);
+    Raven.captureException(err);
     error = true;
   }
 

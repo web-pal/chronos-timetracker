@@ -1,4 +1,7 @@
+import { remote } from 'electron';
 import * as types from '../constants';
+
+const Updater = remote.require('electron-simple-updater');
 
 export function tick() {
   return {
@@ -26,9 +29,10 @@ export function cutIddles(payload) {
   };
 }
 
-export function setForceQuitFlag() {
+export function setForceQuitFlag(callback = true) {
   return {
     type: types.SET_FORCE_QUIT_FLAG,
+    payload: callback,
   };
 }
 
@@ -39,6 +43,7 @@ export function startTimer() {
 }
 
 export function stopTimer() {
+  Updater.checkForUpdates();
   return {
     type: types.STOP_TIMER,
   };

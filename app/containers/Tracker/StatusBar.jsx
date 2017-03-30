@@ -7,9 +7,10 @@ import LoadingBar from '../../components/LoadingBar/LoadingBar';
 import Updater from './../Updater';
 
 import * as loadingBarActions from '../../actions/loadingBar';
+import * as timerActions from '../../actions/timer';
 
 
-const StatusBar = ({ showLoading, hideLoading }) =>
+const StatusBar = ({ showLoading, hideLoading, setForceQuitFlag, stopTimer }) =>
   <Flex row className="StatusBar">
     <div style={{ flexGrow: '1' }}>
       <LoadingBar
@@ -20,17 +21,24 @@ const StatusBar = ({ showLoading, hideLoading }) =>
         style={{ backgroundColor: '#5454ee', marginTop: '20px' }}
       />
     </div>
-    <Updater showLoading={showLoading} hideLoading={hideLoading} />
+    <Updater
+      showLoading={showLoading}
+      hideLoading={hideLoading}
+      setForceQuitFlag={setForceQuitFlag}
+      stopTimer={stopTimer}
+    />
   </Flex>;
 
 StatusBar.propTypes = {
   showLoading: PropTypes.func.isRequired,
   hideLoading: PropTypes.func.isRequired,
+  setForceQuitFlag: PropTypes.func.isRequired,
+  stopTimer: PropTypes.func.isRequired,
 };
 
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(loadingBarActions, dispatch);
+  return bindActionCreators({ ...loadingBarActions, ...timerActions }, dispatch);
 }
 
 export default connect(null, mapDispatchToProps)(StatusBar);

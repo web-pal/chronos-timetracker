@@ -76,7 +76,27 @@ function* searchIssues() {
   const projectKey = yield select(state => state.projects.byId.get(currentProject).get('key'));
   const searchValue = yield select(state => state.issues.meta.searchValue);
 
-  const issues = yield call(fetchSearchIssues, { currentProject, projectKey, searchValue });
+  let issues = yield call(fetchSearchIssues, { currentProject, projectKey, searchValue });
+  const incompleteIssues = issues.filter(issue => issue.fields.worklog.total > 20);
+  if (incompleteIssues.length) {
+    const worklogs = yield call(fetchWorklogs, incompleteIssues);
+    issues = issues.map((issue) => {
+      const additionalWorklogs = worklogs.filter(w => w.issueId === issue.id);
+      if (additionalWorklogs.length) {
+        return {
+          ...issue,
+          fields: {
+            ...issue.fields,
+            worklog: {
+              total: additionalWorklogs.length,
+              worklogs: additionalWorklogs,
+            },
+          },
+        };
+      }
+      return issue;
+    });
+  }
 
   yield storeIssues({
     issues,
@@ -97,9 +117,31 @@ function* getIssues({ pagination: { stopIndex, resolve } }) {
   yield put({ type: types.SET_LAST_STOP_INDEX, payload: newStopIndex });
 
   const response = yield call(fetchIssues, { startIndex, stopIndex: newStopIndex, currentProject });
+  let { issues } = response;
+  const { total } = response;
+  const incompleteIssues = issues.filter(issue => issue.fields.worklog.total > 20);
+  if (incompleteIssues.length) {
+    const worklogs = yield call(fetchWorklogs, incompleteIssues);
+    issues = issues.map((issue) => {
+      const additionalWorklogs = worklogs.filter(w => w.issueId === issue.id);
+      if (additionalWorklogs.length) {
+        return {
+          ...issue,
+          fields: {
+            ...issue.fields,
+            worklog: {
+              total: additionalWorklogs.length,
+              worklogs: additionalWorklogs,
+            },
+          },
+        };
+      }
+      return issue;
+    });
+  }
 
   yield storeIssues({
-    issues: response.issues,
+    issues,
     fillIssuesType: types.FILL_ISSUES,
     fillWorklogsType: types.FILL_WORKLOGS,
   });
@@ -110,7 +152,7 @@ function* getIssues({ pagination: { stopIndex, resolve } }) {
   if (resolve) {
     resolve();
   }
-  yield put({ type: types.SET_ISSUES_COUNT, payload: response.total });
+  yield put({ type: types.SET_ISSUES_COUNT, payload: total });
   yield put({ type: types.SET_ISSUES_FETCH_STATE, payload: false });
 }
 

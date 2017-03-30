@@ -1,5 +1,6 @@
 import { take, put, call } from 'redux-saga/effects';
 import storage from 'electron-json-storage';
+import Raven from 'raven-js';
 import {
   jiraAuth, chronosBackendAuth,
   chronosBackendGetJiraCredentials, fetchSettings,
@@ -22,6 +23,12 @@ function* jiraLogin(values) {
   let success = true;
   try {
     const userData = yield call(jiraAuth, values);
+    Raven.setUserContext({
+      locale: userData.locale,
+      timeZone: userData.timeZone,
+      name: userData.displayName,
+      email: userData.emailAddress,
+    });
     yield put({ type: types.FILL_PROFILE, payload: userData });
   } catch (err) {
     yield loginError('Cannot authorize to JIRA. Check your credentials and try again');
@@ -77,6 +84,7 @@ export function* loginFlow() {
       chronosBackendLoginSuccess = yield chronosBackendLogin(values);
     }
     if (jiraLoginSuccess && chronosBackendLoginSuccess) {
+      Raven.setExtraContext({ host: values.host });
       yield getSettings();
       yield put({ type: types.SET_CURRENT_HOST, payload: values.host });
       yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: false });

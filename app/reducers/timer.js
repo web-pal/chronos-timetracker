@@ -29,7 +29,7 @@ export default function timer(state = initialState, action) {
     case types.SET_LAST_SCREENSHOT_TIME:
       return state.set('lastScreenshotTime', action.payload);
     case types.SET_FORCE_QUIT_FLAG:
-      return state.set('forceQuit', true);
+      return state.set('forceQuit', action.payload);
 
     case types.ADD_IDLE:
       return state.update('currentIdleList', list => list.push(action.payload));

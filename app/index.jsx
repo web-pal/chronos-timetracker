@@ -23,6 +23,12 @@ if (useSentry) {
     .install();
 }
 
+const Updater = remote.require('electron-simple-updater');
+Updater.init({
+  checkUpdateOnStart: false,
+  autoDownload: false,
+});
+
 // TODO: Move it to saga
 // Create directories for screens and worklogs
 const appDir = remote.getGlobal('appDir');

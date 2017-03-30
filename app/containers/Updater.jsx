@@ -1,11 +1,15 @@
 import React, { PropTypes, Component } from 'react';
 import { remote, ipcRenderer } from 'electron';
 
+const Updater = remote.require('electron-simple-updater');
 
-class Updater extends Component {
+
+class UpdaterContainer extends Component {
   static propTypes = {
     showLoading: PropTypes.func.isRequired,
     hideLoading: PropTypes.func.isRequired,
+    setForceQuitFlag: PropTypes.func.isRequired,
+    stopTimer: PropTypes.func.isRequired,
   }
 
   constructor(props) {
@@ -19,17 +23,15 @@ class Updater extends Component {
   }
 
   componentDidMount() {
-    this.electronUpdater = remote.require('electron-simple-updater');
-
-    this.electronUpdater.on('checking-for-update', this.onCheckingForUpdate);
-    this.electronUpdater.on('update-available', this.onUpdateAvailable);
-    this.electronUpdater.on('update-downloading', this.onUpdateDownloading);
-    this.electronUpdater.on('update-downloaded', this.onUpdateDownloaded);
-    this.electronUpdater.checkForUpdates();
+    Updater.on('checking-for-update', this.onCheckingForUpdate);
+    Updater.on('update-available', this.onUpdateAvailable);
+    Updater.on('update-downloading', this.onUpdateDownloading);
+    Updater.on('update-downloaded', this.onUpdateDownloaded);
+    Updater.checkForUpdates();
   }
 
   componentWillUnmount() {
-    this.electronUpdater.removeAllListeners();
+    Updater.removeAllListeners();
   }
 
   onCheckingForUpdate = () => {
@@ -48,10 +50,23 @@ class Updater extends Component {
 
   onUpdateDownloaded = () => {
     this.props.hideLoading();
+    const { getGlobal } = remote;
     setTimeout(() => {
       if (window.confirm('App updated, restart now?')) {
-        ipcRenderer.send('set-should-quit');
-        this.electronUpdater.quitAndInstall();
+        const { running, uploading } = getGlobal('sharedObj');
+        if (uploading) {
+          window.alert('Currently app in process of saving worklog, wait few seconds and restart app');
+        } else {
+          if (running) { // eslint-disable-line
+            if (window.confirm('Tracking in progress, save worklog before restart?')) {
+              this.props.setForceQuitFlag(Updater.quitAndInstall);
+              this.props.stopTimer();
+            }
+          } else {
+            ipcRenderer.send('set-should-quit');
+            Updater.quitAndInstall();
+          }
+        }
       }
     }, 500);
   }
@@ -75,7 +90,7 @@ class Updater extends Component {
     });
   }
 
-  installUpdates = () => this.electronUpdater.downloadUpdate();
+  installUpdates = () => Updater.downloadUpdate();
 
   render() {
     const { downloading, available, updateAvailable } = this.state;
@@ -100,4 +115,4 @@ class Updater extends Component {
   }
 }
 
-export default Updater;
+export default UpdaterContainer;

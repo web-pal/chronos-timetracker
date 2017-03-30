@@ -141,7 +141,12 @@ function* runTimer() {
       }
       const forceQuit = yield select(state => state.timer.forceQuit);
       if (forceQuit) {
-        ipcRenderer.send('ready-to-quit');
+        if (typeof forceQuit === 'function') {
+          ipcRenderer.send('set-should-quit');
+          forceQuit();
+        } else {
+          ipcRenderer.send('ready-to-quit');
+        }
       }
       console.log('timer cancelled');
     }
