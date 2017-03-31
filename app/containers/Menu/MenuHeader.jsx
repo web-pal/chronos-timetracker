@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ImmutablePropTypes from 'react-immutable-proptypes';
+import { remote } from 'electron';
 
 import Flex from '../../components/Base/Flex/Flex';
 import Avatar from '../../components/Avatar/Avatar';
@@ -54,7 +55,19 @@ const MenuHeader = ({
             <a
               className="flex-item--end logout"
               title="logout"
-              onClick={logout}
+              onClick={() => {
+                const { getGlobal } = remote;
+                const { running, uploading } = getGlobal('sharedObj');
+                if (running) {
+                  window.alert('Tracking in progress, save worklog before logout!');
+                }
+                if (uploading) {
+                  window.alert('Currently app in process of saving worklog, wait few seconds please');
+                }
+                if (!running && !uploading) {
+                  logout();
+                }
+              }}
             >
               <img
                 src={logoutIcon}
