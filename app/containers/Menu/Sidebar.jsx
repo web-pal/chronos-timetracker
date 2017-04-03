@@ -9,6 +9,7 @@ import SidebarItems from './SidebarItems';
 import SidebarHeader from '../../components/Sidebar/SidebarHeader/SidebarHeader';
 import Flex from '../../components/Base/Flex/Flex';
 import SidebarFilter from './SidebarFilter';
+import CriteriaFilters from './CriteriaFilters';
 
 const Sidebar = ({ sidebarType, setSidebarType, currentProjectId, projectsFetched }) =>
   <Flex column className="SidebarWrapper">
@@ -18,6 +19,7 @@ const Sidebar = ({ sidebarType, setSidebarType, currentProjectId, projectsFetche
     />
     <Flex column className="sidebar">
       <SidebarFilter />
+      <CriteriaFilters />
       {currentProjectId ?
         <SidebarItems /> :
         <span className="sidebar-nothing-selected">
