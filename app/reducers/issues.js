@@ -44,6 +44,7 @@ const InitialMeta = Immutable.Record({
   trackingIssueId: null,
 
   searchValue: '',
+  showingFilterCriteriaBlock: 'none',
 
   recentIssuesIds: new OrderedSet(),
   searchResultsIds: new OrderedSet(),
@@ -69,6 +70,9 @@ function meta(state = new InitialMeta(), action) {
 
     case types.SET_ISSUES_SEARCH_VALUE:
       return state.set('searchValue', action.payload);
+
+    case types.SET_SHOWING_FILTER_CRITERIA_BLOCK:
+      return state.set('showingFilterCriteriaBlock', action.payload);
 
     case types.SELECT_ISSUE:
       return state.set('selectedIssueId', action.payload);

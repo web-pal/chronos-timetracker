@@ -28,6 +28,14 @@ export function setIssuesSearchValue(value) {
   };
 }
 
+
+export function setShowingFilterCriteriaBlock(value) {
+  return {
+    type: types.SET_SHOWING_FILTER_CRITERIA_BLOCK,
+    payload: value,
+  };
+}
+
 export function selectIssue(issueId) {
   return {
     type: types.SELECT_ISSUE,
