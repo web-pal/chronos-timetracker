@@ -270,6 +270,10 @@ ipcMain.on('dismissIdleTime', (e, time) => {
   mainWindow.webContents.send('dismissIdleTime', time);
 });
 
+ipcMain.on('keepIdleTime', () => {
+  mainWindow.webContents.send('keepIdleTime');
+});
+
 ipcMain.on('dismissAndRestart', (e, time) => {
   mainWindow.webContents.send('dismissAndRestart', time);
 });
