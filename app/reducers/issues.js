@@ -46,6 +46,18 @@ const InitialMeta = Immutable.Record({
   searchValue: '',
   showingFilterCriteriaBlock: 'none',
 
+  issuesAlltypesMap: {},
+  issuesTypesIds: [],
+  subIssuesTypesIds: [],
+  issueFilterOfFilters_Type: '',
+
+  issueStatuses: {},
+  issueStatusCategories: [],
+  issueStatusesIds: [],
+  issueFilterOfFilters_Status: '',
+
+  issueFilterOfFilters_Assignee: '',
+
   recentIssuesIds: new OrderedSet(),
   searchResultsIds: new OrderedSet(),
 });
@@ -73,6 +85,19 @@ function meta(state = new InitialMeta(), action) {
 
     case types.SET_SHOWING_FILTER_CRITERIA_BLOCK:
       return state.set('showingFilterCriteriaBlock', action.payload);
+
+    case types.SET_FITER_OF_ISSUES_CRITERIA_FILTERS:
+      return state.set(`issueFilterOfFilters_${action.payload.filterName}`, action.payload.value);
+
+    case types.FILL_ISSUES_ALL_TYPES:
+      return state.set('issuesAlltypesMap', action.payload.map)
+                  .set('issuesTypesIds', action.payload.issuesIds)
+                  .set('subIssuesTypesIds', action.payload.subIssuesIds);
+
+    case types.FILL_ISSUES_ALL_STATUSES:
+      return state.set('issueStatuses', action.payload.map)
+                  .set('issueStatusCategories', action.payload.statusCategories)
+                  .set('issueStatusesIds', action.payload.ids);
 
     case types.SELECT_ISSUE:
       return state.set('selectedIssueId', action.payload);

@@ -4,6 +4,18 @@ import { Map } from 'immutable';
 export const getIssuesMap = ({ issues }) => issues.byId;
 export const getIssuesIds = ({ issues }) => issues.allIds;
 
+export const getIssuesAllTypesMap = ({ issues }) => issues.meta.issuesAlltypesMap;
+export const getIssuesAllTypesIds = ({ issues }) => issues.meta.issuesTypesIds;
+export const getSubIssuesAllTypesIds = ({ issues }) => issues.meta.subIssuesTypesIds;
+export const getSubIssuesAllTypesFilter = ({ issues }) => issues.meta.issueFilterOfFilters_Type;
+
+export const getIssuesAllStatusesMap = ({ issues }) => issues.meta.issueStatuses;
+export const getIssuesAllStatusesIds = ({ issues }) => issues.meta.issueStatusesIds;
+export const getSubIssuesAllStatusCategories = ({ issues }) => issues.meta.issueStatusCategories;
+export const getIssuesAllStatusesFilter = ({ issues }) => issues.meta.issueFilterOfFilters_Status;
+
+export const getIssuesAllAssigneeFilter = ({ issues }) => issues.meta.issueFilterOfFilters_Assignee;
+
 export const getRecentIssuesIds = ({ issues }) => issues.meta.recentIssuesIds;
 export const getSearchResultIssuesIds = ({ issues }) => issues.meta.searchResultsIds;
 
@@ -31,6 +43,26 @@ export const getSearchResultIssues = createSelector(
 export const getAllIssues = createSelector(
   [getSearchResultIssuesIds, getIssuesIds, getIssuesMap],
   (searchIds, ids, map) => ids.map(id => map.get(id)).toList(),
+);
+
+export const getAllIssuesStatuses = createSelector(
+  [getIssuesAllStatusesIds, getSubIssuesAllStatusCategories,
+    getIssuesAllStatusesMap, getIssuesAllStatusesFilter],
+  (ids, categories, map, filter) =>
+    ids.filter(id => (filter ? map[id].name.includes(filter) : true))
+        .map(id => ({ ...map[id], style: categories[map[id].statusCategory] })),
+);
+
+export const getAllIssuesTypes = createSelector(
+  [getIssuesAllTypesIds, getIssuesAllTypesMap, getSubIssuesAllTypesFilter],
+  (ids, map, filter) => ids.filter(id => (filter ? map[id].name.includes(filter) : true))
+                    .map(id => map[id]),
+);
+
+export const getAllSubIssuesTypes = createSelector(
+  [getSubIssuesAllTypesIds, getIssuesAllTypesMap, getSubIssuesAllTypesFilter],
+  (ids, map, filter) => ids.filter(id => (filter ? map[id].name.includes(filter) : true))
+                    .map(id => map[id]),
 );
 
 export const getTrackingIssue = createSelector(

@@ -5,6 +5,7 @@ import { getProjects, onSelectProject } from './projects';
 import {
   watchGetIssues, watchGetIssue, watchRecentIssues,
   watchSearchIssues, watchChangeSidebar,
+  watchGetIssueTypes, watchGetIssueStatuses,
 } from './issues';
 import {
   watchSelectWorklogs, watchUploadScreenshot,
@@ -25,6 +26,9 @@ export default function* root() {
     fork(watchGetIssue),
     fork(watchSearchIssues),
     fork(watchRecentIssues),
+
+    fork(watchGetIssueTypes),
+    fork(watchGetIssueStatuses),
 
     fork(watchChangeSidebar),
 

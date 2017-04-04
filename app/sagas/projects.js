@@ -6,7 +6,7 @@ import { fetchProjects } from 'api';
 import * as types from '../constants/';
 import { projectSchema } from '../schemas/';
 import { getFromStorage } from './helper';
-import { fetchIssues, fetchRecentIssues } from '../actions/issues';
+import { fetchIssues, fetchRecentIssues, fetchIssuesAllTypes, fetchIssuesAllStatuses } from '../actions/issues';
 
 
 export function* getProjects() {
@@ -36,6 +36,8 @@ export function* getProjects() {
         if (selectedProject[host]) {
           yield put({ type: types.SELECT_PROJECT, payload: selectedProject[host] });
           yield put(fetchIssues());
+          yield put(fetchIssuesAllTypes());
+          yield put(fetchIssuesAllStatuses());
           yield put(fetchRecentIssues());
         }
       }

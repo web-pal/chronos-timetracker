@@ -5,10 +5,12 @@ import {
   fetchIssues, fetchIssue,
   fetchSearchIssues, fetchRecentIssues,
   fetchWorklogs,
+  fetchIssueTypes,
+  fetchIssueStatuses,
 } from 'api';
 import * as types from '../constants/';
 import { getAllIssues } from '../selectors';
-import { issueSchema } from '../schemas/';
+import { issueSchema, issueTypeSchema, issueStatusSchema } from '../schemas/';
 
 
 function* storeIssues({ issues, fillIssuesType, fillWorklogsType }) {
@@ -30,6 +32,37 @@ function* storeIssues({ issues, fillIssuesType, fillWorklogsType }) {
     });
   }
 }
+
+
+function* storeIssuesTypes({ issueTypes }) {
+  const normalizedData = normalize(issueTypes, [issueTypeSchema]);
+  const issuesIds =
+          normalizedData.result.filter(id => !(normalizedData.entities.issueTypes[id].subtask));
+  const subIssuesIds =
+          normalizedData.result.filter(id => (normalizedData.entities.issueTypes[id].subtask));
+  yield put({
+    type: types.FILL_ISSUES_ALL_TYPES,
+    payload: {
+      map: normalizedData.entities.issueTypes,
+      issuesIds,
+      subIssuesIds,
+    },
+  });
+}
+
+function* storeIssuesStatuses({ issueStatuses }) {
+  const normalizedData = normalize(issueStatuses, [issueStatusSchema]);
+
+  yield put({
+    type: types.FILL_ISSUES_ALL_STATUSES,
+    payload: {
+      map: normalizedData.entities.issueStatus,
+      statusCategories: normalizedData.entities.issueStatusCategory,
+      ids: normalizedData.result,
+    },
+  });
+}
+
 
 function* getRecentIssues() {
   yield put({ type: types.SET_RECENT_ISSUES_FETCH_STATE, payload: true });
@@ -66,6 +99,30 @@ function* getRecentIssues() {
   });
 
   yield put({ type: types.SET_RECENT_ISSUES_FETCH_STATE, payload: false });
+}
+
+function* getIssueTypes() {
+  yield put({ type: types.SET_ISSUES_ALL_TYPES_FETCH_STATE, payload: true });
+
+  const issueTypes = yield call(fetchIssueTypes);
+
+  yield storeIssuesTypes({
+    issueTypes,
+  });
+
+  yield put({ type: types.SET_ISSUES_ALL_TYPES_FETCH_STATE, payload: false });
+}
+
+function* getIssueStatuses() {
+  yield put({ type: types.SET_ISSUES_ALL_STATUSES_FETCH_STATE, payload: true });
+
+  const issueStatuses = yield call(fetchIssueStatuses);
+
+  yield storeIssuesStatuses({
+    issueStatuses,
+  });
+
+  yield put({ type: types.SET_ISSUES_ALL_STATUSES_FETCH_STATE, payload: false });
 }
 
 function* searchIssues() {
@@ -202,4 +259,12 @@ export function* watchRecentIssues() {
 
 export function* watchChangeSidebar() {
   yield takeLatest(types.SET_SIDEBAR_TYPE, findSelectedIndex);
+}
+
+export function* watchGetIssueTypes() {
+  yield takeLatest(types.FETCH_ISSUES_ALL_TYPES_REQUEST, getIssueTypes);
+}
+
+export function* watchGetIssueStatuses() {
+  yield takeLatest(types.FETCH_ISSUES_ALL_STATUSES_REQUEST, getIssueStatuses);
 }

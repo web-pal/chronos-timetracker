@@ -9,6 +9,18 @@ export function fetchIssues(pagination = { startIndex: 0, stopIndex: 50 }, resol
   };
 }
 
+export function fetchIssuesAllTypes() {
+  return {
+    type: types.FETCH_ISSUES_ALL_TYPES_REQUEST,
+  };
+}
+
+export function fetchIssuesAllStatuses() {
+  return {
+    type: types.FETCH_ISSUES_ALL_STATUSES_REQUEST,
+  };
+}
+
 export function fetchRecentIssues() {
   return {
     type: types.FETCH_RECENT_ISSUES_REQUEST,
@@ -25,6 +37,13 @@ export function setIssuesSearchValue(value) {
   return {
     type: types.SET_ISSUES_SEARCH_VALUE,
     payload: value,
+  };
+}
+
+export function setFilterOfIssuesFiltersValue(value, filterName) {
+  return {
+    type: types.SET_FITER_OF_ISSUES_CRITERIA_FILTERS,
+    payload: { value, filterName },
   };
 }
 
