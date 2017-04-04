@@ -6,20 +6,43 @@ const FilterCriteriaOptions = ({
   options, filterOfFilters, handleFilterOfFilters,
 }) =>
   <div className={'sidebar-filter-criterias__options'}>
-    <form id="issue-filter" action="#" className="searchfilter aui top-label aui-popup-content issuetype-criteria">
+    <form action="#" className="searchfilter aui top-label aui-popup-content issuetype-criteria">
       <div className="form-body checkboxmultiselect-container">
         <div className="field-group aui-field-issuetype">
-          <div className="check-list-select" id="searcher-type-multi-select" data-query="">
+          <div className="check-list-select">
             <div className="check-list-field-container">
-              <input onChange={handleFilterOfFilters} value={filterOfFilters} autoComplete="off" role="combobox" aria-autocomplete="list" aria-haspopup="true" aria-expanded="true" placeholder="Find Statuses..." className="aui-field check-list-field" id="searcher-status-input" aria-controls="searcher-status-suggestions" aria-activedescendant="10101-9" />
-              <span className="icon-default aui-icon aui-icon-small aui-iconfont-search noloading" />
+              <input
+                onChange={handleFilterOfFilters}
+                value={filterOfFilters}
+                autoComplete="off"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-haspopup="true"
+                aria-expanded="true"
+                placeholder="Find Statuses..."
+                className="aui-field check-list-field"
+                id="searcher-status-input"
+                aria-controls="searcher-status-suggestions"
+                aria-activedescendant="10101-9"
+              />
+              <span
+                className="icon-default aui-icon aui-icon-small aui-iconfont-search noloading"
+              />
             </div>
-            <div className="aui-list aui-list-scroll" id="searcher-type-suggestions" tabIndex="-1" role="listbox" style={{ display: 'block' }} >
+            <div
+              className="aui-list aui-list-scroll"
+              role="listbox"
+              style={{ display: 'block' }}
+            >
               {
                 options.map(list =>
-                  <div>
+                  <div key={list.key}>
                     <h5>{list.header}</h5>
-                    <ul id="standard-issue-types" className="aui-list-section" aria-label="Standard Issue Types">
+                    <ul
+                      id="standard-issue-types"
+                      className="aui-list-section"
+                      aria-label="Standard Issue Types"
+                    >
                       {
                         list.values.map(option =>
                           <FilterCriteriaOptionsList option={option} />,

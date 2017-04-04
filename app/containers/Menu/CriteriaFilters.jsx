@@ -4,7 +4,11 @@ import { bindActionCreators } from 'redux';
 
 import * as issuesActions from '../../actions/issues';
 
-import { getAllIssuesTypes, getAllSubIssuesTypes, getAllIssuesStatuses } from '../../selectors/issues';
+import {
+  getAllIssuesTypes,
+  getAllSubIssuesTypes,
+  getAllIssuesStatuses,
+} from '../../selectors/issues';
 
 import Flex from '../../components/Base/Flex/Flex';
 import FilterCriteria from '../../components/Sidebar/CriteriaFilters/FilterCriteria';
@@ -32,7 +36,10 @@ const CriteriaFilters = ({
           isOpen={showingFilterCriteriaBlock === 'Type'}
           handleFilterOfFilters={handleFilterOfFilters(setFilterOfIssuesFiltersValue, 'Type')}
           filterOfFilters={issueFilterOfFiltersTypes}
-          options={[{ header: 'Standard Issue Types', values: AllIssuesTypes }, { header: 'Sub-Task Issue Types', values: AllSubIssuesTypes }]}
+          options={[
+            { key: 'Standard', header: 'Standard Issue Types', values: AllIssuesTypes },
+            { key: 'Sub', header: 'Sub-Task Issue Types', values: AllSubIssuesTypes },
+          ]}
           handleClick={setShowingFilterCriteriaBlock}
         />
         <FilterCriteria
@@ -40,7 +47,7 @@ const CriteriaFilters = ({
           isOpen={showingFilterCriteriaBlock === 'Status'}
           handleFilterOfFilters={handleFilterOfFilters(setFilterOfIssuesFiltersValue, 'Status')}
           filterOfFilters={issueFilterOfFiltersStatus}
-          options={[{ values: AllIssuesStatuses }]}
+          options={[{ key: 'Status', values: AllIssuesStatuses }]}
           handleClick={setShowingFilterCriteriaBlock}
         />
         <FilterCriteria
@@ -48,7 +55,7 @@ const CriteriaFilters = ({
           isOpen={showingFilterCriteriaBlock === 'Assignee'}
           handleFilterOfFilters={handleFilterOfFilters(setFilterOfIssuesFiltersValue, 'Assignee')}
           filterOfFilters={issueFilterOfFiltersAssignee}
-          options={[{ values: [{ name: 'Current User' }, { name: 'Unassigned' }] }]}
+          options={[{ key: 'Assignee', values: [{ name: 'Current User' }, { name: 'Unassigned' }] }]}
           handleClick={setShowingFilterCriteriaBlock}
         />
       </Flex>
@@ -66,16 +73,17 @@ CriteriaFilters.propTypes = {
   issueFilterOfFiltersTypes: PropTypes.string.isRequired,
   issueFilterOfFiltersStatus: PropTypes.string.isRequired,
   issueFilterOfFiltersAssignee: PropTypes.string.isRequired,
-  setFilterOfIssuesFiltersValue: PropTypes.string.isRequired,
+  setFilterOfIssuesFiltersValue: PropTypes.func.isRequired,
 };
 
-function mapStateToProps({ issues }) {
+function mapStateToProps({ ui, issues }) {
   const AllSubIssuesTypes = getAllSubIssuesTypes({ issues });
   const AllIssuesTypes = getAllIssuesTypes({ issues });
 
   const AllIssuesStatuses = getAllIssuesStatuses({ issues });
 
   return {
+    sidebarType: ui.sidebarType,
     showingFilterCriteriaBlock: issues.meta.showingFilterCriteriaBlock,
     AllSubIssuesTypes,
     AllIssuesTypes,

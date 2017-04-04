@@ -33,7 +33,7 @@ const FilterCriteria = ({
 FilterCriteria.propTypes = {
   name: PropTypes.string.isRequired,
   handleClick: PropTypes.func.isRequired,
-  options: PropTypes.object,
+  options: PropTypes.array,
   isOpen: PropTypes.bool,
   filterOfFilters: PropTypes.string.isRequired,
   handleFilterOfFilters: PropTypes.func.isRequired,
@@ -41,7 +41,14 @@ FilterCriteria.propTypes = {
 
 FilterCriteria.defaultProps = {
   isOpen: false,
-  options: [{ header: 'Standard Issue Types1', values: ['bug', 'epic', 'another', 'epic', 'another'] }, { header: 'Standard Issue Types2', values: ['bug', 'epic', 'another'] }],
+  options: [{
+    header: 'Standard Issue Types1',
+    values: ['bug', 'epic', 'another', 'epic', 'another'],
+  },
+  {
+    header: 'Standard Issue Types2',
+    values: ['bug', 'epic', 'another'],
+  }],
 };
 
 export default FilterCriteria;
