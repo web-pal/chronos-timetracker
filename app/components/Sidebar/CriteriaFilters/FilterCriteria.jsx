@@ -7,22 +7,26 @@ import FilterCriteriaOptions from './FilterCriteriaOptions';
 const FilterCriteria = ({
   name, isOpen, handleClick, options, filterOfFilters, handleFilterOfFilters,
 }) =>
-  <Flex column centered data-id="issuetype" className={'sidebar-filter-criterias__item'}>
-    <button type="button" data-id="issuetype" className={`criteria-selector aui-button aui-button-subtle drop-arrow ${isOpen ? 'active' : ''}`} onClick={() => handleClick(isOpen ? '' : name)}>
+  <Flex column centered className="sidebar-filter-criterias__item">
+    <button
+      type="button"
+      onClick={() => handleClick(isOpen ? '' : name)}
+      className={[
+        'criteria-selector aui-button aui-button-subtle drop-arrow',
+        `${isOpen ? 'active' : ''}`,
+      ].join(' ')}
+    >
       <div className="criteria-wrap">
         <span className="fieldLabel">{name}:</span> All
       </div>
     </button>
-    <a href="" className="remove-filter hidden" title="delete" tabIndex="-1">
-      <span className="aui-icon aui-icon-small aui-iconfont-remove" />
-    </a>
-    { isOpen
-      ? <FilterCriteriaOptions
+    { isOpen &&
+      <FilterCriteriaOptions
         handleFilterOfFilters={handleFilterOfFilters}
         filterOfFilters={filterOfFilters}
         options={options}
       />
-     : null }
+    }
   </Flex>
 ;
 
