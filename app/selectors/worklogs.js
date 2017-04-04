@@ -30,9 +30,9 @@ export const getRecentWorklogsWithIssues = createSelector(
 export const getRecentWorklogsGroupedByDate = createSelector(
   getRecentWorklogsWithIssues,
   map => map.groupBy(
-    w => moment(w.get('updated')).startOf('day'),
+    w => moment(w.get('started')).startOf('day'),
   )
-  .map(g => ({ day: moment(g.first().get('updated')).startOf('day').format(), worklogs: g.reverse() }))
+  .map(g => ({ day: moment(g.first().get('started')).startOf('day').format(), worklogs: g.reverse() }))
   .reverse()
   .toList(),
 );
