@@ -16,6 +16,12 @@ export function dismissIdleTime(time) {
   };
 }
 
+export function normalizeScreenshotsPeriods() {
+  return {
+    type: types.NORMALIZE_SCREENSHOTS_PERIODS,
+  };
+}
+
 export function cutIddlesFromLastScreenshot() {
   return {
     type: types.CUT_IDDLES_FROM_LAST_SCREENSHOT,
@@ -46,5 +52,12 @@ export function stopTimer() {
   Updater.checkForUpdates();
   return {
     type: types.STOP_TIMER,
+  };
+}
+
+export function savePeriods(periods) {
+  return {
+    type: types.SET_PERIODS,
+    payload: periods,
   };
 }

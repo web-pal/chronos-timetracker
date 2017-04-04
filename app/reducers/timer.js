@@ -8,6 +8,7 @@ const InitialState = Immutable.Record({
 
   lastScreenshotTime: 0,
   currentIdleList: Immutable.List(),
+  screenShotsPeriods: [],
 });
 
 const initialState = new InitialState();
@@ -30,6 +31,8 @@ export default function timer(state = initialState, action) {
       return state.set('lastScreenshotTime', action.payload);
     case types.SET_FORCE_QUIT_FLAG:
       return state.set('forceQuit', action.payload);
+    case types.SET_PERIODS:
+      return state.set('screenShotsPeriods', action.payload);
 
     case types.ADD_IDLE:
       return state.update('currentIdleList', list => list.push(action.payload));

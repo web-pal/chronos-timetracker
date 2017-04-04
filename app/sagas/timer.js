@@ -8,6 +8,7 @@ import { makeScreenshot } from 'api';
 import { idleTimeThreshold } from 'config';
 import * as types from '../constants/';
 import { uploadWorklog } from './worklogs';
+import { savePeriods } from '../actions/timer';
 
 const system = remote.require('@paulcbetts/system-idle-time');
 
@@ -18,15 +19,13 @@ function randomInteger(min, max) {
 }
 
 function randomPeriods(periodsQty, min, max) {
-  const averageMax = max / periodsQty;
+  const averageMax = (max - min) / periodsQty;
   let prevPeriod = min;
-  return [...Array(periodsQty).keys()].map((i) => {
-    prevPeriod = randomInteger(prevPeriod + 20, averageMax * (i + 1));
+  return [...Array(periodsQty).keys()].map(() => {
+    prevPeriod = randomInteger(prevPeriod + 20, prevPeriod + averageMax);
     return prevPeriod;
   });
 }
-
-// TODO: Move all saga's selectors to selectors module
 
 
 function* takeScreenshot() {
@@ -63,7 +62,7 @@ function* runTimer() {
     !screenshotsEnabledUsers.includes(selfKey);
   const screensShotsAllowed = cond1 || cond2 || cond3;
 
-  let periods = randomPeriods(screenshotsQuantity, 0, screenshotsPeriod);
+  yield put(savePeriods(randomPeriods(screenshotsQuantity, 0, screenshotsPeriod)));
   let idleState = false;
   let prevIdleTime = 0;
   let totalIdleTimeDuringOneMinute = 0;
@@ -89,7 +88,8 @@ function* runTimer() {
       }
       prevIdleTime = idleTime;
 
-      const seconds = yield take(chan);
+      yield take(chan);
+      const seconds = yield select(state => state.timer.time);
       // Check offline screenshots
       if (seconds % 240 === 0) {
         yield put({ type: types.CHECK_OFFLINE_SCREENSHOTS });
@@ -97,17 +97,19 @@ function* runTimer() {
       }
       // Screenshots check
       if (screensShotsAllowed) {
-        console.log(periods);
+        let periods = yield select(state => state.timer.screenShotsPeriods);
         if (seconds === periods[0]) {
           if (!idleState) {
-            yield fork(takeScreenshot);
             console.log('Need to take a screnshot');
+            yield fork(takeScreenshot);
+            periods.shift();
+            yield put(savePeriods(periods));
           }
-          periods.shift();
         }
         if (seconds === nextPeriod) {
           nextPeriod += screenshotsPeriod;
           periods = randomPeriods(screenshotsQuantity, seconds, nextPeriod);
+          yield put(savePeriods(periods));
         }
       }
 
@@ -180,5 +182,15 @@ export function* cutIddlesFromLastScreenshot() {
       type: types.CUT_IDDLES,
       payload: Math.ceil((currentTime - lastScreenshotTime) / 60),
     });
+  }
+}
+
+export function* normalizePeriods() {
+  while (true) {
+    yield take(types.NORMALIZE_SCREENSHOTS_PERIODS);
+    const currentTime = yield select(state => state.timer.time);
+    const periods = yield select(state => state.timer.screenShotsPeriods);
+
+    yield put(savePeriods(periods.filter(p => p > currentTime)));
   }
 }

@@ -25,6 +25,7 @@ class IdlePopup extends Component {
   }
 
   keepTime = () => {
+    ipc.send('keepIdleTime', this.state.idleTime);
     remote.getCurrentWindow().destroy();
   }
 

@@ -1,6 +1,6 @@
 import { fork } from 'redux-saga/effects';
 
-import { loginFlow, checkJWT } from './profile';
+import { loginFlow, loginOAuthFlow, checkJWT } from './profile';
 import { getProjects, onSelectProject } from './projects';
 import {
   watchGetIssues, watchGetIssue, watchRecentIssues,
@@ -10,12 +10,13 @@ import {
   watchSelectWorklogs, watchUploadScreenshot,
   watchRejectScreenshot, uploadOfflineScreenshots, uploadOfflineWorklogs,
 } from './worklogs';
-import { manageTimer, cutIddlesFromLastScreenshot } from './timer';
+import { manageTimer, cutIddlesFromLastScreenshot, normalizePeriods } from './timer';
 
 
 export default function* root() {
   yield [
     fork(loginFlow),
+    fork(loginOAuthFlow),
     fork(checkJWT),
 
     fork(getProjects),
@@ -36,5 +37,6 @@ export default function* root() {
 
     fork(manageTimer),
     fork(cutIddlesFromLastScreenshot),
+    fork(normalizePeriods),
   ];
 }

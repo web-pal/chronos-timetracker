@@ -1,13 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Field, reduxForm } from 'redux-form/immutable';
+import { Field, reduxForm, formValueSelector } from 'redux-form/immutable';
+import { ipcRenderer } from 'electron';
 import storage from 'electron-json-storage';
 
 import * as profileActions from '../actions/profile';
 
 import Flex from '../components/Base/Flex/Flex';
-import Checkbox from '../components/Checkbox/Checkbox';
 
 import { rememberToken } from '../utils/api/helper';
 import logo from '../assets/images/logo256x256.png';
@@ -54,9 +54,14 @@ class AuthForm extends Component {
     loginError: PropTypes.string.isRequired,
 
     login: PropTypes.func.isRequired,
+    loginOAuth: PropTypes.func.isRequired,
+    continueOAuthWithCode: PropTypes.func.isRequired,
+    deniedOAuth: PropTypes.func.isRequired,
+    throwLoginError: PropTypes.func.isRequired,
     checkJWT: PropTypes.func.isRequired,
     handleSubmit: PropTypes.func.isRequired,
     initialize: PropTypes.func.isRequired,
+    host: PropTypes.string.isRequired,
   }
 
   componentDidMount() {
@@ -71,6 +76,31 @@ class AuthForm extends Component {
         this.props.checkJWT();
       }
     });
+    ipcRenderer.on('oauth-code', this.onOauthCode);
+    ipcRenderer.on('oauth-denied', this.onOauthDenied);
+  }
+
+  componentWillUnmount() {
+    ipcRenderer.removeListener('oauth-code', this.onOauthCode);
+    ipcRenderer.removeListener('oauth-denied', this.onOauthDenied);
+  }
+
+  onOauthCode = (ev, code) => {
+    this.props.continueOAuthWithCode(code);
+  }
+
+  onOauthDenied = () => {
+    this.props.deniedOAuth();
+  }
+
+  oAuth = () => {
+    if (this.props.host && this.props.host.length) {
+      storage.set('jira_credentials', { host: this.props.host });
+      this.props.throwLoginError('');
+      this.props.loginOAuth({ host: `${this.props.host}.atlassian.net` });
+    } else {
+      this.props.throwLoginError('You need to fill JIRA host at first');
+    }
   }
 
   submit = values => (
@@ -102,12 +132,7 @@ class AuthForm extends Component {
             <Field name="username" placeholder="Username*" component={renderField} type="text" />
             <Field name="password" placeholder="Password*" component={renderField} type="password" />
             <div className="form-element">
-              <Field
-                label="Remember me "
-                name="memorize"
-                type="checkbox"
-                component={Checkbox}
-              />
+              <span onClick={this.oAuth}>OAuth SignIn</span>
             </div>
             <Flex row>
               <button
@@ -132,10 +157,12 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators(profileActions, dispatch);
 }
 
-function mapStateToProps({ profile }) {
+function mapStateToProps({ profile, form }) {
+  const selector = formValueSelector('auth');
   return {
     loginError: profile.loginError,
     loginRequestInProcess: profile.loginRequestInProcess,
+    host: selector({ form }, 'host') || '',
   };
 }
 

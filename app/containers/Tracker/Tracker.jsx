@@ -26,6 +26,7 @@ class Tracker extends Component {
     cutIddlesFromLastScreenshot: PropTypes.func.isRequired,
     cutIddles: PropTypes.func.isRequired,
     dismissIdleTime: PropTypes.func.isRequired,
+    normalizeScreenshotsPeriods: PropTypes.func.isRequired,
 
     startTimer: PropTypes.func.isRequired,
     stopTimer: PropTypes.func.isRequired,
@@ -46,6 +47,7 @@ class Tracker extends Component {
 
     ipcRenderer.on('force-save', this.forceSave);
     ipcRenderer.on('dismissIdleTime', this.dismissIdleTime);
+    ipcRenderer.on('keepIdleTime', this.keepIdleTime);
   }
 
   componentWillUnmount() {
@@ -54,6 +56,7 @@ class Tracker extends Component {
 
     ipcRenderer.removeListener('force-save', this.forceSave);
     ipcRenderer.removeListener('dismissIdleTime', this.dismissIdleTime);
+    ipcRenderer.removeListener('keepIdleTime', this.keepIdleTime);
   }
 
   acceptScreenshot = () => {
@@ -86,6 +89,10 @@ class Tracker extends Component {
     const seconds = Math.ceil(time / 1000);
     this.props.cutIddles(Math.ceil(seconds / 60));
     this.props.dismissIdleTime(seconds);
+  }
+
+  keepIdleTime = () => {
+    this.props.normalizeScreenshotsPeriods();
   }
 
   render() {
