@@ -86,6 +86,7 @@ class AuthForm extends Component {
   }
 
   oAuth = () => {
+    storage.set('jira_credentials', { host: this.props.host });
     this.props.loginOAuth({ host: `${this.props.host}.atlassian.net` });
   }
 

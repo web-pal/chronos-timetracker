@@ -12,3 +12,7 @@ export function getHeaders() {
 export function rememberToken(newToken) {
   token = newToken;
 }
+
+export function clearToken() {
+  token = null;
+}

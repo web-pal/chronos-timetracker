@@ -8,7 +8,7 @@ import {
   getDataForOAuth, jiraProfile,
 } from 'api';
 import * as types from '../constants/';
-import { rememberToken } from '../utils/api/helper';
+import { rememberToken, clearToken } from '../utils/api/helper';
 import { login, loginOAuth } from '../actions/profile';
 import Socket from '../socket';
 import jira from '../utils/jiraClient';
@@ -108,7 +108,8 @@ export function* loginFlow() {
       yield put({ type: types.CHECK_OFFLINE_WORKLOGS });
       Socket.login();
       yield take(types.LOGOUT_REQUEST);
-      storage.remove('desktop_tracker_jwt');
+      yield cps(storage.remove, 'desktop_tracker_jwt');
+      clearToken();
       yield put({ type: types.CLEAR_ALL_REDUCERS });
     }
     yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: false });
@@ -153,6 +154,7 @@ export function* loginOAuthFlow() {
         chronosBackendOAuth,
         { baseUrl: host, token: accessToken, token_secret: tokenSecret },
       );
+      rememberToken(data.token);
       yield storage.set('desktop_tracker_jwt', data.token);
     }
     yield call(jira.oauth,
@@ -176,7 +178,8 @@ export function* loginOAuthFlow() {
     yield put({ type: types.CHECK_OFFLINE_WORKLOGS });
     Socket.login();
     yield take(types.LOGOUT_REQUEST);
-    storage.remove('desktop_tracker_jwt');
+    yield cps(storage.remove, 'desktop_tracker_jwt');
+    clearToken();
     yield put({ type: types.CLEAR_ALL_REDUCERS });
   }
 }
