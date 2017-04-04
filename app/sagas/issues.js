@@ -37,6 +37,7 @@ function* getRecentIssues() {
   const currentProject = yield select(state => state.projects.meta.selectedProjectId);
   const worklogAuthor = yield select(state => state.profile.userData.get('key'));
 
+  // TODO: Handle errros with wrong project id
   let { issues } = yield call(fetchRecentIssues, { currentProject, worklogAuthor });
   const incompleteIssues = issues.filter(issue => issue.fields.worklog.total > 20);
   if (incompleteIssues.length) {

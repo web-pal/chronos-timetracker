@@ -1,14 +1,17 @@
-import { take, put, call } from 'redux-saga/effects';
+import { take, put, call, cps } from 'redux-saga/effects';
 import storage from 'electron-json-storage';
 import Raven from 'raven-js';
+import { ipcRenderer } from 'electron';
 import {
-  jiraAuth, chronosBackendAuth,
+  jiraAuth, chronosBackendAuth, chronosBackendOAuth,
   chronosBackendGetJiraCredentials, fetchSettings,
+  getDataForOAuth, jiraProfile,
 } from 'api';
 import * as types from '../constants/';
 import { rememberToken } from '../utils/api/helper';
-import { login } from '../actions/profile';
+import { login, loginOAuth } from '../actions/profile';
 import Socket from '../socket';
+import jira from '../utils/jiraClient';
 
 
 function* loginError(error) {
@@ -64,7 +67,19 @@ export function* checkJWT() {
   yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: true });
   try {
     const userData = yield call(chronosBackendGetJiraCredentials);
-    yield put(login({ values: { ...userData, host: userData.baseUrl.split('.')[0] } }, false));
+    if (userData.authType === 'basic_auth') {
+      yield put(login({ values: { ...userData, host: userData.baseUrl.split('.')[0] } }, false));
+    }
+    if (userData.authType === 'OAuth') {
+      yield put(loginOAuth(
+        {
+          host: userData.baseUrl,
+          aToken: userData.token,
+          tSecret: userData.token_secret,
+        },
+        false,
+      ));
+    }
   } catch (err) {
     yield loginError('Automatic login failed, please enter your credentials again');
     yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: false });
@@ -100,5 +115,68 @@ export function* loginFlow() {
     if (resolve) {
       resolve();
     }
+  }
+}
+
+export function* loginOAuthFlow() {
+  while (true) {
+    const { backendLogin, payload: { host, aToken, tSecret } } =
+      yield take(types.LOGIN_OAUTH_REQUEST);
+    const chronosBackendLoginSuccess = !backendLogin;
+    let accessToken = aToken;
+    let tokenSecret = tSecret;
+
+    yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: true });
+
+    const oauth = yield call(getDataForOAuth, host);
+    if (!chronosBackendLoginSuccess) {
+      const oauthUrlData = yield cps(jira.getOAuthUrl, { oauth, host });
+      const { token, url } = oauthUrlData;
+      tokenSecret = oauthUrlData.token_secret;
+      ipcRenderer.send('open-oauth-url', url);
+
+      const { code } = yield take(types.LOGIN_OAUTH_HAVE_CODE);
+      accessToken =
+        yield cps(
+          jira.getOAuthToken,
+          { host,
+            oauth: {
+              token,
+              token_secret: tokenSecret,
+              oauth_verifier: code,
+              consumer_key: oauth.consumerKey,
+              private_key: oauth.privateKey,
+            },
+          },
+        );
+      const data = yield call(
+        chronosBackendOAuth,
+        { baseUrl: host, token: accessToken, token_secret: tokenSecret },
+      );
+      yield storage.set('desktop_tracker_jwt', data.token);
+    }
+    yield call(jira.oauth,
+      { host,
+        oauth: {
+          token: accessToken,
+          token_secret: tokenSecret,
+          consumer_key: oauth.consumerKey,
+          private_key: oauth.privateKey,
+        },
+      },
+    );
+    const userData = yield call(jiraProfile);
+    yield put({ type: types.FILL_PROFILE, payload: userData });
+    Raven.setExtraContext({ host });
+    yield getSettings();
+    yield put({ type: types.SET_CURRENT_HOST, payload: host });
+    yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: false });
+    yield put({ type: types.SET_AUTH_STATE, payload: true });
+    yield put({ type: types.CHECK_OFFLINE_SCREENSHOTS });
+    yield put({ type: types.CHECK_OFFLINE_WORKLOGS });
+    Socket.login();
+    yield take(types.LOGOUT_REQUEST);
+    storage.remove('desktop_tracker_jwt');
+    yield put({ type: types.CLEAR_ALL_REDUCERS });
   }
 }

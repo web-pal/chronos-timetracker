@@ -26,6 +26,7 @@ export function chronosBackendAuth({ host, username, password }) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
+      type: 'basic_auth',
       baseUrl: `${clearHost(host)}.atlassian.net`,
       username,
       password,
@@ -33,7 +34,35 @@ export function chronosBackendAuth({ host, username, password }) {
   }).then(res => res.json());
 }
 
+export function chronosBackendOAuth({ baseUrl, token, token_secret }) {
+  return fetch(`${apiUrl}/desktop-tracker/authenticate`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      type: 'OAuth',
+      baseUrl,
+      token,
+      token_secret,
+    }),
+  }).then(res => res.json());
+}
+
+
 export function chronosBackendGetJiraCredentials() {
   const url = `${apiUrl}/desktop-tracker/authenticate`;
   return fetch(url, { headers: getHeaders() }).then(res => res.json());
+}
+
+export function getDataForOAuth(baseUrl) {
+  const url = `${apiUrl}/desktop-tracker/getDataForOAuth?baseUrl=${baseUrl}`;
+  return fetch(
+    url,
+    {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }).then(res => res.json());
 }

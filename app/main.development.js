@@ -38,6 +38,7 @@ process.on('uncaughtExecption', (err) => {
 
 let menu;
 let mainWindow;
+let authWindow;
 let template;
 let shouldQuit = process.platform !== 'darwin';
 let tray = null;
@@ -140,6 +141,51 @@ ipcMain.on('showScreenPreviewPopup', () => {
   win.once('ready-to-show', () => {
     win.show();
   });
+});
+
+ipcMain.on('oauthText', (event, text) => {
+  try {
+    const code = text.split('.')[1].split('\'')[1];
+    mainWindow.webContents.send('oauth-code', code);
+  } catch (err) {
+    console.log(err);
+  }
+  authWindow.close();
+});
+
+ipcMain.on('open-oauth-url', (event, url) => {
+  authWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    show: false,
+    'node-integration': false,
+  });
+
+  authWindow.loadURL(url);
+  authWindow.once('ready-to-show', () => {
+    authWindow.show();
+  });
+
+  authWindow.webContents.on('did-navigate', (ev, navUrl) => {
+    if (navUrl.includes('plugins/servlet/oauth/authorize')) {
+      setTimeout(() => {
+        if (authWindow) {
+          authWindow.webContents.executeJavaScript(`
+            var ipcRenderer = require('electron').ipcRenderer;
+            var text = document.querySelector('#content p').textContent;
+            console.log(text);
+            if (text.includes('You have successfully authorized')) {
+              ipcRenderer.send('oauthText', text);
+            }
+          `);
+        }
+      }, 500);
+    }
+  });
+
+  authWindow.on('close', () => {
+    authWindow = null;
+  }, false);
 });
 
 
