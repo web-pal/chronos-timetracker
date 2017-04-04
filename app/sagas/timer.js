@@ -18,15 +18,13 @@ function randomInteger(min, max) {
 }
 
 function randomPeriods(periodsQty, min, max) {
-  const averageMax = max / periodsQty;
+  const averageMax = (max - min) / periodsQty;
   let prevPeriod = min;
-  return [...Array(periodsQty).keys()].map((i) => {
-    prevPeriod = randomInteger(prevPeriod + 20, averageMax * (i + 1));
+  return [...Array(periodsQty).keys()].map(() => {
+    prevPeriod = randomInteger(prevPeriod + 20, prevPeriod + averageMax);
     return prevPeriod;
   });
 }
-
-// TODO: Move all saga's selectors to selectors module
 
 
 function* takeScreenshot() {
@@ -97,11 +95,14 @@ function* runTimer() {
       }
       // Screenshots check
       if (screensShotsAllowed) {
-        console.log(periods);
-        if (seconds === periods[0]) {
+        if (seconds >= periods[0]) {
           if (!idleState) {
             yield fork(takeScreenshot);
             console.log('Need to take a screnshot');
+          } else {
+            console.log('Should be screenshot but it was idle time');
+            // if will be rejected, it's mean that user owe this screenshot
+            // We need save it and then use it if need
           }
           periods.shift();
         }

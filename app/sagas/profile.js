@@ -1,4 +1,4 @@
-import { take, put, call, cps } from 'redux-saga/effects';
+import { race, take, put, call, cps } from 'redux-saga/effects';
 import storage from 'electron-json-storage';
 import Raven from 'raven-js';
 import { ipcRenderer } from 'electron';
@@ -9,16 +9,13 @@ import {
 } from 'api';
 import * as types from '../constants/';
 import { rememberToken, clearToken } from '../utils/api/helper';
-import { login, loginOAuth } from '../actions/profile';
+import { login, loginOAuth, throwLoginError } from '../actions/profile';
 import Socket from '../socket';
 import jira from '../utils/jiraClient';
 
 
 function* loginError(error) {
-  yield put({
-    type: types.THROW_LOGIN_ERROR,
-    payload: { error },
-  });
+  yield put(throwLoginError(error));
   yield put({ type: types.SET_AUTH_STATE, payload: false });
 }
 
@@ -131,12 +128,27 @@ export function* loginOAuthFlow() {
 
     const oauth = yield call(getDataForOAuth, host);
     if (!chronosBackendLoginSuccess) {
-      const oauthUrlData = yield cps(jira.getOAuthUrl, { oauth, host });
+      let oauthUrlData = {};
+      try {
+        oauthUrlData = yield cps(jira.getOAuthUrl, { oauth, host });
+      } catch (err) {
+        yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: false });
+        yield loginError('To use oauth ask your jira admin configure application link');
+        continue; // eslint-disable-line
+      }
       const { token, url } = oauthUrlData;
       tokenSecret = oauthUrlData.token_secret;
       ipcRenderer.send('open-oauth-url', url);
 
-      const { code } = yield take(types.LOGIN_OAUTH_HAVE_CODE);
+      const { haveCode, denied } = yield race({
+        haveCode: take(types.LOGIN_OAUTH_HAVE_CODE),
+        denied: take(types.LOGIN_OAUTH_DENIED),
+      });
+      if (denied) {
+        yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: false });
+        yield loginError('OAuth denied');
+        continue; // eslint-disable-line
+      }
       accessToken =
         yield cps(
           jira.getOAuthToken,
@@ -144,7 +156,7 @@ export function* loginOAuthFlow() {
             oauth: {
               token,
               token_secret: tokenSecret,
-              oauth_verifier: code,
+              oauth_verifier: haveCode.code,
               consumer_key: oauth.consumerKey,
               private_key: oauth.privateKey,
             },

@@ -56,6 +56,8 @@ class AuthForm extends Component {
     login: PropTypes.func.isRequired,
     loginOAuth: PropTypes.func.isRequired,
     continueOAuthWithCode: PropTypes.func.isRequired,
+    deniedOAuth: PropTypes.func.isRequired,
+    throwLoginError: PropTypes.func.isRequired,
     checkJWT: PropTypes.func.isRequired,
     handleSubmit: PropTypes.func.isRequired,
     initialize: PropTypes.func.isRequired,
@@ -75,19 +77,30 @@ class AuthForm extends Component {
       }
     });
     ipcRenderer.on('oauth-code', this.onOauthCode);
+    ipcRenderer.on('oauth-denied', this.onOauthDenied);
   }
 
   componentWillUnmount() {
     ipcRenderer.removeListener('oauth-code', this.onOauthCode);
+    ipcRenderer.removeListener('oauth-denied', this.onOauthDenied);
   }
 
   onOauthCode = (ev, code) => {
     this.props.continueOAuthWithCode(code);
   }
 
+  onOauthDenied = () => {
+    this.props.deniedOAuth();
+  }
+
   oAuth = () => {
-    storage.set('jira_credentials', { host: this.props.host });
-    this.props.loginOAuth({ host: `${this.props.host}.atlassian.net` });
+    if (this.props.host && this.props.host.length) {
+      storage.set('jira_credentials', { host: this.props.host });
+      this.props.throwLoginError('');
+      this.props.loginOAuth({ host: `${this.props.host}.atlassian.net` });
+    } else {
+      this.props.throwLoginError('You need to fill JIRA host at first');
+    }
   }
 
   submit = values => (

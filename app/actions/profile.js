@@ -17,6 +17,19 @@ export function loginOAuth(data, backendLogin = true) {
   };
 }
 
+export function deniedOAuth() {
+  return {
+    type: types.LOGIN_OAUTH_DENIED,
+  };
+}
+
+export function throwLoginError(error) {
+  return {
+    type: types.THROW_LOGIN_ERROR,
+    payload: { error },
+  };
+}
+
 export function continueOAuthWithCode(code) {
   return {
     type: types.LOGIN_OAUTH_HAVE_CODE,

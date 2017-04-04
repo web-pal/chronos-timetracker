@@ -153,6 +153,12 @@ ipcMain.on('oauthText', (event, text) => {
   authWindow.close();
 });
 
+ipcMain.on('oauthDenied', () => {
+  mainWindow.webContents.send('oauth-denied');
+  authWindow.close();
+});
+
+
 ipcMain.on('open-oauth-url', (event, url) => {
   authWindow = new BrowserWindow({
     width: 800,
@@ -176,6 +182,9 @@ ipcMain.on('open-oauth-url', (event, url) => {
             console.log(text);
             if (text.includes('You have successfully authorized')) {
               ipcRenderer.send('oauthText', text);
+            }
+            if (text.includes('You have denied')) {
+              ipcRenderer.send('oauthDenied', text);
             }
           `);
         }

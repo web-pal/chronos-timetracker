@@ -1,6 +1,7 @@
 export const LOGIN_REQUEST = 'profile/LOGIN_REQUEST';
 export const LOGIN_OAUTH_REQUEST = 'profile/LOGIN_OAUTH_REQUEST';
 export const LOGIN_OAUTH_HAVE_CODE = 'profile/LOGIN_OAUTH_HAVE_CODE';
+export const LOGIN_OAUTH_DENIED = 'profile/LOGIN_OAUTH_DENIED';
 export const LOGOUT_REQUEST = 'profile/LOGOUT_REQUEST';
 export const THROW_LOGIN_ERROR = 'profile/THROW_LOGIN_ERROR';
 
