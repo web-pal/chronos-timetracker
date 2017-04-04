@@ -131,9 +131,6 @@ class AuthForm extends Component {
             </div>
             <Field name="username" placeholder="Username*" component={renderField} type="text" />
             <Field name="password" placeholder="Password*" component={renderField} type="password" />
-            <div className="form-element">
-              <span onClick={this.oAuth}>OAuth SignIn</span>
-            </div>
             <Flex row>
               <button
                 className="button button-primary"
@@ -141,6 +138,15 @@ class AuthForm extends Component {
                 disabled={loginRequestInProcess}
               >
                 Login
+              </button>
+            </Flex>
+            <Flex row style={{ marginTop: '10px' }}>
+              <button
+                className="button button-primary"
+                onClick={this.oAuth}
+                disabled={loginRequestInProcess}
+              >
+                OAuth SignIn
               </button>
             </Flex>
             <span className="error">
