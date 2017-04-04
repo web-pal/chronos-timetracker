@@ -21,9 +21,29 @@ const CriteriaFilters = ({
   <Flex row className={`sidebar-filter-item sidebar-filter-item--criterias ${sidebarType === 'Recent' ? 'hidden' : ''}`}>
     <Flex column centered className={'sidebar-filter-criterias'} >
       <Flex row centered>
-        <FilterCriteria name={'Type'} handleFilterOfFilters={handleFilterOfFilters(setFilterOfIssuesFiltersValue, 'Type')} filterOfFilters={issueFilterOfFiltersTypes} options={[{ header: 'Standard Issue Types', values: AllIssuesTypes }, { header: 'Sub-Task Issue Types', values: AllSubIssuesTypes }]} handleClick={setShowingFilterCriteriaBlock} isOpen={showingFilterCriteriaBlock === 'Type'} />
-        <FilterCriteria name={'Status'} handleFilterOfFilters={handleFilterOfFilters(setFilterOfIssuesFiltersValue, 'Status')} filterOfFilters={issueFilterOfFiltersStatus} options={[{ values: AllIssuesStatuses }]} handleClick={setShowingFilterCriteriaBlock} isOpen={showingFilterCriteriaBlock === 'Status'} />
-        <FilterCriteria name={'Assignee'} handleFilterOfFilters={handleFilterOfFilters(setFilterOfIssuesFiltersValue, 'Assignee')} filterOfFilters={issueFilterOfFiltersAssignee} options={[{ values: [{ name: 'Surrent User' }, { name: 'Unassigned' }] }]} handleClick={setShowingFilterCriteriaBlock} isOpen={showingFilterCriteriaBlock === 'Assignee'} />
+        <FilterCriteria
+          name={'Type'}
+          handleFilterOfFilters={handleFilterOfFilters(setFilterOfIssuesFiltersValue, 'Type')}
+          filterOfFilters={issueFilterOfFiltersTypes}
+          options={[{ header: 'Standard Issue Types', values: AllIssuesTypes }, { header: 'Sub-Task Issue Types', values: AllSubIssuesTypes }]}
+          handleClick={setShowingFilterCriteriaBlock}
+          isOpen={showingFilterCriteriaBlock === 'Type'}
+        />
+        <FilterCriteria
+          name={'Status'}
+          handleFilterOfFilters={handleFilterOfFilters(setFilterOfIssuesFiltersValue, 'Status')}
+          filterOfFilters={issueFilterOfFiltersStatus} options={[{ values: AllIssuesStatuses }]}
+          handleClick={setShowingFilterCriteriaBlock}
+          isOpen={showingFilterCriteriaBlock === 'Status'}
+        />
+        <FilterCriteria
+          name={'Assignee'}
+          handleFilterOfFilters={handleFilterOfFilters(setFilterOfIssuesFiltersValue, 'Assignee')}
+          filterOfFilters={issueFilterOfFiltersAssignee}
+          options={[{ values: [{ name: 'Current User' }, { name: 'Unassigned' }] }]}
+          handleClick={setShowingFilterCriteriaBlock}
+          isOpen={showingFilterCriteriaBlock === 'Assignee'}
+        />
       </Flex>
     </Flex>
   </Flex>
