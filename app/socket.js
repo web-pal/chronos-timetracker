@@ -34,5 +34,31 @@ export default class Socket {
         payload: response.newSetting.desktopApp,
       });
     });
+
+    this.socket.on('showCurrentWorklog', ({ toSocketId }) => {
+      const state = store.getState();
+
+      const running = state.timer.running;
+      const issueId = state.issues.meta.trackingIssueId;
+      const timeSpentSeconds = state.timer.time;
+      const description = state.worklogs.meta.currentDescription;
+      const screensShot =
+        state.worklogs.meta.currentWorklogScreenshots.toArray().map(s => ({ name: s }));
+      const userData = state.profile.userData;
+
+      if (running) {
+        this.socket.emit(
+          'sendCurrentWorklog',
+          {
+            issueId,
+            timeSpentSeconds,
+            description,
+            screensShot,
+            toSocketId,
+            user: userData.toJS(),
+          },
+        );
+      }
+    });
   }
 }
