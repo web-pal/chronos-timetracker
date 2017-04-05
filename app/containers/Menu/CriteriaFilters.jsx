@@ -20,7 +20,8 @@ const CriteriaFilters = ({
   showingFilterCriteriaBlock, setShowingFilterCriteriaBlock,
   AllIssuesTypes, AllSubIssuesTypes, AllIssuesStatuses,
   issueFilterOfFiltersTypes, issueFilterOfFiltersStatus, issueFilterOfFiltersAssignee,
-  setFilterOfIssuesFiltersValue,
+  setFilterOfIssuesFiltersValue, AllIssuesAssignee,
+  setIssuesCriteriaFilter,
 }) =>
   <Flex
     row
@@ -31,33 +32,43 @@ const CriteriaFilters = ({
   >
     <Flex column centered className={'sidebar-filter-criterias'} >
       <Flex row centered>
-        <FilterCriteria
-          name="Type"
-          isOpen={showingFilterCriteriaBlock === 'Type'}
-          handleFilterOfFilters={handleFilterOfFilters(setFilterOfIssuesFiltersValue, 'Type')}
-          filterOfFilters={issueFilterOfFiltersTypes}
-          options={[
-            { key: 'Standard', header: 'Standard Issue Types', values: AllIssuesTypes },
-            { key: 'Sub', header: 'Sub-Task Issue Types', values: AllSubIssuesTypes },
-          ]}
-          handleClick={setShowingFilterCriteriaBlock}
-        />
-        <FilterCriteria
-          name="Status"
-          isOpen={showingFilterCriteriaBlock === 'Status'}
-          handleFilterOfFilters={handleFilterOfFilters(setFilterOfIssuesFiltersValue, 'Status')}
-          filterOfFilters={issueFilterOfFiltersStatus}
-          options={[{ key: 'Status', values: AllIssuesStatuses }]}
-          handleClick={setShowingFilterCriteriaBlock}
-        />
-        <FilterCriteria
-          name="Assignee"
-          isOpen={showingFilterCriteriaBlock === 'Assignee'}
-          handleFilterOfFilters={handleFilterOfFilters(setFilterOfIssuesFiltersValue, 'Assignee')}
-          filterOfFilters={issueFilterOfFiltersAssignee}
-          options={[{ key: 'Assignee', values: [{ name: 'Current User' }, { name: 'Unassigned' }] }]}
-          handleClick={setShowingFilterCriteriaBlock}
-        />
+        {
+          [
+            {
+              name: 'Type',
+              criteriaKey: 'Type',
+              options: [
+                { key: 'Standard', header: 'Standard Issue Types', values: AllIssuesTypes },
+                { key: 'Sub', header: 'Sub-Task Issue Types', values: AllSubIssuesTypes },
+              ],
+              filterOfFilters: issueFilterOfFiltersTypes,
+            },
+            {
+              name: 'Status',
+              criteriaKey: 'Status',
+              options: [{ key: 'Status', values: AllIssuesStatuses }],
+              filterOfFilters: issueFilterOfFiltersStatus,
+            },
+            {
+              name: 'Assignee',
+              criteriaKey: 'Assignee',
+              options: [{ key: 'Assignee', values: AllIssuesAssignee }],
+              filterOfFilters: issueFilterOfFiltersAssignee,
+              hideFilterOfFiltersField: true,
+            },
+          ].map(criteria =>
+            <FilterCriteria
+              key={criteria.criteriaKey}
+              isOpen={showingFilterCriteriaBlock === criteria.criteriaKey}
+              handleFilterOfFilters={
+                handleFilterOfFilters(setFilterOfIssuesFiltersValue, criteria.criteriaKey)
+              }
+              handleClick={setShowingFilterCriteriaBlock}
+              handleCriteriaSet={setIssuesCriteriaFilter}
+              {...criteria}
+            />,
+          )
+        }
       </Flex>
     </Flex>
   </Flex>
@@ -74,11 +85,15 @@ CriteriaFilters.propTypes = {
   issueFilterOfFiltersStatus: PropTypes.string.isRequired,
   issueFilterOfFiltersAssignee: PropTypes.string.isRequired,
   setFilterOfIssuesFiltersValue: PropTypes.func.isRequired,
+  setIssuesCriteriaFilter: PropTypes.func.isRequired,
+  AllIssuesAssignee: PropTypes.array.isRequired,
 };
 
 function mapStateToProps({ ui, issues }) {
   const AllSubIssuesTypes = getAllSubIssuesTypes({ issues });
   const AllIssuesTypes = getAllIssuesTypes({ issues });
+  const AllIssuesAssignee = issues.meta.issueAssigneeIds.map(id =>
+    issues.meta.issuesCriteriaOptions_Assignee[id]);
 
   const AllIssuesStatuses = getAllIssuesStatuses({ issues });
 
@@ -88,6 +103,7 @@ function mapStateToProps({ ui, issues }) {
     AllSubIssuesTypes,
     AllIssuesTypes,
     AllIssuesStatuses,
+    AllIssuesAssignee,
     issueFilterOfFiltersTypes: issues.meta.issueFilterOfFilters_Type,
     issueFilterOfFiltersStatus: issues.meta.issueFilterOfFilters_Status,
     issueFilterOfFiltersAssignee: issues.meta.issueFilterOfFilters_Assignee,

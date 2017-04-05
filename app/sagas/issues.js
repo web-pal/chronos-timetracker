@@ -36,6 +36,7 @@ function* storeIssues({ issues, fillIssuesType, fillWorklogsType }) {
 
 function* storeIssuesTypes({ issueTypes }) {
   const normalizedData = normalize(issueTypes, [issueTypeSchema]);
+  normalizedData.result.forEach(id => normalizedData.entities.issueTypes[id].checked = false);
   const issuesIds =
           normalizedData.result.filter(id => !(normalizedData.entities.issueTypes[id].subtask));
   const subIssuesIds =
@@ -52,7 +53,7 @@ function* storeIssuesTypes({ issueTypes }) {
 
 function* storeIssuesStatuses({ issueStatuses }) {
   const normalizedData = normalize(issueStatuses, [issueStatusSchema]);
-
+  normalizedData.result.forEach(id => normalizedData.entities.issueStatus[id].checked = false);
   yield put({
     type: types.FILL_ISSUES_ALL_STATUSES,
     payload: {

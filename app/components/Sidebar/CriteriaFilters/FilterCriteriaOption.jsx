@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 
-const FilterCriteriaOptionsList = ({
-  option,
+const CriteriaFilterOption = ({
+  option, handleCriteriaSet,
 }) =>
   <li className="check-list-item  imagebacked" role="option" >
     <label
@@ -12,18 +12,18 @@ const FilterCriteriaOptionsList = ({
       title={option.name}
       data-descriptor-title={option.desctiption}
     >
-      <input tabIndex="-1" value="" type="checkbox" />
+      <input onChange={() => handleCriteriaSet(option.id, option.checked)} checked={option.checked} type="checkbox" />
       { (option.iconUrl && option.iconUrl[option.iconUrl.length - 1] !== '/')
         ? (<img alt="" src={option.iconUrl} width="16" height="16" />)
         : '' }
       {option.name}
     </label>
-  </li>
-;
+  </li>;
 
 
-FilterCriteriaOptionsList.propTypes = {
+CriteriaFilterOption.propTypes = {
   option: PropTypes.object.isRequired,
+  handleCriteriaSet: PropTypes.func.isRequired,
 };
 
-export default FilterCriteriaOptionsList;
+export default CriteriaFilterOption;

@@ -47,6 +47,13 @@ export function setFilterOfIssuesFiltersValue(value, filterName) {
   };
 }
 
+export function setIssuesCriteriaFilter(value, criteriaName, del) {
+  return {
+    type: del ? types.DELETE_ISSUES_CRITERIA_FITER : types.SET_ISSUES_CRITERIA_FITER,
+    payload: { value, criteriaName },
+  };
+}
+
 
 export function setShowingFilterCriteriaBlock(value) {
   return {

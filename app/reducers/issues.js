@@ -46,17 +46,24 @@ const InitialMeta = Immutable.Record({
   searchValue: '',
   showingFilterCriteriaBlock: 'none',
 
-  issuesAlltypesMap: {},
+  issuesCriteriaOptions_Type: {},
   issuesTypesIds: [],
   subIssuesTypesIds: [],
   issueFilterOfFilters_Type: '',
+  issueCurrentCriteriaFilter_Type: [],
 
-  issueStatuses: {},
+  issuesCriteriaOptions_Status: {},
   issueStatusCategories: [],
   issueStatusesIds: [],
   issueFilterOfFilters_Status: '',
+  issueCurrentCriteriaFilter_Status: [],
 
+  issuesCriteriaOptions_Assignee: {
+    none: { name: 'Unassigned', id: 'none', checked: false },
+  },
+  issueAssigneeIds: ['none'],
   issueFilterOfFilters_Assignee: '',
+  issueCurrentCriteriaFilter_Assignee: [],
 
   recentIssuesIds: new OrderedSet(),
   searchResultsIds: new OrderedSet(),
@@ -89,13 +96,65 @@ function meta(state = new InitialMeta(), action) {
     case types.SET_FITER_OF_ISSUES_CRITERIA_FILTERS:
       return state.set(`issueFilterOfFilters_${action.payload.filterName}`, action.payload.value);
 
+    case types.SET_ISSUES_CRITERIA_FITER: {
+      const stateField = `issueCurrentCriteriaFilter_${action.payload.criteriaName}`;
+      const stateOptionsField = `issuesCriteriaOptions_${action.payload.criteriaName}`;
+      const filters = state.get(stateField);
+      const criteriasMap = state.get(stateOptionsField);
+      return state.set(
+        stateField,
+        [
+          ...filters,
+          action.payload.value,
+        ],
+      ).set(stateOptionsField, {
+        ...criteriasMap,
+        [action.payload.value]: {
+          ...criteriasMap[action.payload.value],
+          checked: true,
+        },
+      },
+    );
+    }
+
+    case types.DELETE_ISSUES_CRITERIA_FITER: {
+      const stateField = `issueCurrentCriteriaFilter_${action.payload.criteriaName}`;
+      const stateOptionsField = `issuesCriteriaOptions_${action.payload.criteriaName}`;
+      const filters = state.get(stateField).filter(id => id !== action.payload.value);
+      const criteriasMap = state.get(stateOptionsField);
+      return state.set(
+        stateField,
+        filters,
+      ).set(stateOptionsField, {
+        ...criteriasMap,
+        [action.payload.value]: {
+          ...criteriasMap[action.payload.value],
+          checked: false,
+        },
+      },
+    );
+    }
+
+    case types.FILL_FILTER_ASSIGNEE:
+      return state.set(
+        'issuesCriteriaOptions_Assignee',
+        {
+          ...state.get('issuesCriteriaOptions_Assignee'),
+          [action.payload]: {
+            id: action.payload,
+            name: 'Current User',
+            checked: false,
+          },
+        },
+      ).set('issueAssigneeIds', ['none', action.payload]);
+
     case types.FILL_ISSUES_ALL_TYPES:
-      return state.set('issuesAlltypesMap', action.payload.map)
+      return state.set('issuesCriteriaOptions_Type', action.payload.map)
                   .set('issuesTypesIds', action.payload.issuesIds)
                   .set('subIssuesTypesIds', action.payload.subIssuesIds);
 
     case types.FILL_ISSUES_ALL_STATUSES:
-      return state.set('issueStatuses', action.payload.map)
+      return state.set('issuesCriteriaOptions_Status', action.payload.map)
                   .set('issueStatusCategories', action.payload.statusCategories)
                   .set('issueStatusesIds', action.payload.ids);
 
