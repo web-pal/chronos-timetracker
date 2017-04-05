@@ -30,7 +30,9 @@ function randomPeriods(periodsQty, min, max) {
 
 function* takeScreenshot() {
   const screenshotTime = yield select(state => state.timer.time);
-  yield call(makeScreenshot, screenshotTime);
+  const userData = yield select(state => state.profile.userData);
+  const host = yield select(state => state.profile.host);
+  yield call(makeScreenshot, screenshotTime, userData.get('key'), host);
 }
 
 function timerChannel() {

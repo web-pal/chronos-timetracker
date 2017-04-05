@@ -25,23 +25,11 @@ export function jiraUploadWorklog(opts) {
   return jira.client.issue.addWorkLog(opts);
 }
 
-export function chronosBackendUploadWorklog({
-  worklogId, issueId, comment,
-  timeSpentSeconds, screensShot, activity,
-}) {
+export function chronosBackendUploadWorklog(worklog) {
   return fetch(`${apiUrl}/api/tracker/worklog`, {
     method: 'POST',
     headers: getHeaders(),
-    body: JSON.stringify({
-      id: worklogId,
-      worklog: {
-        issueId,
-        screensShot,
-        description: comment,
-        timeTracked: timeSpentSeconds,
-        activity,
-      },
-    }),
+    body: JSON.stringify(worklog),
   });
 }
 
@@ -65,7 +53,7 @@ export function uploadScreenshotOnS3Bucket({ url, image }) {
   return fetch(url, {
     method: 'PUT',
     headers: {
-      'Content-Type': 'image/png',
+      'Content-Type': 'image/jpeg',
     },
     body: image,
   });

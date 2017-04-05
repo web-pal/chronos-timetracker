@@ -38,7 +38,7 @@ export function* uploadWorklog({
 }, offlineMode = false) {
   remote.getGlobal('sharedObj').uploading = true;
   let activity = activityValue;
-  let screensShot = screens;
+  let screenshots = screens;
   let worklogId = worklog_id; // eslint-disable-line
 
   if (!offlineMode) {
@@ -57,10 +57,9 @@ export function* uploadWorklog({
     });
     console.log('activity', activity);
 
-    screensShot = yield select(
+    screenshots = yield select(
       state => state.worklogs.meta.currentWorklogScreenshots.toArray(),
     );
-    screensShot = screensShot.map(s => ({ name: s }));
   }
 
   let worklog = false;
@@ -86,7 +85,7 @@ export function* uploadWorklog({
       }
       offlineWorklogs.push({
         ...jiraWorklogData,
-        screensShot,
+        screenshots,
         activity,
         type: 'jiraUploadWorklog',
       });
@@ -99,7 +98,7 @@ export function* uploadWorklog({
       issueId,
       timeSpentSeconds,
       comment,
-      screensShot,
+      screenshots,
       activity,
     };
     try {
@@ -121,7 +120,7 @@ export function* uploadWorklog({
     yield put({ type: types.SET_WORKLOG_UPLOAD_STATE, payload: false });
     yield put({ type: types.FETCH_ISSUE_REQUEST, payload: issueId });
   }
-  // Maybe we need to have temporary id
+
   if (!offlineMode && worklog) {
     yield put({ type: types.ADD_RECENT_WORKLOG, payload: worklog });
   }
@@ -135,19 +134,34 @@ export function* watchSelectWorklogs() {
   );
 }
 
-export function* uploadScreenshot({ screenshotTime, lastScreenshotPath }) {
+export function* uploadScreenshot({ screenshotTime, lastScreenshotPath, lastScreenshotThumbPath }) {
   const isOffline = lastScreenshotPath.includes('offline_screens');
   if (!isOffline) {
     yield put({ type: types.SET_LAST_SCREENSHOT_TIME, payload: screenshotTime });
   }
 
   const fileName = path.basename(lastScreenshotPath);
+  const thumbFilename = path.basename(lastScreenshotThumbPath);
+
   let error = false;
+  let mainScreenError = true;
+  let thumbScreenError = true;
+
   const image = yield cps(fs.readFile, lastScreenshotPath);
+  const thumbImage = yield cps(fs.readFile, lastScreenshotThumbPath);
 
   try {
     const { url } = yield call(signUploadUrlForS3Bucket, fileName);
     yield uploadScreenshotOnS3Bucket({ url, image });
+    mainScreenError = false;
+
+    if (lastScreenshotThumbPath.length) {
+      const thumbUrlData = yield call(signUploadUrlForS3Bucket, thumbFilename);
+      yield uploadScreenshotOnS3Bucket({ url: thumbUrlData.url, thumbImage });
+      thumbScreenError = false;
+    } else {
+      thumbScreenError = false;
+    }
   } catch (err) {
     console.log(err);
     Raven.captureException(err);
@@ -157,16 +171,24 @@ export function* uploadScreenshot({ screenshotTime, lastScreenshotPath }) {
   if (!isOffline) {
     yield put({
       type: types.ADD_SCREENSHOT_TO_CURRENT_LIST,
-      payload: fileName,
+      payload: { fileName, thumbFilename, screenshotTime },
     });
   }
 
   if (error) {
     if (!isOffline) {
-      fs.rename(lastScreenshotPath, `${remote.getGlobal('appDir')}/offline_screens/${fileName}`);
+      if (mainScreenError) {
+        fs.rename(lastScreenshotPath, `${remote.getGlobal('appDir')}/offline_screens/${fileName}`);
+      }
+      if (thumbScreenError) {
+        fs.rename(lastScreenshotPath, `${remote.getGlobal('appDir')}/offline_screens/${thumbFilename}`);
+      }
     }
   } else {
     yield cps(fs.unlink, lastScreenshotPath);
+    if (lastScreenshotThumbPath.length) {
+      yield cps(fs.unlink, lastScreenshotThumbPath);
+    }
   }
   return error;
 }
@@ -197,16 +219,20 @@ export function* uploadOfflineWorklogs() {
       offlineWorklogs = [];
     }
     let index = 0;
-    for (let worklog of offlineWorklogs) { // eslint-disable-line
+    for (const worklog of offlineWorklogs) { // eslint-disable-line
       const args = {
         issueId: worklog.issueId,
-        timeSpentSeconds: worklog.worklog.timeSpentSeconds,
-        comment: worklog.comment,
-        screens: worklog.screensShot,
+        screens: worklog.screenshots,
         activityValue: worklog.activity,
       };
+      if (worklog.type === 'jiraUploadWorklog') {
+        args.timeSpentSeconds = worklog.worklog.timeSpentSeconds;
+        args.comment = worklog.worklog.comment;
+      }
       if (worklog.type === 'chronosUploadWorklog') {
-        args.worklog_id = worklog.id;
+        args.timeSpentSeconds = worklog.timeSpentSeconds;
+        args.worklog_id = worklog.worklogId;
+        args.comment = worklog.comment;
       }
       const error = yield uploadWorklog(args, true);
       offlineWorklogs.splice(index, 1);

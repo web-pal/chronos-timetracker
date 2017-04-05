@@ -18,6 +18,7 @@ global.sharedObj = {
   running: false,
   uploading: false,
   lastScreenshotPath: '',
+  lastScreenshotThumbPath: '',
   screenshotTime: null,
   idleTime: 0,
 };
