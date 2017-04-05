@@ -64,7 +64,7 @@ export function* checkJWT() {
   yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: true });
   try {
     const userData = yield call(chronosBackendGetJiraCredentials);
-    if (userData.authType === 'basic_auth') {
+    if (userData.authType === 'basic_auth' || userData.authType === undefined) {
       yield put(login({ values: { ...userData, host: userData.baseUrl.split('.')[0] } }, false));
     }
     if (userData.authType === 'OAuth') {
