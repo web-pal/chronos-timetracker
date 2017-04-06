@@ -150,7 +150,7 @@ export function* uploadScreenshot({
 
     if (lastScreenshotThumbPath.length) {
       const thumbUrlData = yield call(signUploadUrlForS3Bucket, thumbFilename);
-      yield uploadScreenshotOnS3Bucket({ url: thumbUrlData.url, thumbImage });
+      yield uploadScreenshotOnS3Bucket({ url: thumbUrlData.url, image: thumbImage });
       thumbScreenError = false;
     } else {
       thumbScreenError = false;
