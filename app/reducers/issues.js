@@ -9,8 +9,8 @@ function allItems(state = new OrderedSet(), action) {
       return state.concat(action.payload.ids);
     case types.CLEAR_ISSUES:
     case types.CLEAR_ALL_REDUCERS:
-    case types.DELETE_ISSUES_CRITERIA_FITER:
-    case types.SET_ISSUES_CRITERIA_FITER:
+    case types.DELETE_ISSUES_CRITERIA_FILTER:
+    case types.SET_ISSUES_CRITERIA_FILTER:
       return new OrderedSet();
     default:
       return state;
@@ -96,10 +96,10 @@ function meta(state = new InitialMeta(), action) {
     case types.SET_SHOWING_FILTER_CRITERIA_BLOCK:
       return state.set('showingFilterCriteriaBlock', action.payload);
 
-    case types.SET_FITER_OF_ISSUES_CRITERIA_FILTERS:
+    case types.SET_FILTER_OF_ISSUES_CRITERIA_FILTERS:
       return state.set(`issueFilterOfFilters_${action.payload.filterName}`, action.payload.value);
 
-    case types.SET_ISSUES_CRITERIA_FITER: {
+    case types.SET_ISSUES_CRITERIA_FILTER: {
       const stateField = `issueCurrentCriteriaFilter_${action.payload.criteriaName}`;
       const stateOptionsField = `issuesCriteriaOptions_${action.payload.criteriaName}`;
       const filters = state.get(stateField);
@@ -120,7 +120,7 @@ function meta(state = new InitialMeta(), action) {
     ).set('lastStopIndex', 0);
     }
 
-    case types.DELETE_ISSUES_CRITERIA_FITER: {
+    case types.DELETE_ISSUES_CRITERIA_FILTER: {
       const stateField = `issueCurrentCriteriaFilter_${action.payload.criteriaName}`;
       const stateOptionsField = `issuesCriteriaOptions_${action.payload.criteriaName}`;
       const filters = state.get(stateField).filter(id => id !== action.payload.value);

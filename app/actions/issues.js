@@ -42,7 +42,7 @@ export function setIssuesSearchValue(value) {
 
 export function setFilterOfIssuesFiltersValue(value, filterName) {
   return {
-    type: types.SET_FITER_OF_ISSUES_CRITERIA_FILTERS,
+    type: types.SET_FILTER_OF_ISSUES_CRITERIA_FILTERS,
     payload: { value, filterName },
   };
 }
@@ -54,7 +54,7 @@ export function setIssuesCriteriaFilter(
   pagination = { startIndex: 0, stopIndex: 50 },
 ) {
   return {
-    type: del ? types.DELETE_ISSUES_CRITERIA_FITER : types.SET_ISSUES_CRITERIA_FITER,
+    type: del ? types.DELETE_ISSUES_CRITERIA_FILTER : types.SET_ISSUES_CRITERIA_FILTER,
     payload: { value, criteriaName },
     pagination,
   };

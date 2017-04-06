@@ -15,6 +15,7 @@ import { issueSchema, issueTypeSchema, issueStatusSchema } from '../schemas/';
 
 function* storeIssues({ issues, fillIssuesType, fillWorklogsType }) {
   const normalizedData = normalize(issues, [issueSchema]);
+  console.log('storeIssues', issues);
   yield put({
     type: fillIssuesType,
     payload: {
@@ -277,8 +278,11 @@ export function* watchGetIssue() {
 }
 
 export function* watchIssuesCriteriaFilter() {
-  yield takeLatest(types.SET_ISSUES_CRITERIA_FITER, getIssuesAfterFiltersSelection);
-  yield takeLatest(types.DELETE_ISSUES_CRITERIA_FITER, getIssuesAfterFiltersSelection);
+  yield takeLatest(types.SET_ISSUES_CRITERIA_FILTER, getIssuesAfterFiltersSelection);
+}
+
+export function* watchIssuesCriteriaFilterDelete() {
+  yield takeLatest(types.DELETE_ISSUES_CRITERIA_FILTER, getIssuesAfterFiltersSelection);
 }
 
 export function* watchSearchIssues() {

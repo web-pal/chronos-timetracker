@@ -16,7 +16,7 @@ const CriteriaFilterOption = ({
       { (option.iconUrl && option.iconUrl[option.iconUrl.length - 1] !== '/')
         ? (<img alt="" src={option.iconUrl} width="16" height="16" />)
         : '' }
-      {option.name} {option.id}
+      {option.name}
     </label>
   </li>;
 
