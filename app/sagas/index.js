@@ -6,7 +6,7 @@ import {
   watchGetIssues, watchGetIssue, watchRecentIssues,
   watchSearchIssues, watchChangeSidebar,
   watchGetIssueTypes, watchGetIssueStatuses,
-  watchIssuesCriteriaFilter,
+  watchIssuesCriteriaFilter, watchFilterIssues,
 } from './issues';
 import {
   watchSelectWorklogs, watchUploadScreenshot,
@@ -26,6 +26,7 @@ export default function* root() {
     fork(watchGetIssues),
 
     fork(watchIssuesCriteriaFilter),
+    fork(watchFilterIssues),
     fork(watchGetIssue),
     fork(watchSearchIssues),
     fork(watchRecentIssues),

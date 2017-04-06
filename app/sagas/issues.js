@@ -255,7 +255,7 @@ function* findSelectedIndex({ payload }) {
 
 function* getIssuesAfterFiltersSelection() {
   yield put({
-    type: types.FETCH_ISSUES_REQUEST,
+    type: types.FETCH_FILTER_ISSUES_REQUEST,
     pagination: { startIndex: 0, stopIndex: 50 },
     resolve: false,
   });
@@ -265,13 +265,16 @@ export function* watchGetIssues() {
   yield throttle(2000, types.FETCH_ISSUES_REQUEST, getIssues);
 }
 
+export function* watchFilterIssues() {
+  yield takeLatest(types.FETCH_FILTER_ISSUES_REQUEST, getIssues);
+}
+
 export function* watchGetIssue() {
   while (true) {
     const { payload } = yield take(types.FETCH_ISSUE_REQUEST);
     yield fork(getIssue, payload);
   }
 }
-
 
 export function* watchIssuesCriteriaFilter() {
   yield takeLatest(types.SET_ISSUES_CRITERIA_FITER, getIssuesAfterFiltersSelection);
