@@ -128,13 +128,20 @@ export function* uploadScreenshot({
   lastScreenshotPath,
   lastScreenshotThumbPath,
 }) {
+  yield put({ type: types.SET_SCREENSHOT_UPLOAD_STATE, payload: true });
   const isOffline = lastScreenshotPath.includes('offline_screens');
-  if (!isOffline) {
-    yield put({ type: types.SET_LAST_SCREENSHOT_TIME, payload: screenshotTime });
-  }
 
   const fileName = path.basename(lastScreenshotPath);
   const thumbFilename = path.basename(lastScreenshotThumbPath);
+
+  if (!isOffline) {
+    // Set screenshot upload in process
+    yield put({ type: types.SET_LAST_SCREENSHOT_TIME, payload: screenshotTime });
+    yield put({
+      type: types.ADD_SCREENSHOT_TO_CURRENT_LIST,
+      payload: { fileName, thumbFilename, screenshotTime, timestamp },
+    });
+  }
 
   let error = false;
   let mainScreenError = true;
@@ -183,6 +190,7 @@ export function* uploadScreenshot({
       yield cps(fs.unlink, lastScreenshotThumbPath);
     }
   }
+  yield put({ type: types.SET_SCREENSHOT_UPLOAD_STATE, payload: false });
   return error;
 }
 

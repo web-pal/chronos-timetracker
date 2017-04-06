@@ -7,7 +7,7 @@ import playIcon from '../../assets/images/play@2x.png';
 import stopIcon from '../../assets/images/stop@2x.png';
 
 const TimerControls = (props) => {
-  const { startTimer, stopTimer, running } = props;
+  const { startTimer, stopTimer, running, screenshotUploading } = props;
   return (
     <Flex row centered className="TimerControls">
       <div className="TimerControls__button">
@@ -18,7 +18,19 @@ const TimerControls = (props) => {
         />
         <button
           className={`button button-${running ? 'stop' : 'play'}`}
-          onClick={running ? stopTimer : startTimer}
+          onClick={() => {
+            if (running) {
+              if (screenshotUploading) {
+                window.alert(
+                  'Currently app in process of uploading screenshot, wait few seconds please',
+                );
+              } else {
+                stopTimer();
+              }
+            } else {
+              startTimer();
+            }
+          }}
         >
           {running
             ? <img src={stopIcon} width={33} height={33} alt="stop" />
@@ -35,6 +47,7 @@ TimerControls.propTypes = {
   stopTimer: PropTypes.func.isRequired,
 
   running: PropTypes.bool.isRequired,
+  screenshotUploading: PropTypes.bool.isRequired,
 };
 
 export default TimerControls;

@@ -35,6 +35,7 @@ class Tracker extends Component {
     setDescription: PropTypes.func.isRequired,
 
     running: PropTypes.bool.isRequired,
+    screenshotUploading: PropTypes.bool.isRequired,
     currentIssue: ImmutablePropTypes.map.isRequired,
     currentTrackingIssue: ImmutablePropTypes.map.isRequired,
     description: PropTypes.string.isRequired,
@@ -108,7 +109,8 @@ class Tracker extends Component {
   render() {
     const {
       startTimer, stopTimer, selectIssue, setDescription,
-      running, currentIssue, currentTrackingIssue, description, currentIssueSelfLogged,
+      running, screenshotUploading, description,
+      currentIssue, currentTrackingIssue, currentIssueSelfLogged,
     } = this.props;
 
     if (!currentIssue.size) {
@@ -168,6 +170,7 @@ class Tracker extends Component {
             <Flex column>
               <TimerControls
                 running={running}
+                screenshotUploading={screenshotUploading}
                 startTimer={startTimer}
                 stopTimer={stopTimer}
               />
@@ -184,6 +187,7 @@ class Tracker extends Component {
 function mapStateToProps({ timer, issues, worklogs, profile }) {
   return {
     running: timer.running,
+    screenshotUploading: worklogs.meta.screenshotUploading,
     currentIssue: getSelectedIssue({ issues }),
     currentIssueSelfLogged: getIssueLoggedByUser({ issues, worklogs, profile }),
     currentTrackingIssue: getTrackingIssue({ issues, worklogs }),
