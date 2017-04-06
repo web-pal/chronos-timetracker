@@ -171,10 +171,25 @@ function* getIssues({ pagination: { stopIndex, resolve } }) {
   const currentProject = yield select(state => state.projects.meta.selectedProjectId);
   const fetched = yield select(state => state.issues.meta.fetched);
   const startIndex = yield select(state => state.issues.meta.lastStopIndex);
+  const typeFiltresId = yield select(state => state.issues.meta.issueCurrentCriteriaFilter_Type);
+  const statusFiltresId = yield select(state =>
+    state.issues.meta.issueCurrentCriteriaFilter_Status);
+  const assigneeFiltresId = yield select(state =>
+    state.issues.meta.issueCurrentCriteriaFilter_Assignee);
+  const assigneeFiltresMap = yield select(state =>
+    state.issues.meta.issuesCriteriaOptions_Assignee);
+
+  const assigneeFiltresEmail = assigneeFiltresId.map(id => assigneeFiltresMap[id].field);
   const newStopIndex = stopIndex + 30;
   yield put({ type: types.SET_LAST_STOP_INDEX, payload: newStopIndex });
-
-  const response = yield call(fetchIssues, { startIndex, stopIndex: newStopIndex, currentProject });
+  const response = yield call(fetchIssues, {
+    startIndex,
+    stopIndex: newStopIndex,
+    currentProject,
+    typeFiltresId,
+    statusFiltresId,
+    assigneeFiltresEmail,
+  });
   let { issues } = response;
   const { total } = response;
   const incompleteIssues = issues.filter(issue => issue.fields.worklog.total > 20);
@@ -238,6 +253,13 @@ function* findSelectedIndex({ payload }) {
   }
 }
 
+function* getIssuesAfterFiltersSelection() {
+  yield put({
+    type: types.FETCH_ISSUES_REQUEST,
+    pagination: { startIndex: 0, stopIndex: 50 },
+    resolve: false,
+  });
+}
 
 export function* watchGetIssues() {
   yield throttle(2000, types.FETCH_ISSUES_REQUEST, getIssues);
@@ -248,6 +270,12 @@ export function* watchGetIssue() {
     const { payload } = yield take(types.FETCH_ISSUE_REQUEST);
     yield fork(getIssue, payload);
   }
+}
+
+
+export function* watchIssuesCriteriaFilter() {
+  yield takeLatest(types.SET_ISSUES_CRITERIA_FITER, getIssuesAfterFiltersSelection);
+  yield takeLatest(types.DELETE_ISSUES_CRITERIA_FITER, getIssuesAfterFiltersSelection);
 }
 
 export function* watchSearchIssues() {

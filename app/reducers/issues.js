@@ -9,6 +9,8 @@ function allItems(state = new OrderedSet(), action) {
       return state.concat(action.payload.ids);
     case types.CLEAR_ISSUES:
     case types.CLEAR_ALL_REDUCERS:
+    case types.DELETE_ISSUES_CRITERIA_FITER:
+    case types.SET_ISSUES_CRITERIA_FITER:
       return new OrderedSet();
     default:
       return state;
@@ -59,9 +61,10 @@ const InitialMeta = Immutable.Record({
   issueCurrentCriteriaFilter_Status: [],
 
   issuesCriteriaOptions_Assignee: {
-    none: { name: 'Unassigned', id: 'none', checked: false },
+    none: { name: 'Unassigned', id: 'none', field: 'assignee is EMPTY', checked: false },
+    currentUser: { name: 'Current User', id: 'currentUser', field: 'assignee = currentUser()', checked: false },
   },
-  issueAssigneeIds: ['none'],
+  issueAssigneeIds: ['none', 'currentUser'],
   issueFilterOfFilters_Assignee: '',
   issueCurrentCriteriaFilter_Assignee: [],
 
@@ -114,7 +117,7 @@ function meta(state = new InitialMeta(), action) {
           checked: true,
         },
       },
-    );
+    ).set('lastStopIndex', 0);
     }
 
     case types.DELETE_ISSUES_CRITERIA_FITER: {
@@ -132,21 +135,8 @@ function meta(state = new InitialMeta(), action) {
           checked: false,
         },
       },
-    );
+    ).set('lastStopIndex', 0);
     }
-
-    case types.FILL_FILTER_ASSIGNEE:
-      return state.set(
-        'issuesCriteriaOptions_Assignee',
-        {
-          ...state.get('issuesCriteriaOptions_Assignee'),
-          [action.payload]: {
-            id: action.payload,
-            name: 'Current User',
-            checked: false,
-          },
-        },
-      ).set('issueAssigneeIds', ['none', action.payload]);
 
     case types.FILL_ISSUES_ALL_TYPES:
       return state.set('issuesCriteriaOptions_Type', action.payload.map)

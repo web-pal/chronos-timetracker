@@ -23,6 +23,8 @@ const ProjectPicker = enhance(({
   clearWorklogs,
   clearIssues,
   fetchIssues,
+  fetchIssuesAllTypes,
+  fetchIssuesAllStatuses,
   fetchRecentIssues,
   selectedProject,
   projectsFetching,
@@ -39,6 +41,8 @@ const ProjectPicker = enhance(({
       clearIssues();
       fetchRecentIssues();
       fetchIssues();
+      fetchIssuesAllTypes();
+      fetchIssuesAllStatuses();
     }}
     isLoading={projectsFetching}
     clearable={false}

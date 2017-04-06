@@ -16,9 +16,22 @@ const requiredFields = [
 ];
 
 
-export function fetchIssues({ startIndex, stopIndex, currentProject }) {
+export function fetchIssues({
+  startIndex,
+  stopIndex,
+  currentProject,
+  typeFiltresId = [],
+  statusFiltresId = [],
+  assigneeFiltresEmail = [],
+}) {
+  const jql = [
+    `project = ${currentProject}`,
+    (typeFiltresId.length ? ` AND issueType in (${typeFiltresId.join(',')})` : ''),
+    (statusFiltresId.length ? ` AND status in (${statusFiltresId.join(',')})` : ''),
+    (assigneeFiltresEmail.length ? ` AND (${assigneeFiltresEmail.join(' OR ')})` : ''),
+  ].join('');
   return jira.client.search.search({
-    jql: `project = ${currentProject}`,
+    jql,
     maxResults: stopIndex - startIndex,
     startAt: startIndex,
     fields: requiredFields,

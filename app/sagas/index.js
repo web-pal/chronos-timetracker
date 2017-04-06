@@ -6,6 +6,7 @@ import {
   watchGetIssues, watchGetIssue, watchRecentIssues,
   watchSearchIssues, watchChangeSidebar,
   watchGetIssueTypes, watchGetIssueStatuses,
+  watchIssuesCriteriaFilter,
 } from './issues';
 import {
   watchSelectWorklogs, watchUploadScreenshot,
@@ -23,6 +24,8 @@ export default function* root() {
     fork(onSelectProject),
 
     fork(watchGetIssues),
+
+    fork(watchIssuesCriteriaFilter),
     fork(watchGetIssue),
     fork(watchSearchIssues),
     fork(watchRecentIssues),

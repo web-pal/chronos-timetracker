@@ -33,18 +33,6 @@ export const getTrackingIssueId = ({ issues }) => issues.meta.trackingIssueId;
 const getWorklogsMap = ({ worklogs }) => worklogs.byId;
 const getSelfKey = ({ profile }) => profile.userData.get('key');
 
-function criteriaFilter(issues, statusIds, typeIds, assigneeIds) {
-  function assigneeFilter(issue) {
-    const assignee = issue.get('fields').get('assignee');
-    if (!assigneeIds.length) return true;
-    return assigneeIds.includes(assignee ? assignee.get('emailAddress') : 'none');
-  }
-  return issues
-    .filter(issue => (statusIds.length ? statusIds.includes(issue.get('fields').get('status').get('id')) : true))
-    .filter(issue => (typeIds.length ? typeIds.includes(issue.get('fields').get('issuetype').get('id')) : true))
-    .filter(assigneeFilter);
-}
-
 
 export const getIssues = createSelector(
   [getIssuesIds, getIssuesMap],
@@ -60,24 +48,19 @@ export const getSearchResultIssues = createSelector(
   [
     getSearchResultIssuesIds,
     getIssuesMap,
-    getFrilteredStatusIds,
-    getFrilteredTypesIds,
-    getFrilteredAssigneeIds,
   ],
-  (ids, map, statusIds, typeIds, assigneeIds) =>
-    criteriaFilter(ids.map(id => map.get(id)), statusIds, typeIds, assigneeIds).toList(),
+  (ids, map) =>
+    ids.map(id => map.get(id)).toList(),
 );
 
 export const getAllIssues = createSelector(
   [
     getSearchResultIssuesIds,
-    getIssuesIds, getIssuesMap,
-    getFrilteredStatusIds,
-    getFrilteredTypesIds,
-    getFrilteredAssigneeIds,
+    getIssuesIds,
+    getIssuesMap,
   ],
-  (searchIds, ids, map, statusIds, typeIds, assigneeIds) =>
-    criteriaFilter(ids.map(id => map.get(id)), statusIds, typeIds, assigneeIds).toList(),
+  (searchIds, ids, map) =>
+    ids.map(id => map.get(id)).toList(),
   );
 
 export const getAllIssuesStatuses = createSelector(

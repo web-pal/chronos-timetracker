@@ -14,6 +14,7 @@ const FilterCriteria = ({
   handleCriteriaSet,
   criteriaKey,
   hideFilterOfFiltersField,
+  isActive,
 }) =>
   <Flex column centered className="sidebar-filter-criterias__item">
     <button
@@ -25,7 +26,8 @@ const FilterCriteria = ({
       ].join(' ')}
     >
       <div className="criteria-wrap">
-        <span className="fieldLabel">{name}:</span> All
+        <span className="fieldLabel">{name}:</span>
+        { isActive ? ' +' : ' All' }
       </div>
     </button>
     { isOpen &&
@@ -50,6 +52,7 @@ FilterCriteria.propTypes = {
   handleFilterOfFilters: PropTypes.func.isRequired,
   handleCriteriaSet: PropTypes.func.isRequired,
   criteriaKey: PropTypes.string.isRequired,
+  isActive: PropTypes.bool.isRequired,
 };
 
 FilterCriteria.defaultProps = {

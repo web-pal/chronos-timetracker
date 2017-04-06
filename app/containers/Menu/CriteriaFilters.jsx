@@ -22,6 +22,9 @@ const CriteriaFilters = ({
   issueFilterOfFiltersTypes, issueFilterOfFiltersStatus, issueFilterOfFiltersAssignee,
   setFilterOfIssuesFiltersValue, AllIssuesAssignee,
   setIssuesCriteriaFilter,
+  isStatusFilterActvie,
+  isTypeFilterActvie,
+  isAssigneeFilterActvie,
 }) =>
   <Flex
     row
@@ -41,6 +44,7 @@ const CriteriaFilters = ({
                 { key: 'Standard', header: 'Standard Issue Types', values: AllIssuesTypes },
                 { key: 'Sub', header: 'Sub-Task Issue Types', values: AllSubIssuesTypes },
               ],
+              isActive: isTypeFilterActvie,
               filterOfFilters: issueFilterOfFiltersTypes,
             },
             {
@@ -48,12 +52,14 @@ const CriteriaFilters = ({
               criteriaKey: 'Status',
               options: [{ key: 'Status', values: AllIssuesStatuses }],
               filterOfFilters: issueFilterOfFiltersStatus,
+              isActive: isStatusFilterActvie,
             },
             {
               name: 'Assignee',
               criteriaKey: 'Assignee',
               options: [{ key: 'Assignee', values: AllIssuesAssignee }],
               filterOfFilters: issueFilterOfFiltersAssignee,
+              isActive: isAssigneeFilterActvie,
               hideFilterOfFiltersField: true,
             },
           ].map(criteria =>
@@ -87,6 +93,9 @@ CriteriaFilters.propTypes = {
   setFilterOfIssuesFiltersValue: PropTypes.func.isRequired,
   setIssuesCriteriaFilter: PropTypes.func.isRequired,
   AllIssuesAssignee: PropTypes.array.isRequired,
+  isStatusFilterActvie: PropTypes.bool.isRequired,
+  isTypeFilterActvie: PropTypes.bool.isRequired,
+  isAssigneeFilterActvie: PropTypes.bool.isRequired,
 };
 
 function mapStateToProps({ ui, issues }) {
@@ -104,6 +113,9 @@ function mapStateToProps({ ui, issues }) {
     AllIssuesTypes,
     AllIssuesStatuses,
     AllIssuesAssignee,
+    isStatusFilterActvie: !!issues.meta.issueCurrentCriteriaFilter_Status.length,
+    isTypeFilterActvie: !!issues.meta.issueCurrentCriteriaFilter_Type.length,
+    isAssigneeFilterActvie: !!issues.meta.issueCurrentCriteriaFilter_Assignee.length,
     issueFilterOfFiltersTypes: issues.meta.issueFilterOfFilters_Type,
     issueFilterOfFiltersStatus: issues.meta.issueFilterOfFilters_Status,
     issueFilterOfFiltersAssignee: issues.meta.issueFilterOfFilters_Assignee,

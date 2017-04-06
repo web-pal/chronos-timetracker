@@ -30,7 +30,6 @@ function* jiraLogin(values) {
       email: userData.emailAddress,
     });
     yield put({ type: types.FILL_PROFILE, payload: userData });
-    yield put({ type: types.FILL_FILTER_ASSIGNEE, payload: userData.emailAddress });
   } catch (err) {
     yield loginError('Cannot authorize to JIRA. Check your credentials and try again');
     success = false;

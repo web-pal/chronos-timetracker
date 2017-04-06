@@ -47,10 +47,16 @@ export function setFilterOfIssuesFiltersValue(value, filterName) {
   };
 }
 
-export function setIssuesCriteriaFilter(value, criteriaName, del) {
+export function setIssuesCriteriaFilter(
+  value,
+  criteriaName,
+  del,
+  pagination = { startIndex: 0, stopIndex: 50 },
+) {
   return {
     type: del ? types.DELETE_ISSUES_CRITERIA_FITER : types.SET_ISSUES_CRITERIA_FITER,
     payload: { value, criteriaName },
+    pagination,
   };
 }
 
