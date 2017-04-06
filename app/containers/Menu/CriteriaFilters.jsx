@@ -15,9 +15,10 @@ import FilterCriteria from '../../components/Sidebar/CriteriaFilters/FilterCrite
 
 const handleFilterOfFilters = (f, filterName) => ev => f(ev.target.value, filterName);
 
+
 const CriteriaFilters = ({
   sidebarType,
-  showingFilterCriteriaBlock, setShowingFilterCriteriaBlock,
+  setShowingFilterCriteriaBlock,
   AllIssuesTypes, AllSubIssuesTypes, AllIssuesStatuses,
   issueFilterOfFiltersTypes, issueFilterOfFiltersStatus, issueFilterOfFiltersAssignee,
   setFilterOfIssuesFiltersValue, AllIssuesAssignee,
@@ -25,8 +26,13 @@ const CriteriaFilters = ({
   isStatusFilterActvie,
   isTypeFilterActvie,
   isAssigneeFilterActvie,
-}) =>
-  <Flex
+  showPanel,
+  showFilterCriteria_Types,
+  showFilterCriteria_Status,
+  showFilterCriteria_Assignee,
+}) => (
+  showPanel
+  ? <Flex
     row
     className={[
       'sidebar-filter-item sidebar-filter-item--criterias',
@@ -46,6 +52,7 @@ const CriteriaFilters = ({
               ],
               isActive: isTypeFilterActvie,
               filterOfFilters: issueFilterOfFiltersTypes,
+              isOpen: showFilterCriteria_Types,
             },
             {
               name: 'Status',
@@ -53,6 +60,7 @@ const CriteriaFilters = ({
               options: [{ key: 'Status', values: AllIssuesStatuses }],
               filterOfFilters: issueFilterOfFiltersStatus,
               isActive: isStatusFilterActvie,
+              isOpen: showFilterCriteria_Status,
             },
             {
               name: 'Assignee',
@@ -61,11 +69,11 @@ const CriteriaFilters = ({
               filterOfFilters: issueFilterOfFiltersAssignee,
               isActive: isAssigneeFilterActvie,
               hideFilterOfFiltersField: true,
+              isOpen: showFilterCriteria_Assignee,
             },
           ].map(criteria =>
             <FilterCriteria
               key={criteria.criteriaKey}
-              isOpen={showingFilterCriteriaBlock === criteria.criteriaKey}
               handleFilterOfFilters={
                 handleFilterOfFilters(setFilterOfIssuesFiltersValue, criteria.criteriaKey)
               }
@@ -78,11 +86,12 @@ const CriteriaFilters = ({
       </Flex>
     </Flex>
   </Flex>
+    : null
+)
 ;
 
 CriteriaFilters.propTypes = {
   sidebarType: PropTypes.string.isRequired,
-  showingFilterCriteriaBlock: PropTypes.string.isRequired,
   setShowingFilterCriteriaBlock: PropTypes.func.isRequired,
   AllSubIssuesTypes: PropTypes.array.isRequired,
   AllIssuesTypes: PropTypes.array.isRequired,
@@ -96,6 +105,10 @@ CriteriaFilters.propTypes = {
   isStatusFilterActvie: PropTypes.bool.isRequired,
   isTypeFilterActvie: PropTypes.bool.isRequired,
   isAssigneeFilterActvie: PropTypes.bool.isRequired,
+  showPanel: PropTypes.bool.isRequired,
+  showFilterCriteria_Types: PropTypes.bool.isRequired,
+  showFilterCriteria_Status: PropTypes.bool.isRequired,
+  showFilterCriteria_Assignee: PropTypes.bool.isRequired,
 };
 
 function mapStateToProps({ ui, issues }) {
@@ -108,17 +121,20 @@ function mapStateToProps({ ui, issues }) {
 
   return {
     sidebarType: ui.sidebarType,
-    showingFilterCriteriaBlock: issues.meta.showingFilterCriteriaBlock,
     AllSubIssuesTypes,
     AllIssuesTypes,
     AllIssuesStatuses,
     AllIssuesAssignee,
+    showFilterCriteria_Types: issues.meta.showFilterCriteria_Types,
+    showFilterCriteria_Status: issues.meta.showFilterCriteria_Status,
+    showFilterCriteria_Assignee: issues.meta.showFilterCriteria_Assignee,
     isStatusFilterActvie: !!issues.meta.issueCurrentCriteriaFilter_Status.length,
     isTypeFilterActvie: !!issues.meta.issueCurrentCriteriaFilter_Type.length,
     isAssigneeFilterActvie: !!issues.meta.issueCurrentCriteriaFilter_Assignee.length,
     issueFilterOfFiltersTypes: issues.meta.issueFilterOfFilters_Type,
     issueFilterOfFiltersStatus: issues.meta.issueFilterOfFilters_Status,
     issueFilterOfFiltersAssignee: issues.meta.issueFilterOfFilters_Assignee,
+    showPanel: issues.meta.filterCriteriaPanel,
   };
 }
 

@@ -46,7 +46,11 @@ const InitialMeta = Immutable.Record({
   trackingIssueId: null,
 
   searchValue: '',
-  showingFilterCriteriaBlock: 'none',
+  filterCriteriaPanel: true,
+
+  showFilterCriteria_Types: false,
+  showFilterCriteria_Status: false,
+  showFilterCriteria_Assignee: false,
 
   issuesCriteriaOptions_Type: {},
   issuesTypesIds: [],
@@ -91,10 +95,16 @@ function meta(state = new InitialMeta(), action) {
       return state.set('lastStopIndex', action.payload);
 
     case types.SET_ISSUES_SEARCH_VALUE:
-      return state.set('searchValue', action.payload);
+      return state.set('searchValue', action.payload)
+        .set('filterCriteriaPanel', !action.payload);
 
-    case types.SET_SHOWING_FILTER_CRITERIA_BLOCK:
-      return state.set('showingFilterCriteriaBlock', action.payload);
+    case types.SET_SHOWING_FILTER_CRITERIA_BLOCK_TYPE:
+      return state.set('showFilterCriteria_Types', action.payload);
+    case types.SET_SHOWING_FILTER_CRITERIA_BLOCK_STATUS:
+      return state.set('showFilterCriteria_Status', action.payload);
+    case types.SET_SHOWING_FILTER_CRITERIA_BLOCK_ASSIGNEE:
+      return state.set('showFilterCriteria_Assignee', action.payload);
+
 
     case types.SET_FILTER_OF_ISSUES_CRITERIA_FILTERS:
       return state.set(`issueFilterOfFilters_${action.payload.filterName}`, action.payload.value);

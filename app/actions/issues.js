@@ -61,9 +61,9 @@ export function setIssuesCriteriaFilter(
 }
 
 
-export function setShowingFilterCriteriaBlock(value) {
+export function setShowingFilterCriteriaBlock(key, value) {
   return {
-    type: types.SET_SHOWING_FILTER_CRITERIA_BLOCK,
+    type: types[`SET_SHOWING_FILTER_CRITERIA_BLOCK_${key.toUpperCase()}`],
     payload: value,
   };
 }
