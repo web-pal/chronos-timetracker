@@ -23,7 +23,8 @@ export function makeScreenshot(screenshotTime, userKey, host) {
         maxHeight = image.naturalHeight > maxHeight ? image.naturalHeight : maxHeight;
         return imageObj;
       });
-      const screenhotName = `${host}_${userKey}_${screenshotTime}_${Date.now()}`;
+      const now = Date.now();
+      const screenhotName = `${host}_${userKey}_${screenshotTime}_${now}`;
       mergeImages(
         imagesWithCords,
         { width: totalWidth, height: maxHeight, format: 'image/jpeg', quality: 0.9 },
@@ -49,6 +50,7 @@ export function makeScreenshot(screenshotTime, userKey, host) {
               remote.getGlobal('sharedObj').lastScreenshotPath = imageDir;
               remote.getGlobal('sharedObj').lastScreenshotThumbPath = thumbImageDir;
               remote.getGlobal('sharedObj').screenshotTime = screenshotTime;
+              remote.getGlobal('sharedObj').timestamp = now;
               ipcRenderer.send('showScreenPreviewPopup');
               resolve();
             });

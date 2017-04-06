@@ -27,6 +27,16 @@ function randomPeriods(periodsQty, min, max) {
   });
 }
 
+function calculateActivity(currentIdleList, timeSpentSeconds) {
+  return [...Array(Math.ceil(timeSpentSeconds / 600)).keys()].map((period) => {
+    console.log('period', period);
+    const idleSec = currentIdleList
+      .slice(period * 10, (period + 1) * 10)
+      .reduce((a, b) => (a + b), 0) / 1000;
+    console.log('idleSec', idleSec);
+    return 100 - Math.round((10 * idleSec) / 100);
+  });
+}
 
 function* takeScreenshot() {
   const screenshotTime = yield select(state => state.timer.time);
@@ -135,9 +145,14 @@ function* runTimer() {
       yield put({ type: types.SET_TIME, payload: 0 });
       yield put({ type: types.SET_CURRENT_DESCRIPTION, payload: '' });
       if (timeSpentSeconds >= 60) {
+        const currentIdleList = yield select(state => state.timer.currentIdleList);
+        const screenshots = yield select(
+          state => state.worklogs.meta.currentWorklogScreenshots.toArray(),
+        );
+        const activity = calculateActivity(currentIdleList, timeSpentSeconds);
         yield call(
           uploadWorklog,
-          { issueId, timeSpentSeconds, comment: description },
+          { issueId, timeSpentSeconds, activity, screenshots, comment: description },
         );
       } else {
         // Show alert message that you have to track at least 60 seconds

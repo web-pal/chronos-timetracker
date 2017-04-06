@@ -41,3 +41,10 @@ export function setDescription(description) {
     payload: description,
   };
 }
+
+export function setWorklogUploadState(payload) {
+  return {
+    type: types.SET_WORKLOG_UPLOAD_STATE,
+    payload,
+  };
+}

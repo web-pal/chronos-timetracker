@@ -13,7 +13,19 @@ import {
 
 import * as types from '../constants/';
 import { getRecentWorklogsGroupedByDate } from '../selectors/worklogs';
-import { selectWorklog } from '../actions/worklogs';
+import { selectWorklog, setWorklogUploadState } from '../actions/worklogs';
+
+
+function* saveWorklogAsOffline(err, worklog) {
+  console.log(err);
+  Raven.captureException(err);
+  let offlineWorklogs = yield cps(storage.get, 'offlineWorklogs');
+  if (Object.prototype.toString.call(offlineWorklogs) !== '[object Array]') {
+    offlineWorklogs = [];
+  }
+  offlineWorklogs.push(worklog);
+  yield cps(storage.set, 'offlineWorklogs', offlineWorklogs);
+}
 
 
 export function* findAndSelectWorlogByIssueId({ issueId }) {
@@ -32,34 +44,15 @@ export function* uploadWorklog({
   issueId,
   timeSpentSeconds,
   comment,
-  activityValue,
-  screens,
+  activity,
+  screenshots,
   worklog_id,
 }, offlineMode = false) {
   remote.getGlobal('sharedObj').uploading = true;
-  let activity = activityValue;
-  let screenshots = screens;
   let worklogId = worklog_id; // eslint-disable-line
 
   if (!offlineMode) {
-    yield put({ type: types.SET_WORKLOG_UPLOAD_STATE, payload: true });
-    const currentIdleList = yield select(
-      state => state.timer.currentIdleList,
-    );
-    activity = [...Array(Math.ceil(timeSpentSeconds / 600)).keys()].map((period) => {
-      console.log('period', period);
-      const idleSec = currentIdleList
-        .slice(period * 10, (period + 1) * 10)
-        .reduce((a, b) => (a + b), 0) / 1000;
-      console.log('idleSec', idleSec);
-
-      return 100 - Math.round((10 * idleSec) / 100);
-    });
-    console.log('activity', activity);
-
-    screenshots = yield select(
-      state => state.worklogs.meta.currentWorklogScreenshots.toArray(),
-    );
+    yield put(setWorklogUploadState(true));
   }
 
   let worklog = false;
@@ -72,24 +65,19 @@ export function* uploadWorklog({
       },
     };
     try {
-      worklog = yield call(
-        jiraUploadWorklog, jiraWorklogData,
-      );
+      worklog = yield call(jiraUploadWorklog, jiraWorklogData);
       worklogId = worklog.id;
     } catch (err) {
-      console.log(err);
-      Raven.captureException(err);
-      let offlineWorklogs = yield cps(storage.get, 'offlineWorklogs');
-      if (Object.prototype.toString.call(offlineWorklogs) !== '[object Array]') {
-        offlineWorklogs = [];
-      }
-      offlineWorklogs.push({
-        ...jiraWorklogData,
-        screenshots,
-        activity,
-        type: 'jiraUploadWorklog',
-      });
-      yield cps(storage.set, 'offlineWorklogs', offlineWorklogs);
+      yield call(
+        saveWorklogAsOffline,
+        err,
+        {
+          ...jiraWorklogData,
+          screenshots,
+          activity,
+          type: 'jiraUploadWorklog',
+        },
+      );
     }
   }
   if (worklogId) {
@@ -104,20 +92,20 @@ export function* uploadWorklog({
     try {
       yield call(chronosBackendUploadWorklog, chronosWorklogData);
     } catch (err) {
-      console.log(err);
-      Raven.captureException(err);
-      let offlineWorklogs = yield cps(storage.get, 'offlineWorklogs');
-      if (Object.prototype.toString.call(offlineWorklogs) !== '[object Array]') {
-        offlineWorklogs = [];
-      }
-      offlineWorklogs.push({ ...chronosWorklogData, type: 'chronosUploadWorklog' });
-      yield cps(storage.set, 'offlineWorklogs', offlineWorklogs);
+      yield call(
+        saveWorklogAsOffline,
+        err,
+        {
+          ...chronosWorklogData,
+          type: 'chronosUploadWorklog',
+        },
+      );
     }
   }
   if (!offlineMode) {
     yield put({ type: types.CLEAR_CURRENT_SCREENSHOTS_LIST });
     yield put({ type: types.CLEAR_CURRENT_IDLE_LIST });
-    yield put({ type: types.SET_WORKLOG_UPLOAD_STATE, payload: false });
+    yield put(setWorklogUploadState(false));
     yield put({ type: types.FETCH_ISSUE_REQUEST, payload: issueId });
   }
 
@@ -134,7 +122,12 @@ export function* watchSelectWorklogs() {
   );
 }
 
-export function* uploadScreenshot({ screenshotTime, lastScreenshotPath, lastScreenshotThumbPath }) {
+export function* uploadScreenshot({
+  screenshotTime,
+  timestamp,
+  lastScreenshotPath,
+  lastScreenshotThumbPath,
+}) {
   const isOffline = lastScreenshotPath.includes('offline_screens');
   if (!isOffline) {
     yield put({ type: types.SET_LAST_SCREENSHOT_TIME, payload: screenshotTime });
@@ -171,7 +164,7 @@ export function* uploadScreenshot({ screenshotTime, lastScreenshotPath, lastScre
   if (!isOffline) {
     yield put({
       type: types.ADD_SCREENSHOT_TO_CURRENT_LIST,
-      payload: { fileName, thumbFilename, screenshotTime },
+      payload: { fileName, thumbFilename, screenshotTime, timestamp },
     });
   }
 
@@ -220,11 +213,8 @@ export function* uploadOfflineWorklogs() {
     }
     let index = 0;
     for (const worklog of offlineWorklogs) { // eslint-disable-line
-      const args = {
-        issueId: worklog.issueId,
-        screens: worklog.screenshots,
-        activityValue: worklog.activity,
-      };
+      const { issueId, screenshots, activity } = worklog;
+      const args = { issueId, screenshots, activity };
       if (worklog.type === 'jiraUploadWorklog') {
         args.timeSpentSeconds = worklog.worklog.timeSpentSeconds;
         args.comment = worklog.worklog.comment;

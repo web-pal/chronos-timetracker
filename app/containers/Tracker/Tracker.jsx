@@ -61,8 +61,18 @@ class Tracker extends Component {
 
   acceptScreenshot = () => {
     const { getGlobal } = remote;
-    const { screenshotTime, lastScreenshotPath, lastScreenshotThumbPath } = getGlobal('sharedObj');
-    this.props.uploadScreenshot({ screenshotTime, lastScreenshotPath, lastScreenshotThumbPath });
+    const {
+      screenshotTime,
+      timestamp,
+      lastScreenshotPath,
+      lastScreenshotThumbPath,
+    } = getGlobal('sharedObj');
+    this.props.uploadScreenshot({
+      screenshotTime,
+      lastScreenshotPath,
+      lastScreenshotThumbPath,
+      timestamp,
+    });
   }
 
   rejectScreenshot = () => {

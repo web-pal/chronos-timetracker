@@ -17,7 +17,7 @@
     "build": "npm run build-main && npm run build-renderer",
     "start": "cross-env NODE_ENV=production electron ./app/",
     "dev": "concurrently -p \"{name}\" -n \"RENDERER|>,    MAIN|>\" --kill-others \"npm run hot\" \"npm run hot-server\"",
-    "test": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 mocha --retries 2 --compilers js:babel-register --recursive --require ./test/index.js test/**/*.spec.js",
+    "test": "cross-env BABEL_ENV=cjs NODE_ENV=test babel-node ./app/testIndex.js | tap-spec",
     "lint": "eslint app *.js *.jsx --ignore-pattern '/dist/' --ignore-pattern '**/node_modules/*'"
   },
   "author": {
@@ -93,7 +93,7 @@
     "babel-polyfill": "6.22.0",
     "babel-preset-babili": "0.0.10",
     "babel-preset-env": "^1.1.8",
-    "babel-preset-es2015": "6.22.0",
+    "babel-preset-es2015": "6.24.0",
     "babel-preset-es2016": "6.22.0",
     "babel-preset-react": "6.22.0",
     "babel-preset-react-hmre": "1.1.1",
@@ -125,6 +125,8 @@
     "react-hot-loader": "3.0.0-beta.6",
     "redux-logger": "2.7.4",
     "style-loader": "0.13.1",
+    "tap-spec": "^4.1.1",
+    "tape": "^4.6.3",
     "webpack": "1.14.0",
     "webpack-dev-middleware": "1.9.0",
     "webpack-hot-middleware": "2.15.0",
