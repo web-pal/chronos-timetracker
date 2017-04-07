@@ -3,7 +3,12 @@ import React, { PropTypes } from 'react';
 import FilterCriteriaOption from './FilterCriteriaOption.jsx';
 
 const FilterCriteriaOptions = ({
-  options, filterOfFilters, handleFilterOfFilters, handleCriteriaSet, hideFilterOfFiltersField,
+  options,
+  filterOfFilters,
+  handleFilterOfFilters,
+  handleCriteriaSet,
+  hideFilterOfFiltersField,
+  showIcons,
 }) =>
   <div className={'sidebar-filter-criterias__options'}>
     <form action="#" className="searchfilter aui top-label aui-popup-content issuetype-criteria">
@@ -49,7 +54,8 @@ const FilterCriteriaOptions = ({
                       {
                         list.values.map(option =>
                           <FilterCriteriaOption
-                            key={option.name}
+                            key={option.get('name')}
+                            showIcons={showIcons}
                             option={option}
                             handleCriteriaSet={handleCriteriaSet}
                           />,
@@ -73,6 +79,7 @@ FilterCriteriaOptions.propTypes = {
   handleFilterOfFilters: PropTypes.func.isRequired,
   handleCriteriaSet: PropTypes.func.isRequired,
   hideFilterOfFiltersField: PropTypes.bool.isRequired,
+  showIcons: PropTypes.bool.isRequired,
 };
 
 export default FilterCriteriaOptions;

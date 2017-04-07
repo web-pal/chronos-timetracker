@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import ImmutablePropTypes from 'react-immutable-proptypes';
 
 import * as issuesActions from '../../actions/issues';
 
@@ -8,6 +9,7 @@ import {
   getAllIssuesTypes,
   getAllSubIssuesTypes,
   getAllIssuesStatuses,
+  getAllIssuesAssignee,
 } from '../../selectors/issues';
 
 import Flex from '../../components/Base/Flex/Flex';
@@ -52,6 +54,7 @@ const CriteriaFilters = ({
               isActive: isTypeFilterActvie,
               filterOfFilters: issueFilterOfFiltersTypes,
               isOpen: showFilterCriteriaType,
+              showIcons: true,
             },
             {
               name: 'Status',
@@ -60,6 +63,7 @@ const CriteriaFilters = ({
               filterOfFilters: issueFilterOfFiltersStatus,
               isActive: isStatusFilterActvie,
               isOpen: showFilterCriteriaStatus,
+              showIcons: false,
             },
             {
               name: 'Assignee',
@@ -69,6 +73,7 @@ const CriteriaFilters = ({
               isActive: isAssigneeFilterActvie,
               hideFilterOfFiltersField: true,
               isOpen: showFilterCriteriaAssignee,
+              showIcons: false,
             },
           ].map(criteria =>
             <FilterCriteria
@@ -92,15 +97,15 @@ const CriteriaFilters = ({
 CriteriaFilters.propTypes = {
   sidebarType: PropTypes.string.isRequired,
   setShowingFilterCriteriaBlock: PropTypes.func.isRequired,
-  AllSubIssuesTypes: PropTypes.array.isRequired,
-  AllIssuesTypes: PropTypes.array.isRequired,
-  AllIssuesStatuses: PropTypes.array.isRequired,
+  AllSubIssuesTypes: ImmutablePropTypes.list.isRequired,
+  AllIssuesTypes: ImmutablePropTypes.list.isRequired,
+  AllIssuesStatuses: ImmutablePropTypes.list.isRequired,
   issueFilterOfFiltersTypes: PropTypes.string.isRequired,
   issueFilterOfFiltersStatus: PropTypes.string.isRequired,
   issueFilterOfFiltersAssignee: PropTypes.string.isRequired,
   setFilterOfIssuesFiltersValue: PropTypes.func.isRequired,
   setIssuesCriteriaFilter: PropTypes.func.isRequired,
-  AllIssuesAssignee: PropTypes.array.isRequired,
+  AllIssuesAssignee: ImmutablePropTypes.list.isRequired,
   isStatusFilterActvie: PropTypes.bool.isRequired,
   isTypeFilterActvie: PropTypes.bool.isRequired,
   isAssigneeFilterActvie: PropTypes.bool.isRequired,
@@ -113,9 +118,7 @@ CriteriaFilters.propTypes = {
 function mapStateToProps({ ui, issues }) {
   const AllSubIssuesTypes = getAllSubIssuesTypes({ issues });
   const AllIssuesTypes = getAllIssuesTypes({ issues });
-  const AllIssuesAssignee = issues.meta.issueAssigneeIds.map(id =>
-    issues.meta.issuesCriteriaOptionsAssignee[id]);
-
+  const AllIssuesAssignee = getAllIssuesAssignee({ issues });
   const AllIssuesStatuses = getAllIssuesStatuses({ issues });
 
   return {
@@ -127,9 +130,9 @@ function mapStateToProps({ ui, issues }) {
     showFilterCriteriaType: issues.meta.showFilterCriteriaType,
     showFilterCriteriaStatus: issues.meta.showFilterCriteriaStatus,
     showFilterCriteriaAssignee: issues.meta.showFilterCriteriaAssignee,
-    isStatusFilterActvie: !!issues.meta.issueCurrentCriteriaFilterStatus.length,
-    isTypeFilterActvie: !!issues.meta.issueCurrentCriteriaFilterType.length,
-    isAssigneeFilterActvie: !!issues.meta.issueCurrentCriteriaFilterAssignee.length,
+    isStatusFilterActvie: !!issues.meta.issueCurrentCriteriaFilterStatus.size,
+    isTypeFilterActvie: !!issues.meta.issueCurrentCriteriaFilterType.size,
+    isAssigneeFilterActvie: !!issues.meta.issueCurrentCriteriaFilterAssignee.size,
     issueFilterOfFiltersTypes: issues.meta.issueFilterOfFiltersType,
     issueFilterOfFiltersStatus: issues.meta.issueFilterOfFiltersStatus,
     issueFilterOfFiltersAssignee: issues.meta.issueFilterOfFiltersAssignee,

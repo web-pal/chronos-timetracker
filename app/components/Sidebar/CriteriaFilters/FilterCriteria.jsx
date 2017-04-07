@@ -10,6 +10,9 @@ class FilterCriteria extends React.Component {
     this.handleClick = this.handleClick.bind(this);
     this.setRef = this.setRef.bind(this);
   }
+  componentWillMount() {
+    document.removeEventListener('click', this.handleOutsideClick, false);
+  }
   setRef(node) {
     this.node = node;
   }
@@ -39,6 +42,7 @@ class FilterCriteria extends React.Component {
       criteriaKey,
       hideFilterOfFiltersField,
       isActive,
+      showIcons,
     } = this.props;
     return (<Flex
       column
@@ -66,6 +70,7 @@ class FilterCriteria extends React.Component {
             hideFilterOfFiltersField={hideFilterOfFiltersField}
             options={options}
             handleCriteriaSet={(id, del) => handleCriteriaSet(id, criteriaKey, del)}
+            showIcons={showIcons}
           />
         }
       </div>
@@ -85,6 +90,7 @@ FilterCriteria.propTypes = {
   handleCriteriaSet: PropTypes.func.isRequired,
   criteriaKey: PropTypes.string.isRequired,
   isActive: PropTypes.bool.isRequired,
+  showIcons: PropTypes.bool.isRequired,
 };
 
 FilterCriteria.defaultProps = {

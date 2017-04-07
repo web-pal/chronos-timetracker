@@ -22,13 +22,13 @@ export function fetchIssues({
   currentProject,
   typeFiltresId = [],
   statusFiltresId = [],
-  assigneeFiltresEmail = [],
+  assigneeFiltresFields = [],
 }) {
   const jql = [
     `project = ${currentProject}`,
     (typeFiltresId.length ? ` AND issueType in (${typeFiltresId.join(',')})` : ''),
     (statusFiltresId.length ? ` AND status in (${statusFiltresId.join(',')})` : ''),
-    (assigneeFiltresEmail.length ? ` AND (${assigneeFiltresEmail.join(' OR ')})` : ''),
+    (assigneeFiltresFields.length ? ` AND (${assigneeFiltresFields.join(' OR ')})` : ''),
   ].join('');
   return jira.client.search.search({
     jql,

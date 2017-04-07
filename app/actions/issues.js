@@ -43,7 +43,8 @@ export function setIssuesSearchValue(value) {
 export function setFilterOfIssuesFiltersValue(value, filterName) {
   return {
     type: types.SET_FILTER_OF_ISSUES_CRITERIA_FILTERS,
-    payload: { value, filterName },
+    payload: { value },
+    meta: { filterName },
   };
 }
 
@@ -55,7 +56,8 @@ export function setIssuesCriteriaFilter(
 ) {
   return {
     type: del ? types.DELETE_ISSUES_CRITERIA_FILTER : types.SET_ISSUES_CRITERIA_FILTER,
-    payload: { value, criteriaName },
+    payload: { value },
+    meta: { criteriaName },
     pagination,
   };
 }

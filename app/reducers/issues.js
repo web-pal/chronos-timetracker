@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { Map, OrderedSet, fromJS } from 'immutable';
+import { Map, List, OrderedSet, fromJS } from 'immutable';
 
 import * as types from '../constants';
 
@@ -52,25 +52,25 @@ const InitialMeta = Immutable.Record({
   showFilterCriteriaStatus: false,
   showFilterCriteriaAssignee: false,
 
-  issuesCriteriaOptionsType: {},
-  issuesTypesIds: [],
-  subIssuesTypesIds: [],
+  issuesCriteriaOptionsType: new Map(),
+  issuesTypesIds: new List(),
+  subIssuesTypesIds: new List(),
   issueFilterOfFiltersType: '',
-  issueCurrentCriteriaFilterType: [],
+  issueCurrentCriteriaFilterType: new List(),
 
-  issuesCriteriaOptionsStatus: {},
-  issueStatusCategories: [],
-  issueStatusesIds: [],
+  issuesCriteriaOptionsStatus: new Map(),
+  issueStatusCategories: new List(),
+  issueStatusesIds: new List(),
   issueFilterOfFiltersStatus: '',
-  issueCurrentCriteriaFilterStatus: [],
+  issueCurrentCriteriaFilterStatus: new List(),
 
-  issuesCriteriaOptionsAssignee: {
+  issuesCriteriaOptionsAssignee: fromJS({
     none: { name: 'Unassigned', id: 'none', field: 'assignee is EMPTY', checked: false },
     currentUser: { name: 'Current User', id: 'currentUser', field: 'assignee = currentUser()', checked: false },
-  },
-  issueAssigneeIds: ['none', 'currentUser'],
+  }),
+  issueAssigneeIds: fromJS(['none', 'currentUser']),
   issueFilterOfFiltersAssignee: '',
-  issueCurrentCriteriaFilterAssignee: [],
+  issueCurrentCriteriaFilterAssignee: new List(),
 
   recentIssuesIds: new OrderedSet(),
   searchResultsIds: new OrderedSet(),
@@ -102,56 +102,47 @@ function meta(state = new InitialMeta(), action) {
       return state.set(`showFilterCriteria${action.meta}`, action.payload);
 
     case types.SET_FILTER_OF_ISSUES_CRITERIA_FILTERS:
-      return state.set(`issueFilterOfFilters${action.payload.filterName}`, action.payload.value);
+      return state.set(`issueFilterOfFilters${action.meta.filterName}`, action.payload.value);
 
     case types.SET_ISSUES_CRITERIA_FILTER: {
-      const stateField = `issueCurrentCriteriaFilter${action.payload.criteriaName}`;
-      const stateOptionsField = `issuesCriteriaOptions${action.payload.criteriaName}`;
+      const stateField = `issueCurrentCriteriaFilter${action.meta.criteriaName}`;
+      const stateOptionsField = `issuesCriteriaOptions${action.meta.criteriaName}`;
       const filters = state.get(stateField);
       const criteriasMap = state.get(stateOptionsField);
       return state.set(
         stateField,
-        [
-          ...filters,
-          action.payload.value,
-        ],
-      ).set(stateOptionsField, {
-        ...criteriasMap,
-        [action.payload.value]: {
-          ...criteriasMap[action.payload.value],
-          checked: true,
-        },
-      },
+        filters.push(action.payload.value),
+      ).set(stateOptionsField, criteriasMap.set(
+        action.payload.value,
+        criteriasMap.get(action.payload.value).set('checked', true),
+      ),
     ).set('lastStopIndex', 0);
     }
 
     case types.DELETE_ISSUES_CRITERIA_FILTER: {
-      const stateField = `issueCurrentCriteriaFilter${action.payload.criteriaName}`;
-      const stateOptionsField = `issuesCriteriaOptions${action.payload.criteriaName}`;
+      const stateField = `issueCurrentCriteriaFilter${action.meta.criteriaName}`;
+      const stateOptionsField = `issuesCriteriaOptions${action.meta.criteriaName}`;
       const filters = state.get(stateField).filter(id => id !== action.payload.value);
       const criteriasMap = state.get(stateOptionsField);
       return state.set(
         stateField,
         filters,
-      ).set(stateOptionsField, {
-        ...criteriasMap,
-        [action.payload.value]: {
-          ...criteriasMap[action.payload.value],
-          checked: false,
-        },
-      },
+      ).set(stateOptionsField, criteriasMap.set(
+        action.payload.value,
+        criteriasMap.get(action.payload.value).set('checked', false),
+      ),
     ).set('lastStopIndex', 0);
     }
 
     case types.FILL_ISSUES_ALL_TYPES:
-      return state.set('issuesCriteriaOptionsType', action.payload.map)
-                  .set('issuesTypesIds', action.payload.issuesIds)
-                  .set('subIssuesTypesIds', action.payload.subIssuesIds);
+      return state.set('issuesCriteriaOptionsType', fromJS(action.payload.map))
+                  .set('issuesTypesIds', fromJS(action.payload.issuesIds))
+                  .set('subIssuesTypesIds', fromJS(action.payload.subIssuesIds));
 
     case types.FILL_ISSUES_ALL_STATUSES:
-      return state.set('issuesCriteriaOptionsStatus', action.payload.map)
-                  .set('issueStatusCategories', action.payload.statusCategories)
-                  .set('issueStatusesIds', action.payload.ids);
+      return state.set('issuesCriteriaOptionsStatus', fromJS(action.payload.map))
+                  .set('issueStatusCategories', fromJS(action.payload.statusCategories))
+                  .set('issueStatusesIds', fromJS(action.payload.ids));
 
     case types.SELECT_ISSUE:
       return state.set('selectedIssueId', action.payload);
