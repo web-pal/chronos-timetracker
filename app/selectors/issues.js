@@ -4,24 +4,24 @@ import { Map } from 'immutable';
 export const getIssuesMap = ({ issues }) => issues.byId;
 export const getIssuesIds = ({ issues }) => issues.allIds;
 
-export const getIssuesAllTypesMap = ({ issues }) => issues.meta.issuesCriteriaOptions_Type;
+export const getIssuesAllTypesMap = ({ issues }) => issues.meta.issuesCriteriaOptionsType;
 export const getIssuesAllTypesIds = ({ issues }) => issues.meta.issuesTypesIds;
 export const getSubIssuesAllTypesIds = ({ issues }) => issues.meta.subIssuesTypesIds;
 export const getSubIssuesAllTypesFilter = ({ issues }) =>
-  issues.meta.issueFilterOfFilters_Type.toLowerCase();
-export const getFrilteredTypesIds = ({ issues }) => issues.meta.issueCurrentCriteriaFilter_Type;
+  issues.meta.issueFilterOfFiltersType.toLowerCase();
+export const getFrilteredTypesIds = ({ issues }) => issues.meta.issueCurrentCriteriaFilterType;
 
-export const getIssuesAllStatusesMap = ({ issues }) => issues.meta.issuesCriteriaOptions_Status;
+export const getIssuesAllStatusesMap = ({ issues }) => issues.meta.issuesCriteriaOptionsStatus;
 export const getIssuesAllStatusesIds = ({ issues }) => issues.meta.issueStatusesIds;
 export const getSubIssuesAllStatusCategories = ({ issues }) => issues.meta.issueStatusCategories;
 export const getIssuesAllStatusesFilter = ({ issues }) =>
-  issues.meta.issueFilterOfFilters_Status.toLowerCase();
-export const getFrilteredStatusIds = ({ issues }) => issues.meta.issueCurrentCriteriaFilter_Status;
+  issues.meta.issueFilterOfFiltersStatus.toLowerCase();
+export const getFrilteredStatusIds = ({ issues }) => issues.meta.issueCurrentCriteriaFilterStatus;
 
 export const getIssuesAllAssigneeFilter = ({ issues }) =>
-  issues.meta.issueFilterOfFilters_Assignee.toLowerCase();
+  issues.meta.issueFilterOfFiltersAssignee.toLowerCase();
 export const getFrilteredAssigneeIds = ({ issues }) =>
-  issues.meta.issueCurrentCriteriaFilter_Assignee;
+  issues.meta.issueCurrentCriteriaFilterAssignee;
 
 
 export const getRecentIssuesIds = ({ issues }) => issues.meta.recentIssuesIds;

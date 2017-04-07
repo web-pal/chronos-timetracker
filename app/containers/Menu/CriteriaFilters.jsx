@@ -27,16 +27,15 @@ const CriteriaFilters = ({
   isTypeFilterActvie,
   isAssigneeFilterActvie,
   showPanel,
-  showFilterCriteria_Types,
-  showFilterCriteria_Status,
-  showFilterCriteria_Assignee,
+  showFilterCriteriaType,
+  showFilterCriteriaStatus,
+  showFilterCriteriaAssignee,
 }) => (
-  showPanel
+  (showPanel && sidebarType === 'All')
   ? <Flex
     row
     className={[
       'sidebar-filter-item sidebar-filter-item--criterias',
-      `${sidebarType === 'Recent' ? 'hidden' : ''}`,
     ].join(' ')}
   >
     <Flex column centered className={'sidebar-filter-criterias'} >
@@ -52,7 +51,7 @@ const CriteriaFilters = ({
               ],
               isActive: isTypeFilterActvie,
               filterOfFilters: issueFilterOfFiltersTypes,
-              isOpen: showFilterCriteria_Types,
+              isOpen: showFilterCriteriaType,
             },
             {
               name: 'Status',
@@ -60,7 +59,7 @@ const CriteriaFilters = ({
               options: [{ key: 'Status', values: AllIssuesStatuses }],
               filterOfFilters: issueFilterOfFiltersStatus,
               isActive: isStatusFilterActvie,
-              isOpen: showFilterCriteria_Status,
+              isOpen: showFilterCriteriaStatus,
             },
             {
               name: 'Assignee',
@@ -69,7 +68,7 @@ const CriteriaFilters = ({
               filterOfFilters: issueFilterOfFiltersAssignee,
               isActive: isAssigneeFilterActvie,
               hideFilterOfFiltersField: true,
-              isOpen: showFilterCriteria_Assignee,
+              isOpen: showFilterCriteriaAssignee,
             },
           ].map(criteria =>
             <FilterCriteria
@@ -106,16 +105,16 @@ CriteriaFilters.propTypes = {
   isTypeFilterActvie: PropTypes.bool.isRequired,
   isAssigneeFilterActvie: PropTypes.bool.isRequired,
   showPanel: PropTypes.bool.isRequired,
-  showFilterCriteria_Types: PropTypes.bool.isRequired,
-  showFilterCriteria_Status: PropTypes.bool.isRequired,
-  showFilterCriteria_Assignee: PropTypes.bool.isRequired,
+  showFilterCriteriaType: PropTypes.bool.isRequired,
+  showFilterCriteriaStatus: PropTypes.bool.isRequired,
+  showFilterCriteriaAssignee: PropTypes.bool.isRequired,
 };
 
 function mapStateToProps({ ui, issues }) {
   const AllSubIssuesTypes = getAllSubIssuesTypes({ issues });
   const AllIssuesTypes = getAllIssuesTypes({ issues });
   const AllIssuesAssignee = issues.meta.issueAssigneeIds.map(id =>
-    issues.meta.issuesCriteriaOptions_Assignee[id]);
+    issues.meta.issuesCriteriaOptionsAssignee[id]);
 
   const AllIssuesStatuses = getAllIssuesStatuses({ issues });
 
@@ -125,15 +124,15 @@ function mapStateToProps({ ui, issues }) {
     AllIssuesTypes,
     AllIssuesStatuses,
     AllIssuesAssignee,
-    showFilterCriteria_Types: issues.meta.showFilterCriteria_Types,
-    showFilterCriteria_Status: issues.meta.showFilterCriteria_Status,
-    showFilterCriteria_Assignee: issues.meta.showFilterCriteria_Assignee,
-    isStatusFilterActvie: !!issues.meta.issueCurrentCriteriaFilter_Status.length,
-    isTypeFilterActvie: !!issues.meta.issueCurrentCriteriaFilter_Type.length,
-    isAssigneeFilterActvie: !!issues.meta.issueCurrentCriteriaFilter_Assignee.length,
-    issueFilterOfFiltersTypes: issues.meta.issueFilterOfFilters_Type,
-    issueFilterOfFiltersStatus: issues.meta.issueFilterOfFilters_Status,
-    issueFilterOfFiltersAssignee: issues.meta.issueFilterOfFilters_Assignee,
+    showFilterCriteriaType: issues.meta.showFilterCriteriaType,
+    showFilterCriteriaStatus: issues.meta.showFilterCriteriaStatus,
+    showFilterCriteriaAssignee: issues.meta.showFilterCriteriaAssignee,
+    isStatusFilterActvie: !!issues.meta.issueCurrentCriteriaFilterStatus.length,
+    isTypeFilterActvie: !!issues.meta.issueCurrentCriteriaFilterType.length,
+    isAssigneeFilterActvie: !!issues.meta.issueCurrentCriteriaFilterAssignee.length,
+    issueFilterOfFiltersTypes: issues.meta.issueFilterOfFiltersType,
+    issueFilterOfFiltersStatus: issues.meta.issueFilterOfFiltersStatus,
+    issueFilterOfFiltersAssignee: issues.meta.issueFilterOfFiltersAssignee,
     showPanel: issues.meta.filterCriteriaPanel,
   };
 }

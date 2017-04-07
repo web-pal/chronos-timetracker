@@ -175,13 +175,13 @@ function* getIssues({ pagination: { stopIndex, resolve } }) {
   const currentProject = yield select(state => state.projects.meta.selectedProjectId);
   const fetched = yield select(state => state.issues.meta.fetched);
   const startIndex = yield select(state => state.issues.meta.lastStopIndex);
-  const typeFiltresId = yield select(state => state.issues.meta.issueCurrentCriteriaFilter_Type);
+  const typeFiltresId = yield select(state => state.issues.meta.issueCurrentCriteriaFilterType);
   const statusFiltresId = yield select(state =>
-    state.issues.meta.issueCurrentCriteriaFilter_Status);
+    state.issues.meta.issueCurrentCriteriaFilterStatus);
   const assigneeFiltresId = yield select(state =>
-    state.issues.meta.issueCurrentCriteriaFilter_Assignee);
+    state.issues.meta.issueCurrentCriteriaFilterAssignee);
   const assigneeFiltresMap = yield select(state =>
-    state.issues.meta.issuesCriteriaOptions_Assignee);
+    state.issues.meta.issuesCriteriaOptionsAssignee);
 
   const assigneeFiltresEmail = assigneeFiltresId.map(id => assigneeFiltresMap[id].field);
   const newStopIndex = stopIndex + 30;

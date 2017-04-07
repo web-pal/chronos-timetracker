@@ -48,29 +48,29 @@ const InitialMeta = Immutable.Record({
   searchValue: '',
   filterCriteriaPanel: true,
 
-  showFilterCriteria_Types: false,
-  showFilterCriteria_Status: false,
-  showFilterCriteria_Assignee: false,
+  showFilterCriteriaType: false,
+  showFilterCriteriaStatus: false,
+  showFilterCriteriaAssignee: false,
 
-  issuesCriteriaOptions_Type: {},
+  issuesCriteriaOptionsType: {},
   issuesTypesIds: [],
   subIssuesTypesIds: [],
-  issueFilterOfFilters_Type: '',
-  issueCurrentCriteriaFilter_Type: [],
+  issueFilterOfFiltersType: '',
+  issueCurrentCriteriaFilterType: [],
 
-  issuesCriteriaOptions_Status: {},
+  issuesCriteriaOptionsStatus: {},
   issueStatusCategories: [],
   issueStatusesIds: [],
-  issueFilterOfFilters_Status: '',
-  issueCurrentCriteriaFilter_Status: [],
+  issueFilterOfFiltersStatus: '',
+  issueCurrentCriteriaFilterStatus: [],
 
-  issuesCriteriaOptions_Assignee: {
+  issuesCriteriaOptionsAssignee: {
     none: { name: 'Unassigned', id: 'none', field: 'assignee is EMPTY', checked: false },
     currentUser: { name: 'Current User', id: 'currentUser', field: 'assignee = currentUser()', checked: false },
   },
   issueAssigneeIds: ['none', 'currentUser'],
-  issueFilterOfFilters_Assignee: '',
-  issueCurrentCriteriaFilter_Assignee: [],
+  issueFilterOfFiltersAssignee: '',
+  issueCurrentCriteriaFilterAssignee: [],
 
   recentIssuesIds: new OrderedSet(),
   searchResultsIds: new OrderedSet(),
@@ -98,20 +98,15 @@ function meta(state = new InitialMeta(), action) {
       return state.set('searchValue', action.payload)
         .set('filterCriteriaPanel', !action.payload);
 
-    case types.SET_SHOWING_FILTER_CRITERIA_BLOCK_TYPE:
-      return state.set('showFilterCriteria_Types', action.payload);
-    case types.SET_SHOWING_FILTER_CRITERIA_BLOCK_STATUS:
-      return state.set('showFilterCriteria_Status', action.payload);
-    case types.SET_SHOWING_FILTER_CRITERIA_BLOCK_ASSIGNEE:
-      return state.set('showFilterCriteria_Assignee', action.payload);
-
+    case types.SET_SHOWING_FILTER_CRITERIA_BLOCK:
+      return state.set(`showFilterCriteria${action.meta}`, action.payload);
 
     case types.SET_FILTER_OF_ISSUES_CRITERIA_FILTERS:
-      return state.set(`issueFilterOfFilters_${action.payload.filterName}`, action.payload.value);
+      return state.set(`issueFilterOfFilters${action.payload.filterName}`, action.payload.value);
 
     case types.SET_ISSUES_CRITERIA_FILTER: {
-      const stateField = `issueCurrentCriteriaFilter_${action.payload.criteriaName}`;
-      const stateOptionsField = `issuesCriteriaOptions_${action.payload.criteriaName}`;
+      const stateField = `issueCurrentCriteriaFilter${action.payload.criteriaName}`;
+      const stateOptionsField = `issuesCriteriaOptions${action.payload.criteriaName}`;
       const filters = state.get(stateField);
       const criteriasMap = state.get(stateOptionsField);
       return state.set(
@@ -131,8 +126,8 @@ function meta(state = new InitialMeta(), action) {
     }
 
     case types.DELETE_ISSUES_CRITERIA_FILTER: {
-      const stateField = `issueCurrentCriteriaFilter_${action.payload.criteriaName}`;
-      const stateOptionsField = `issuesCriteriaOptions_${action.payload.criteriaName}`;
+      const stateField = `issueCurrentCriteriaFilter${action.payload.criteriaName}`;
+      const stateOptionsField = `issuesCriteriaOptions${action.payload.criteriaName}`;
       const filters = state.get(stateField).filter(id => id !== action.payload.value);
       const criteriasMap = state.get(stateOptionsField);
       return state.set(
@@ -149,12 +144,12 @@ function meta(state = new InitialMeta(), action) {
     }
 
     case types.FILL_ISSUES_ALL_TYPES:
-      return state.set('issuesCriteriaOptions_Type', action.payload.map)
+      return state.set('issuesCriteriaOptionsType', action.payload.map)
                   .set('issuesTypesIds', action.payload.issuesIds)
                   .set('subIssuesTypesIds', action.payload.subIssuesIds);
 
     case types.FILL_ISSUES_ALL_STATUSES:
-      return state.set('issuesCriteriaOptions_Status', action.payload.map)
+      return state.set('issuesCriteriaOptionsStatus', action.payload.map)
                   .set('issueStatusCategories', action.payload.statusCategories)
                   .set('issueStatusesIds', action.payload.ids);
 

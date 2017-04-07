@@ -8,6 +8,10 @@ class FilterCriteria extends React.Component {
     super(props);
     this.handleOutsideClick = this.handleOutsideClick.bind(this);
     this.handleClick = this.handleClick.bind(this);
+    this.setRef = this.setRef.bind(this);
+  }
+  setRef(node) {
+    this.node = node;
   }
   handleClick() {
     if (!this.props.isOpen) {
@@ -41,7 +45,7 @@ class FilterCriteria extends React.Component {
       centered
       className="sidebar-filter-criterias__item"
     >
-      <div ref={ (node) => { this.node = node; }}>
+      <div ref={this.setRef}>
         <button
           type="button"
           onClick={this.handleClick}
