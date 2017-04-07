@@ -21,16 +21,8 @@ const FilterCriteriaOptions = ({
                   <input
                     onChange={handleFilterOfFilters}
                     value={filterOfFilters}
-                    autoComplete="off"
-                    role="combobox"
-                    aria-autocomplete="list"
-                    aria-haspopup="true"
-                    aria-expanded="true"
-                    placeholder="Find Statuses..."
+                    placeholder="Find option"
                     className="aui-field check-list-field"
-                    id="searcher-status-input"
-                    aria-controls="searcher-status-suggestions"
-                    aria-activedescendant="10101-9"
                   />
                   <span
                     className="icon-default aui-icon aui-icon-small aui-iconfont-search noloading"

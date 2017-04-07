@@ -4,16 +4,18 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 const CriteriaFilterOption = ({
   option, handleCriteriaSet, showIcons,
 }) =>
-  <li className="check-list-item  imagebacked" role="option" >
+  <li className="check-list-item  imagebacked">
     <label
       className={[
         'item-label',
         `${(option.get('style') && (` jira-issue-status-lozenge jira-issue-status-lozenge-${option.get('style').get('colorName')}`))}`,
       ]}
       title={option.get('name')}
-      data-descriptor-title={option.get('desctiption')}
     >
-      <input onChange={() => handleCriteriaSet(option.get('id'), option.get('checked'))} checked={option.get('checked')} type="checkbox" />
+      <input
+        onChange={() => handleCriteriaSet(option.get('id'), option.get('checked'))}
+        checked={option.get('checked')} type="checkbox"
+      />
       { (showIcons
         && option.get('iconUrl')
         && option.get('iconUrl')[option.get('iconUrl').length - 1] !== '/'
