@@ -79,7 +79,7 @@ function createWindow() {
   // https://github.com/electron/electron/blob/master/docs/api/frameless-window.md
   const noFrameOption = process.platform === 'darwin'
     ? { titleBarStyle: 'hidden' }
-    : { frame: false };
+    : { frame: process.platform === 'linux' };
 
   storage.get('lastWindowSize', (err, data) => {
     if (err) {
