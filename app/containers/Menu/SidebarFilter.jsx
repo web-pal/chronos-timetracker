@@ -14,45 +14,47 @@ const SidebarFilter = ({
   searchValue, sidebarType, searchIssues,
   clearIssues, fetchIssues, fetchRecentIssues, setIssuesSearchValue,
 }) =>
-  <Flex row className={`sidebar-filter-item ${sidebarType === 'Recent' ? 'hidden' : ''}`}>
-    <Flex column centered className="search-field">
-      <Flex column centered>
-        {(searchValue.length > 0) &&
-          <span
-            className="aui-icon aui-icon-small aui-iconfont-remove-label"
-            onClick={() => setIssuesSearchValue('')}
+  <Flex column centered >
+    <Flex row className={`sidebar-filter-item ${sidebarType === 'Recent' ? 'hidden' : ''}`}>
+      <Flex column centered className="search-field">
+        <Flex column centered>
+          {(searchValue.length > 0) &&
+            <span
+              className="aui-icon aui-icon-small aui-iconfont-remove-label"
+              onClick={() => setIssuesSearchValue('')}
+            />
+          }
+          <img
+            src={searchIcon}
+            width={18}
+            height={18}
+            alt="searchIcon"
           />
-        }
-        <img
-          src={searchIcon}
-          width={18}
-          height={18}
-          alt="searchIcon"
+        </Flex>
+        <input
+          className="text"
+          type="text"
+          value={searchValue}
+          onChange={(ev) => {
+            setIssuesSearchValue(ev.target.value);
+            searchIssues();
+          }}
         />
       </Flex>
-      <input
-        className="text"
-        type="text"
-        value={searchValue}
-        onChange={(ev) => {
-          setIssuesSearchValue(ev.target.value);
-          searchIssues();
-        }}
-      />
-    </Flex>
-    <Flex column centered>
-      <img
-        className="refreshIcon"
-        alt="refreshIcon"
-        src={refreshIcon}
-        onClick={() => {
-          clearIssues();
-          fetchRecentIssues();
-          fetchIssues();
-        }}
-        width={20}
-        height={19}
-      />
+      <Flex column centered>
+        <img
+          className="refreshIcon"
+          alt="refreshIcon"
+          src={refreshIcon}
+          onClick={() => {
+            clearIssues();
+            fetchRecentIssues();
+            fetchIssues();
+          }}
+          width={20}
+          height={19}
+        />
+      </Flex>
     </Flex>
   </Flex>;
 
@@ -69,9 +71,11 @@ SidebarFilter.propTypes = {
 function mapStateToProps({ ui, issues }) {
   return {
     searchValue: issues.meta.searchValue,
+    showingFilterCriteriaBlock: issues.meta.showingFilterCriteriaBlock,
     sidebarType: ui.sidebarType,
   };
 }
+
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(issuesActions, dispatch);

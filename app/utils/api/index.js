@@ -4,3 +4,4 @@ export * from './projects';
 export * from './issues';
 export * from './worklogs';
 export * from './timer';
+export * from './issueCriteriaFilters';
