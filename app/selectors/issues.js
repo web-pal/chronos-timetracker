@@ -18,14 +18,6 @@ export const getIssuesAllStatusesFilter = ({ issues }) =>
   issues.meta.issueFilterOfFiltersStatus.toLowerCase();
 export const getFrilteredStatusIds = ({ issues }) => issues.meta.issueCurrentCriteriaFilterStatus;
 
-export const getAllIssuesAssignee = ({ issues }) =>
-  issues.meta.issueAssigneeIds.map(id => issues.meta.issuesCriteriaOptionsAssignee.get(id));
-export const getIssuesAllAssigneeFilter = ({ issues }) =>
-  issues.meta.issueFilterOfFiltersAssignee.toLowerCase();
-export const getFrilteredAssigneeIds = ({ issues }) =>
-  issues.meta.issueCurrentCriteriaFilterAssignee;
-
-
 export const getRecentIssuesIds = ({ issues }) => issues.meta.recentIssuesIds;
 export const getSearchResultIssuesIds = ({ issues }) => issues.meta.searchResultsIds;
 

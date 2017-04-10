@@ -15,6 +15,16 @@ const requiredFields = [
   'timespent',
 ];
 
+function mapAssignee(assigneeId) {
+  switch (assigneeId) {
+    case 'none':
+      return 'assignee is EMPTY';
+    case 'currentUser':
+      return 'assignee = currentUser()';
+    default:
+      return '';
+  }
+}
 
 export function fetchIssues({
   startIndex,
@@ -22,8 +32,9 @@ export function fetchIssues({
   currentProject,
   typeFiltresId = [],
   statusFiltresId = [],
-  assigneeFiltresFields = [],
+  assigneeFiltresId = [],
 }) {
+  const assigneeFiltresFields = assigneeFiltresId.map(mapAssignee);
   const jql = [
     `project = ${currentProject}`,
     (typeFiltresId.length ? ` AND issueType in (${typeFiltresId.join(',')})` : ''),

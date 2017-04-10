@@ -86,8 +86,8 @@ FilterCriteria.propTypes = {
   options: PropTypes.array,
   isOpen: PropTypes.bool,
   hideFilterOfFiltersField: PropTypes.bool,
-  filterOfFilters: PropTypes.string.isRequired,
-  handleFilterOfFilters: PropTypes.func.isRequired,
+  filterOfFilters: PropTypes.string,
+  handleFilterOfFilters: PropTypes.func,
   handleCriteriaSet: PropTypes.func.isRequired,
   criteriaKey: PropTypes.string.isRequired,
   isActive: PropTypes.bool.isRequired,
@@ -100,6 +100,8 @@ FilterCriteria.defaultProps = {
   options: [{
     values: [],
   }],
+  filterOfFilters: null,
+  handleFilterOfFilters: null,
 };
 
 export default FilterCriteria;
