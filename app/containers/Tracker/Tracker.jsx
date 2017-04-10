@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 
 import { remote, ipcRenderer } from 'electron';
 
+import TextareaAutosize from 'react-autosize-textarea';
 import Flex from '../../components/Base/Flex/Flex';
 import TimerControls from '../../components/Timer/TimerControls';
 import TimerDisplay from './TimerDisplay';
@@ -156,10 +157,11 @@ class Tracker extends Component {
           }
           {running &&
             <Flex row centered>
-              <input
+              <TextareaAutosize
                 autoFocus
                 id="descriptionInput"
                 value={description}
+                style={{ minHeight: 15, maxHeight: 180 }}
                 className="descriptionInput"
                 onChange={e => setDescription(e.target.value)}
                 placeholder="What are you doing?"
