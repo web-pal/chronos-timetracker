@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { fromJS } from 'immutable';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 
 import * as issuesActions from '../../actions/issues';
@@ -9,7 +10,6 @@ import {
   getAllIssuesTypes,
   getAllSubIssuesTypes,
   getAllIssuesStatuses,
-  getAllIssuesAssignee,
 } from '../../selectors/issues';
 
 import Flex from '../../components/Base/Flex/Flex';
@@ -22,12 +22,12 @@ const CriteriaFilters = ({
   sidebarType,
   setShowingFilterCriteriaBlock,
   AllIssuesTypes, AllSubIssuesTypes, AllIssuesStatuses,
-  issueFilterOfFiltersTypes, issueFilterOfFiltersStatus, issueFilterOfFiltersAssignee,
-  setFilterOfIssuesFiltersValue, AllIssuesAssignee,
+  issueFilterOfFiltersTypes, issueFilterOfFiltersStatus,
+  setFilterOfIssuesFiltersValue,
   setIssuesCriteriaFilter,
   isStatusFilterActvie,
   isTypeFilterActvie,
-  isAssigneeFilterActvie,
+  assigneeActiveFilters,
   showPanel,
   showFilterCriteriaType,
   showFilterCriteriaStatus,
@@ -68,9 +68,20 @@ const CriteriaFilters = ({
             {
               name: 'Assignee',
               criteriaKey: 'Assignee',
-              options: [{ key: 'Assignee', values: AllIssuesAssignee }],
-              filterOfFilters: issueFilterOfFiltersAssignee,
-              isActive: isAssigneeFilterActvie,
+              options: [{
+                key: 'Assignee',
+                values: fromJS([
+                  { name: 'Unassigned', id: 'none', checked: assigneeActiveFilters.has('none') },
+                  {
+                    name: 'Current User',
+                    id: 'currentUser',
+                    checked: assigneeActiveFilters.has('currentUser'),
+                  },
+                ]),
+              }],
+              filterOfFilters: null,
+              handleFilterOfFilters: null,
+              isActive: !!assigneeActiveFilters.size,
               hideFilterOfFiltersField: true,
               isOpen: showFilterCriteriaAssignee,
               showIcons: false,
@@ -102,13 +113,11 @@ CriteriaFilters.propTypes = {
   AllIssuesStatuses: ImmutablePropTypes.list.isRequired,
   issueFilterOfFiltersTypes: PropTypes.string.isRequired,
   issueFilterOfFiltersStatus: PropTypes.string.isRequired,
-  issueFilterOfFiltersAssignee: PropTypes.string.isRequired,
   setFilterOfIssuesFiltersValue: PropTypes.func.isRequired,
   setIssuesCriteriaFilter: PropTypes.func.isRequired,
-  AllIssuesAssignee: ImmutablePropTypes.list.isRequired,
   isStatusFilterActvie: PropTypes.bool.isRequired,
   isTypeFilterActvie: PropTypes.bool.isRequired,
-  isAssigneeFilterActvie: PropTypes.bool.isRequired,
+  assigneeActiveFilters: ImmutablePropTypes.set.isRequired,
   showPanel: PropTypes.bool.isRequired,
   showFilterCriteriaType: PropTypes.bool.isRequired,
   showFilterCriteriaStatus: PropTypes.bool.isRequired,
@@ -118,7 +127,6 @@ CriteriaFilters.propTypes = {
 function mapStateToProps({ ui, issues }) {
   const AllSubIssuesTypes = getAllSubIssuesTypes({ issues });
   const AllIssuesTypes = getAllIssuesTypes({ issues });
-  const AllIssuesAssignee = getAllIssuesAssignee({ issues });
   const AllIssuesStatuses = getAllIssuesStatuses({ issues });
 
   return {
@@ -126,16 +134,14 @@ function mapStateToProps({ ui, issues }) {
     AllSubIssuesTypes,
     AllIssuesTypes,
     AllIssuesStatuses,
-    AllIssuesAssignee,
     showFilterCriteriaType: issues.meta.showFilterCriteriaType,
     showFilterCriteriaStatus: issues.meta.showFilterCriteriaStatus,
     showFilterCriteriaAssignee: issues.meta.showFilterCriteriaAssignee,
     isStatusFilterActvie: !!issues.meta.issueCurrentCriteriaFilterStatus.size,
     isTypeFilterActvie: !!issues.meta.issueCurrentCriteriaFilterType.size,
-    isAssigneeFilterActvie: !!issues.meta.issueCurrentCriteriaFilterAssignee.size,
+    assigneeActiveFilters: issues.meta.issueCurrentCriteriaFilterAssignee,
     issueFilterOfFiltersTypes: issues.meta.issueFilterOfFiltersType,
     issueFilterOfFiltersStatus: issues.meta.issueFilterOfFiltersStatus,
-    issueFilterOfFiltersAssignee: issues.meta.issueFilterOfFiltersAssignee,
     showPanel: issues.meta.filterCriteriaPanel,
   };
 }

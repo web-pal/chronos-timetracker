@@ -10,8 +10,9 @@ class FilterCriteria extends React.Component {
     this.handleClick = this.handleClick.bind(this);
     this.setRef = this.setRef.bind(this);
   }
-  componentWillMount() {
+  componentWillUnmount() {
     document.removeEventListener('click', this.handleOutsideClick, false);
+    this.props.handleClick(this.props.criteriaKey, false);
   }
   setRef(node) {
     this.node = node;
@@ -85,8 +86,8 @@ FilterCriteria.propTypes = {
   options: PropTypes.array,
   isOpen: PropTypes.bool,
   hideFilterOfFiltersField: PropTypes.bool,
-  filterOfFilters: PropTypes.string.isRequired,
-  handleFilterOfFilters: PropTypes.func.isRequired,
+  filterOfFilters: PropTypes.string,
+  handleFilterOfFilters: PropTypes.func,
   handleCriteriaSet: PropTypes.func.isRequired,
   criteriaKey: PropTypes.string.isRequired,
   isActive: PropTypes.bool.isRequired,
@@ -99,6 +100,8 @@ FilterCriteria.defaultProps = {
   options: [{
     values: [],
   }],
+  filterOfFilters: null,
+  handleFilterOfFilters: null,
 };
 
 export default FilterCriteria;
