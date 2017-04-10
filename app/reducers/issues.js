@@ -113,12 +113,14 @@ function meta(state = new InitialMeta(), action) {
       const filters = state.get(stateField);
       const criteriasMap = state.get(stateOptionsField);
       const newState = action.meta.criteriaName !== 'Assignee'
-        ? state.set(stateOptionsField, criteriasMap.set(
-          action.payload.value,
-          criteriasMap.get(action.payload.value).set('checked', true),
-        ),
-      )
-      : state;
+        ? state.set(
+          stateOptionsField,
+          criteriasMap.set(
+            action.payload.value,
+            criteriasMap.get(action.payload.value).set('checked', true),
+          ),
+        )
+        : state;
       return newState.set(
         stateField,
         filters.add(action.payload.value),
@@ -131,12 +133,14 @@ function meta(state = new InitialMeta(), action) {
       const filters = state.get(stateField);
       const criteriasMap = state.get(stateOptionsField);
       const newState = action.meta.criteriaName !== 'Assignee'
-        ? state.set(stateOptionsField, criteriasMap.set(
-          action.payload.value,
-          criteriasMap.get(action.payload.value).set('checked', false),
-        ),
-      )
-      : state;
+        ? state.set(
+          stateOptionsField,
+          criteriasMap.set(
+            action.payload.value,
+            criteriasMap.get(action.payload.value).set('checked', false),
+          ),
+        )
+        : state;
       return newState.set(
         stateField,
         filters.delete(action.payload.value),
