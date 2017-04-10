@@ -168,13 +168,6 @@ export function* uploadScreenshot({
     error = true;
   }
 
-  if (!isOffline) {
-    yield put({
-      type: types.ADD_SCREENSHOT_TO_CURRENT_LIST,
-      payload: { fileName, thumbFilename, screenshotTime, timestamp },
-    });
-  }
-
   if (error) {
     if (!isOffline) {
       if (mainScreenError) {
