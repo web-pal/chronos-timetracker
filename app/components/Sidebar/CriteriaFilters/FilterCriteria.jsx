@@ -10,8 +10,9 @@ class FilterCriteria extends React.Component {
     this.handleClick = this.handleClick.bind(this);
     this.setRef = this.setRef.bind(this);
   }
-  componentWillMount() {
+  componentWillUnmount() {
     document.removeEventListener('click', this.handleOutsideClick, false);
+    this.props.handleClick(this.props.criteriaKey, false);
   }
   setRef(node) {
     this.node = node;
