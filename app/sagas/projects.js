@@ -14,6 +14,18 @@ export function* getProjects() {
     const { selectLastSelectedProject } = yield take(types.FETCH_PROJECTS_REQUEST);
     yield put({ type: types.SET_PROJECTS_FETCH_STATE, payload: true });
 
+    const selectedFiltersType = yield getFromStorage('issueCurrentCriteriaFilterType');
+    const selectedFiltersStatus = yield getFromStorage('issueCurrentCriteriaFilterStatus');
+    const selectedFiltersAssignee = yield getFromStorage('issueCurrentCriteriaFilterAssignee');
+    yield put({
+      type: types.SET_SAVED_ISSUES_CRITERIA_FILTER,
+      payload: {
+        type: selectedFiltersType,
+        status: selectedFiltersStatus,
+        assignee: selectedFiltersAssignee,
+      },
+    });
+
     let projects = [];
     try {
       projects = yield call(fetchProjects);

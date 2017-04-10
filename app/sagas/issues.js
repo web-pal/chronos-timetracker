@@ -1,6 +1,7 @@
 import { delay } from 'redux-saga';
 import { takeLatest, take, fork, throttle, put, call, select } from 'redux-saga/effects';
-import { normalize } from 'normalizr';
+import { normalize, schema } from 'normalizr';
+import storage from 'electron-json-storage';
 import {
   fetchIssues, fetchIssue,
   fetchSearchIssues, fetchRecentIssues,
@@ -10,7 +11,7 @@ import {
 } from 'api';
 import * as types from '../constants/';
 import { getAllIssues } from '../selectors';
-import { issueSchema, issueTypeSchema, issueStatusSchema } from '../schemas/';
+import { issueSchema, issueStatusCategorySchema } from '../schemas/';
 
 
 function* storeIssues({ issues, fillIssuesType, fillWorklogsType }) {
@@ -35,6 +36,10 @@ function* storeIssues({ issues, fillIssuesType, fillWorklogsType }) {
 
 
 function* storeIssuesTypes({ issueTypes }) {
+  const savedFiltersType = yield select(state => state.issues.meta.issueCurrentCriteriaFilterType);
+  const issueTypeSchema = new schema.Entity('issueTypes', {}, {
+    processStrategy: value => ({ ...value, checked: savedFiltersType.has(value.id) }),
+  });
   const normalizedData = normalize(issueTypes, [issueTypeSchema]);
   const issuesIds =
           normalizedData.result.filter(id => !(normalizedData.entities.issueTypes[id].subtask));
@@ -51,6 +56,13 @@ function* storeIssuesTypes({ issueTypes }) {
 }
 
 function* storeIssuesStatuses({ issueStatuses }) {
+  const savedFiltersStatus = yield select(state =>
+    state.issues.meta.issueCurrentCriteriaFilterStatus);
+  const issueStatusSchema = new schema.Entity('issueStatus', {
+    statusCategory: issueStatusCategorySchema,
+  }, {
+    processStrategy: value => ({ ...value, checked: savedFiltersStatus.has(value.id) }),
+  });
   const normalizedData = normalize(issueStatuses, [issueStatusSchema]);
   yield put({
     type: types.FILL_ISSUES_ALL_STATUSES,
@@ -183,12 +195,7 @@ function* getIssues({ pagination: { stopIndex, resolve } }) {
     Array.from(state.issues.meta.issueCurrentCriteriaFilterStatus));
   const assigneeFiltresId = yield select(state =>
     Array.from(state.issues.meta.issueCurrentCriteriaFilterAssignee));
-  const assigneeFiltresMap = yield select(state =>
-    state.issues.meta.issuesCriteriaOptionsAssignee);
 
-  const assigneeFiltresFields = Array.from(
-    assigneeFiltresId.map(id => assigneeFiltresMap.get(id).get('field')),
-  );
   const newStopIndex = stopIndex + 30;
   yield put({ type: types.SET_LAST_STOP_INDEX, payload: newStopIndex });
   const response = yield call(fetchIssues, {
@@ -197,7 +204,7 @@ function* getIssues({ pagination: { stopIndex, resolve } }) {
     currentProject,
     typeFiltresId,
     statusFiltresId,
-    assigneeFiltresFields,
+    assigneeFiltresId,
   });
   let { issues } = response;
   const { total } = response;
@@ -311,4 +318,21 @@ export function* watchGetIssueTypes() {
 
 export function* watchGetIssueStatuses() {
   yield takeLatest(types.FETCH_ISSUES_ALL_STATUSES_REQUEST, getIssueStatuses);
+}
+
+function* storeSelectedFilters(key) {
+  const selected = yield select(state =>
+    state.issues.meta[`issueCurrentCriteriaFilter${key}`]);
+  storage.set(`issueCurrentCriteriaFilter${key}`, Array.from(selected));
+}
+
+export function* onSetFilters() {
+  while (true) {
+    const { meta } = yield take([
+      types.SET_ISSUES_CRITERIA_FILTER,
+      types.DELETE_ISSUES_CRITERIA_FILTER,
+    ]);
+    yield take(types.FILL_ISSUES);
+    yield* storeSelectedFilters(meta.criteriaName);
+  }
 }

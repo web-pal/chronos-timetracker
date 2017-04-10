@@ -1,16 +1,11 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-import WindowsControlButtons from '../components/WindowsControlButtons/WindowsControlButtons';
 import AuthForm from './AuthForm';
 import Main from '../containers/Main';
 
 const App = ({ isAuthorized }) =>
   <div className="wrapper">
-    {process.platform !== 'darwin' &&
-      process.platform !== 'linux' &&
-      <WindowsControlButtons />
-    }
     {isAuthorized
       ? <Main />
       : <AuthForm />

@@ -10,15 +10,4 @@ export const issueSchema = new schema.Entity('issues', {
 });
 
 
-export const issueTypeSchema = new schema.Entity('issueTypes', {}, {
-  processStrategy: value => ({ ...value, checked: false }),
-});
-
-
 export const issueStatusCategorySchema = new schema.Entity('issueStatusCategory');
-
-export const issueStatusSchema = new schema.Entity('issueStatus', {
-  statusCategory: issueStatusCategorySchema,
-}, {
-  processStrategy: value => ({ ...value, checked: false }),
-});

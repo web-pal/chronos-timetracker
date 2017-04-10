@@ -67,11 +67,16 @@ const FilterCriteriaOptions = ({
 
 FilterCriteriaOptions.propTypes = {
   options: PropTypes.array.isRequired,
-  filterOfFilters: PropTypes.string.isRequired,
-  handleFilterOfFilters: PropTypes.func.isRequired,
+  filterOfFilters: PropTypes.string,
+  handleFilterOfFilters: PropTypes.func,
   handleCriteriaSet: PropTypes.func.isRequired,
   hideFilterOfFiltersField: PropTypes.bool.isRequired,
   showIcons: PropTypes.bool.isRequired,
+};
+
+FilterCriteriaOptions.defaultProps = {
+  filterOfFilters: null,
+  handleFilterOfFilters: null,
 };
 
 export default FilterCriteriaOptions;

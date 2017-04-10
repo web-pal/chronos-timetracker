@@ -77,10 +77,18 @@ function checkRunning(e) {
 function createWindow() {
   // disabling chrome frames differ on OSX and other platforms
   // https://github.com/electron/electron/blob/master/docs/api/frameless-window.md
-  const noFrameOption = process.platform === 'darwin'
-    ? { titleBarStyle: 'hidden' }
-    : { frame: process.platform === 'linux' };
-
+  const noFrameOption = {};
+  switch (process.platform) {
+    case 'darwin':
+      noFrameOption.titleBarStyle = 'hidden';
+      break;
+    case 'linux':
+    case 'windows':
+      noFrameOption.frame = true;
+      break;
+    default:
+      break;
+  }
   storage.get('lastWindowSize', (err, data) => {
     if (err) {
       console.log(err);
