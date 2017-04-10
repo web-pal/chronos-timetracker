@@ -21,7 +21,7 @@ const IssueInfo = ({ currentIssue }) =>
       paddingTop: process.platform !== 'darwin' ? 30 : 15,
     }}
   >
-    <Flex column>
+    <Flex column style={{ flexGrow: 5 }}>
       <Flex row className="issueName">
         <span
           onClick={openIssueInBrowser(currentIssue)}
