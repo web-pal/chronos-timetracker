@@ -5,11 +5,25 @@ import { lifecycle } from 'recompose';
 import Select from 'react-select';
 import 'react-select/dist/react-select.css';
 
-import { getSelectedProjectOption, getProjectsOptions } from '../../selectors';
+import {
+  getSelectedProjectOption,
+  getProjectsOptions,
+  getBoardsOptions,
+} from '../../selectors';
 
 import * as projectsActions from '../../actions/projects';
 import * as issuesActions from '../../actions/issues';
 import * as worklogsActions from '../../actions/worklogs';
+
+function renderOpions(option) {
+  return option.divider
+    ? (
+      <h5>
+        {option.dividerName}
+      </h5>
+    )
+    : option.label;
+}
 
 const enhance = lifecycle({
   componentDidMount() {
@@ -36,7 +50,7 @@ const ProjectPicker = enhance(({
     placeholder="Select project"
     className="ProjectPicker"
     onChange={(option) => {
-      selectProject(option.value);
+      selectProject(option.value, option.type);
       clearWorklogs();
       clearIssues();
       fetchRecentIssues();
@@ -47,6 +61,7 @@ const ProjectPicker = enhance(({
     isLoading={projectsFetching}
     clearable={false}
     disabled={disabled}
+    optionRenderer={renderOpions}
   />
 ));
 
@@ -63,8 +78,13 @@ ProjectPicker.propTypes = {
 };
 
 function mapStateToProps({ projects, issues }) {
-  const options = getProjectsOptions({ projects });
+  const options = [
+    ...getProjectsOptions({ projects }),
+    ...getBoardsOptions({ projects }),
+  ];
+  console.log('project options', options);
   const selectedProject = getSelectedProjectOption({ projects });
+  console.log('selectedProject', selectedProject);
   return {
     options,
     projectsFetching: projects.meta.get('fetching'),

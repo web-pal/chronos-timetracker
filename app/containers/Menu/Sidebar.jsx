@@ -44,7 +44,7 @@ Sidebar.defaultProps = {
 
 function mapStateToProps({ projects, ui }) {
   return {
-    currentProjectId: projects.meta.get('selectedProjectId'),
+    currentProjectId: `${projects.meta.get('selectedProjectId')}`,
     projectsFetched: projects.meta.get('fetched'),
     sidebarType: ui.sidebarType,
   };

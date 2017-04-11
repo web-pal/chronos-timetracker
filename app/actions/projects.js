@@ -9,9 +9,10 @@ export function fetchProjects(selectLastSelectedProject = false) {
 }
 
 
-export function selectProject(projectId) {
+export function selectProject(projectId, type) {
   return {
     type: types.SELECT_PROJECT,
     payload: projectId,
+    meta: type,
   };
 }
