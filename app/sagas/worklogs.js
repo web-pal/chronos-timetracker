@@ -43,6 +43,7 @@ export function* findAndSelectWorlogByIssueId({ issueId }) {
 export function* uploadWorklog({
   issueId,
   timeSpentSeconds,
+  screenshotsPeriod,
   comment,
   activity,
   screenshots,
@@ -74,6 +75,7 @@ export function* uploadWorklog({
         {
           ...jiraWorklogData,
           screenshots,
+          screenshotsPeriod,
           activity,
           type: 'jiraUploadWorklog',
         },
@@ -85,6 +87,7 @@ export function* uploadWorklog({
       worklogId,
       issueId,
       timeSpentSeconds,
+      screenshotsPeriod,
       comment,
       screenshots,
       activity,
@@ -214,8 +217,8 @@ export function* uploadOfflineWorklogs() {
     }
     let index = 0;
     for (const worklog of offlineWorklogs) { // eslint-disable-line
-      const { issueId, screenshots, activity } = worklog;
-      const args = { issueId, screenshots, activity };
+      const { issueId, screenshots, screenshotsPeriod, activity } = worklog;
+      const args = { issueId, screenshots, screenshotsPeriod, activity };
       if (worklog.type === 'jiraUploadWorklog') {
         args.timeSpentSeconds = worklog.worklog.timeSpentSeconds;
         args.comment = worklog.worklog.comment;

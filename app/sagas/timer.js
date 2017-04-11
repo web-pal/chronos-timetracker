@@ -2,6 +2,7 @@ import { cancelled, call, take, race, put, select, fork } from 'redux-saga/effec
 import { eventChannel } from 'redux-saga';
 
 import { remote, ipcRenderer } from 'electron';
+import moment from 'moment';
 
 import NanoTimer from 'nanotimer';
 import { makeScreenshot } from 'api';
@@ -22,13 +23,14 @@ function randomPeriods(periodsQty, min, max) {
   const averageMax = (max - min) / periodsQty;
   let prevPeriod = min;
   return [...Array(periodsQty).keys()].map(() => {
-    prevPeriod = randomInteger(prevPeriod + 20, (prevPeriod + averageMax) - 10);
+    const plusForPrev = periodsQty > 1 ? 20 : 0;
+    prevPeriod = randomInteger(prevPeriod + plusForPrev, (prevPeriod + averageMax) - 1);
     return prevPeriod;
   });
 }
 
-function calculateActivity(currentIdleList, timeSpentSeconds) {
-  return [...Array(Math.ceil(timeSpentSeconds / 600)).keys()].map((period) => {
+function calculateActivity(currentIdleList, timeSpentSeconds, screenshotsPeriod) {
+  return [...Array(Math.ceil(timeSpentSeconds / screenshotsPeriod)).keys()].map((period) => {
     console.log('period', period);
     const idleSec = currentIdleList
       .slice(period * 10, (period + 1) * 10)
@@ -74,11 +76,25 @@ function* runTimer() {
     !screenshotsEnabledUsers.includes(selfKey);
   const screensShotsAllowed = cond1 || cond2 || cond3;
 
-  yield put(savePeriods(randomPeriods(screenshotsQuantity, 0, screenshotsPeriod)));
+  // Initial screenshots periods calculation
+  const minutes = moment().format('mm');
+  // 33
+  const minutePeriod = screenshotsPeriod / 60;
+  // 10
+  const periodNumber = Math.floor(minutes / minutePeriod) + 1;
+  // 33/10 + 1 = 4
+  const periodRange = (periodNumber * minutePeriod) - minutes;
+  // (4 * 10) - 33 = 7
+  const screensQnt = Math.round(periodRange / (minutePeriod / screenshotsQuantity)) || 1;
+  // 7/(10/1) = 1
+  let nextPeriod = periodRange * 60;
+
+  const initialPeriods = randomPeriods(screensQnt, 1, nextPeriod);
+  yield put(savePeriods(initialPeriods));
+
   let idleState = false;
   let prevIdleTime = 0;
   let totalIdleTimeDuringOneMinute = 0;
-  let nextPeriod = screenshotsPeriod;
 
   try {
     while (true) {
@@ -149,10 +165,16 @@ function* runTimer() {
         const screenshots = yield select(
           state => state.worklogs.meta.currentWorklogScreenshots.toArray(),
         );
-        const activity = calculateActivity(currentIdleList, timeSpentSeconds);
+        const activity = calculateActivity(currentIdleList, timeSpentSeconds, screenshotsPeriod);
         yield call(
-          uploadWorklog,
-          { issueId, timeSpentSeconds, activity, screenshots, comment: description },
+          uploadWorklog, {
+            issueId,
+            timeSpentSeconds,
+            activity,
+            screenshots,
+            screenshotsPeriod,
+            comment: description,
+          },
         );
       } else {
         // Show alert message that you have to track at least 60 seconds

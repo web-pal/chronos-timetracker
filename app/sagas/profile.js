@@ -179,19 +179,31 @@ export function* loginOAuthFlow() {
         },
       },
     );
-    const userData = yield call(jiraProfile);
-    yield put({ type: types.FILL_PROFILE, payload: userData });
-    Raven.setExtraContext({ host });
-    yield getSettings();
-    yield put({ type: types.SET_CURRENT_HOST, payload: host });
-    yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: false });
-    yield put({ type: types.SET_AUTH_STATE, payload: true });
-    yield put({ type: types.CHECK_OFFLINE_SCREENSHOTS });
-    yield put({ type: types.CHECK_OFFLINE_WORKLOGS });
-    Socket.login();
-    yield take(types.LOGOUT_REQUEST);
-    yield cps(storage.remove, 'desktop_tracker_jwt');
-    clearToken();
-    yield put({ type: types.CLEAR_ALL_REDUCERS });
+    let userData = {};
+    let jiraProfileError = false;
+    try {
+      userData = yield call(jiraProfile);
+    } catch (err) {
+      jiraProfileError = true;
+      Raven.captureException(err);
+    }
+    if (jiraProfileError) {
+      yield loginError('Cannot authorize to JIRA. Check your credentials and try again');
+      yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: false });
+    } else {
+      yield put({ type: types.FILL_PROFILE, payload: userData });
+      Raven.setExtraContext({ host });
+      yield getSettings();
+      yield put({ type: types.SET_CURRENT_HOST, payload: host });
+      yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: false });
+      yield put({ type: types.SET_AUTH_STATE, payload: true });
+      yield put({ type: types.CHECK_OFFLINE_SCREENSHOTS });
+      yield put({ type: types.CHECK_OFFLINE_WORKLOGS });
+      Socket.login();
+      yield take(types.LOGOUT_REQUEST);
+      yield cps(storage.remove, 'desktop_tracker_jwt');
+      clearToken();
+      yield put({ type: types.CLEAR_ALL_REDUCERS });
+    }
   }
 }
