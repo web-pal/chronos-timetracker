@@ -29,18 +29,19 @@ function mapAssignee(assigneeId) {
 export function fetchIssues({
   startIndex,
   stopIndex,
-  currentProject,
+  currentProjectId, currentProjectType,
   typeFiltresId = [],
   statusFiltresId = [],
   assigneeFiltresId = [],
 }) {
   const assigneeFiltresFields = assigneeFiltresId.map(mapAssignee);
   const jql = [
-    `project = ${currentProject}`,
+    (currentProjectType === 'project' ? `project = ${currentProjectId}` : 'project = 10100'),
     (typeFiltresId.length ? ` AND issueType in (${typeFiltresId.join(',')})` : ''),
     (statusFiltresId.length ? ` AND status in (${statusFiltresId.join(',')})` : ''),
     (assigneeFiltresFields.length ? ` AND (${assigneeFiltresFields.join(' OR ')})` : ''),
   ].join('');
+  console.log('fetchIssues jql', jql);
   return jira.client.search.search({
     jql,
     maxResults: stopIndex - startIndex,
@@ -57,32 +58,45 @@ export function fetchIssue(issueId) {
 }
 
 
-export function fetchRecentIssues({ currentProject, worklogAuthor }) {
+export function fetchRecentIssues({ currentProjectId, currentProjectType, worklogAuthor }) {
   return jira.client.search.search({
     jql: [
-      `project = ${currentProject} `,
-      `AND worklogAuthor = ${worklogAuthor} `,
-      'AND timespent > 0 AND worklogDate >= "-4w"',
-    ].join(''),
+      (currentProjectType === 'project' ? `project = ${currentProjectId}` : 'project = 10100'),
+      `worklogAuthor = ${worklogAuthor} `,
+      'timespent > 0 AND worklogDate >= "-4w"',
+    ].join(' AND '),
     maxResults: 1000,
     fields: requiredFields,
   });
 }
 
-export function fetchSearchIssues({ currentProject, projectKey, searchValue }) {
+export function fetchSearchIssues({
+  currentProjectId,
+  currentProjectType,
+  projectKey,
+  searchValue,
+}) {
   return new Promise((resolve) => {
     const promises = [];
-    const searchValueWithKey = /^\d+$/.test(searchValue) ? `${projectKey}-${searchValue}` : searchValue;
+    const searchValueWithKey = (currentProjectType === 'project') && (/^\d+$/.test(searchValue))
+      ? `${projectKey}-${searchValue}`
+      : searchValue;
     promises.push(new Promise((r) => {
       jira.client.search.search({
-        jql: `project = ${currentProject} AND issuekey = "${searchValueWithKey}"`,
+        jql: [
+          (currentProjectType === 'project' ? `project = ${currentProjectId}` : 'project = 10100'),
+          `issuekey = "${searchValueWithKey}"`,
+        ].join(' AND '),
         maxResults: 1000,
         fields: requiredFields,
       }, (error, response) => r(response ? response.issues : []));
     }));
     promises.push(new Promise((r) => {
       jira.client.search.search({
-        jql: `project = ${currentProject} AND summary ~ "${searchValue}"`,
+        jql: [
+          (currentProjectType === 'project' ? `project = ${currentProjectId}` : 'project = 10100'),
+          `summary ~ "${searchValue}"`,
+        ].join(' AND '),
         maxResults: 1000,
         fields: requiredFields,
       }, (error, response) => r(response ? response.issues : []));
