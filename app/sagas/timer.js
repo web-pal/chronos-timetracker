@@ -22,7 +22,7 @@ function randomPeriods(periodsQty, min, max) {
   const averageMax = (max - min) / periodsQty;
   let prevPeriod = min;
   return [...Array(periodsQty).keys()].map(() => {
-    prevPeriod = randomInteger(prevPeriod + 20, prevPeriod + averageMax);
+    prevPeriod = randomInteger(prevPeriod + 20, (prevPeriod + averageMax) - 10);
     return prevPeriod;
   });
 }
