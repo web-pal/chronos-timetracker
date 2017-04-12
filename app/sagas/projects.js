@@ -33,7 +33,6 @@ export function* getProjects() {
     } catch (err) {
       console.log(err);
     }
-    console.log('selectLastSelectedProject', selectLastSelectedProject);
     let boards;
     try {
       boards = yield call(fetchAllBoards);
@@ -41,10 +40,6 @@ export function* getProjects() {
     } catch (err) {
       console.log(err);
     }
-
-    console.log('===============');
-    console.log('boards', boards);
-    console.log('projects', projects);
 
     let sprintsForBoard3;
     try {
@@ -70,13 +65,11 @@ export function* getProjects() {
       });
       if (selectLastSelectedProject) {
         const selectedProject = yield getFromStorage('lastProject');
-        console.log('--=---selectedProject', selectedProject);
         const host = yield select(state => state.profile.host);
-        console.log('--=---payload: selectedProject[host].substr(1),', selectedProject[host].substr(1));
         if (selectedProject[host]) {
           yield put({
             type: types.SELECT_PROJECT,
-            payload: selectedProject[host].substr(1),
+            payload: selectedProject[host][0] === 'b' ? selectedProject[host].substr(1) : selectedProject[host],
             meta: selectedProject[host][0] === 'b' ? 'board' : 'project',
           });
           yield put(fetchIssues());
@@ -97,7 +90,6 @@ export function* onSelectProject() {
     const { payload, meta } = yield take(types.SELECT_PROJECT);
     const host = yield select(state => state.profile.host);
     const data = yield cps(storage.get, 'lastProject');
-    console.log('meta ? board', (meta==='board' ? 'b' : '') + payload);
     storage.set('lastProject', { ...data, [host]: (meta === 'board' ? 'b' : '') + payload });
   }
 }

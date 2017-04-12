@@ -36,13 +36,15 @@ export function fetchIssues({
 }) {
   const assigneeFiltresFields = assigneeFiltresId.map(mapAssignee);
   const jql = [
-    (currentProjectType === 'project' ? `project = ${currentProjectId}` : 'project = 10100'),
-    (typeFiltresId.length ? ` AND issueType in (${typeFiltresId.join(',')})` : ''),
-    (statusFiltresId.length ? ` AND status in (${statusFiltresId.join(',')})` : ''),
-    (assigneeFiltresFields.length ? ` AND (${assigneeFiltresFields.join(' OR ')})` : ''),
-  ].join('');
-  console.log('fetchIssues jql', jql);
-  return jira.client.search.search({
+    (currentProjectType === 'project' ? `project = ${currentProjectId}` : ''),
+    (typeFiltresId.length ? `issueType in (${typeFiltresId.join(',')})` : ''),
+    (statusFiltresId.length ? `status in (${statusFiltresId.join(',')})` : ''),
+    (assigneeFiltresFields.length ? `(${assigneeFiltresFields.join(' OR ')})` : ''),
+  ].filter(f => !!f).join(' AND ');
+  const api = currentProjectType === 'project'
+    ? opts => jira.client.search.search(opts)
+    : opts => jira.client.board.getIssuesForBoard({ ...opts, boardId: currentProjectId });
+  return api({
     jql,
     maxResults: stopIndex - startIndex,
     startAt: startIndex,
@@ -59,12 +61,18 @@ export function fetchIssue(issueId) {
 
 
 export function fetchRecentIssues({ currentProjectId, currentProjectType, worklogAuthor }) {
-  return jira.client.search.search({
-    jql: [
-      (currentProjectType === 'project' ? `project = ${currentProjectId}` : 'project = 10100'),
-      `worklogAuthor = ${worklogAuthor} `,
-      'timespent > 0 AND worklogDate >= "-4w"',
-    ].join(' AND '),
+  const jql = [
+    (currentProjectType === 'project' ? `project = ${currentProjectId}` : ''),
+    `worklogAuthor = ${worklogAuthor} `,
+    'timespent > 0 AND worklogDate >= "-4w"',
+  ].filter(f => !!f).join(' AND ');
+
+  const api = currentProjectType === 'project'
+    ? opts => jira.client.search.search(opts)
+    : opts => jira.client.board.getIssuesForBoard({ ...opts, boardId: currentProjectId });
+
+  return api({
+    jql,
     maxResults: 1000,
     fields: requiredFields,
   });
@@ -81,26 +89,33 @@ export function fetchSearchIssues({
     const searchValueWithKey = (currentProjectType === 'project') && (/^\d+$/.test(searchValue))
       ? `${projectKey}-${searchValue}`
       : searchValue;
+
+    const api = currentProjectType === 'project'
+      ? opts => jira.client.search.search(opts)
+      : opts => jira.client.board.getIssuesForBoard({ ...opts, boardId: currentProjectId });
+
     promises.push(new Promise((r) => {
-      jira.client.search.search({
+      api({
         jql: [
-          (currentProjectType === 'project' ? `project = ${currentProjectId}` : 'project = 10100'),
+          (currentProjectType === 'project' ? `project = ${currentProjectId}` : ''),
           `issuekey = "${searchValueWithKey}"`,
-        ].join(' AND '),
+        ].filter(f => !!f).join(' AND '),
         maxResults: 1000,
         fields: requiredFields,
       }, (error, response) => r(response ? response.issues : []));
     }));
+
     promises.push(new Promise((r) => {
-      jira.client.search.search({
+      api({
         jql: [
-          (currentProjectType === 'project' ? `project = ${currentProjectId}` : 'project = 10100'),
+          (currentProjectType === 'project' ? `project = ${currentProjectId}` : ''),
           `summary ~ "${searchValue}"`,
-        ].join(' AND '),
+        ].filter(f => !!f).join(' AND '),
         maxResults: 1000,
         fields: requiredFields,
       }, (error, response) => r(response ? response.issues : []));
     }));
+
     Promise.all(promises).then((results) => {
       const items = [].concat(...results.map(i => i));
       resolve(items);

@@ -131,13 +131,10 @@ function* getIssueTypes() {
 
 function* getIssueStatuses() {
   yield put({ type: types.SET_ISSUES_ALL_STATUSES_FETCH_STATE, payload: true });
-
   const issueStatuses = yield call(fetchIssueStatuses);
-
   yield storeIssuesStatuses({
     issueStatuses,
   });
-
   yield put({ type: types.SET_ISSUES_ALL_STATUSES_FETCH_STATE, payload: false });
 }
 
