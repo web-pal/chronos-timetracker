@@ -77,6 +77,7 @@ function* runTimer() {
   const screensShotsAllowed = cond1 || cond2 || cond3;
 
   // Initial screenshots periods calculation
+  const currentSeconds = moment().format('ss');
   const minutes = moment().format('mm');
   // 33
   const minutePeriod = screenshotsPeriod / 60;
@@ -87,7 +88,7 @@ function* runTimer() {
   // (4 * 10) - 33 = 7
   const screensQnt = Math.round(periodRange / (minutePeriod / screenshotsQuantity)) || 1;
   // 7/(10/1) = 1
-  let nextPeriod = periodRange * 60;
+  let nextPeriod = (periodRange * 60) - currentSeconds;
 
   const initialPeriods = randomPeriods(screensQnt, 1, nextPeriod);
   yield put(savePeriods(initialPeriods));
@@ -144,6 +145,7 @@ function* runTimer() {
       // Activity check every tracked minute
       const currentTime = yield select(state => state.timer.time);
       if (currentTime % 60 === 0) {
+        // totalIdleTimeDuringOneMinute = randomInteger(5 * 1000, 60 * 1000);
         console.log('Add idle', totalIdleTimeDuringOneMinute);
         yield put({ type: types.ADD_IDLE, payload: totalIdleTimeDuringOneMinute });
         totalIdleTimeDuringOneMinute = 0;
