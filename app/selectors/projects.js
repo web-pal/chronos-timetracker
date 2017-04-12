@@ -47,9 +47,8 @@ export const getSelectedProjectOption = createSelector(
   (id, type, projectsMap, boardsMap) => {
     const r = (id ? ({
       value: id,
-      label: (type === 'boards' ? boardsMap.getIn([`${id}`, 'name']) : projectsMap.getIn([+id, 'name'])),
+      label: (type === 'board' ? boardsMap : projectsMap).getIn([`${id}`, 'name']),
     }) : null);
-    console.log('getSelectedProjectOption', r);
     return r;
   },
 );

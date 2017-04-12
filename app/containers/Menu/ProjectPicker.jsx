@@ -82,9 +82,7 @@ function mapStateToProps({ projects, issues }) {
     ...getProjectsOptions({ projects }),
     ...getBoardsOptions({ projects }),
   ];
-  console.log('project options', options);
   const selectedProject = getSelectedProjectOption({ projects });
-  console.log('selectedProject', selectedProject);
   return {
     options,
     projectsFetching: projects.meta.get('fetching'),

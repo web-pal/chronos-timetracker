@@ -61,7 +61,6 @@ function meta(state = new initialMeta(), action) {
     case types.SET_PROJECTS_FETCHED_STATE:
       return state.set('fetched', action.payload);
     case types.SELECT_PROJECT:
-      console.log('SELECT_PROJECT', action);
       return state.set(
         'selectedProjectId',
         action.payload,
