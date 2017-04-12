@@ -1,5 +1,6 @@
 export const FILL_WORKLOGS = 'worklogs/FILL';
 export const FILL_RECENT_WORKLOGS = 'worklogs/FILL_RECENT';
+export const MERGE_RECENT_WORKLOGS = 'worklogs/MERGE_RECENT';
 export const ADD_RECENT_WORKLOG = 'worklogs/ADD_RECENT_WORKLOG';
 export const CLEAR_WORKLOGS = 'worklogs/CLEAR';
 

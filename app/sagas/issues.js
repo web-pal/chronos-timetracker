@@ -34,6 +34,31 @@ function* storeIssues({ issues, fillIssuesType, fillWorklogsType }) {
   }
 }
 
+function* getAdditionalWorklogsForIssues({ incompleteIssues, fillIssuesType, fillWorklogsType }) {
+  const worklogs = yield call(fetchWorklogs, incompleteIssues);
+  const issues = incompleteIssues.map((issue) => {
+    const additionalWorklogs = worklogs.filter(w => w.issueId === issue.id);
+    if (additionalWorklogs.length) {
+      return {
+        ...issue,
+        fields: {
+          ...issue.fields,
+          worklog: {
+            total: additionalWorklogs.length,
+            worklogs: additionalWorklogs,
+          },
+        },
+      };
+    }
+    return issue;
+  });
+  yield storeIssues({
+    issues,
+    fillIssuesType,
+    fillWorklogsType,
+  });
+}
+
 
 function* storeIssuesTypes({ issueTypes }) {
   const savedFiltersType = yield select(state => state.issues.meta.issueCurrentCriteriaFilterType);
@@ -82,26 +107,17 @@ function* getRecentIssues() {
   const worklogAuthor = yield select(state => state.profile.userData.get('key'));
 
   // TODO: Handle errros with wrong project id
-  let { issues } = yield call(fetchRecentIssues, { currentProject, worklogAuthor });
+  const { issues } = yield call(fetchRecentIssues, { currentProject, worklogAuthor });
   const incompleteIssues = issues.filter(issue => issue.fields.worklog.total > 20);
   if (incompleteIssues.length) {
-    const worklogs = yield call(fetchWorklogs, incompleteIssues);
-    issues = issues.map((issue) => {
-      const additionalWorklogs = worklogs.filter(w => w.issueId === issue.id);
-      if (additionalWorklogs.length) {
-        return {
-          ...issue,
-          fields: {
-            ...issue.fields,
-            worklog: {
-              total: additionalWorklogs.length,
-              worklogs: additionalWorklogs,
-            },
-          },
-        };
-      }
-      return issue;
-    });
+    yield fork(
+      getAdditionalWorklogsForIssues,
+      {
+        incompleteIssues,
+        fillIssuesType: types.MERGE_RECENT_ISSUES,
+        fillWorklogsType: types.MERGE_RECENT_WORKLOGS,
+      },
+    );
   }
 
   yield storeIssues({
@@ -145,26 +161,17 @@ function* searchIssues() {
   const projectKey = yield select(state => state.projects.byId.get(currentProject).get('key'));
   const searchValue = yield select(state => state.issues.meta.searchValue);
 
-  let issues = yield call(fetchSearchIssues, { currentProject, projectKey, searchValue });
+  const issues = yield call(fetchSearchIssues, { currentProject, projectKey, searchValue });
   const incompleteIssues = issues.filter(issue => issue.fields.worklog.total > 20);
   if (incompleteIssues.length) {
-    const worklogs = yield call(fetchWorklogs, incompleteIssues);
-    issues = issues.map((issue) => {
-      const additionalWorklogs = worklogs.filter(w => w.issueId === issue.id);
-      if (additionalWorklogs.length) {
-        return {
-          ...issue,
-          fields: {
-            ...issue.fields,
-            worklog: {
-              total: additionalWorklogs.length,
-              worklogs: additionalWorklogs,
-            },
-          },
-        };
-      }
-      return issue;
-    });
+    yield fork(
+      getAdditionalWorklogsForIssues,
+      {
+        incompleteIssues,
+        fillIssuesType: types.FILL_SEARCH_ISSUES,
+        fillWorklogsType: types.FILL_WORKLOGS,
+      },
+    );
   }
 
   yield storeIssues({
@@ -206,27 +213,18 @@ function* getIssues({ pagination: { stopIndex, resolve } }) {
     statusFiltresId,
     assigneeFiltresId,
   });
-  let { issues } = response;
+  const { issues } = response;
   const { total } = response;
   const incompleteIssues = issues.filter(issue => issue.fields.worklog.total > 20);
   if (incompleteIssues.length) {
-    const worklogs = yield call(fetchWorklogs, incompleteIssues);
-    issues = issues.map((issue) => {
-      const additionalWorklogs = worklogs.filter(w => w.issueId === issue.id);
-      if (additionalWorklogs.length) {
-        return {
-          ...issue,
-          fields: {
-            ...issue.fields,
-            worklog: {
-              total: additionalWorklogs.length,
-              worklogs: additionalWorklogs,
-            },
-          },
-        };
-      }
-      return issue;
-    });
+    yield fork(
+      getAdditionalWorklogsForIssues,
+      {
+        incompleteIssues,
+        fillIssuesType: types.FILL_ISSUES,
+        fillWorklogsType: types.FILL_WORKLOGS,
+      },
+    );
   }
 
   yield storeIssues({

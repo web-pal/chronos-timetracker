@@ -6,6 +6,7 @@ export const FETCH_SEARCH_ISSUES_REQUEST = 'issues/FETCH_SEARCH_ISSUES_REQUEST';
 
 export const FILL_ISSUES = 'issues/FILL';
 export const FILL_RECENT_ISSUES = 'issues/FILL_RECENT';
+export const MERGE_RECENT_ISSUES = 'issues/MERGE_RECENT';
 export const FILL_SEARCH_ISSUES = 'issues/FILL_SEARCH';
 
 export const SET_ISSUES_FETCH_STATE = 'issues/SET_FETCH_STATE';

@@ -23,23 +23,30 @@ function formatSummary(summary) {
 
 function makeMapStateToProps() {
   return ({ issues, worklogs }, { issue, worklog, itemType }) => {
-    const id = issue.get('id');
     const selectedIssueId = issues.meta.selectedIssueId;
     const selectedWorklogId = worklogs.meta.selectedWorklogId;
     const trackingIssueId = issues.meta.trackingIssueId;
 
-    let active = id !== undefined && selectedIssueId === id;
-    let onTracking = trackingIssueId === id;
-    const activeGroup = active;
-    if (itemType === 'Recent') {
-      active = selectedWorklogId === worklog.get('id');
-      onTracking = trackingIssueId !== null && active;
+    let active = false;
+    let activeGroup = active;
+    let onTracking = false;
+    let summary = '';
+    if (issue && issue.size) {
+      const id = issue.get('id');
+      active = id !== undefined && selectedIssueId === id;
+      onTracking = trackingIssueId === id;
+      activeGroup = active;
+      if (itemType === 'Recent') {
+        active = selectedWorklogId === worklog.get('id');
+        onTracking = trackingIssueId !== null && active;
+      }
+      summary = formatSummary(issue.get('fields').get('summary'));
     }
     return {
       active,
       activeGroup,
       onTracking,
-      summary: issue.size ? formatSummary(issue.get('fields').get('summary')) : '',
+      summary,
     };
   };
 }

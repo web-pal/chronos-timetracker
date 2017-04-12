@@ -21,6 +21,7 @@ function itemsById(state = new Map(), action) {
   switch (action.type) {
     case types.FILL_SEARCH_ISSUES:
     case types.FILL_RECENT_ISSUES:
+    case types.MERGE_RECENT_ISSUES:
     case types.FILL_ISSUES:
       return state.merge(fromJS(action.payload.map));
     case types.CLEAR_ISSUES:
@@ -166,6 +167,8 @@ function meta(state = new InitialMeta(), action) {
 
     case types.FILL_RECENT_ISSUES:
       return state.set('recentIssuesIds', new OrderedSet(action.payload.ids));
+    case types.MERGE_RECENT_ISSUES:
+      return state.update('recentIssuesIds', issues => issues.concat(action.payload.ids));
     case types.FILL_SEARCH_ISSUES:
       return state.set('searchResultsIds', new OrderedSet(action.payload.ids));
     case types.CLEAR_ISSUES_SEARCH_RESULTS:

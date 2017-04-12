@@ -11,7 +11,7 @@ import refreshIcon from '../../assets/images/refresh@2x.png';
 
 
 const SidebarFilter = ({
-  searchValue, sidebarType, searchIssues,
+  searchValue, sidebarType, searchIssues, allowRefresh,
   clearIssues, fetchIssues, fetchRecentIssues, setIssuesSearchValue,
 }) =>
   <Flex column centered >
@@ -47,9 +47,11 @@ const SidebarFilter = ({
           alt="refreshIcon"
           src={refreshIcon}
           onClick={() => {
-            clearIssues();
-            fetchRecentIssues();
-            fetchIssues();
+            if (allowRefresh) {
+              clearIssues();
+              fetchRecentIssues();
+              fetchIssues();
+            }
           }}
           width={20}
           height={19}
@@ -66,6 +68,7 @@ SidebarFilter.propTypes = {
   fetchRecentIssues: PropTypes.func.isRequired,
   searchIssues: PropTypes.func.isRequired,
   setIssuesSearchValue: PropTypes.func.isRequired,
+  allowRefresh: PropTypes.bool.isRequired,
 };
 
 function mapStateToProps({ ui, issues }) {
@@ -73,6 +76,7 @@ function mapStateToProps({ ui, issues }) {
     searchValue: issues.meta.searchValue,
     showingFilterCriteriaBlock: issues.meta.showingFilterCriteriaBlock,
     sidebarType: ui.sidebarType,
+    allowRefresh: !issues.meta.fetching,
   };
 }
 
