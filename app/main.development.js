@@ -98,9 +98,9 @@ function createWindow() {
     mainWindow = new BrowserWindow({
       show: false,
       width: lastWindowSize.width || 810,
-      height: lastWindowSize.height || 575,
+      height: lastWindowSize.height || 675,
       minWidth: 710,
-      minHeight: 400,
+      minHeight: 640,
       ...noFrameOption,
     });
 
