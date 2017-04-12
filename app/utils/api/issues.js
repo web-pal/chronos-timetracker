@@ -100,8 +100,11 @@ export function fetchSearchIssues({
       : searchValue;
 
     const api = currentProjectType === 'project'
-      ? opts => jira.client.search.search(opts)
-      : opts => jira.client.board.getIssuesForBoard({ ...opts, boardId: currentProjectId });
+      ? (opts, callback) => jira.client.search.search(opts, callback)
+      : (opts, callback) => jira.client.board.getIssuesForBoard(
+        { ...opts, boardId: currentProjectId },
+      callback,
+    );
 
     promises.push(new Promise((r) => {
       api({
