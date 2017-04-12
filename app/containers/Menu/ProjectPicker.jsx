@@ -9,6 +9,7 @@ import {
   getSelectedProjectOption,
   getProjectsOptions,
   getBoardsOptions,
+  getSprints,
 } from '../../selectors';
 
 import * as projectsActions from '../../actions/projects';
@@ -43,26 +44,38 @@ const ProjectPicker = enhance(({
   selectedProject,
   projectsFetching,
   disabled,
+  sprintsFetching,
+  projectType,
+  sprints,
 }) => (
-  <Select
-    options={options}
-    value={selectedProject}
-    placeholder="Select project"
-    className="ProjectPicker"
-    onChange={(option) => {
-      selectProject(option.value, option.type);
-      clearWorklogs();
-      clearIssues();
-      fetchRecentIssues();
-      fetchIssues();
-      fetchIssuesAllTypes();
-      fetchIssuesAllStatuses();
-    }}
-    isLoading={projectsFetching}
-    clearable={false}
-    disabled={disabled}
-    optionRenderer={renderOpions}
-  />
+  <span>
+    <Select
+      options={options}
+      value={selectedProject}
+      placeholder="Select project"
+      className="ProjectPicker"
+      onChange={(option) => {
+        selectProject(option.value, option.type);
+        clearWorklogs();
+        clearIssues();
+        fetchRecentIssues();
+        fetchIssues();
+        fetchIssuesAllTypes();
+        fetchIssuesAllStatuses();
+      }}
+      isLoading={projectsFetching}
+      clearable={false}
+      disabled={disabled}
+      optionRenderer={renderOpions}
+    />
+    { (projectType === 'board') &&
+      <Select
+        placeholder="Select sprint"
+        isLoading={sprintsFetching}
+        options={sprints}
+      />
+    }
+  </span>
 ));
 
 ProjectPicker.propTypes = {
@@ -75,6 +88,9 @@ ProjectPicker.propTypes = {
   clearWorklogs: PropTypes.func.isRequired,
   clearIssues: PropTypes.func.isRequired,
   disabled: PropTypes.bool.isRequired,
+  sprintsFetching: PropTypes.bool.isRequired,
+  projectType: PropTypes.string.isRequired,
+  sprints: PropTypes.array.isRequired,
 };
 
 function mapStateToProps({ projects, issues }) {
@@ -83,11 +99,15 @@ function mapStateToProps({ projects, issues }) {
     ...getBoardsOptions({ projects }),
   ];
   const selectedProject = getSelectedProjectOption({ projects });
+  const sprints = getSprints({ projects });
   return {
     options,
     projectsFetching: projects.meta.get('fetching'),
     selectedProject,
+    sprints,
     disabled: issues.meta.fetching || issues.meta.searchFetching || issues.meta.recentFetching,
+    sprintsFetching: projects.meta.get('sprintsFetching'),
+    projectType: projects.meta.get('selectedProjectType'),
   };
 }
 

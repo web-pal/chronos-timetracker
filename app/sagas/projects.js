@@ -1,10 +1,10 @@
-import { take, put, call, cps, select } from 'redux-saga/effects';
+import { take, put, call, cps, select, takeLatest } from 'redux-saga/effects';
 import { normalize } from 'normalizr';
 import storage from 'electron-json-storage';
 
-import { fetchProjects, fetchAllBoards } from 'api';
+import { fetchProjects, fetchAllBoards, fetchSprints } from 'api';
 import * as types from '../constants/';
-import { projectSchema, boardSchema } from '../schemas/';
+import { projectSchema, boardSchema, sprintsSchema } from '../schemas/';
 import { getFromStorage } from './helper';
 import { fetchIssues, fetchRecentIssues, fetchIssuesAllTypes, fetchIssuesAllStatuses } from '../actions/issues';
 
@@ -82,9 +82,38 @@ export function* getProjects() {
 
 export function* onSelectProject() {
   while (true) {
-    const { payload } = yield take(types.SELECT_PROJECT);
+    const { payload, meta } = yield take(types.SELECT_PROJECT);
+
+    if (meta === 'board') yield put({ type: types.FETCH_SPRINTS_FOR_BOARD });
+
     const host = yield select(state => state.profile.host);
     const data = yield cps(storage.get, 'lastProject');
-    storage.set('lastProject', { ...data, [host]: payload });
+
+    storage.set('lastProject', { ...data, [host]: (meta === 'board' ? 'b' : '') + payload });
   }
+}
+
+function* storeSprints({ sprints }) {
+  const normalizedData = normalize(sprints, [sprintsSchema]);
+  yield put({
+    type: types.FILL_SPRINTS,
+    payload: {
+      map: normalizedData.entities.sprints,
+      ids: normalizedData.result,
+    },
+  });
+}
+
+function* getSprints() {
+  yield put({ type: types.SET_SPRINTS_FOR_BOARD_FETCH_STATE, payload: true });
+  const boardId = yield select(state => state.projects.meta.selectedProjectId);
+  const sprints = yield call(fetchSprints, { boardId });
+  yield storeSprints({
+    sprints: sprints.values,
+  });
+  yield put({ type: types.SET_SPRINTS_FOR_BOARD_FETCH_STATE, payload: false });
+}
+
+export function* whatchBoardSelection() {
+  yield takeLatest(types.FETCH_SPRINTS_FOR_BOARD, getSprints);
 }

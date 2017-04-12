@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { Record, OrderedSet, fromJS } from 'immutable';
+import { Record, OrderedSet, fromJS, List } from 'immutable';
 
 import * as types from '../constants';
 
@@ -50,8 +50,11 @@ function boardsById(state = new Map(), action) {
 const initialMeta = Record({
   fetching: false,
   fetched: false,
-  selectedProjectId: null,
-  selectedProjectType: null,
+  sprintsFetching: false,
+  selectedProjectId: '',
+  selectedProjectType: '',
+  sprintsById: new Map(),
+  sprintsId: new List(),
 });
 
 function meta(state = new initialMeta(), action) {
@@ -60,6 +63,8 @@ function meta(state = new initialMeta(), action) {
       return state.set('fetching', action.payload);
     case types.SET_PROJECTS_FETCHED_STATE:
       return state.set('fetched', action.payload);
+    case types.SET_SPRINTS_FOR_BOARD_FETCH_STATE:
+      return state.set('sprintsFetching', action.payload);
     case types.SELECT_PROJECT:
       return state.set(
         'selectedProjectId',
@@ -67,6 +72,14 @@ function meta(state = new initialMeta(), action) {
       ).set(
         'selectedProjectType',
         action.meta,
+      );
+    case types.FILL_SPRINTS:
+      return state.set(
+        'sprintsById',
+        fromJS(action.payload.map),
+      ).set(
+        'sprintsId',
+        fromJS(action.payload.ids),
       );
     case types.CLEAR_ALL_REDUCERS:
       return new initialMeta();
