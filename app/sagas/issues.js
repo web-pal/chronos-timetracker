@@ -79,13 +79,14 @@ function* getRecentIssues() {
   yield put({ type: types.SET_RECENT_ISSUES_FETCH_STATE, payload: true });
 
   const currentProjectId = yield select(state => state.projects.meta.selectedProjectId);
+  const currentSprintId = yield select(state => state.projects.meta.selectedSprintId);
   const currentProjectType = yield select(state => state.projects.meta.selectedProjectType);
   const worklogAuthor = yield select(state => state.profile.userData.get('key'));
 
   // TODO: Handle errros with wrong project id
   let { issues } = yield call(
     fetchRecentIssues,
-    { currentProjectId, currentProjectType, worklogAuthor },
+    { currentProjectId, currentProjectType, currentSprintId, worklogAuthor },
   );
   const incompleteIssues = issues.filter(issue => issue.fields.worklog.total > 20);
   if (incompleteIssues.length) {
@@ -143,6 +144,7 @@ function* searchIssues() {
   yield call(delay, 500);
 
   const currentProjectId = yield select(state => state.projects.meta.selectedProjectId);
+  const currentSprintId = yield select(state => state.projects.meta.selectedSprintId);
   const currentProjectType = yield select(state => state.projects.meta.selectedProjectType);
   let projectKey;
   if (currentProjectType === 'project') {
@@ -153,6 +155,7 @@ function* searchIssues() {
   let issues = yield call(fetchSearchIssues, {
     currentProjectId,
     currentProjectType,
+    currentSprintId,
     projectKey,
     searchValue,
   });
@@ -196,6 +199,7 @@ function* getIssues({ pagination: { stopIndex, resolve } }) {
   }
 
   const currentProjectId = yield select(state => state.projects.meta.selectedProjectId);
+  const currentSprintId = yield select(state => state.projects.meta.selectedSprintId);
   const currentProjectType = yield select(state => state.projects.meta.selectedProjectType);
   const fetched = yield select(state => state.issues.meta.fetched);
   const startIndex = yield select(state => state.issues.meta.lastStopIndex);
@@ -214,6 +218,7 @@ function* getIssues({ pagination: { stopIndex, resolve } }) {
     stopIndex: newStopIndex,
     currentProjectId,
     currentProjectType,
+    currentSprintId,
     typeFiltresId,
     statusFiltresId,
     assigneeFiltresId,

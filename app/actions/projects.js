@@ -16,3 +16,10 @@ export function selectProject(projectId, type) {
     meta: type,
   };
 }
+
+export function selectSprint(sprintId) {
+  return {
+    type: types.SELECT_SPRINT,
+    payload: sprintId,
+  };
+}

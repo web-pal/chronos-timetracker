@@ -30,6 +30,7 @@ export function fetchIssues({
   startIndex,
   stopIndex,
   currentProjectId, currentProjectType,
+  currentSprintId,
   typeFiltresId = [],
   statusFiltresId = [],
   assigneeFiltresId = [],
@@ -37,6 +38,7 @@ export function fetchIssues({
   const assigneeFiltresFields = assigneeFiltresId.map(mapAssignee);
   const jql = [
     (currentProjectType === 'project' ? `project = ${currentProjectId}` : ''),
+    ((currentProjectType === 'board') && currentSprintId ? `sprint = ${currentSprintId}` : ''),
     (typeFiltresId.length ? `issueType in (${typeFiltresId.join(',')})` : ''),
     (statusFiltresId.length ? `status in (${statusFiltresId.join(',')})` : ''),
     (assigneeFiltresFields.length ? `(${assigneeFiltresFields.join(' OR ')})` : ''),
@@ -60,9 +62,15 @@ export function fetchIssue(issueId) {
 }
 
 
-export function fetchRecentIssues({ currentProjectId, currentProjectType, worklogAuthor }) {
+export function fetchRecentIssues({
+  currentProjectId,
+  currentProjectType,
+  currentSprintId,
+  worklogAuthor,
+}) {
   const jql = [
     (currentProjectType === 'project' ? `project = ${currentProjectId}` : ''),
+    ((currentProjectType === 'board') && currentSprintId ? `sprint = ${currentSprintId}` : ''),
     `worklogAuthor = ${worklogAuthor} `,
     'timespent > 0 AND worklogDate >= "-4w"',
   ].filter(f => !!f).join(' AND ');
@@ -81,6 +89,7 @@ export function fetchRecentIssues({ currentProjectId, currentProjectType, worklo
 export function fetchSearchIssues({
   currentProjectId,
   currentProjectType,
+  currentSprintId,
   projectKey,
   searchValue,
 }) {
@@ -98,6 +107,7 @@ export function fetchSearchIssues({
       api({
         jql: [
           (currentProjectType === 'project' ? `project = ${currentProjectId}` : ''),
+          ((currentProjectType === 'board') && currentSprintId ? `sprint = ${currentSprintId}` : ''),
           `issuekey = "${searchValueWithKey}"`,
         ].filter(f => !!f).join(' AND '),
         maxResults: 1000,
@@ -109,6 +119,7 @@ export function fetchSearchIssues({
       api({
         jql: [
           (currentProjectType === 'project' ? `project = ${currentProjectId}` : ''),
+          ((currentProjectType === 'board') && currentSprintId ? `sprint = ${currentSprintId}` : ''),
           `summary ~ "${searchValue}"`,
         ].filter(f => !!f).join(' AND '),
         maxResults: 1000,

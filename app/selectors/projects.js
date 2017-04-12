@@ -8,6 +8,7 @@ export const getSprintsMap = ({ projects }) => projects.meta.sprintsById;
 export const getSprintsIds = ({ projects }) => projects.meta.sprintsId;
 export const getSelectedProjectId = ({ projects }) => projects.meta.get('selectedProjectId');
 export const getSelectedProjectType = ({ projects }) => projects.meta.get('selectedProjectType');
+export const getSelectedSprintId = ({ projects }) => projects.meta.get('selectedSprintId');
 
 export const getProjects = createSelector(
   [getProjectsIds, getProjectsMap],
@@ -53,6 +54,14 @@ export const getSelectedProjectOption = createSelector(
     }) : null);
     return r;
   },
+);
+
+export const getSelectedSprintOption = createSelector(
+  [getSelectedSprintId, getSprintsMap],
+  (id, map) => (id ? ({
+    value: id,
+    label: map.getIn([`${id}`, 'name']),
+  }) : null),
 );
 
 export const getSprints = createSelector(

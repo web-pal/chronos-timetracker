@@ -53,6 +53,7 @@ const initialMeta = Record({
   sprintsFetching: false,
   selectedProjectId: '',
   selectedProjectType: '',
+  selectedSprintId: '',
   sprintsById: new Map(),
   sprintsId: new List(),
 });
@@ -65,6 +66,8 @@ function meta(state = new initialMeta(), action) {
       return state.set('fetched', action.payload);
     case types.SET_SPRINTS_FOR_BOARD_FETCH_STATE:
       return state.set('sprintsFetching', action.payload);
+    case types.SELECT_SPRINT:
+      return state.set('selectedSprintId', action.payload);
     case types.SELECT_PROJECT:
       return state.set(
         'selectedProjectId',

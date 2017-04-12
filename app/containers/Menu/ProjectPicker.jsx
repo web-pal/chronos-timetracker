@@ -10,6 +10,7 @@ import {
   getProjectsOptions,
   getBoardsOptions,
   getSprints,
+  getSelectedSprintOption,
 } from '../../selectors';
 
 import * as projectsActions from '../../actions/projects';
@@ -47,6 +48,8 @@ const ProjectPicker = enhance(({
   sprintsFetching,
   projectType,
   sprints,
+  selectSprint,
+  selectedSprint,
 }) => (
   <span>
     <Select
@@ -71,8 +74,21 @@ const ProjectPicker = enhance(({
     { (projectType === 'board') &&
       <Select
         placeholder="Select sprint"
+        className="siprint_picker"
         isLoading={sprintsFetching}
         options={sprints}
+        disabled={disabled}
+        clearable={false}
+        value={selectedSprint}
+        onChange={(option) => {
+          selectSprint(option.value);
+          clearWorklogs();
+          clearIssues();
+          fetchRecentIssues();
+          fetchIssues();
+          fetchIssuesAllTypes();
+          fetchIssuesAllStatuses();
+        }}
       />
     }
   </span>
@@ -91,6 +107,7 @@ ProjectPicker.propTypes = {
   sprintsFetching: PropTypes.bool.isRequired,
   projectType: PropTypes.string.isRequired,
   sprints: PropTypes.array.isRequired,
+  selectedSprint: PropTypes.object,
 };
 
 function mapStateToProps({ projects, issues }) {
@@ -99,12 +116,14 @@ function mapStateToProps({ projects, issues }) {
     ...getBoardsOptions({ projects }),
   ];
   const selectedProject = getSelectedProjectOption({ projects });
+  const selectedSprint = getSelectedSprintOption({ projects });
   const sprints = getSprints({ projects });
   return {
     options,
     projectsFetching: projects.meta.get('fetching'),
     selectedProject,
     sprints,
+    selectedSprint,
     disabled: issues.meta.fetching || issues.meta.searchFetching || issues.meta.recentFetching,
     sprintsFetching: projects.meta.get('sprintsFetching'),
     projectType: projects.meta.get('selectedProjectType'),
