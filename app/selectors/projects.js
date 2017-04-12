@@ -4,6 +4,8 @@ export const getProjectsMap = ({ projects }) => projects.byId;
 export const getProjectsIds = ({ projects }) => projects.allIds;
 export const getBoardsMap = ({ projects }) => projects.boardsById;
 export const getBoardsIds = ({ projects }) => projects.allBoards;
+export const getSprintsMap = ({ projects }) => projects.meta.sprintsById;
+export const getSprintsIds = ({ projects }) => projects.meta.sprintsId;
 export const getSelectedProjectId = ({ projects }) => projects.meta.get('selectedProjectId');
 export const getSelectedProjectType = ({ projects }) => projects.meta.get('selectedProjectType');
 
@@ -51,4 +53,12 @@ export const getSelectedProjectOption = createSelector(
     }) : null);
     return r;
   },
+);
+
+export const getSprints = createSelector(
+  [getSprintsIds, getSprintsMap],
+  (ids, map) => ids.map(id => ({
+    value: id,
+    label: map.getIn([`${id}`, 'name']),
+  })).toArray(),
 );
