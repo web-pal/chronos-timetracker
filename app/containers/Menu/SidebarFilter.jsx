@@ -13,6 +13,8 @@ import refreshIcon from '../../assets/images/refresh@2x.png';
 const SidebarFilter = ({
   searchValue, sidebarType, searchIssues, allowRefresh,
   clearIssues, fetchIssues, fetchRecentIssues, setIssuesSearchValue,
+  fetchIssuesAllTypes,
+  fetchIssuesAllStatuses,
 }) =>
   <Flex column centered >
     <Flex row className={`sidebar-filter-item ${sidebarType === 'Recent' ? 'hidden' : ''}`}>
@@ -51,6 +53,8 @@ const SidebarFilter = ({
               clearIssues();
               fetchRecentIssues();
               fetchIssues();
+              fetchIssuesAllTypes();
+              fetchIssuesAllStatuses();
             }
           }}
           width={20}
@@ -69,6 +73,8 @@ SidebarFilter.propTypes = {
   searchIssues: PropTypes.func.isRequired,
   setIssuesSearchValue: PropTypes.func.isRequired,
   allowRefresh: PropTypes.bool.isRequired,
+  fetchIssuesAllTypes: PropTypes.func.isRequired,
+  fetchIssuesAllStatuses: PropTypes.func.isRequired,
 };
 
 function mapStateToProps({ ui, issues }) {

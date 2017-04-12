@@ -61,21 +61,21 @@ export const getAllIssuesStatuses = createSelector(
   [getIssuesAllStatusesIds, getSubIssuesAllStatusCategories,
     getIssuesAllStatusesMap, getIssuesAllStatusesFilter],
   (ids, categories, map, filter) =>
-  ids.filter(id => (filter ? map.get(id).name.toLowerCase().includes(filter) : true))
+  ids.filter(id => (filter ? map.get(id).get('name').toLowerCase().includes(filter) : true))
         .map(id => map.get(id).set('style', categories.get(map.get(id).statusCategory))),
 );
 
 export const getAllIssuesTypes = createSelector(
   [getIssuesAllTypesIds, getIssuesAllTypesMap, getSubIssuesAllTypesFilter],
   (ids, map, filter) =>
-  ids.filter(id => (filter ? map.get(id).name.toLowerCase().includes(filter) : true))
+  ids.filter(id => (filter ? map.get(id).get('name').toLowerCase().includes(filter) : true))
     .map(id => map.get(id)),
 );
 
 export const getAllSubIssuesTypes = createSelector(
   [getSubIssuesAllTypesIds, getIssuesAllTypesMap, getSubIssuesAllTypesFilter],
   (ids, map, filter) =>
-  ids.filter(id => (filter ? map.get(id).name.toLowerCase().includes(filter) : true))
+  ids.filter(id => (filter ? map.get(id).get('name').toLowerCase().includes(filter) : true))
     .map(id => map.get(id)),
 );
 
