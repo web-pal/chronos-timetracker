@@ -192,12 +192,6 @@ function* searchIssues() {
 function* getIssues({ pagination: { stopIndex, resolve } }) {
   yield put({ type: types.SET_ISSUES_FETCH_STATE, payload: true });
 
-  const totalCount = yield select(state => state.issues.meta.totalCount);
-  if (!totalCount) {
-    // Fake count
-    yield put({ type: types.SET_ISSUES_COUNT, payload: 10 });
-  }
-
   const currentProjectId = yield select(state => state.projects.meta.selectedProjectId);
   const currentSprintId = yield select(state => state.projects.meta.selectedSprintId);
   const currentProjectType = yield select(state => state.projects.meta.selectedProjectType);

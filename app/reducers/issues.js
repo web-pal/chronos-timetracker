@@ -144,7 +144,10 @@ function meta(state = new InitialMeta(), action) {
       return newState.set(
         stateField,
         filters.delete(action.payload.value),
-      ).set('lastStopIndex', 0);
+      ).set('lastStopIndex', 0).set(
+        'totalCount',
+        state.get('totalCount') || 10,
+      );
     }
 
     case types.FILL_ISSUES_ALL_TYPES:
