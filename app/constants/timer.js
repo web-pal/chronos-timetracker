@@ -4,6 +4,7 @@ export const STOP_TIMER = 'timer/STOP_TIMER';
 export const TICK = 'timer/TICK';
 export const SET_TIME = 'timer/SET_TIME';
 export const DISMISS_IDLE_TIME = 'timer/DISMISS_IDLE_TIME';
+export const SAVE_KEEP_IDLE = 'timer/SAVE_KEEP_IDLE';
 
 export const SET_LAST_SCREENSHOT_TIME = 'worklogs/SET_LAST_SCREENSHOT_TIME';
 export const SET_FORCE_QUIT_FLAG = 'timer/SET_FORCE_QUIT_FLAG';

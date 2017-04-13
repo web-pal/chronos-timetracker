@@ -34,6 +34,7 @@ class Tracker extends Component {
     selectIssue: PropTypes.func.isRequired,
     setForceQuitFlag: PropTypes.func.isRequired,
     setDescription: PropTypes.func.isRequired,
+    saveKeepedIdle: PropTypes.func.isRequired,
 
     running: PropTypes.bool.isRequired,
     screenshotUploading: PropTypes.bool.isRequired,
@@ -104,6 +105,9 @@ class Tracker extends Component {
   }
 
   keepIdleTime = () => {
+    const { getGlobal } = remote;
+    const { idleDetails } = getGlobal('sharedObj');
+    this.props.saveKeepedIdle(idleDetails);
     this.props.normalizeScreenshotsPeriods();
   }
 

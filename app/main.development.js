@@ -22,6 +22,7 @@ global.sharedObj = {
   screenshotTime: null,
   timestamp: null,
   idleTime: 0,
+  idleDetails: {},
 };
 
 if (process.env.NODE_ENV === 'production') {

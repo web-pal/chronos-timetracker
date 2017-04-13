@@ -8,6 +8,7 @@ const InitialState = Immutable.Record({
 
   lastScreenshotTime: 0,
   currentIdleList: Immutable.List(),
+  keepedIdles: Immutable.List(),
   screenShotsPeriods: [],
 });
 
@@ -26,6 +27,8 @@ export default function timer(state = initialState, action) {
       return state.set('time', action.payload);
     case types.DISMISS_IDLE_TIME:
       return state.set('time', state.time - action.payload);
+    case types.SAVE_KEEP_IDLE:
+      return state.update('keepedIdles', idles => idles.push(action.payload));
 
     case types.SET_LAST_SCREENSHOT_TIME:
       return state.set('lastScreenshotTime', action.payload);
@@ -43,7 +46,9 @@ export default function timer(state = initialState, action) {
         });
       });
     case types.CLEAR_CURRENT_IDLE_LIST:
-      return state.set('currentIdleList', Immutable.List());
+      return state
+        .set('currentIdleList', Immutable.List())
+        .set('keepedIdles', Immutable.List());
 
     default:
       return state;

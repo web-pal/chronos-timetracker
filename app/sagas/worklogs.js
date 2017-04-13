@@ -46,6 +46,7 @@ export function* uploadWorklog({
   screenshotsPeriod,
   comment,
   activity,
+  keepedIdles,
   screenshots,
   worklog_id,
 }, offlineMode = false) {
@@ -77,6 +78,7 @@ export function* uploadWorklog({
           screenshots,
           screenshotsPeriod,
           activity,
+          keepedIdles,
           type: 'jiraUploadWorklog',
         },
       );
@@ -91,6 +93,7 @@ export function* uploadWorklog({
       comment,
       screenshots,
       activity,
+      keepedIdles,
     };
     try {
       yield call(chronosBackendUploadWorklog, chronosWorklogData);
@@ -217,8 +220,8 @@ export function* uploadOfflineWorklogs() {
     }
     let index = 0;
     for (const worklog of offlineWorklogs) { // eslint-disable-line
-      const { issueId, screenshots, screenshotsPeriod, activity } = worklog;
-      const args = { issueId, screenshots, screenshotsPeriod, activity };
+      const { issueId, screenshots, screenshotsPeriod, activity, keepedIdles } = worklog;
+      const args = { issueId, screenshots, screenshotsPeriod, activity, keepedIdles };
       if (worklog.type === 'jiraUploadWorklog') {
         args.timeSpentSeconds = worklog.worklog.timeSpentSeconds;
         args.comment = worklog.worklog.comment;

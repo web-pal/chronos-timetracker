@@ -116,7 +116,10 @@ function* runTimer() {
       const idleTime = system.getIdleTime();
       if (idleState && idleTime < idleTimeThreshold * 1000) {
         idleState = false;
+        const currentTime = yield select(state => state.timer.time);
         remote.getGlobal('sharedObj').idleTime = prevIdleTime;
+        remote.getGlobal('sharedObj').idleDetails =
+          { from: currentTime - (Math.ceil(prevIdleTime / 1000)), to: currentTime };
         ipcRenderer.send('showIdlePopup');
       }
       if (!idleState && idleTime >= idleTimeThreshold * 1000) {
@@ -181,11 +184,15 @@ function* runTimer() {
         const activity = calculateActivity(
           currentIdleList, timeSpentSeconds, screenshotsPeriod, periodRange,
         );
+        const keepedIdles = yield select(
+          state => state.timer.keepedIdles.toArray(),
+        );
         yield call(
           uploadWorklog, {
             issueId,
             timeSpentSeconds,
             activity,
+            keepedIdles,
             screenshots,
             screenshotsPeriod,
             comment: description,

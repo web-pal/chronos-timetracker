@@ -16,6 +16,13 @@ export function dismissIdleTime(time) {
   };
 }
 
+export function saveKeepedIdle(payload) {
+  return {
+    type: types.SAVE_KEEP_IDLE,
+    payload,
+  };
+}
+
 export function normalizeScreenshotsPeriods() {
   return {
     type: types.NORMALIZE_SCREENSHOTS_PERIODS,
