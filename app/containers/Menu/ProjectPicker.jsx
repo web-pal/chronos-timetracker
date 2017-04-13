@@ -8,7 +8,8 @@ import 'react-select/dist/react-select.css';
 import {
   getSelectedProjectOption,
   getProjectsOptions,
-  getBoardsOptions,
+  getScrumBoardsOptions,
+  getKanbanBoardsOptions,
   getSprints,
   getSelectedSprintOption,
 } from '../../selectors';
@@ -71,17 +72,17 @@ const ProjectPicker = enhance(({
       disabled={disabled}
       optionRenderer={renderOpions}
     />
-    { (projectType === 'board') &&
+    { (projectType === 'scrum') &&
       <Select
         placeholder="Select sprint"
         className="siprint_picker"
         isLoading={sprintsFetching}
         options={sprints}
         disabled={disabled}
-        clearable={false}
+        clearable
         value={selectedSprint}
         onChange={(option) => {
-          selectSprint(option.value);
+          selectSprint(option && option.value);
           clearWorklogs();
           clearIssues();
           fetchRecentIssues();
@@ -113,7 +114,8 @@ ProjectPicker.propTypes = {
 function mapStateToProps({ projects, issues }) {
   const options = [
     ...getProjectsOptions({ projects }),
-    ...getBoardsOptions({ projects }),
+    ...getScrumBoardsOptions({ projects }),
+    ...getKanbanBoardsOptions({ projects }),
   ];
   const selectedProject = getSelectedProjectOption({ projects });
   const selectedSprint = getSelectedSprintOption({ projects });

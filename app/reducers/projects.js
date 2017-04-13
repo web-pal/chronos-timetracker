@@ -25,10 +25,21 @@ function itemsById(state = new Map(), action) {
   }
 }
 
-function allBoards(state = new OrderedSet(), action) {
+function allScrumBoards(state = new OrderedSet(), action) {
   switch (action.type) {
     case types.FILL_PROJECTS:
-      return new OrderedSet(action.payload.boardsIds);
+      return new OrderedSet(action.payload.scrumBoardsIds);
+    case types.CLEAR_ALL_REDUCERS:
+      return new OrderedSet();
+    default:
+      return state;
+  }
+}
+
+function allKanbanBoards(state = new OrderedSet(), action) {
+  switch (action.type) {
+    case types.FILL_PROJECTS:
+      return new OrderedSet(action.payload.kanbanBoardsIds);
     case types.CLEAR_ALL_REDUCERS:
       return new OrderedSet();
     default:
@@ -75,6 +86,9 @@ function meta(state = new initialMeta(), action) {
       ).set(
         'selectedProjectType',
         action.meta,
+      ).set(
+        'selectedSprintId',
+        '',
       );
     case types.FILL_SPRINTS:
       return state.set(
@@ -95,6 +109,7 @@ export default combineReducers({
   byId: itemsById,
   allIds: allItems,
   boardsById,
-  allBoards,
+  allScrumBoards,
+  allKanbanBoards,
   meta,
 });

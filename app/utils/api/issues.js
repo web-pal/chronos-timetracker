@@ -38,7 +38,7 @@ export function fetchIssues({
   const assigneeFiltresFields = assigneeFiltresId.map(mapAssignee);
   const jql = [
     (currentProjectType === 'project' ? `project = ${currentProjectId}` : ''),
-    ((currentProjectType === 'board') && currentSprintId ? `sprint = ${currentSprintId}` : ''),
+    ((currentProjectType === 'scrum') && currentSprintId ? `sprint = ${currentSprintId}` : ''),
     (typeFiltresId.length ? `issueType in (${typeFiltresId.join(',')})` : ''),
     (statusFiltresId.length ? `status in (${statusFiltresId.join(',')})` : ''),
     (assigneeFiltresFields.length ? `(${assigneeFiltresFields.join(' OR ')})` : ''),
@@ -70,7 +70,7 @@ export function fetchRecentIssues({
 }) {
   const jql = [
     (currentProjectType === 'project' ? `project = ${currentProjectId}` : ''),
-    ((currentProjectType === 'board') && currentSprintId ? `sprint = ${currentSprintId}` : ''),
+    ((currentProjectType === 'scrum') && currentSprintId ? `sprint = ${currentSprintId}` : ''),
     `worklogAuthor = ${worklogAuthor} `,
     'timespent > 0 AND worklogDate >= "-4w"',
   ].filter(f => !!f).join(' AND ');
@@ -106,11 +106,14 @@ export function fetchSearchIssues({
       callback,
     );
 
+    const project = currentProjectType === 'project' ? `project = ${currentProjectId}` : '';
+    const sprint = (currentProjectType === 'scrum') && currentSprintId ? `sprint = ${currentSprintId}` : '';
+
     promises.push(new Promise((r) => {
       api({
         jql: [
-          (currentProjectType === 'project' ? `project = ${currentProjectId}` : ''),
-          ((currentProjectType === 'board') && currentSprintId ? `sprint = ${currentSprintId}` : ''),
+          project,
+          sprint,
           `issuekey = "${searchValueWithKey}"`,
         ].filter(f => !!f).join(' AND '),
         maxResults: 1000,
@@ -121,8 +124,8 @@ export function fetchSearchIssues({
     promises.push(new Promise((r) => {
       api({
         jql: [
-          (currentProjectType === 'project' ? `project = ${currentProjectId}` : ''),
-          ((currentProjectType === 'board') && currentSprintId ? `sprint = ${currentSprintId}` : ''),
+          project,
+          sprint,
           `summary ~ "${searchValue}"`,
         ].filter(f => !!f).join(' AND '),
         maxResults: 1000,

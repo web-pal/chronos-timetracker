@@ -44,25 +44,51 @@ export function* getProjects() {
     if (projects.length || boards.length) {
       const normalizedBoardsData = normalize(boards, [boardSchema]);
       const normalizedProjectData = normalize(projects, [projectSchema]);
-
+      const { scrumBoards, kanbanBoards } = normalizedBoardsData.result.reduce(
+        (filter, id) => (
+          normalizedBoardsData.entities.boards[id].type === 'scrum'
+            ? filter.scrumBoards.push(id)
+            : filter.kanbanBoards.push(id)
+          ) && filter,
+        { scrumBoards: [], kanbanBoards: [] },
+      );
       yield put({
         type: types.FILL_PROJECTS,
         payload: {
           map: normalizedProjectData.entities.projects,
           ids: normalizedProjectData.result,
           boardsMap: normalizedBoardsData.entities.boards,
-          boardsIds: normalizedBoardsData.result,
+          scrumBoardsIds: scrumBoards,
+          kanbanBoardsIds: kanbanBoards,
         },
       });
       if (selectLastSelectedProject) {
         const selectedProject = yield getFromStorage('lastProject');
         const host = yield select(state => state.profile.host);
+        let type;
+        let projectId;
+        let sprintId;
+        if (typeof selectedProject[host] === 'string') {
+          type = 'project';
+          projectId = selectedProject[host];
+        } else {
+          type = selectedProject[host].type;
+          projectId = selectedProject[host].id;
+          sprintId = (type === 'scrum') && selectedProject[host].sprint;
+        }
         if (selectedProject[host]) {
           yield put({
             type: types.SELECT_PROJECT,
-            payload: selectedProject[host][0] === 'b' ? selectedProject[host].substr(1) : selectedProject[host],
-            meta: selectedProject[host][0] === 'b' ? 'board' : 'project',
+            payload: projectId,
+            meta: type,
           });
+          if (sprintId) {
+            yield take(types.FILL_SPRINTS);
+            yield put({
+              type: types.SELECT_SPRINT,
+              payload: sprintId,
+            });
+          }
           yield put(fetchIssues());
           yield put(fetchIssuesAllTypes());
           yield put(fetchIssuesAllStatuses());
@@ -80,12 +106,12 @@ export function* onSelectProject() {
   while (true) {
     const { payload, meta } = yield take(types.SELECT_PROJECT);
 
-    if (meta === 'board') yield put({ type: types.FETCH_SPRINTS_FOR_BOARD });
+    if (meta === 'scrum') yield put({ type: types.FETCH_SPRINTS_FOR_BOARD });
 
     const host = yield select(state => state.profile.host);
     const data = yield cps(storage.get, 'lastProject');
 
-    storage.set('lastProject', { ...data, [host]: (meta === 'board' ? 'b' : '') + payload });
+    storage.set('lastProject', { ...data, [host]: { type: meta, id: payload, sprint: '' } });
   }
 }
 
@@ -112,4 +138,15 @@ function* getSprints() {
 
 export function* whatchBoardSelection() {
   yield takeLatest(types.FETCH_SPRINTS_FOR_BOARD, getSprints);
+}
+
+export function* onSelectSprint() {
+  while (true) {
+    const { payload } = yield take(types.SELECT_SPRINT);
+
+    const host = yield select(state => state.profile.host);
+    const data = yield cps(storage.get, 'lastProject');
+
+    storage.set('lastProject', { ...data, [host]: { ...data[host], sprint: payload } });
+  }
 }
