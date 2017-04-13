@@ -29,15 +29,26 @@ function randomPeriods(periodsQty, min, max) {
   });
 }
 
-function calculateActivity(currentIdleList, timeSpentSeconds, screenshotsPeriod) {
-  return [...Array(Math.ceil(timeSpentSeconds / screenshotsPeriod)).keys()].map((period) => {
-    console.log('period', period);
-    const idleSec = currentIdleList
-      .slice(period * 10, (period + 1) * 10)
-      .reduce((a, b) => (a + b), 0) / 1000;
-    console.log('idleSec', idleSec);
-    return 100 - Math.round((10 * idleSec) / 100);
-  });
+function calculateActivity(
+  currentIdleList, timeSpentSeconds, screenshotsPeriod, firstPeriodInMinute,
+) {
+  const firstPeriodIdleSec =
+    currentIdleList.slice(0, firstPeriodInMinute).reduce((a, b) => (a + b), 0) / 1000;
+
+  const activityArray =
+    [...Array(Math.ceil(
+      (timeSpentSeconds - (firstPeriodInMinute * 60)) / screenshotsPeriod,
+    )).keys()].map((period) => {
+      const idleSec = currentIdleList
+        .slice(
+          period * (screenshotsPeriod / 60),
+          (period + 1) * (screenshotsPeriod / 60),
+        )
+        .reduce((a, b) => (a + b), 0) / 1000;
+      return 100 - Math.round((10 * idleSec) / 100);
+    });
+  activityArray.unshift(firstPeriodIdleSec);
+  return activityArray;
 }
 
 function* takeScreenshot() {
@@ -167,7 +178,9 @@ function* runTimer() {
         const screenshots = yield select(
           state => state.worklogs.meta.currentWorklogScreenshots.toArray(),
         );
-        const activity = calculateActivity(currentIdleList, timeSpentSeconds, screenshotsPeriod);
+        const activity = calculateActivity(
+          currentIdleList, timeSpentSeconds, screenshotsPeriod, periodRange,
+        );
         yield call(
           uploadWorklog, {
             issueId,
