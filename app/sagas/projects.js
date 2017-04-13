@@ -68,7 +68,7 @@ export function* getProjects() {
           kanbanBoardsIds: kanbanBoards,
         },
       });
-      if (selectLastSelectedProject) {
+      if (selectLastSelectedProject && Object.keys(selectLastSelectedProject).length) {
         const selectedProject = yield getFromStorage('lastProject');
         const host = yield select(state => state.profile.host);
         let type;
