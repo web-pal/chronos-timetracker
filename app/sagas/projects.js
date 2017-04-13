@@ -102,6 +102,7 @@ export function* getProjects() {
         }
       }
     }
+
     yield put({ type: types.SET_PROJECTS_FETCHED_STATE, payload: true });
     yield put({ type: types.SET_PROJECTS_FETCH_STATE, payload: false });
   }
@@ -151,7 +152,6 @@ export function* onSelectSprint() {
 
     const host = yield select(state => state.profile.host);
     const data = yield cps(storage.get, 'lastProject');
-
     storage.set('lastProject', { ...data, [host]: { ...data[host], sprint: payload } });
   }
 }

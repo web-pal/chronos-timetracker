@@ -168,7 +168,6 @@ function* searchIssues() {
   }
   const searchValue = yield select(state => state.issues.meta.searchValue);
 
-
   const issues = yield call(fetchSearchIssues, {
     currentProjectId,
     currentProjectType,
