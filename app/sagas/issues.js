@@ -103,11 +103,16 @@ function* storeIssuesStatuses({ issueStatuses }) {
 function* getRecentIssues() {
   yield put({ type: types.SET_RECENT_ISSUES_FETCH_STATE, payload: true });
 
-  const currentProject = yield select(state => state.projects.meta.selectedProjectId);
+  const currentProjectId = yield select(state => state.projects.meta.selectedProjectId);
+  const currentSprintId = yield select(state => state.projects.meta.selectedSprintId);
+  const currentProjectType = yield select(state => state.projects.meta.selectedProjectType);
   const worklogAuthor = yield select(state => state.profile.userData.get('key'));
 
   // TODO: Handle errros with wrong project id
-  const { issues } = yield call(fetchRecentIssues, { currentProject, worklogAuthor });
+  const { issues } = yield call(
+    fetchRecentIssues,
+    { currentProjectId, currentProjectType, currentSprintId, worklogAuthor },
+  );
   const incompleteIssues = issues.filter(issue => issue.fields.worklog.total > 20);
   if (incompleteIssues.length) {
     yield fork(
@@ -143,13 +148,10 @@ function* getIssueTypes() {
 
 function* getIssueStatuses() {
   yield put({ type: types.SET_ISSUES_ALL_STATUSES_FETCH_STATE, payload: true });
-
   const issueStatuses = yield call(fetchIssueStatuses);
-
   yield storeIssuesStatuses({
     issueStatuses,
   });
-
   yield put({ type: types.SET_ISSUES_ALL_STATUSES_FETCH_STATE, payload: false });
 }
 
@@ -157,11 +159,22 @@ function* searchIssues() {
   yield put({ type: types.SET_SEARCH_ISSUES_FETCH_STATE, payload: true });
   yield call(delay, 500);
 
-  const currentProject = yield select(state => state.projects.meta.selectedProjectId);
-  const projectKey = yield select(state => state.projects.byId.get(currentProject).get('key'));
+  const currentProjectId = yield select(state => state.projects.meta.selectedProjectId);
+  const currentSprintId = yield select(state => state.projects.meta.selectedSprintId);
+  const currentProjectType = yield select(state => state.projects.meta.selectedProjectType);
+  let projectKey;
+  if (currentProjectType === 'project') {
+    projectKey = yield select(state => state.projects.byId.get(currentProjectId).get('key'));
+  }
   const searchValue = yield select(state => state.issues.meta.searchValue);
 
-  const issues = yield call(fetchSearchIssues, { currentProject, projectKey, searchValue });
+  const issues = yield call(fetchSearchIssues, {
+    currentProjectId,
+    currentProjectType,
+    currentSprintId,
+    projectKey,
+    searchValue,
+  });
   const incompleteIssues = issues.filter(issue => issue.fields.worklog.total > 20);
   if (incompleteIssues.length) {
     yield fork(
@@ -186,13 +199,9 @@ function* searchIssues() {
 function* getIssues({ pagination: { stopIndex, resolve } }) {
   yield put({ type: types.SET_ISSUES_FETCH_STATE, payload: true });
 
-  const totalCount = yield select(state => state.issues.meta.totalCount);
-  if (!totalCount) {
-    // Fake count
-    yield put({ type: types.SET_ISSUES_COUNT, payload: 10 });
-  }
-
-  const currentProject = yield select(state => state.projects.meta.selectedProjectId);
+  const currentProjectId = yield select(state => state.projects.meta.selectedProjectId);
+  const currentSprintId = yield select(state => state.projects.meta.selectedSprintId);
+  const currentProjectType = yield select(state => state.projects.meta.selectedProjectType);
   const fetched = yield select(state => state.issues.meta.fetched);
   const startIndex = yield select(state => state.issues.meta.lastStopIndex);
   const typeFiltresId = yield select(state =>
@@ -208,7 +217,9 @@ function* getIssues({ pagination: { stopIndex, resolve } }) {
   const response = yield call(fetchIssues, {
     startIndex,
     stopIndex: newStopIndex,
-    currentProject,
+    currentProjectId,
+    currentProjectType,
+    currentSprintId,
     typeFiltresId,
     statusFiltresId,
     assigneeFiltresId,

@@ -142,7 +142,7 @@ function mapStateToProps({ ui, issues }) {
     assigneeActiveFilters: issues.meta.issueCurrentCriteriaFilterAssignee,
     issueFilterOfFiltersTypes: issues.meta.issueFilterOfFiltersType,
     issueFilterOfFiltersStatus: issues.meta.issueFilterOfFiltersStatus,
-    showPanel: issues.meta.filterCriteriaPanel,
+    showPanel: issues.meta.filterCriteriaPanel && issues.meta.fetched,
   };
 }
 

@@ -5,11 +5,28 @@ import { lifecycle } from 'recompose';
 import Select from 'react-select';
 import 'react-select/dist/react-select.css';
 
-import { getSelectedProjectOption, getProjectsOptions } from '../../selectors';
+import {
+  getSelectedProjectOption,
+  getProjectsOptions,
+  getScrumBoardsOptions,
+  getKanbanBoardsOptions,
+  getSprints,
+  getSelectedSprintOption,
+} from '../../selectors';
 
 import * as projectsActions from '../../actions/projects';
 import * as issuesActions from '../../actions/issues';
 import * as worklogsActions from '../../actions/worklogs';
+
+function renderOpions(option) {
+  return option.divider
+    ? (
+      <h5>
+        {option.dividerName}
+      </h5>
+    )
+    : option.label;
+}
 
 const enhance = lifecycle({
   componentDidMount() {
@@ -29,25 +46,53 @@ const ProjectPicker = enhance(({
   selectedProject,
   projectsFetching,
   disabled,
+  sprintsFetching,
+  projectType,
+  sprints,
+  selectSprint,
+  selectedSprint,
 }) => (
-  <Select
-    options={options}
-    value={selectedProject}
-    placeholder="Select project"
-    className="ProjectPicker"
-    onChange={(option) => {
-      selectProject(option.value);
-      clearWorklogs();
-      clearIssues();
-      fetchRecentIssues();
-      fetchIssues();
-      fetchIssuesAllTypes();
-      fetchIssuesAllStatuses();
-    }}
-    isLoading={projectsFetching}
-    clearable={false}
-    disabled={disabled}
-  />
+  <span>
+    <Select
+      options={options}
+      value={selectedProject}
+      placeholder="Select project"
+      className="ProjectPicker"
+      onChange={(option) => {
+        selectProject(option.value, option.type);
+        clearWorklogs();
+        clearIssues();
+        fetchRecentIssues();
+        fetchIssues();
+        fetchIssuesAllTypes();
+        fetchIssuesAllStatuses();
+      }}
+      isLoading={projectsFetching}
+      clearable={false}
+      disabled={disabled}
+      optionRenderer={renderOpions}
+    />
+    { (projectType === 'scrum') &&
+      <Select
+        placeholder="Select sprint"
+        className="siprint_picker"
+        isLoading={sprintsFetching}
+        options={sprints}
+        disabled={disabled}
+        clearable
+        value={selectedSprint}
+        onChange={(option) => {
+          selectSprint(option && option.value);
+          clearWorklogs();
+          clearIssues();
+          fetchRecentIssues();
+          fetchIssues();
+          fetchIssuesAllTypes();
+          fetchIssuesAllStatuses();
+        }}
+      />
+    }
+  </span>
 ));
 
 ProjectPicker.propTypes = {
@@ -60,16 +105,30 @@ ProjectPicker.propTypes = {
   clearWorklogs: PropTypes.func.isRequired,
   clearIssues: PropTypes.func.isRequired,
   disabled: PropTypes.bool.isRequired,
+  sprintsFetching: PropTypes.bool.isRequired,
+  projectType: PropTypes.string.isRequired,
+  sprints: PropTypes.array.isRequired,
+  selectedSprint: PropTypes.object,
 };
 
 function mapStateToProps({ projects, issues }) {
-  const options = getProjectsOptions({ projects });
+  const options = [
+    ...getProjectsOptions({ projects }),
+    ...getScrumBoardsOptions({ projects }),
+    ...getKanbanBoardsOptions({ projects }),
+  ];
   const selectedProject = getSelectedProjectOption({ projects });
+  const selectedSprint = getSelectedSprintOption({ projects });
+  const sprints = getSprints({ projects });
   return {
     options,
     projectsFetching: projects.meta.get('fetching'),
     selectedProject,
+    sprints,
+    selectedSprint,
     disabled: issues.meta.fetching || issues.meta.searchFetching || issues.meta.recentFetching,
+    sprintsFetching: projects.meta.get('sprintsFetching'),
+    projectType: projects.meta.get('selectedProjectType'),
   };
 }
 

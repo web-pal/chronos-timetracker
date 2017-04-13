@@ -1,7 +1,7 @@
 import { fork } from 'redux-saga/effects';
 
 import { loginFlow, loginOAuthFlow, checkJWT } from './profile';
-import { getProjects, onSelectProject } from './projects';
+import { getProjects, onSelectProject, whatchBoardSelection, onSelectSprint } from './projects';
 import {
   watchGetIssues, watchGetIssue, watchRecentIssues,
   watchSearchIssues, watchChangeSidebar,
@@ -24,8 +24,10 @@ export default function* root() {
 
     fork(getProjects),
     fork(onSelectProject),
+    fork(onSelectSprint),
 
     fork(watchGetIssues),
+    fork(whatchBoardSelection),
 
     fork(onSetFilters),
     fork(watchIssuesCriteriaFilter),

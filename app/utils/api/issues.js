@@ -29,19 +29,24 @@ function mapAssignee(assigneeId) {
 export function fetchIssues({
   startIndex,
   stopIndex,
-  currentProject,
+  currentProjectId, currentProjectType,
+  currentSprintId,
   typeFiltresId = [],
   statusFiltresId = [],
   assigneeFiltresId = [],
 }) {
   const assigneeFiltresFields = assigneeFiltresId.map(mapAssignee);
   const jql = [
-    `project = ${currentProject}`,
-    (typeFiltresId.length ? ` AND issueType in (${typeFiltresId.join(',')})` : ''),
-    (statusFiltresId.length ? ` AND status in (${statusFiltresId.join(',')})` : ''),
-    (assigneeFiltresFields.length ? ` AND (${assigneeFiltresFields.join(' OR ')})` : ''),
-  ].join('');
-  return jira.client.search.search({
+    (currentProjectType === 'project' ? `project = ${currentProjectId}` : ''),
+    ((currentProjectType === 'scrum') && currentSprintId ? `sprint = ${currentSprintId}` : ''),
+    (typeFiltresId.length ? `issueType in (${typeFiltresId.join(',')})` : ''),
+    (statusFiltresId.length ? `status in (${statusFiltresId.join(',')})` : ''),
+    (assigneeFiltresFields.length ? `(${assigneeFiltresFields.join(' OR ')})` : ''),
+  ].filter(f => !!f).join(' AND ');
+  const api = currentProjectType === 'project'
+    ? opts => jira.client.search.search(opts)
+    : opts => jira.client.board.getIssuesForBoard({ ...opts, boardId: currentProjectId });
+  return api({
     jql,
     maxResults: stopIndex - startIndex,
     startAt: startIndex,
@@ -57,36 +62,77 @@ export function fetchIssue(issueId) {
 }
 
 
-export function fetchRecentIssues({ currentProject, worklogAuthor }) {
-  return jira.client.search.search({
-    jql: [
-      `project = ${currentProject} `,
-      `AND worklogAuthor = ${worklogAuthor} `,
-      'AND timespent > 0 AND worklogDate >= "-4w"',
-    ].join(''),
+export function fetchRecentIssues({
+  currentProjectId,
+  currentProjectType,
+  currentSprintId,
+  worklogAuthor,
+}) {
+  const jql = [
+    (currentProjectType === 'project' ? `project = ${currentProjectId}` : ''),
+    ((currentProjectType === 'scrum') && currentSprintId ? `sprint = ${currentSprintId}` : ''),
+    `worklogAuthor = ${worklogAuthor} `,
+    'timespent > 0 AND worklogDate >= "-4w"',
+  ].filter(f => !!f).join(' AND ');
+
+  const api = currentProjectType === 'project'
+    ? opts => jira.client.search.search(opts)
+    : opts => jira.client.board.getIssuesForBoard({ ...opts, boardId: currentProjectId });
+
+  return api({
+    jql,
     maxResults: 1000,
     fields: requiredFields,
   });
 }
 
-export function fetchSearchIssues({ currentProject, projectKey, searchValue }) {
+export function fetchSearchIssues({
+  currentProjectId,
+  currentProjectType,
+  currentSprintId,
+  projectKey,
+  searchValue,
+}) {
   return new Promise((resolve) => {
     const promises = [];
-    const searchValueWithKey = /^\d+$/.test(searchValue) ? `${projectKey}-${searchValue}` : searchValue;
+    const searchValueWithKey = (currentProjectType === 'project') && (/^\d+$/.test(searchValue))
+      ? `${projectKey}-${searchValue}`
+      : searchValue;
+
+    const api = currentProjectType === 'project'
+      ? (opts, callback) => jira.client.search.search(opts, callback)
+      : (opts, callback) => jira.client.board.getIssuesForBoard(
+        { ...opts, boardId: currentProjectId },
+      callback,
+    );
+
+    const project = currentProjectType === 'project' ? `project = ${currentProjectId}` : '';
+    const sprint = (currentProjectType === 'scrum') && currentSprintId ? `sprint = ${currentSprintId}` : '';
+
     promises.push(new Promise((r) => {
-      jira.client.search.search({
-        jql: `project = ${currentProject} AND issuekey = "${searchValueWithKey}"`,
+      api({
+        jql: [
+          project,
+          sprint,
+          `issuekey = "${searchValueWithKey}"`,
+        ].filter(f => !!f).join(' AND '),
         maxResults: 1000,
         fields: requiredFields,
       }, (error, response) => r(response ? response.issues : []));
     }));
+
     promises.push(new Promise((r) => {
-      jira.client.search.search({
-        jql: `project = ${currentProject} AND summary ~ "${searchValue}"`,
+      api({
+        jql: [
+          project,
+          sprint,
+          `summary ~ "${searchValue}"`,
+        ].filter(f => !!f).join(' AND '),
         maxResults: 1000,
         fields: requiredFields,
       }, (error, response) => r(response ? response.issues : []));
     }));
+
     Promise.all(promises).then((results) => {
       const items = [].concat(...results.map(i => i));
       resolve(items);
