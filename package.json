@@ -1,6 +1,6 @@
 {
   "name": "Chronos",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "description": "Full functionality time tracking software with direct JIRA integration",
   "main": "./app/main.js",
   "scripts": {
@@ -189,7 +189,6 @@
     "url-loader": "^0.5.7",
     "user-media-screenshot": "git+https://github.com/Architektor/user-media-screenshot.git",
     "utf-8-validate": "^2.0.0",
-    "uuid": "^3.0.1",
     "x11": "^2.2.0"
   },
   "devEngines": {
