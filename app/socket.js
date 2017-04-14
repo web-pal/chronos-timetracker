@@ -5,6 +5,8 @@ import config from 'config';
 import * as types from './constants';
 import store from './store.js';
 
+const uuidV4 = require('uuid/v4');
+
 export default class Socket {
   static connect() {
     this.socket = io(config.socketUrl, {
@@ -42,8 +44,8 @@ export default class Socket {
       const issueId = state.issues.meta.trackingIssueId;
       const timeSpentSeconds = state.timer.time;
       const description = state.worklogs.meta.currentDescription;
-      const screensShot =
-        state.worklogs.meta.currentWorklogScreenshots.toArray().map(s => ({ name: s }));
+      const screenshots =
+        state.worklogs.meta.currentWorklogScreenshots.toArray().map(s => ({ ...s }));
       const userData = state.profile.userData;
       const currentProjectId = state.projects.meta.selectedProjectId;
 
@@ -54,7 +56,7 @@ export default class Socket {
             issueId,
             timeSpentSeconds,
             description,
-            screensShot,
+            screenshots,
             currentProjectId,
             toSocketId,
             user: userData.toJS(),
