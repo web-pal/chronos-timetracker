@@ -5,8 +5,6 @@ import config from 'config';
 import * as types from './constants';
 import store from './store.js';
 
-const uuidV4 = require('uuid/v4');
-
 export default class Socket {
   static connect() {
     this.socket = io(config.socketUrl, {
