@@ -28,7 +28,7 @@ function* storeIssues({ issues, fillIssuesType, fillWorklogsType }) {
       type: fillWorklogsType,
       payload: {
         map: normalizedData.entities.worklogs,
-        ids: Object.keys(normalizedData.entities.worklogs || {}),
+        ids: Object.keys(normalizedData.entities.worklogs),
       },
     });
   }
