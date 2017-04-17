@@ -16,6 +16,7 @@ test('uploadWorklog Saga test online mode', (t) => {
 
   const generator = uploadWorklog(worklog, offlineMode);
 
+  // eslint-disable-next-line prefer-const
   let next = generator.next();
   t.deepEqual(next.value, put(actions.setWorklogUploadState(true)),
     'must yield actions.setWorklogUploadState(true)',

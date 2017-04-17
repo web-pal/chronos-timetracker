@@ -1,109 +1,33 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { fromJS } from 'immutable';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 
 import * as issuesActions from '../../actions/issues';
 
-import {
-  getAllIssuesTypes,
-  getAllSubIssuesTypes,
-  getAllIssuesStatuses,
-} from '../../selectors/issues';
+import { getAllIssuesTypes, getAllSubIssuesTypes, getAllIssuesStatuses } from '../../selectors';
 
 import Flex from '../../components/Base/Flex/Flex';
 import FilterCriteria from '../../components/Sidebar/CriteriaFilters/FilterCriteria';
 
-const handleFilterOfFilters = (f, filterName) => ev => f(ev.target.value, filterName);
+import getCriteriaFilters from './getCriteriaFilters';
 
-
-const CriteriaFilters = ({
-  sidebarType,
-  setShowingFilterCriteriaBlock,
-  AllIssuesTypes, AllSubIssuesTypes, AllIssuesStatuses,
-  issueFilterOfFiltersTypes, issueFilterOfFiltersStatus,
-  setFilterOfIssuesFiltersValue,
-  setIssuesCriteriaFilter,
-  isStatusFilterActvie,
-  isTypeFilterActvie,
-  assigneeActiveFilters,
-  showPanel,
-  showFilterCriteriaType,
-  showFilterCriteriaStatus,
-  showFilterCriteriaAssignee,
-}) => (
-  (showPanel && sidebarType === 'All')
-  ? <Flex
-    row
-    className={[
-      'sidebar-filter-item sidebar-filter-item--criterias',
-    ].join(' ')}
-  >
-    <Flex column centered className={'sidebar-filter-criterias'} >
+const CriteriaFilters = props => props.showPanel && props.sidebarType === 'All'
+  ? <Flex row className="sidebar-filter-item sidebar-filter-item--criterias">
+    <Flex column centered className="sidebar-filter-criterias">
       <Flex row centered>
-        {
-          [
-            {
-              name: 'Type',
-              criteriaKey: 'Type',
-              options: [
-                { key: 'Standard', header: 'Standard Issue Types', values: AllIssuesTypes },
-                { key: 'Sub', header: 'Sub-Task Issue Types', values: AllSubIssuesTypes },
-              ],
-              isActive: isTypeFilterActvie,
-              filterOfFilters: issueFilterOfFiltersTypes,
-              isOpen: showFilterCriteriaType,
-              showIcons: true,
-            },
-            {
-              name: 'Status',
-              criteriaKey: 'Status',
-              options: [{ key: 'Status', values: AllIssuesStatuses }],
-              filterOfFilters: issueFilterOfFiltersStatus,
-              isActive: isStatusFilterActvie,
-              isOpen: showFilterCriteriaStatus,
-              showIcons: false,
-            },
-            {
-              name: 'Assignee',
-              criteriaKey: 'Assignee',
-              options: [{
-                key: 'Assignee',
-                values: fromJS([
-                  { name: 'Unassigned', id: 'none', checked: assigneeActiveFilters.has('none') },
-                  {
-                    name: 'Current User',
-                    id: 'currentUser',
-                    checked: assigneeActiveFilters.has('currentUser'),
-                  },
-                ]),
-              }],
-              filterOfFilters: null,
-              handleFilterOfFilters: null,
-              isActive: !!assigneeActiveFilters.size,
-              hideFilterOfFiltersField: true,
-              isOpen: showFilterCriteriaAssignee,
-              showIcons: false,
-            },
-          ].map(criteria =>
-            <FilterCriteria
-              key={criteria.criteriaKey}
-              handleFilterOfFilters={
-                handleFilterOfFilters(setFilterOfIssuesFiltersValue, criteria.criteriaKey)
-              }
-              handleClick={setShowingFilterCriteriaBlock}
-              handleCriteriaSet={setIssuesCriteriaFilter}
-              {...criteria}
-            />,
-          )
-        }
+        {getCriteriaFilters(props).map(criteria =>
+          <FilterCriteria
+            key={criteria.criteriaKey}
+            handleClick={props.setShowingFilterCriteriaBlock}
+            handleCriteriaSet={props.setIssuesCriteriaFilter}
+            {...criteria}
+          />
+        )}
       </Flex>
     </Flex>
   </Flex>
-    : null
-)
-;
+  : null;
 
 CriteriaFilters.propTypes = {
   sidebarType: PropTypes.string.isRequired,
@@ -145,7 +69,6 @@ function mapStateToProps({ ui, issues }) {
     showPanel: issues.meta.filterCriteriaPanel && issues.meta.fetched,
   };
 }
-
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(issuesActions, dispatch);
