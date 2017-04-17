@@ -10,46 +10,9 @@ import { idleTimeThreshold } from 'config';
 import * as types from '../constants/';
 import { uploadWorklog } from './worklogs';
 import { savePeriods } from '../actions/timer';
+import { randomPeriods, calculateActivity } from './timerHelper';
 
 const system = remote.require('@paulcbetts/system-idle-time');
-
-
-function randomInteger(min, max) {
-  const rand = (min - 0.5) + (Math.random() * ((max - min) + 1));
-  return Math.round(rand);
-}
-
-function randomPeriods(periodsQty, min, max) {
-  const averageMax = (max - min) / periodsQty;
-  let prevPeriod = min;
-  return [...Array(periodsQty).keys()].map(() => {
-    const plusForPrev = periodsQty > 1 ? 20 : 0;
-    prevPeriod = randomInteger(prevPeriod + plusForPrev, (prevPeriod + averageMax) - 1);
-    return prevPeriod;
-  });
-}
-
-function calculateActivity(
-  currentIdleList, timeSpentSeconds, screenshotsPeriod, firstPeriodInMinute,
-) {
-  const firstPeriodIdleSec =
-    currentIdleList.slice(0, firstPeriodInMinute).reduce((a, b) => (a + b), 0) / 1000;
-
-  const activityArray =
-    [...Array(Math.ceil(
-      (timeSpentSeconds - (firstPeriodInMinute * 60)) / screenshotsPeriod,
-    )).keys()].map((period) => {
-      const idleSec = currentIdleList
-        .slice(
-          period * (screenshotsPeriod / 60),
-          (period + 1) * (screenshotsPeriod / 60),
-        )
-        .reduce((a, b) => (a + b), 0) / 1000;
-      return 100 - Math.round((10 * idleSec) / 100);
-    });
-  activityArray.unshift(firstPeriodIdleSec);
-  return activityArray;
-}
 
 function* takeScreenshot() {
   const screenshotTime = yield select(state => state.timer.time);
@@ -89,6 +52,8 @@ function* runTimer() {
 
   // Initial screenshots periods calculation
   const currentSeconds = moment().format('ss');
+  const secondsToMinutesGrid = 60 - currentSeconds;
+  // second remaining to end of current Idle-minute period
   const minutes = moment().format('mm');
   // 33
   const minutePeriod = screenshotsPeriod / 60;
@@ -158,7 +123,7 @@ function* runTimer() {
 
       // Activity check every tracked minute
       const currentTime = yield select(state => state.timer.time);
-      if (currentTime % 60 === 0) {
+      if (currentTime % 60 === secondsToMinutesGrid) {
         // totalIdleTimeDuringOneMinute = randomInteger(5 * 1000, 60 * 1000);
         console.log('Add idle', totalIdleTimeDuringOneMinute);
         yield put({ type: types.ADD_IDLE, payload: totalIdleTimeDuringOneMinute });
@@ -182,7 +147,7 @@ function* runTimer() {
           state => state.worklogs.meta.currentWorklogScreenshots.toArray(),
         );
         const activity = calculateActivity(
-          currentIdleList, timeSpentSeconds, screenshotsPeriod, periodRange,
+          currentIdleList, timeSpentSeconds, screenshotsPeriod, periodRange, secondsToMinutesGrid,
         );
         const keepedIdles = yield select(
           state => state.timer.keepedIdles.toArray(),
