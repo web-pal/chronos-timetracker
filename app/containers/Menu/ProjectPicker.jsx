@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { lifecycle } from 'recompose';
 import Select from 'react-select';
-import 'react-select/dist/react-select.css';
 
 import {
   getSelectedProjectOption,

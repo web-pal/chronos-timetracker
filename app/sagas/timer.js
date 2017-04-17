@@ -106,6 +106,7 @@ function* runTimer() {
       // Screenshots check
       if (screensShotsAllowed) {
         let periods = yield select(state => state.timer.screenShotsPeriods);
+        console.log(seconds);
         if (seconds === periods[0]) {
           if (!idleState) {
             console.log('Need to take a screnshot');

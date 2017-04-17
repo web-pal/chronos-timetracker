@@ -1,12 +1,6 @@
-import configureStoreDev from './configureStore.development';
-import configureStoreProd from './configureStore.production';
-
-let exportStore; // eslint-disable-line
-
+// @flow
 if (process.env.NODE_ENV === 'production') {
-  exportStore = configureStoreProd;
+  module.exports = require('./configureStore.production'); // eslint-disable-line global-require
 } else {
-  exportStore = configureStoreDev;
+  module.exports = require('./configureStore.development'); // eslint-disable-line global-require
 }
-
-export default exportStore;

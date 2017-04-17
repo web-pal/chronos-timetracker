@@ -43,7 +43,7 @@ const InitialMeta = Immutable.Record({
   lastStopIndex: 0,
 
   selectedIssueId: null,
-  selectedIssueIndex: null,
+  selectedIssueIndex: 0,
   trackingIssueId: null,
 
   searchValue: '',

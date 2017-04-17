@@ -1,12 +1,14 @@
 import { createStore, applyMiddleware, compose } from 'redux';
-import createLogger from 'redux-logger';
+import { createLogger } from 'redux-logger';
 import createSagaMiddleware, { END } from 'redux-saga';
+
 import rootReducer from '../reducers';
 
 const logger = createLogger({
   level: 'info',
   collapsed: true,
 });
+
  /* eslint-disable no-underscore-dangle */
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 /* eslint-enable */
@@ -26,7 +28,7 @@ export default function configureStore(initialState) {
   if (module.hot) {
     // Enable Webpack hot module replacement for reducers
     module.hot.accept('../reducers/', () => {
-      const nextRootReducer = require('../reducers/index.js'); //eslint-disable-line
+      const nextRootReducer = require('../reducers'); //eslint-disable-line
       store.replaceReducer(nextRootReducer);
     });
   }

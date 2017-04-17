@@ -4,6 +4,10 @@
   "version": "0.0.20",
   "description": "Electron application boilerplate based on React, React Router, Webpack, React Hot Loader for rapid application development",
   "main": "./main.js",
+  "scripts": {
+    "rebuild-electron": "npm rebuild --runtime=electron --target=1.6.2 --disturl=https://atom.io/download/atom-shell -—abi=51",
+    "postinstall": "npm run rebuild-electron"
+  },
   "updater": {
     "url": "https://raw.githubusercontent.com/web-pal/Chronos/master/updates.json",
     "autoDownload": false,
@@ -16,15 +20,12 @@
   },
   "license": "CCL",
   "dependencies": {
-    "@paulcbetts/system-idle-time": "git+https://github.com/paulcbetts/node-system-idle-time.git",
-    "electron-simple-updater": "^1.2.0"
+    "electron-simple-updater": "^1.2.0",
+    "@paulcbetts/system-idle-time": "github:paulcbetts/node-system-idle-time"
   },
-  "devDependencies": {
-    "eslint": "^3.17.1",
-    "eslint-config-airbnb": "14.0.0",
-    "eslint-plugin-import": "^2.2.0",
-    "eslint-plugin-jsx-a11y": "3.0.2",
-    "eslint-plugin-react": "6.9.0",
-    "babel-eslint": "^7.1.1"
+  "devEngines": {
+    "node": ">=6.x",
+    "npm": ">=4.x",
+    "yarn": "0.22.0"
   }
 }

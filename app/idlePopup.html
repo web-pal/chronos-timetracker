@@ -3,26 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <script>
-    (function() {
+    (() => {
       if (!process.env.HOT) {
         const link = document.createElement('link');
         link.rel = 'stylesheet';
         link.href = './dist/style.css';
-        document.write(link.outerHTML);
+        // HACK: Writing the script path should be done with webpack
+        document.getElementsByTagName('head')[0].appendChild(link);
       }
-    }());
+    })();
   </script>
 </head>
 <body>
   <div id="root"></div>
     <script>
-      (function() {
+      {
+        // Dynamically include DLL if in development
+        if (process.env.NODE_ENV === 'development') {
+          const dllScript = document.createElement('script');
+          dllScript.src = '../dll/vendor.dll.js';
+          document.body.appendChild(dllScript);
+        }
+
+        // Dynamically insert the renderer process
         const script = document.createElement('script');
-        //script.async = true;
-        script.src = (process.env.HOT) ? 'http://localhost:3000/dist/idleTimePopup-bundle.js' : './dist/idleTimePopup-bundle.js';
-        let s0 = document.getElementsByTagName('script')[0];
-        s0.parentNode.insertBefore(script, s0);
-      }());
+        const port = process.env.PORT || 1212;
+
+        script.src = (process.env.HOT)
+          ? 'http://localhost:' + port + '/dist/idleTimePopup-bundle.js'
+          : './dist/idleTimePopup-bundle.js';
+
+        // @HACK: Writing the script path should be done
+        //        with HtmlWebpackPlugin
+        document.body.appendChild(script);
+      }
     </script>
 </body>
 </html>

@@ -1,6 +1,5 @@
 import * as types from '../constants';
 
-
 export function fetchIssues(pagination = { startIndex: 0, stopIndex: 50 }, resolve = false) {
   return {
     type: types.FETCH_ISSUES_REQUEST,
