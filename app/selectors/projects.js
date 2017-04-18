@@ -18,7 +18,7 @@ export const getProjects = createSelector(
 
 export const getProjectsOptions = createSelector(
   [getProjectsIds, getProjectsMap],
-  (ids, map) => ids.size && [
+  (ids, map) => [
     { divider: true, disabled: true, dividerName: 'Projects' },
     ...(ids.toArray().map(id => ({
       value: id,
@@ -30,7 +30,7 @@ export const getProjectsOptions = createSelector(
 );
 export const getScrumBoardsOptions = createSelector(
   [getScrumBoardsIds, getBoardsMap],
-  (ids, map) => ids.size && [
+  (ids, map) => [
     { divider: true, disabled: true, dividerName: 'Scrum Boards' },
     ...(ids.toArray().map(id => ({
       value: id,
@@ -42,7 +42,7 @@ export const getScrumBoardsOptions = createSelector(
 );
 export const getKanbanBoardsOptions = createSelector(
   [getKanbanBoardsIds, getBoardsMap],
-  (ids, map) => ids.size && [
+  (ids, map) => [
     { divider: true, disabled: true, dividerName: 'Kanban Boards' },
     ...(ids.toArray().map(id => ({
       value: id,

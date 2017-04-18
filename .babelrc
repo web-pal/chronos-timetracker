@@ -1,7 +1,9 @@
 {
   "presets": [
-    ["env", { "targets": { "node": 6 }, "useBuiltIns": true }],
-    "latest",
+    ["env", {
+      "targets": { "node": 6 },
+      "useBuiltIns": true
+    }],
     "stage-0",
     "react"
   ],
@@ -9,19 +11,18 @@
   "env": {
     "production": {
       "presets": ["react-optimize"],
-      "plugins": [
-        "babel-plugin-dev-expression",
-        "transform-decorators-legacy",
-        "transform-class-properties",
-        "transform-es2015-classes"
-      ]
+      "plugins": ["babel-plugin-dev-expression", "transform-decorators-legacy"]
     },
     "development": {
-      "plugins": ["transform-decorators-legacy", "react-hot-loader/babel"]
-    },
-    "test": {
       "plugins": [
-        ["webpack-loaders", { "config": "./webpack.config.test.js", "verbose": false }]
+        "transform-class-properties",
+        "transform-decorators-legacy",
+        "transform-es2015-classes",
+        "react-hot-loader/babel",
+        ["flow-runtime", {
+          "assert": true,
+          "annotate": true
+        }]
       ]
     }
   }

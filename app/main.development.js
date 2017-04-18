@@ -1,13 +1,18 @@
-/* eslint-disable no-console */
+/* eslint global-require: 1, flowtype-errors/show-errors: 0 */
 /* global sharedObj */
-import { app, Tray, BrowserWindow, ipcMain, Menu, screen } from 'electron';
-import log from 'electron-log';
+// @flow
 import path from 'path';
-import updater from 'electron-simple-updater';
 import storage from 'electron-json-storage';
+import { app, Tray, ipcMain, BrowserWindow, screen } from 'electron';
+import updater from 'electron-simple-updater';
+import MenuBuilder from './menu';
+
+let mainWindow;
+let tray;
+let authWindow;
+let shouldQuit = process.platform !== 'darwin';
 
 updater.init({
-  logger: log,
   checkUpdateOnStart: false,
   autoDownload: false,
 });
@@ -26,12 +31,14 @@ global.sharedObj = {
 };
 
 if (process.env.NODE_ENV === 'production') {
-  const sourceMapSupport = require('source-map-support'); // eslint-disable-line
+  const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
 }
 
 if (process.env.NODE_ENV === 'development') {
-  require('electron-debug')(); // eslint-disable-line
+  require('electron-debug')();
+  const p = path.join(__dirname, '..', 'app', 'node_modules');
+  require('module').globalPaths.push(p);
 }
 
 process.on('uncaughtExecption', (err) => {
@@ -39,19 +46,29 @@ process.on('uncaughtExecption', (err) => {
 });
 
 
-let menu;
-let mainWindow;
-let authWindow;
-let template;
-let shouldQuit = process.platform !== 'darwin';
-let tray = null;
+const installExtensions = async () => {
+  const installer = require('electron-devtools-installer');
+  const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
+  const extensions = [
+    'REACT_DEVELOPER_TOOLS',
+    'REDUX_DEVTOOLS'
+  ];
+
+  return Promise
+    .all(extensions.map(name => installer.default(installer[name], forceDownload)))
+    .catch(console.log);
+};
+
 
 app.on('window-all-closed', () => {
+  // Respect the OSX convention of having the application in memory even
+  // after all windows have been closed
   if (process.platform !== 'darwin') {
     app.quit();
     tray.destroy();
   }
 });
+
 
 function checkRunning(e) {
   const contentSize = mainWindow.getContentSize();
@@ -75,7 +92,7 @@ function checkRunning(e) {
 }
 
 
-function createWindow() {
+function createWindow(callback) {
   // disabling chrome frames differ on OSX and other platforms
   // https://github.com/electron/electron/blob/master/docs/api/frameless-window.md
   const noFrameOption = {};
@@ -103,16 +120,15 @@ function createWindow() {
       minHeight: 640,
       ...noFrameOption,
     });
+    callback();
 
-    mainWindow.loadURL(`file://${__dirname}/index.html`);
+    mainWindow.loadURL(`file://${__dirname}/app.html`);
     mainWindow.on('closed', () => {
       mainWindow = null;
     });
 
     mainWindow.on('ready-to-show', () => {
-      if (process.env.NODE_ENV === 'development') {
-        mainWindow.webContents.openDevTools();
-      }
+      mainWindow.webContents.openDevTools();
       mainWindow.show();
       mainWindow.focus();
     });
@@ -150,6 +166,7 @@ ipcMain.on('showScreenPreviewPopup', () => {
   const win = new BrowserWindow(options);
   win.loadURL(`file://${__dirname}/screenPopup.html`);
   win.once('ready-to-show', () => {
+    win.webContents.openDevTools();
     win.show();
   });
 });
@@ -249,22 +266,6 @@ ipcMain.on('unmaximize', () => {
   }
 });
 
-const installExtensions = async () => {
-  if (process.env.NODE_ENV === 'development') {
-    const installer = require('electron-devtools-installer'); // eslint-disable-line global-require
-    const extensions = [
-      'REACT_DEVELOPER_TOOLS',
-      'REDUX_DEVTOOLS',
-    ];
-    const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
-    for (const name of extensions) { // eslint-disable-line
-      try {
-        await installer.default(installer[name], forceDownload); // eslint-disable-line
-      } catch (e) {} // eslint-disable-line
-    }
-  }
-};
-
 ipcMain.on('screenshot-reject', () => {
   mainWindow.webContents.send('screenshot-reject');
 });
@@ -274,7 +275,7 @@ ipcMain.on('screenshot-accept', () => {
 });
 
 ipcMain.on('errorInWindow', (e, error) => {
-  log.error(`${error[0]} @ ${error[1]} ${error[2]}:${error[3]}`);
+  console.log(`${error[0]} @ ${error[1]} ${error[2]}:${error[3]}`);
 });
 
 ipcMain.on('dismissIdleTime', (e, time) => {
@@ -296,125 +297,14 @@ app.on('before-quit', () => {
 });
 
 app.on('ready', async () => {
-  await installExtensions();
+  if (process.env.NODE_ENV === 'development' || process.env.SHOW_DEVTOOLS) {
+    await installExtensions();
+  }
+
   tray = new Tray(path.join(__dirname, './assets/images/icon.png'));
   tray.setToolTip('Open chronos tracker');
-  tray.on('click', () => mainWindow.show());
-  createWindow();
-  if (process.platform === 'darwin') {
-    template = [{
-      label: 'Chronos',
-      submenu: [{
-        label: 'About Chronos',
-        role: 'about',
-      }, {
-        type: 'separator',
-      }, {
-        label: 'Hide Chronos',
-        accelerator: 'Command+H',
-        role: 'hide',
-      }, {
-        label: 'Hide Others',
-        accelerator: 'Command+Shift+H',
-        role: 'hideothers',
-      }, {
-        label: 'Show All',
-        role: 'unhide',
-      }, {
-        type: 'separator',
-      }, {
-        label: 'Quit',
-        accelerator: 'Command+Q',
-        click() {
-          app.quit();
-        },
-      }],
-    }, {
-      label: 'Edit',
-      submenu: [{
-        label: 'Undo',
-        accelerator: 'Command+Z',
-        selector: 'undo:',
-      }, {
-        label: 'Redo',
-        accelerator: 'Shift+Command+Z',
-        selector: 'redo:',
-      }, {
-        type: 'separator',
-      }, {
-        label: 'Cut',
-        accelerator: 'Command+X',
-        selector: 'cut:',
-      }, {
-        label: 'Copy',
-        accelerator: 'Command+C',
-        selector: 'copy:',
-      }, {
-        label: 'Paste',
-        accelerator: 'Command+V',
-        selector: 'paste:',
-      }, {
-        label: 'Select All',
-        accelerator: 'Command+A',
-        selector: 'selectAll:',
-      }],
-    }, {
-      label: 'View',
-      submenu: (process.env.NODE_ENV === 'development') ? [{
-        label: 'Reload',
-        accelerator: 'Command+R',
-        click() {
-          mainWindow.webContents.send('reload');
-        },
-      }, {
-        label: 'Toggle Full Screen',
-        accelerator: 'Ctrl+Command+F',
-        click() {
-          mainWindow.setFullScreen(!mainWindow.isFullScreen());
-        },
-      }, {
-        label: 'Toggle Developer Tools',
-        accelerator: 'Alt+Command+I',
-        click() {
-          mainWindow.toggleDevTools();
-        },
-      }] : [{
-        label: 'Toggle Full Screen',
-        accelerator: 'Ctrl+Command+F',
-        click() {
-          mainWindow.setFullScreen(!mainWindow.isFullScreen());
-        },
-      }],
-    }, {
-      label: 'Window',
-      submenu: [{
-        label: 'Minimize',
-        accelerator: 'Command+M',
-        selector: 'performMiniaturize:',
-      }, {
-        label: 'Close',
-        accelerator: 'Command+W',
-        selector: 'performClose:',
-      }, {
-        type: 'separator',
-      }, {
-        label: 'Bring All to Front',
-        selector: 'arrangeInFront:',
-      }],
-    }];
-    menu = Menu.buildFromTemplate(template);
-    Menu.setApplicationMenu(menu);
-  }
-});
-
-app.on('activate', () => {
-  if (mainWindow === null) {
-    createWindow();
-  } else {
-    mainWindow.show();
-  }
-});
-
-process.on('exit', (code) => {
-  console.log(`About to exit with code: ${code}`);
+  createWindow(() => {
+    const menuBuilder = new MenuBuilder(mainWindow);
+    menuBuilder.buildMenu();
+  });
 });
