@@ -18,7 +18,8 @@
     "start": "cross-env NODE_ENV=production electron ./app/",
     "dev": "concurrently -p \"{name}\" -n \"RENDERER|>,    MAIN|>\" --kill-others \"npm run hot\" \"npm run hot-server\"",
     "test": "cross-env BABEL_ENV=cjs NODE_ENV=test babel-node ./app/testIndex.js | tap-spec",
-    "lint": "eslint app *.js *.jsx --ignore-pattern '/dist/' --ignore-pattern '**/node_modules/*'"
+    "lint": "eslint app *.js *.jsx --ignore-pattern '/dist/' --ignore-pattern '**/node_modules/*'",
+    "jest": "BABEL_DISABLE_CACHE=1 jest"
   },
   "author": {
     "name": "Webpal",
@@ -118,6 +119,7 @@
     "extract-text-webpack-plugin": "1.0.1",
     "fbjs-scripts": "^0.7.1",
     "file-loader": "0.9.0",
+    "jest": "^19.0.2",
     "json-loader": "0.5.4",
     "less": "2.7.2",
     "less-loader": "2.2.3",
