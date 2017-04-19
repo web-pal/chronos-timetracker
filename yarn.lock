@@ -4961,7 +4961,7 @@ jest@^19.0.2:
 
 "jira-connector@github:web-pal/jira-connector":
   version "2.6.0"
-  resolved "https://codeload.github.com/web-pal/jira-connector/tar.gz/d4642ee3a5f67829e851ebf51fa0b43da0928794"
+  resolved "https://codeload.github.com/web-pal/jira-connector/tar.gz/b86c5fd77cc06f17c5d49ab5da0e077f0bd53209"
   dependencies:
     oauth "^0.9.12"
     request "^2.51.0"

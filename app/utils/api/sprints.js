@@ -5,5 +5,6 @@ export function fetchSprints({ boardId }) {
     startAt: 0,
     maxResults: 1000,
     boardId,
+    state: 'active',
   });
 }
