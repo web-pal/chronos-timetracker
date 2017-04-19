@@ -1,6 +1,6 @@
 /* eslint no-undef: 0 */
 import { List } from 'immutable';
-import { randomPeriods, calculateActivity, randomInteger } from '../timerHelper';
+import { randomPeriods, calculateActivity, randomInteger } from '../../app/sagas/timerHelper';
 
 
 describe('randomInteger', () => {
@@ -96,13 +96,13 @@ const currentIdleList = List([
 
 describe('calculateActivity', () => {
   test('to be working', () => {
-    const result = calculateActivity(
+    const result = calculateActivity({
       currentIdleList, // list of Idle-minutes
-      15 * 60, // total secont spendt
-      10 * 60, // full period length
-      3, // first period length
-      30, // seconds to minutes grid
-    );
+      timeSpentSeconds: 15 * 60, // total secont spendt
+      screenshotsPeriod: 10 * 60, // full period length
+      firstPeriodInMinute: 3, // first period length
+      secondsToMinutesGrid: 30, // seconds to minutes grid
+    });
     expect(result).toEqual(expect.arrayContaining([90, 100, 50]));
   });
 });

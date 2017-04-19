@@ -128,7 +128,9 @@ function createWindow(callback) {
     });
 
     mainWindow.on('ready-to-show', () => {
-      mainWindow.webContents.openDevTools();
+      if (process.env.NODE_ENV === 'development' || process.env.SHOW_DEVTOOLS) {
+        mainWindow.webContents.openDevTools();
+      }
       mainWindow.show();
       mainWindow.focus();
     });
@@ -166,7 +168,6 @@ ipcMain.on('showScreenPreviewPopup', () => {
   const win = new BrowserWindow(options);
   win.loadURL(`file://${__dirname}/screenPopup.html`);
   win.once('ready-to-show', () => {
-    win.webContents.openDevTools();
     win.show();
   });
 });

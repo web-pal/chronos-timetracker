@@ -14,9 +14,13 @@ export function randomPeriods(periodsQty, min, max, threshold = 20) {
   });
 }
 
-export function calculateActivity(
-  currentIdleList, timeSpentSeconds, screenshotsPeriod, firstPeriodInMinute, secondsToMinutesGrid,
-) {
+export function calculateActivity({
+  currentIdleList,
+  timeSpentSeconds,
+  screenshotsPeriod,
+  firstPeriodInMinute,
+  secondsToMinutesGrid,
+}) {
   let firstPeriodIdleSec = (currentIdleList.get(0) / 1000);
   // time wasted in first Idle-minute
   firstPeriodIdleSec += currentIdleList.slice(1, firstPeriodInMinute)

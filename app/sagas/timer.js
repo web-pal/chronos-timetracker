@@ -147,9 +147,13 @@ function* runTimer() {
         const screenshots = yield select(
           state => state.worklogs.meta.currentWorklogScreenshots.toArray(),
         );
-        const activity = calculateActivity(
-          currentIdleList, timeSpentSeconds, screenshotsPeriod, periodRange, secondsToMinutesGrid,
-        );
+        const activity = calculateActivity({
+          currentIdleList,
+          timeSpentSeconds,
+          screenshotsPeriod,
+          firstPeriodInMinute: periodRange,
+          secondsToMinutesGrid,
+        });
         const keepedIdles = yield select(
           state => state.timer.keepedIdles.toArray(),
         );

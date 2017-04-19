@@ -1,6 +1,6 @@
 {
   "name": "Chronos",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "Full functionality time tracking software with direct JIRA integration",
   "main": "main.js",
   "scripts": {
@@ -23,11 +23,12 @@
     "postinstall": "concurrently \"npm run flow-typed\" \"npm run build-dll\" \"install-app-deps\" \"node node_modules/fbjs-scripts/node/check-dev-engines.js package.json\"",
     "dev": "cross-env START_HOT=1 npm run hot-updates-server",
     "package": "npm run build && build --publish never",
+    "package-dev": "cross-env SHOW_DEVTOOLS=1 npm run build && build --publish never",
+    "package-release": "npm run build && build -p always",
     "package-win": "npm run build && build --win --x64",
     "package-linux": "npm run build && build --linux",
     "package-all": "npm run build && build -mwl"
   },
-  "browserslist": "electron 1.4",
   "author": {
     "name": "Webpal",
     "email": "ilya@lopukhin.ru",
