@@ -126,6 +126,15 @@ export default class MenuBuilder {
         click: () => {
           this.mainWindow.close();
         }
+      }, {
+        label: '&Cut',
+        accelerator: 'Ctrl+X'
+      }, {
+        label: '&Copy',
+        accelerator: 'Ctrl+C'
+      }, {
+        label: 'Paste',
+        accelerator: 'Ctrl+V'
       }]
     }, {
       label: '&View',
