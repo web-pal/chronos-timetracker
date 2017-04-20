@@ -166,6 +166,7 @@
   "dependencies": {
     "bufferutil": "^3.0.0",
     "electron-json-storage": "^3.0.5",
+    "electron-simple-updater": "^1.2.0",
     "font-awesome": "^4.7.0",
     "immutable": "^3.8.1",
     "jira-connector": "github:web-pal/jira-connector",
