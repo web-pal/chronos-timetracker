@@ -304,6 +304,11 @@ app.on('ready', async () => {
 
   tray = new Tray(path.join(__dirname, './assets/images/icon.png'));
   tray.setToolTip('Open chronos tracker');
+  tray.on('click', () => {
+    if (mainWindow) {
+      mainWindow.show();
+    }
+  });
   createWindow(() => {
     const menuBuilder = new MenuBuilder(mainWindow);
     menuBuilder.buildMenu();
