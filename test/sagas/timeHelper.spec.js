@@ -64,15 +64,6 @@ describe('randomPeriods: creating time points for n screenshots between t=t1 and
       (i ? Math.min(period - thisPeriods[i - 1], minDiff) : Infinity), Infinity);
     expect(minDifference).toBeGreaterThan(0);
   });
-
-  test('no imposible params', () => {
-    const n = 10;
-    const min = 0;
-    const max = 10;
-    const threshold = 20;
-    const run = () => randomPeriods(n, min, max, threshold);
-    expect(run).toThrow();
-  });
 });
 
 

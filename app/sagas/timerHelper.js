@@ -4,7 +4,6 @@ export function randomInteger(min, max) {
 }
 
 export function randomPeriods(periodsQty, min, max, threshold = 20) {
-  if (max - min < periodsQty * threshold) throw new Error();
   const averageMax = (max - min) / periodsQty;
   let prevPeriod = min;
   return [...Array(periodsQty).keys()].map(() => {
