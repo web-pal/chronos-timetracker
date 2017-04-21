@@ -1,6 +1,9 @@
 // @flow
 import { app, Menu, shell, BrowserWindow } from 'electron';
 
+import { showDevTools } from './utils/config';
+
+
 export default class MenuBuilder {
   mainWindow: BrowserWindow;
 
@@ -9,7 +12,7 @@ export default class MenuBuilder {
   }
 
   buildMenu() {
-    if (process.env.NODE_ENV === 'development' || process.env.SHOW_DEVTOOLS) {
+    if (process.env.NODE_ENV === 'development' || showDevTools) {
       this.setupDevelopmentEnvironment();
     }
 

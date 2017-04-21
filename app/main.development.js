@@ -6,6 +6,7 @@ import storage from 'electron-json-storage';
 import { app, Tray, ipcMain, BrowserWindow, screen } from 'electron';
 import updater from 'electron-simple-updater';
 import MenuBuilder from './menu';
+import { showDevTools } from './utils/config';
 
 let mainWindow;
 let tray;
@@ -128,7 +129,7 @@ function createWindow(callback) {
     });
 
     mainWindow.on('ready-to-show', () => {
-      if (process.env.NODE_ENV === 'development' || process.env.SHOW_DEVTOOLS) {
+      if (process.env.NODE_ENV === 'development' || showDevTools) {
         mainWindow.webContents.openDevTools();
       }
       mainWindow.show();
@@ -298,7 +299,7 @@ app.on('before-quit', () => {
 });
 
 app.on('ready', async () => {
-  if (process.env.NODE_ENV === 'development' || process.env.SHOW_DEVTOOLS) {
+  if (process.env.NODE_ENV === 'development' || showDevTools) {
     await installExtensions();
   }
 
