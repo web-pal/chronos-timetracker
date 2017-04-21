@@ -1,6 +1,6 @@
 {
   "name": "Chronos",
-  "version": "0.0.23",
+  "version": "0.0.22",
   "description": "Full functionality time tracking software with direct JIRA integration",
   "main": "main.js",
   "scripts": {
@@ -23,7 +23,6 @@
     "postinstall": "concurrently \"npm run flow-typed\" \"npm run build-dll\" \"install-app-deps\" \"node node_modules/fbjs-scripts/node/check-dev-engines.js package.json\"",
     "dev": "cross-env START_HOT=1 npm run hot-updates-server",
     "package": "npm run build && build --publish never",
-    "package-dev": "npm run build && build --publish never",
     "package-release": "npm run build && build -p always",
     "package-win": "npm run build && build --win --x64",
     "package-linux": "npm run build && build --linux",
@@ -84,8 +83,7 @@
       "output": "release"
     },
     "publish": {
-      "provider": "github",
-      "token": "3500cc48fc33870c8fac27848b998906b7d14307"
+      "provider": "github"
     }
   },
   "repository": {
@@ -166,7 +164,7 @@
   "dependencies": {
     "bufferutil": "^3.0.0",
     "electron-json-storage": "^3.0.5",
-    "electron-simple-updater": "^1.2.0",
+    "electron-updater": "^1.14.0",
     "font-awesome": "^4.7.0",
     "immutable": "^3.8.1",
     "jira-connector": "github:web-pal/jira-connector",

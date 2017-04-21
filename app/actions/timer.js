@@ -1,7 +1,8 @@
 import { remote } from 'electron';
+
 import * as types from '../constants';
 
-const Updater = remote.require('electron-simple-updater');
+const { autoUpdater } = remote.require('electron-updater');
 
 export function tick() {
   return {
@@ -56,7 +57,7 @@ export function startTimer() {
 }
 
 export function stopTimer() {
-  Updater.checkForUpdates();
+  autoUpdater.checkForUpdates();
   return {
     type: types.STOP_TIMER,
   };

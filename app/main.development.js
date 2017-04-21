@@ -4,7 +4,6 @@
 import path from 'path';
 import storage from 'electron-json-storage';
 import { app, Tray, ipcMain, BrowserWindow, screen } from 'electron';
-import updater from 'electron-simple-updater';
 import MenuBuilder from './menu';
 import { showDevTools } from './utils/config';
 
@@ -12,11 +11,6 @@ let mainWindow;
 let tray;
 let authWindow;
 let shouldQuit = process.platform !== 'darwin';
-
-updater.init({
-  checkUpdateOnStart: false,
-  autoDownload: false,
-});
 
 global.appDir = app.getPath('userData');
 global.appSrcDir = __dirname;

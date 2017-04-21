@@ -1,8 +1,9 @@
 import React, { PropTypes, Component } from 'react';
 import { remote, ipcRenderer } from 'electron';
 
-const Updater = remote.require('electron-simple-updater');
-
+const { autoUpdater } = remote.require('electron-updater');
+autoUpdater.requestHeaders = { 'Cache-Control': 'no-cache' };
+autoUpdater.autoDownload = false;
 
 class UpdaterContainer extends Component {
   static propTypes = {
@@ -23,15 +24,14 @@ class UpdaterContainer extends Component {
   }
 
   componentDidMount() {
-    Updater.on('checking-for-update', this.onCheckingForUpdate);
-    Updater.on('update-available', this.onUpdateAvailable);
-    Updater.on('update-downloading', this.onUpdateDownloading);
-    Updater.on('update-downloaded', this.onUpdateDownloaded);
-    Updater.checkForUpdates();
+    autoUpdater.on('checking-for-update', this.onCheckingForUpdate);
+    autoUpdater.on('update-available', this.onUpdateAvailable);
+    autoUpdater.on('update-downloaded', this.onUpdateDownloaded);
+    autoUpdater.checkForUpdates();
   }
 
   componentWillUnmount() {
-    Updater.removeAllListeners();
+    autoUpdater.removeAllListeners();
   }
 
   onCheckingForUpdate = () => {
@@ -41,11 +41,6 @@ class UpdaterContainer extends Component {
   onUpdateAvailable = (meta) => {
     this.setUpdateFetchState(false);
     this.notifyUpdateAvailable(meta);
-  }
-
-  onUpdateDownloading = () => {
-    this.props.showLoading();
-    this.setUpdateDownloadState(true);
   }
 
   onUpdateDownloaded = () => {
@@ -59,12 +54,12 @@ class UpdaterContainer extends Component {
         } else {
           if (running) { // eslint-disable-line
             if (window.confirm('Tracking in progress, save worklog before restart?')) {
-              this.props.setForceQuitFlag(Updater.quitAndInstall);
+              this.props.setForceQuitFlag(autoUpdater.quitAndInstall);
               this.props.stopTimer();
             }
           } else {
             ipcRenderer.send('set-should-quit');
-            Updater.quitAndInstall();
+            autoUpdater.quitAndInstall();
           }
         }
       }
@@ -90,7 +85,11 @@ class UpdaterContainer extends Component {
     });
   }
 
-  installUpdates = () => Updater.downloadUpdate();
+  installUpdates = () => {
+    autoUpdater.downloadUpdate();
+    this.props.showLoading();
+    this.setUpdateDownloadState(true);
+  }
 
   render() {
     const { downloading, available, updateAvailable } = this.state;
