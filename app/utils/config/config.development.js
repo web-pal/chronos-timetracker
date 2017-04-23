@@ -7,6 +7,7 @@ const config = {
   idleTimeThreshold: 300, // seconds of inactivity considering user is idle
   useSentry: false,
   showDevTools: true,
+  checkUpdates: false,
 };
 
 export default config;

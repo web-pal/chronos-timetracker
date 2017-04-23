@@ -12,6 +12,53 @@ import BabiliPlugin from 'babili-webpack-plugin';
 import baseConfig from './webpack.config.base';
 import pjson from './package.json';
 
+const plugins = [
+  new webpack.DefinePlugin({
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
+  }),
+  // Define global vars
+  new webpack.ProvidePlugin({
+    Immutable: 'immutable',
+  }),
+  /**
+    * Babli is an ES6+ aware minifier based on the Babel toolchain (beta)
+    */
+  new BabiliPlugin(),
+
+  new ExtractTextPlugin('style.css'),
+
+  /**
+    * Dynamically generate index.html page
+    */
+  new HtmlWebpackPlugin({
+    filename: '../app.html',
+    template: 'app/app.html',
+    inject: false
+  }),
+  new HtmlWebpackPlugin({
+    filename: '../idlePopup.html',
+    template: 'app/idlePopup.html',
+    inject: false
+  }),
+  new HtmlWebpackPlugin({
+    filename: '../screenPopup.html',
+    template: 'app/screenPopup.html',
+    inject: false
+  }),
+];
+
+
+if (process.env.UPLOAD_SENTRY !== '0') {
+  plugins.push(
+    new SentryPlugin({
+      organisation: 'webpal',
+      project: 'chronos-desktop',
+      apiKey: '9eacb1fa468a41b29bd005a1a46c039644fe1ca5ea614540b9e6b03db719a5ee',
+      release: `${pjson.version}_${process.platform}`,
+    })
+  );
+}
+
 export default merge.smart(baseConfig, {
   devtool: 'source-map',
 
@@ -98,56 +145,5 @@ export default merge.smart(baseConfig, {
       }
     ]
   },
-
-  plugins: [
-    /**
-     * Create global constants which can be configured at compile time.
-     *
-     * Useful for allowing different behaviour between development builds and
-     * release builds
-     *
-     * NODE_ENV should be production so that modules do not perform certain
-     * development checks
-     */
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
-    }),
-
-    // Define global vars
-    new webpack.ProvidePlugin({
-      Immutable: 'immutable',
-    }),
-
-    /**
-     * Babli is an ES6+ aware minifier based on the Babel toolchain (beta)
-     */
-    new BabiliPlugin(),
-
-    new ExtractTextPlugin('style.css'),
-
-    /**
-     * Dynamically generate index.html page
-     */
-    new HtmlWebpackPlugin({
-      filename: '../app.html',
-      template: 'app/app.html',
-      inject: false
-    }),
-    new HtmlWebpackPlugin({
-      filename: '../idlePopup.html',
-      template: 'app/idlePopup.html',
-      inject: false
-    }),
-    new HtmlWebpackPlugin({
-      filename: '../screenPopup.html',
-      template: 'app/screenPopup.html',
-      inject: false
-    }),
-    new SentryPlugin({
-      organisation: 'webpal',
-      project: 'chronos-desktop',
-      apiKey: '9eacb1fa468a41b29bd005a1a46c039644fe1ca5ea614540b9e6b03db719a5ee',
-      release: `${pjson.version}_${process.platform}`,
-    }),
-  ],
+  plugins,
 });

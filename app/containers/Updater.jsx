@@ -1,5 +1,6 @@
 import React, { PropTypes, Component } from 'react';
 import { remote, ipcRenderer } from 'electron';
+import { checkUpdates } from 'config';
 
 const { autoUpdater } = remote.require('electron-updater');
 autoUpdater.requestHeaders = { 'Cache-Control': 'no-cache' };
@@ -27,7 +28,9 @@ class UpdaterContainer extends Component {
     autoUpdater.on('checking-for-update', this.onCheckingForUpdate);
     autoUpdater.on('update-available', this.onUpdateAvailable);
     autoUpdater.on('update-downloaded', this.onUpdateDownloaded);
-    autoUpdater.checkForUpdates();
+    if (checkUpdates) {
+      autoUpdater.checkForUpdates();
+    }
   }
 
   componentWillUnmount() {

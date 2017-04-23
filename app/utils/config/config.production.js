@@ -6,6 +6,7 @@ const config = {
   idleTimeThreshold: 300,
   useSentry: true,
   showDevTools: false,
+  checkUpdates: true,
 };
 
 export default config;

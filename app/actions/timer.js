@@ -1,4 +1,5 @@
 import { remote } from 'electron';
+import { checkUpdates } from 'config';
 
 import * as types from '../constants';
 
@@ -57,7 +58,9 @@ export function startTimer() {
 }
 
 export function stopTimer() {
-  autoUpdater.checkForUpdates();
+  if (checkUpdates) {
+    autoUpdater.checkForUpdates();
+  }
   return {
     type: types.STOP_TIMER,
   };
