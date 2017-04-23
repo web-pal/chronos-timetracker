@@ -66,23 +66,25 @@ app.on('window-all-closed', () => {
 
 
 function checkRunning(e) {
-  const contentSize = mainWindow.getContentSize();
-  const lastWindowSize = {
-    width: contentSize[0],
-    height: contentSize[1],
-  };
-  storage.set('lastWindowSize', lastWindowSize, (err) => {
-    if (err) {
-      console.log('error saving last window size', err);
-    } else {
-      console.log('saved last window size');
+  if (mainWindow) {
+    const contentSize = mainWindow.getContentSize();
+    const lastWindowSize = {
+      width: contentSize[0],
+      height: contentSize[1],
+    };
+    storage.set('lastWindowSize', lastWindowSize, (err) => {
+      if (err) {
+        console.log('error saving last window size', err);
+      } else {
+        console.log('saved last window size');
+      }
+    });
+    if (global.sharedObj.running || global.sharedObj.uploading) {
+      console.log('RUNNING');
+      mainWindow.webContents.send('force-save');
+      e.preventDefault();
+      shouldQuit = false;
     }
-  });
-  if (sharedObj.running || sharedObj.uploading) {
-    console.log('RUNNING');
-    mainWindow.webContents.send('force-save');
-    e.preventDefault();
-    shouldQuit = false;
   }
 }
 
@@ -123,24 +125,28 @@ function createWindow(callback) {
     });
 
     mainWindow.on('ready-to-show', () => {
-      if (process.env.NODE_ENV === 'development' || showDevTools) {
-        mainWindow.webContents.openDevTools();
+      if (mainWindow) {
+        if (process.env.NODE_ENV === 'development' || showDevTools) {
+          mainWindow.webContents.openDevTools();
+        }
+        mainWindow.show();
+        mainWindow.focus();
       }
-      mainWindow.show();
-      mainWindow.focus();
     });
 
     mainWindow.on('close', (e) => {
-      if (process.platform !== 'darwin') {
-        checkRunning(e);
-      }
-      if (!shouldQuit) {
-        e.preventDefault();
-        if (process.platform === 'darwin') {
-          mainWindow.hide();
+      if (mainWindow) {
+        if (process.platform !== 'darwin') {
+          checkRunning(e);
         }
-      } else if (process.platform === 'darwin') {
-        checkRunning(e);
+        if (!shouldQuit) {
+          e.preventDefault();
+          if (process.platform === 'darwin') {
+            mainWindow.hide();
+          }
+        } else if (process.platform === 'darwin') {
+          checkRunning(e);
+        }
       }
     });
   });
@@ -168,18 +174,22 @@ ipcMain.on('showScreenPreviewPopup', () => {
 });
 
 ipcMain.on('oauthText', (event, text) => {
-  try {
-    const code = text.split('.')[1].split('\'')[1];
-    mainWindow.webContents.send('oauth-code', code);
-  } catch (err) {
-    console.log(err);
+  if (mainWindow && authWindow) {
+    try {
+      const code = text.split('.')[1].split('\'')[1];
+      mainWindow.webContents.send('oauth-code', code);
+    } catch (err) {
+      console.log(err);
+    }
+    authWindow.close();
   }
-  authWindow.close();
 });
 
 ipcMain.on('oauthDenied', () => {
-  mainWindow.webContents.send('oauth-denied');
-  authWindow.close();
+  if (mainWindow && authWindow) {
+    mainWindow.webContents.send('oauth-denied');
+    authWindow.close();
+  }
 });
 
 
@@ -193,7 +203,9 @@ ipcMain.on('open-oauth-url', (event, url) => {
 
   authWindow.loadURL(url);
   authWindow.once('ready-to-show', () => {
-    authWindow.show();
+    if (authWindow) {
+      authWindow.show();
+    }
   });
 
   authWindow.webContents.on('did-navigate', (ev, navUrl) => {
@@ -263,11 +275,15 @@ ipcMain.on('unmaximize', () => {
 });
 
 ipcMain.on('screenshot-reject', () => {
-  mainWindow.webContents.send('screenshot-reject');
+  if (mainWindow) {
+    mainWindow.webContents.send('screenshot-reject');
+  }
 });
 
 ipcMain.on('screenshot-accept', () => {
-  mainWindow.webContents.send('screenshot-accept');
+  if (mainWindow) {
+    mainWindow.webContents.send('screenshot-accept');
+  }
 });
 
 ipcMain.on('errorInWindow', (e, error) => {
@@ -275,15 +291,21 @@ ipcMain.on('errorInWindow', (e, error) => {
 });
 
 ipcMain.on('dismissIdleTime', (e, time) => {
-  mainWindow.webContents.send('dismissIdleTime', time);
+  if (mainWindow) {
+    mainWindow.webContents.send('dismissIdleTime', time);
+  }
 });
 
 ipcMain.on('keepIdleTime', () => {
-  mainWindow.webContents.send('keepIdleTime');
+  if (mainWindow) {
+    mainWindow.webContents.send('keepIdleTime');
+  }
 });
 
 ipcMain.on('dismissAndRestart', (e, time) => {
-  mainWindow.webContents.send('dismissAndRestart', time);
+  if (mainWindow) {
+    mainWindow.webContents.send('dismissAndRestart', time);
+  }
 });
 
 app.on('before-quit', () => {
