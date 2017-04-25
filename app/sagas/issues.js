@@ -166,7 +166,15 @@ function* searchIssues() {
   if (currentProjectType === 'project') {
     projectKey = yield select(state => state.projects.byId.get(currentProjectId).get('key'));
   }
-  const searchValue = yield select(state => state.issues.meta.searchValue);
+
+  let searchValue = yield select(state => state.issues.meta.searchValue);
+  if (/^\d+$/.test(searchValue)) {
+    const issues = yield select(state => state.issues.byId);
+    if (issues.size) {
+      const projectKeyForSearch = issues.first().get('key').split('-')[0];
+      searchValue = `${projectKeyForSearch}-${searchValue}`;
+    }
+  }
 
   const issues = yield call(fetchSearchIssues, {
     currentProjectId,
