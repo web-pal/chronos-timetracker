@@ -159,8 +159,8 @@ class Tracker extends Component {
               </Flex>
             </Flex>
           }
-          {running &&
-            <Flex row centered>
+          <Flex row centered style={{ minHeight: 60 }}>
+            {running &&
               <TextareaAutosize
                 autoFocus
                 id="descriptionInput"
@@ -170,8 +170,8 @@ class Tracker extends Component {
                 onChange={e => setDescription(e.target.value)}
                 placeholder="What are you doing?"
               />
-            </Flex>
-          }
+            }
+          </Flex>
           <Flex row centered>
             <Flex column>
               <TimerControls

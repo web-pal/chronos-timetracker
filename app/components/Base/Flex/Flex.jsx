@@ -23,7 +23,7 @@ const Flex =
         `${spaceBetween && 'flex--s-between'}`,
         `${spaceAround && 'flex--s-around'}`,
         `${className}`,
-      ].join(' ')}
+      ].filter(cls => cls !== 'false').join(' ')}
       onClick={onClick}
       style={style}
       id={id}

@@ -111,6 +111,7 @@ export function* uploadWorklog({
   if (!offlineMode) {
     yield put({ type: types.CLEAR_CURRENT_SCREENSHOTS_LIST });
     yield put({ type: types.CLEAR_CURRENT_IDLE_LIST });
+    yield put({ type: types.SET_LAST_SCREENSHOT_TIME, payload: 0 });
     yield put(setWorklogUploadState(false));
     yield put({ type: types.FETCH_ISSUE_REQUEST, payload: issueId });
   }
