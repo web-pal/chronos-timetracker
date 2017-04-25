@@ -3,7 +3,7 @@ import storage from 'electron-json-storage';
 import config from 'config';
 
 import * as types from './constants';
-import store from './store.js';
+import store from './store';
 
 export default class Socket {
   static connect() {
@@ -39,6 +39,7 @@ export default class Socket {
       const state = store.getState();
 
       const running = state.timer.running;
+      const tempId = state.worklogs.meta.temporaryWorklogId;
       const issueId = state.issues.meta.trackingIssueId;
       const timeSpentSeconds = state.timer.time;
       const description = state.worklogs.meta.currentDescription;
@@ -51,6 +52,7 @@ export default class Socket {
         this.socket.emit(
           'sendCurrentWorklog',
           {
+            id: tempId,
             issueId,
             timeSpentSeconds,
             description,

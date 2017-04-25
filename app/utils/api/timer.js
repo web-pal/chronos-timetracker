@@ -74,7 +74,9 @@ function getScreen(callback) {
 }
 
 
-export function makeScreenshot(screenshotTime, userKey, host) {
+export function makeScreenshot(
+  screenshotTime, userKey, host, showPreview, screenshotPreviewTime,
+) {
   return new Promise((resolve, reject) => {
     getScreen((images) => {
       let xPointer = 0;
@@ -121,7 +123,13 @@ export function makeScreenshot(screenshotTime, userKey, host) {
               remote.getGlobal('sharedObj').lastScreenshotThumbPath = thumbImageDir;
               remote.getGlobal('sharedObj').screenshotTime = screenshotTime;
               remote.getGlobal('sharedObj').timestamp = now;
-              ipcRenderer.send('showScreenPreviewPopup');
+              remote.getGlobal('sharedObj').screenshotPreviewTime = screenshotPreviewTime;
+
+              if (showPreview) {
+                ipcRenderer.send('showScreenPreviewPopup');
+              } else {
+                ipcRenderer.send('screenshot-accept');
+              }
               resolve();
             });
           },

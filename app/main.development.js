@@ -21,6 +21,7 @@ global.sharedObj = {
   lastScreenshotThumbPath: '',
   screenshotTime: null,
   timestamp: null,
+  screenshotPreviewTime: 15,
   idleTime: 0,
   idleDetails: {},
 };

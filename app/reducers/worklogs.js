@@ -42,6 +42,7 @@ const initialMeta = Immutable.Record({
   checkOfflineScreenshots: false,
   checkOfflineWorklogs: false,
   selectedWorklogId: null,
+  temporaryWorklogId: null,
   recentWorkLogsIds: new OrderedSet(),
   currentWorklogScreenshots: new List(),
   currentDescription: '',
@@ -61,6 +62,8 @@ function meta(state = new initialMeta(), action) {
       return state.set('checkOfflineScreenshots', action.payload);
     case types.SET_STATE_CHECK_OFFLINE_WORKLOGS:
       return state.set('checkOfflineWorklogs', action.payload);
+    case types.SET_TEMPORARY_ID:
+      return state.set('temporaryWorklogId', action.payload);
     case types.SELECT_WORKLOG:
       return state.set('selectedWorklogId', action.payload);
     case types.FILL_RECENT_WORKLOGS:

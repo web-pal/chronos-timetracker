@@ -3,6 +3,7 @@ import { eventChannel } from 'redux-saga';
 
 import { remote, ipcRenderer } from 'electron';
 import moment from 'moment';
+import uuidV4 from 'uuid/v4';
 
 import NanoTimer from 'nanotimer';
 import { makeScreenshot } from 'api';
@@ -18,7 +19,16 @@ function* takeScreenshot() {
   const screenshotTime = yield select(state => state.timer.time);
   const userData = yield select(state => state.profile.userData);
   const host = yield select(state => state.profile.host);
-  yield call(makeScreenshot, screenshotTime, userData.get('key'), host);
+  const localDesktopSettings = yield select(state => state.settings.localDesktopSettings);
+
+  yield call(
+    makeScreenshot,
+    screenshotTime,
+    userData.get('key'),
+    host,
+    localDesktopSettings.get('showScreenshotPreview'),
+    localDesktopSettings.get('screenshotPreviewTime'),
+  );
 }
 
 function timerChannel() {
@@ -193,12 +203,16 @@ export function* manageTimer() {
     const selectedIssueId = yield select(state => state.issues.meta.selectedIssueId);
     yield put({ type: types.SET_TRACKING_ISSUE, payload: selectedIssueId });
 
+    const tempId = uuidV4();
+    yield put({ type: types.SET_TEMPORARY_ID, payload: tempId });
+    yield put({ type: types.SET_TRACKING_ISSUE, payload: selectedIssueId });
     remote.getGlobal('sharedObj').running = true;
     yield race({
       start: call(runTimer),
       stoped: take(types.STOP_TIMER),
     });
     remote.getGlobal('sharedObj').running = false;
+    yield put({ type: types.SET_TEMPORARY_ID, payload: null });
 
     yield put({ type: types.SET_TRACKING_ISSUE, payload: null });
   }

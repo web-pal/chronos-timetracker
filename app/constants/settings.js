@@ -1,1 +1,3 @@
 export const FILL_SETTINGS = 'settings/FILL';
+export const FILL_LOCAL_DESKTOP_SETTINGS = 'settings/FILL_LOCAL_DESKTOP_SETTINGS';
+export const SET_LOCAL_DESKTOP_SETTINGS = 'settings/SET_LOCAL_DESKTOP_SETTINGS';

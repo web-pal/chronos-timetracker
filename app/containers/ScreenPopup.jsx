@@ -14,10 +14,10 @@ let acceptLock = false;
 export default class ScreenPopup extends Component {
   constructor(props) {
     super(props);
-    const { lastScreenshotPath, screenshotTime } = getGlobal('sharedObj');
+    const { lastScreenshotPath, screenshotTime, screenshotPreviewTime } = getGlobal('sharedObj');
     remote.getCurrentWindow().flashFrame(true);
     this.state = {
-      maxTime: 15,
+      maxTime: screenshotPreviewTime,
       currentTime: 0,
       lastScreenshotPath,
       screenshotTime,

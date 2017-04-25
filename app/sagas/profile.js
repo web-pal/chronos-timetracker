@@ -7,6 +7,7 @@ import {
   chronosBackendGetJiraCredentials, fetchSettings,
   getDataForOAuth, jiraProfile,
 } from 'api';
+import { getFromStorage } from './helper';
 import * as types from '../constants/';
 import { rememberToken, clearToken } from '../utils/api/helper';
 import { login, loginOAuth, throwLoginError } from '../actions/profile';
@@ -205,5 +206,20 @@ export function* loginOAuthFlow() {
       clearToken();
       yield put({ type: types.CLEAR_ALL_REDUCERS });
     }
+  }
+}
+
+export function* localDesktopSettings() {
+  while (true) {
+    yield take(types.LOCAL_DESKTOP_SETTINGS_REQUEST);
+    let settings = yield getFromStorage('localDesktopSettings');
+    if (!Object.keys(settings).length) {
+      settings = {
+        showScreenshotPreview: true,
+        screenshotPreviewTime: 15,
+      };
+      yield storage.set('localDesktopSettings', settings);
+    }
+    yield put({ type: types.FILL_LOCAL_DESKTOP_SETTINGS, payload: settings });
   }
 }

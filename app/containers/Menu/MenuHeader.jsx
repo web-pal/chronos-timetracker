@@ -13,11 +13,14 @@ import nocameraIcon from '../../assets/images/camera-crossed-out@2x.png';
 import logoutIcon from '../../assets/images/logout@2x.png';
 
 import * as profileActions from '../../actions/profile';
+import * as uiActions from '../../actions/ui';
+
 
 const MenuHeader = ({
   userData,
   settings,
   logout,
+  setShowSettingsModal,
 }) => {
   const screenshotsEnabled = settings.get('screenshotsEnabled');
   const screenshotsEnabledUsers = settings.get('screenshotsEnabledUsers');
@@ -51,6 +54,9 @@ const MenuHeader = ({
                 height={willMakeScreenshots ? 16 : 19}
                 alt="cameraIcon"
               />
+            </a>
+            <a onClick={() => setShowSettingsModal(true)}>
+              <i className="fa fa-cog" />
             </a>
             <a
               className="flex-item--end logout"
@@ -87,6 +93,7 @@ const MenuHeader = ({
 MenuHeader.propTypes = {
   userData: ImmutablePropTypes.map.isRequired,
   settings: ImmutablePropTypes.record.isRequired,
+  setShowSettingsModal: PropTypes.func.isRequired,
   logout: PropTypes.func.isRequired,
 };
 
@@ -98,7 +105,7 @@ function mapStateToProps({ settings, profile }) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(profileActions, dispatch);
+  return bindActionCreators({ ...profileActions, ...uiActions }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MenuHeader);

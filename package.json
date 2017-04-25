@@ -180,6 +180,7 @@
     "react-hot-loader": "3.0.0-beta.6",
     "react-immutable-proptypes": "^2.1.0",
     "react-markdown": "^2.5.0",
+    "react-modal": "^1.7.7",
     "react-redux": "^5.0.4",
     "react-select": "^1.0.0-rc.3",
     "react-virtualized": "^9.7.3",
@@ -190,7 +191,8 @@
     "reselect": "^3.0.0",
     "socket.io-client": "^1.7.3",
     "source-map-support": "^0.4.14",
-    "utf-8-validate": "^3.0.1"
+    "utf-8-validate": "^3.0.1",
+    "uuid": "^3.0.1"
   },
   "devEngines": {
     "node": ">=6.x",
