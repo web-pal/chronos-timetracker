@@ -315,6 +315,14 @@ app.on('before-quit', () => {
   }
 });
 
+app.on('activate', () => {
+  if (mainWindow === null) {
+    createWindow();
+  } else {
+    mainWindow.show();
+  }
+});
+
 app.on('ready', async () => {
   if (process.env.NODE_ENV === 'development' || showDevTools) {
     await installExtensions();
