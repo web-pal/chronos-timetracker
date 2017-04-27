@@ -68,11 +68,6 @@ span {
   }
 }
 
-.CameraIcon {
-  -webkit-app-region: no-drag;
-  cursor: help;
-}
-
 .Select.ProjectPicker {
   margin-top: 17px;
   .Select-control {
@@ -134,8 +129,28 @@ span {
   }
 }
 
+.cogIcon {
+  position: relative;
+  width: 22px;
+  &:hover {
+    > img {
+      transform: translate3d(-50%, -50%, 0) rotate(90deg);
+    }
+  }
+  > img {
+    height: 22px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0);
+    transition: transform 1s;
+  }
+  cursor: pointer;
+}
+
 .CameraIcon {
-  margin-right: 13px;
+  -webkit-app-region: no-drag;
+  cursor: help;
   position: relative;
   width: 20px;
   img {

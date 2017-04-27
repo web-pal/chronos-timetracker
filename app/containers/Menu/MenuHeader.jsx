@@ -15,6 +15,7 @@ import logoutIcon from '../../assets/images/logout@2x.png';
 import * as profileActions from '../../actions/profile';
 import * as uiActions from '../../actions/ui';
 
+const cogIcon = require('../../assets/images/cog.png');
 
 const MenuHeader = ({
   userData,
@@ -52,11 +53,17 @@ const MenuHeader = ({
                 src={willMakeScreenshots ? cameraIcon : nocameraIcon}
                 width={20}
                 height={willMakeScreenshots ? 16 : 19}
-                alt="cameraIcon"
+                alt="{camera}"
               />
             </a>
-            <a onClick={() => setShowSettingsModal(true)}>
-              <i className="fa fa-cog" />
+            <a
+              onClick={() => setShowSettingsModal(true)}
+              className="cogIcon"
+            >
+              <img
+                src={cogIcon}
+                alt="{cog}"
+              />
             </a>
             <a
               className="flex-item--end logout"

@@ -1,0 +1,40 @@
+.Settings {
+  &__close-btn {
+    position: absolute;
+    top: 3px;
+    right: 4px;
+    font-size: 1.2em;
+    color: rgba(0, 0, 0, .7);
+    transition: all .5s;
+    cursor: pointer;
+    &:hover {
+      font-size: 1.4em;
+      color: rgba(0, 0, 0, .9);
+    }
+  }
+
+  &__inner-wrapper {
+    width: 80%;
+    align-items: center;
+  }
+
+  &__header {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #f6f6f6;
+    width: 100%;
+  }
+
+  &__body {
+    .form-group {
+      > input {
+        margin-right: 10px;
+      }
+    }
+  }
+
+  .subInputs {
+    margin-left: 21px;
+    margin-top: 5px;
+    color: rgba(0, 0, 0, .7);
+  }
+}
