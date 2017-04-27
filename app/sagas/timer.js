@@ -28,6 +28,7 @@ function* takeScreenshot() {
     host,
     localDesktopSettings.get('showScreenshotPreview'),
     localDesktopSettings.get('screenshotPreviewTime'),
+    localDesktopSettings.get('nativeNotifications'),
   );
 }
 

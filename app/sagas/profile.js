@@ -217,6 +217,7 @@ export function* localDesktopSettings() {
       settings = {
         showScreenshotPreview: true,
         screenshotPreviewTime: 15,
+        nativeNotifications: true,
       };
       yield storage.set('localDesktopSettings', settings);
     }

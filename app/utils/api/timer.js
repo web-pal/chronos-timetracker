@@ -75,7 +75,7 @@ function getScreen(callback) {
 
 
 export function makeScreenshot(
-  screenshotTime, userKey, host, showPreview, screenshotPreviewTime,
+  screenshotTime, userKey, host, showPreview, screenshotPreviewTime, nativeNotifications
 ) {
   return new Promise((resolve, reject) => {
     getScreen((images) => {
@@ -124,6 +124,7 @@ export function makeScreenshot(
               remote.getGlobal('sharedObj').screenshotTime = screenshotTime;
               remote.getGlobal('sharedObj').timestamp = now;
               remote.getGlobal('sharedObj').screenshotPreviewTime = screenshotPreviewTime;
+              remote.getGlobal('sharedObj').nativeNotifications = nativeNotifications;
 
               if (showPreview) {
                 ipcRenderer.send('showScreenPreviewPopup');

@@ -4,6 +4,7 @@
 import path from 'path';
 import storage from 'electron-json-storage';
 import { app, Tray, ipcMain, BrowserWindow, screen } from 'electron';
+import notifier from 'node-notifier';
 import MenuBuilder from './menu';
 import { showDevTools } from './utils/config';
 
@@ -22,6 +23,7 @@ global.sharedObj = {
   screenshotTime: null,
   timestamp: null,
   screenshotPreviewTime: 15,
+  nativeNotifications: false,
   idleTime: 0,
   idleDetails: {},
 };
@@ -153,8 +155,7 @@ function createWindow(callback) {
   });
 }
 
-
-ipcMain.on('showScreenPreviewPopup', () => {
+function showScreenPreview() {
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   const options = {
     width: 218,
@@ -172,6 +173,44 @@ ipcMain.on('showScreenPreviewPopup', () => {
   win.once('ready-to-show', () => {
     win.show();
   });
+}
+
+ipcMain.on('showScreenPreviewPopup', () => {
+  let nativeNotifications = process.platform === 'darwin';
+  if (process.platform === 'darwin' && mainWindow) {
+    nativeNotifications = global.sharedObj.nativeNotifications;
+  }
+  if (nativeNotifications) {
+    const nc = new notifier.NotificationCenter();
+    nc.notify(
+      {
+        title: 'Screenshot preview',
+        message: 'Accept or Reject this screenshot',
+        contentImage: global.sharedObj.lastScreenshotPath,
+        sound: 'Funk',
+        closeLabel: 'Accept',
+        actions: ['Reject', 'Show preview'],
+        dropdownLabel: 'Additional',
+        timeout: 5,
+      },
+      (err, response, metadata) => {
+        if (response === 'closed') {
+          acceptScreenshot();
+        }
+        if (response === 'activate') {
+          if (metadata.activationValue === 'Reject') {
+            rejectScreenshot();
+          }
+          if (metadata.activationValue === 'Show preview') {
+            showScreenPreview();
+          }
+        }
+      }
+    );
+    nc.on('timeout', acceptScreenshot);
+  } else {
+    showScreenPreview();
+  }
 });
 
 ipcMain.on('oauthText', (event, text) => {
@@ -275,17 +314,19 @@ ipcMain.on('unmaximize', () => {
   }
 });
 
-ipcMain.on('screenshot-reject', () => {
+function rejectScreenshot() {
   if (mainWindow) {
     mainWindow.webContents.send('screenshot-reject');
   }
-});
+}
+ipcMain.on('screenshot-reject', rejectScreenshot);
 
-ipcMain.on('screenshot-accept', () => {
+function acceptScreenshot() {
   if (mainWindow) {
     mainWindow.webContents.send('screenshot-accept');
   }
-});
+}
+ipcMain.on('screenshot-accept', acceptScreenshot);
 
 ipcMain.on('errorInWindow', (e, error) => {
   console.log(`${error[0]} @ ${error[1]} ${error[2]}:${error[3]}`);

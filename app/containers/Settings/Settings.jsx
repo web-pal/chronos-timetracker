@@ -26,6 +26,12 @@ class Settings extends Component {
     }
   }
 
+  setNativeNotificationsSettings = value => ev => {
+    if (ev.target.checked) {
+      this.props.setLocalDesktopSettings('nativeNotifications', value);
+    }
+  }
+
   handleClose = () => {
     this.props.setShowSettingsModal(false);
   }
@@ -62,43 +68,73 @@ class Settings extends Component {
                     </label>
                   </div>
                   {settings.get('showScreenshotPreview') &&
-                    <div className="subInputs">
-                      <div className="form-group">
-                        <input
-                          name="previewTime"
-                          id="5s"
-                          type="radio"
-                          checked={settings.get('screenshotPreviewTime') === 5}
-                          onChange={this.setScreenshotPreviewTime(5)}
-                        />
-                        <label htmlFor="5s">
-                          5 seconds
-                        </label>
+                    <div>
+                      <div className="subInputs">
+                        <div className="form-group">
+                          <input
+                            name="previewTime"
+                            id="5s"
+                            type="radio"
+                            checked={settings.get('screenshotPreviewTime') === 5}
+                            onChange={this.setScreenshotPreviewTime(5)}
+                          />
+                          <label htmlFor="5s">
+                            5 seconds
+                          </label>
+                        </div>
+                        <div className="form-group">
+                          <input
+                            name="previewTime"
+                            id="10s"
+                            type="radio"
+                            checked={settings.get('screenshotPreviewTime') === 10}
+                            onChange={this.setScreenshotPreviewTime(10)}
+                          />
+                          <label htmlFor="10s">
+                            10 seconds
+                          </label>
+                        </div>
+                        <div className="form-group">
+                          <input
+                            name="previewTime"
+                            id="15s"
+                            type="radio"
+                            checked={settings.get('screenshotPreviewTime') === 15}
+                            onChange={this.setScreenshotPreviewTime(15)}
+                          />
+                          <label htmlFor="15s">
+                            15 seconds
+                          </label>
+                        </div>
                       </div>
-                      <div className="form-group">
-                        <input
-                          name="previewTime"
-                          id="10s"
-                          type="radio"
-                          checked={settings.get('screenshotPreviewTime') === 10}
-                          onChange={this.setScreenshotPreviewTime(10)}
-                        />
-                        <label htmlFor="10s">
-                          10 seconds
-                        </label>
-                      </div>
-                      <div className="form-group">
-                        <input
-                          name="previewTime"
-                          id="15s"
-                          type="radio"
-                          checked={settings.get('screenshotPreviewTime') === 15}
-                          onChange={this.setScreenshotPreviewTime(15)}
-                        />
-                        <label htmlFor="15s">
-                          15 seconds
-                        </label>
-                      </div>
+                      {process.platform === 'darwin' &&
+                        <div>
+                          <div className="form-group">
+                            <input
+                              name="nativeNotifications"
+                              id="useNative"
+                              type="radio"
+                              checked={settings.get('nativeNotifications')}
+                              onChange={this.setNativeNotificationsSettings(true)}
+                            />
+                            <label htmlFor="useNative">
+                              Use native notifications
+                            </label>
+                          </div>
+                          <div className="form-group">
+                            <input
+                              name="nativeNotifications"
+                              id="usPopup"
+                              type="radio"
+                              checked={!settings.get('nativeNotifications')}
+                              onChange={this.setNativeNotificationsSettings(false)}
+                            />
+                            <label htmlFor="usePopup">
+                              Use popup notifications
+                            </label>
+                          </div>
+                        </div>
+                      }
                     </div>
                   }
                 </Flex>
