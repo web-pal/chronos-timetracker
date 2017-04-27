@@ -187,7 +187,7 @@ ipcMain.on('showScreenPreviewPopup', () => {
         title: 'Screenshot preview',
         message: 'Accept or Reject this screenshot',
         contentImage: global.sharedObj.lastScreenshotPath,
-        sound: 'Funk',
+        sound: 'Glass',
         closeLabel: 'Accept',
         actions: ['Reject', 'Show preview'],
         dropdownLabel: 'Additional',
