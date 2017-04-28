@@ -280,8 +280,12 @@ function* getIssue(issueId) {
 function* findSelectedIndex({ payload }) {
   if (payload === 'All') {
     const selectedIssueId = yield select(state => state.issues.meta.selectedIssueId);
+    const selectedIssueIndex = yield select(state => state.issues.meta.selectedIssueIndex);
     const allIssues = yield select(getAllIssues);
-    const index = allIssues.findIndex(i => i.get('id') === selectedIssueId);
+    let index = allIssues.findIndex(i => i.get('id') === selectedIssueId);
+    if (index === selectedIssueIndex) {
+      index = index === 0 ? 1 : index - 1;
+    }
     yield put({ type: types.SET_SELECTED_INDEX, payload: index });
   }
 }
@@ -327,6 +331,13 @@ export function* watchRecentIssues() {
 
 export function* watchChangeSidebar() {
   yield takeLatest(types.SET_SIDEBAR_TYPE, findSelectedIndex);
+}
+
+export function* jumpToTrackingIssue() {
+  while (true) {
+    yield take(types.JUMP_TO_TRACKING_ISSUE);
+    yield call(findSelectedIndex, { payload: 'All' });
+  }
 }
 
 export function* watchGetIssueTypes() {

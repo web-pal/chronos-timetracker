@@ -33,6 +33,7 @@ class Tracker extends Component {
     startTimer: PropTypes.func.isRequired,
     stopTimer: PropTypes.func.isRequired,
     selectIssue: PropTypes.func.isRequired,
+    jumpToTrackingIssue: PropTypes.func.isRequired,
     setForceQuitFlag: PropTypes.func.isRequired,
     setDescription: PropTypes.func.isRequired,
     saveKeepedIdle: PropTypes.func.isRequired,
@@ -114,7 +115,7 @@ class Tracker extends Component {
 
   render() {
     const {
-      startTimer, stopTimer, selectIssue, setDescription,
+      startTimer, stopTimer, selectIssue, jumpToTrackingIssue, setDescription,
       running, screenshotUploading, description,
       currentIssue, currentTrackingIssue, currentIssueSelfLogged,
     } = this.props;
@@ -153,7 +154,10 @@ class Tracker extends Component {
               <Flex row centered>
                 <span
                   className="current-tracking__link"
-                  onClick={() => selectIssue(currentTrackingIssue.get('id'))}
+                  onClick={() => {
+                    selectIssue(currentTrackingIssue.get('id'));
+                    jumpToTrackingIssue();
+                  }}
                 >
                   Jump to issue
                 </span>

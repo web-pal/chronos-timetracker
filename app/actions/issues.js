@@ -77,6 +77,12 @@ export function selectIssue(issueId) {
   };
 }
 
+export function jumpToTrackingIssue() {
+  return {
+    type: types.JUMP_TO_TRACKING_ISSUE,
+  };
+}
+
 export function clearIssues() {
   return {
     type: types.CLEAR_ISSUES,

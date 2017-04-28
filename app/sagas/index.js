@@ -18,6 +18,7 @@ import {
   watchGetIssueTypes, watchGetIssueStatuses,
   watchIssuesCriteriaFilter, watchFilterIssues,
   watchIssuesCriteriaFilterDelete, onSetFilters,
+  jumpToTrackingIssue,
 } from './issues';
 import {
   watchSelectWorklogs, watchUploadScreenshot,
@@ -50,6 +51,7 @@ export default function* root() {
 
     fork(watchGetIssueTypes),
     fork(watchGetIssueStatuses),
+    fork(jumpToTrackingIssue),
 
     fork(watchChangeSidebar),
 
