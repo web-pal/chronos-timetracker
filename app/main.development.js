@@ -191,7 +191,8 @@ ipcMain.on('showScreenPreviewPopup', () => {
         closeLabel: 'Accept',
         actions: ['Reject', 'Show preview'],
         dropdownLabel: 'Additional',
-        timeout: 5,
+        wait: false,
+        timeout: global.sharedObj.screenshotPreviewTime,
       },
       (err, response, metadata) => {
         if (response === 'closed') {

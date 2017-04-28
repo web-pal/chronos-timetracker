@@ -47,8 +47,8 @@ electron-is-dev@^0.1.2:
   resolved "https://registry.yarnpkg.com/electron-is-dev/-/electron-is-dev-0.1.2.tgz#8a1043e32b3a1da1c3f553dce28ce764246167e3"
 
 electron-updater@^1.14.0:
-  version "1.14.1"
-  resolved "https://registry.yarnpkg.com/electron-updater/-/electron-updater-1.14.1.tgz#cdc45ca72b9b98ce96c480fd1185d0c6d726ce03"
+  version "1.14.2"
+  resolved "https://registry.yarnpkg.com/electron-updater/-/electron-updater-1.14.2.tgz#49bd145a5a71f0a44b2e8962e3ea64e26d69e57d"
   dependencies:
     bluebird-lst "^1.0.2"
     electron-builder-http "~17.0.3"
