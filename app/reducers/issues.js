@@ -178,8 +178,16 @@ function meta(state = new InitialMeta(), action) {
       return state.set('searchResults', new OrderedSet());
 
     case types.CLEAR_ALL_REDUCERS:
-    case types.CLEAR_ISSUES:
       return new InitialMeta();
+    case types.CLEAR_ISSUES: {
+      const selectedIssueId = state.selectedIssueId;
+      const selectedIssueIndex = state.selectedIssueIndex;
+      const trackingIssueId = state.trackingIssueId;
+      return new InitialMeta()
+        .set('selectedIssueId', selectedIssueId)
+        .set('selectedIssueIndex', selectedIssueIndex)
+        .set('trackingIssueId', trackingIssueId);
+    }
     default:
       return state;
   }

@@ -140,19 +140,19 @@ class AuthForm extends Component {
                 Login
               </button>
             </Flex>
-            <Flex row style={{ marginTop: '10px' }}>
-              <button
-                className="button button-primary"
-                onClick={this.oAuth}
-                disabled={loginRequestInProcess}
-              >
-                OAuth SignIn
-              </button>
-            </Flex>
             <span className="error">
               {loginError}
             </span>
           </form>
+          <Flex row style={{ marginTop: '10px' }}>
+            <button
+              className="button button-primary"
+              onClick={this.oAuth}
+              disabled={loginRequestInProcess}
+            >
+              OAuth SignIn
+            </button>
+          </Flex>
         </Flex>
       </Flex>
     );

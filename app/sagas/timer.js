@@ -214,7 +214,6 @@ export function* manageTimer() {
     });
     remote.getGlobal('sharedObj').running = false;
     yield put({ type: types.SET_TEMPORARY_ID, payload: null });
-
     yield put({ type: types.SET_TRACKING_ISSUE, payload: null });
   }
 }
