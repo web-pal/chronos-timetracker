@@ -31,8 +31,11 @@ export const SET_ISSUES_COUNT = 'issues/SET_COUNT';
 export const SET_ISSUES_SEARCH_VALUE = 'issues/SET_ISSUES_SEARCH_VALUE';
 export const SET_LAST_STOP_INDEX = 'issues/SET_LAST_STOP_INDEX';
 export const CLEAR_ISSUES_SEARCH_RESULTS = 'issues/CLEAR_ISSUES_SEARCH_RESULTS';
+export const CLEAR_CURRENT_SCREENSHOTS = 'issues/CLEAR_CURRENT_SCREENSHOTS';
 
 export const SELECT_ISSUE = 'issues/SELECT';
 export const SET_SELECTED_INDEX = 'issues/SET_SELECTED_INDEX';
+
+export const ADD_CURRENT_SCREENSHOT = 'issues/ADD_CURRENT_SCREENSHOT';
 
 export const CLEAR_ISSUES = 'issues/CLEAR';

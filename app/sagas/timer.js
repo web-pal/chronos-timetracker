@@ -1,9 +1,11 @@
-import { cancelled, call, take, race, put, select, fork } from 'redux-saga/effects';
+import fs from 'fs';
+import { cancelled, call, take, race, put, select, fork, cps } from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
 
 import { remote, ipcRenderer } from 'electron';
 import moment from 'moment';
 import uuidV4 from 'uuid/v4';
+import rimraf from 'rimraf';
 
 import NanoTimer from 'nanotimer';
 import { makeScreenshot } from 'api';
@@ -215,6 +217,9 @@ export function* manageTimer() {
     remote.getGlobal('sharedObj').running = false;
     yield put({ type: types.SET_TEMPORARY_ID, payload: null });
     yield put({ type: types.SET_TRACKING_ISSUE, payload: null });
+    yield put({ type: types.CLEAR_CURRENT_SCREENSHOTS });
+    yield cps(rimraf, `${remote.getGlobal('appDir')}/current_screenshots/`);
+    yield call(fs.mkdirSync, `${remote.getGlobal('appDir')}/current_screenshots/`);
   }
 }
 

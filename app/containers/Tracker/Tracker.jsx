@@ -11,6 +11,7 @@ import TimerControls from '../../components/Timer/TimerControls';
 import TimerDisplay from './TimerDisplay';
 import TrackerHeader from '../../components/TrackerHeader/TrackerHeader';
 import StatusBar from './StatusBar';
+import ScreenShots from './ScreenShots';
 
 import { getSelectedIssue, getTrackingIssue, getIssueLoggedByUser } from '../../selectors';
 
@@ -159,6 +160,7 @@ class Tracker extends Component {
               </Flex>
             </Flex>
           }
+          <ScreenShots />
           <Flex row centered style={{ minHeight: 60 }}>
             {running &&
               <TextareaAutosize

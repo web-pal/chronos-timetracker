@@ -5,7 +5,6 @@ import { AppContainer } from 'react-hot-loader';
 
 import Raven from 'raven-js';
 import fs from 'fs';
-import rimraf from 'rimraf';
 import { remote, ipcRenderer as ipc } from 'electron';
 import { useSentry } from 'config';
 
@@ -37,6 +36,11 @@ try {
   fs.accessSync(`${appDir}/offline_screens/`, fs.constants.R_OK | fs.constants.W_OK); // eslint-disable-line
 } catch (err) {
   fs.mkdirSync(`${appDir}/offline_screens/`);
+}
+try {
+  fs.accessSync(`${appDir}/current_screenshots/`, fs.constants.R_OK | fs.constants.W_OK); // eslint-disable-line
+} catch (err) {
+  fs.mkdirSync(`${appDir}/current_screenshots/`);
 }
 try {
   fs.accessSync(`${appDir}/worklogs/`, fs.constants.R_OK | fs.constants.W_OK) // eslint-disable-line

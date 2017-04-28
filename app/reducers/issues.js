@@ -68,6 +68,7 @@ const InitialMeta = Immutable.Record({
   issueAssigneeIds: fromJS(['none', 'currentUser']),
   issueCurrentCriteriaFilterAssignee: new Set(),
 
+  currentScreenshots: new OrderedSet(),
   recentIssuesIds: new OrderedSet(),
   searchResultsIds: new OrderedSet(),
 });
@@ -168,6 +169,12 @@ function meta(state = new InitialMeta(), action) {
     case types.SET_TRACKING_ISSUE:
       return state.set('trackingIssueId', action.payload);
 
+    case types.ADD_CURRENT_SCREENSHOT:
+      return state.update(
+        'currentScreenshots',
+        screenshots => screenshots.add(action.payload)
+      );
+
     case types.FILL_RECENT_ISSUES:
       return state.set('recentIssuesIds', new OrderedSet(action.payload.ids));
     case types.MERGE_RECENT_ISSUES:
@@ -179,14 +186,18 @@ function meta(state = new InitialMeta(), action) {
 
     case types.CLEAR_ALL_REDUCERS:
       return new InitialMeta();
+    case types.CLEAR_CURRENT_SCREENSHOTS:
+      return state.set('currentScreenshots', new OrderedSet());
     case types.CLEAR_ISSUES: {
       const selectedIssueId = state.selectedIssueId;
       const selectedIssueIndex = state.selectedIssueIndex;
       const trackingIssueId = state.trackingIssueId;
+      const currentScreenshots = state.currentScreenshots;
       return new InitialMeta()
         .set('selectedIssueId', selectedIssueId)
         .set('selectedIssueIndex', selectedIssueIndex)
-        .set('trackingIssueId', trackingIssueId);
+        .set('trackingIssueId', trackingIssueId)
+        .set('currentScreenshots', currentScreenshots);
     }
     default:
       return state;

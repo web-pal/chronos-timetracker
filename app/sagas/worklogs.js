@@ -175,6 +175,14 @@ export function* uploadScreenshot({
     error = true;
   }
 
+
+  const currentScreenshot = `${remote.getGlobal('appDir')}/current_screenshots/${fileName}`;
+  yield call(fs.writeFileSync, currentScreenshot, image);
+  yield put({
+    type: types.ADD_CURRENT_SCREENSHOT,
+    payload: { screenshot: currentScreenshot, screenshotTime, timestamp },
+  });
+
   if (error) {
     if (!isOffline) {
       if (mainScreenError) {
