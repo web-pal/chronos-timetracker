@@ -11,7 +11,7 @@ const Description = ({}) =>
       Configure whether to show screenshot popup or not,
       and the time untill it accepts automatically
     </span>
-  </Flex>
+  </Flex>;
 
 Description.propTypes = {
 
