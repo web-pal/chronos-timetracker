@@ -40,13 +40,16 @@ SidebarItems.propTypes = {
   sidebarType: PropTypes.string.isRequired,
 };
 
-function mapStateToProps({ issues, worklogs, ui, profile }) {
+function mapStateToProps({ issues, worklogs, ui, profile, projects }) {
   let showSpinner = true;
   const searchMode = issues.meta.searchValue.length > 0;
   const allItems = searchMode ? getSearchResultIssues({ issues }) : getAllIssues({ issues });
   const recentItems = getRecentWorklogsGroupedByDate({ issues, worklogs, profile });
   if (ui.sidebarType === 'All') {
-    showSpinner = (issues.meta.fetching && !issues.meta.fetched) || issues.meta.searchFetching;
+    showSpinner =
+      (issues.meta.fetching && !issues.meta.fetched) ||
+      issues.meta.searchFetching ||
+      projects.meta.fetching;
   } else {
     showSpinner = issues.meta.recentFetching;
   }
