@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 import AuthForm from './AuthForm';
-import Main from '../containers/Main';
+import Main from './Main';
 
 const App = ({ isAuthorized }) =>
   <div className="wrapper">
