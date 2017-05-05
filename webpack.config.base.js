@@ -35,8 +35,8 @@ export default {
   resolve: {
     extensions: ['.js', '.jsx', '.json'],
     modules: [
-      path.join(__dirname, 'app/utils'),
       path.join(__dirname, 'app'),
+      path.join(__dirname, 'app/utils'),
       'node_modules',
     ],
   },

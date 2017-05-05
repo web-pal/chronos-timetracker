@@ -5,9 +5,9 @@
 import path from 'path';
 import webpack from 'webpack';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import SentryPlugin from 'webpack-sentry-plugin';
 import merge from 'webpack-merge';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
 import BabiliPlugin from 'babili-webpack-plugin';
 import baseConfig from './webpack.config.base';
 import pjson from './package.json';
@@ -27,23 +27,9 @@ const plugins = [
 
   new ExtractTextPlugin('style.css'),
 
-  /**
-    * Dynamically generate index.html page
-    */
-  new HtmlWebpackPlugin({
-    filename: '../app.html',
-    template: 'app/app.html',
-    inject: false
-  }),
-  new HtmlWebpackPlugin({
-    filename: '../idlePopup.html',
-    template: 'app/idlePopup.html',
-    inject: false
-  }),
-  new HtmlWebpackPlugin({
-    filename: '../screenPopup.html',
-    template: 'app/screenPopup.html',
-    inject: false
+  new BundleAnalyzerPlugin({
+    analyzerMode: process.env.OPEN_ANALYZER === 'true' ? 'server' : 'disabled',
+    openAnalyzer: process.env.OPEN_ANALYZER === 'true'
   }),
 ];
 

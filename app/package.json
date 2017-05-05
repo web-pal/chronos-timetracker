@@ -3,7 +3,7 @@
   "productName": "Chronos",
   "version": "0.1.2",
   "description": "Native app for time-tracking fully integrated with JIRA",
-  "main": "./main.js",
+  "main": "./main.prod.js",
   "scripts": {
     "rebuild-electron": "npm rebuild --runtime=electron --target=1.6.5 --disturl=https://atom.io/download/atom-shell -—abi=51",
     "postinstall": "npm run rebuild-electron && ./replaceNotifier.sh"

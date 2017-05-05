@@ -95,7 +95,6 @@ export default merge.smart(baseConfig, {
   resolve: {
     modules: [
       'app',
-      'node_modules',
     ],
   },
 

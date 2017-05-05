@@ -6,7 +6,6 @@ import { AppContainer } from 'react-hot-loader';
 import Raven from 'raven-js';
 import fs from 'fs';
 import { remote, ipcRenderer as ipc } from 'electron';
-import { useSentry } from 'config';
 
 import Base from './components/Base/Base';
 import store from './store';
@@ -16,7 +15,7 @@ import './assets/stylesheets/main.less';
 
 
 Raven.addPlugin(require('./raven-electron-plugin')); // eslint-disable-line
-if (useSentry) {
+if (process.env.UPLOAD_SENTRY !== '0') {
   Raven
     .config('https://60a0dae4681d47d29a4cd77703472a29@sentry.io/153064', {
       release: `${pjson.version}_${process.platform}`,
