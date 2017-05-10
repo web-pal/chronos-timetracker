@@ -2,6 +2,7 @@ import jira from '../jiraClient';
 
 const requiredFields = [
   'issuetype',
+  'project',
   'labels',
   'priority',
   'status',

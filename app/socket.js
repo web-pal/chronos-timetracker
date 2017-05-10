@@ -46,7 +46,7 @@ export default class Socket {
       const screenshots =
         state.worklogs.meta.currentWorklogScreenshots.toArray().map(s => ({ ...s }));
       const userData = state.profile.userData;
-      const currentProjectId = state.projects.meta.selectedProjectId;
+      const currentProjectId = state.issues.byId.getIn([issueId, 'fields', 'project', 'id']);
 
       if (running) {
         this.socket.emit(
