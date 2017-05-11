@@ -47,20 +47,25 @@ export default class Socket {
         state.worklogs.meta.currentWorklogScreenshots.toArray().map(s => ({ ...s }));
       const userData = state.profile.userData;
       const currentProjectId = state.issues.byId.getIn([issueId, 'fields', 'project', 'id']);
+      const worklogData = {
+        id: tempId,
+        issueId,
+        timeSpentSeconds,
+        description,
+        screenshots,
+        currentProjectId,
+        toSocketId,
+        user: userData.toJS(),
+      };
+      const currentBoardId = state.projects.meta.selectedProjectId;
+      if (currentBoardId !== currentProjectId) {
+        worklogData.currentBoardId = currentBoardId;
+      }
 
       if (running) {
         this.socket.emit(
           'sendCurrentWorklog',
-          {
-            id: tempId,
-            issueId,
-            timeSpentSeconds,
-            description,
-            screenshots,
-            currentProjectId,
-            toSocketId,
-            user: userData.toJS(),
-          },
+          { ...worklogData },
         );
       }
     });
