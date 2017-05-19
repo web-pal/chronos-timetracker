@@ -235,9 +235,8 @@ ipcMain.on('oauthDenied', () => {
 
 ipcMain.on('open-oauth-url', (event, url) => {
   authWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
-    show: false,
+    parent: mainWindow,
+    modal: true,
     webPreferences: {
       nodeIntegration: false,
       preload: path.join(__dirname, 'preload.js'),
