@@ -9,7 +9,6 @@
     "arrow-parens": ["off"],
     "compat/compat": "error",
     "consistent-return": "off",
-    "comma-dangle": "off",
     "flowtype-errors/show-errors": 2,
     "generator-star-spacing": "off",
     "import/no-unresolved": "error",

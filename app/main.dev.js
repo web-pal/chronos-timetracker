@@ -205,7 +205,7 @@ ipcMain.on('showScreenPreviewPopup', () => {
             showScreenPreview();
           }
         }
-      }
+      },
     );
     nc.on('timeout', acceptScreenshot);
   } else {
@@ -238,7 +238,10 @@ ipcMain.on('open-oauth-url', (event, url) => {
     width: 800,
     height: 600,
     show: false,
-    'node-integration': false,
+    webPreferences: {
+      nodeIntegration: false,
+      preload: path.join(__dirname, 'preload.js'),
+    },
   });
 
   authWindow.loadURL(url);
@@ -253,7 +256,6 @@ ipcMain.on('open-oauth-url', (event, url) => {
       setTimeout(() => {
         if (authWindow) {
           authWindow.webContents.executeJavaScript(`
-            var ipcRenderer = require('electron').ipcRenderer;
             var text = document.querySelector('#content p').textContent;
             console.log(text);
             if (text.includes('You have successfully authorized')) {
