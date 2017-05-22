@@ -1,7 +1,7 @@
 .tracker {
-  width: 100%;
   background: #fff;
   position: relative;
+  width: ~"calc(100% - 320px)";
   .descriptionInput {
     width: 50%;
     max-width: 90%;
@@ -53,6 +53,26 @@
       }
     }
   }
+  .slick-list{
+    padding: 0!important;
+    .slider-image{
+      width: ~"calc(100% - 20px)";
+      height: 150px;
+      margin: 10px;
+      position: relative;
+    }
+    .slider-timestamp{
+      text-align: center;
+    }
+  }
+}
+.slick-prev{
+  left: 25px;
+  z-index: 12;
+}
+.slick-next{
+  right: 25px;
+  z-index: 12;
 }
 
 .timer {

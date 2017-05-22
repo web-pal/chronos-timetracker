@@ -165,7 +165,7 @@ class Tracker extends Component {
             </Flex>
           }
           <ScreenShots />
-          <Flex row centered style={{ minHeight: 60 }}>
+          <Flex row centered style={{ minHeight: 10, height: 30 }}>
             {running &&
               <TextareaAutosize
                 autoFocus

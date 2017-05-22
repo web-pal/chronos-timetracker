@@ -8,23 +8,50 @@ const settings = {
   className: 'center',
   centerMode: true,
   infinite: true,
-  centerPadding: '60px',
-  slidesToShow: 3,
+  centerPadding: '0px',
+  slidesToShow: 7,
   speed: 500,
 };
 
 const ScreenShots = ({ screenshots }) =>
   <div>
     <Slider {...settings}>
-      <div><h3>1</h3></div>
-      <div><h3>2</h3></div>
-      <div><h3>3</h3></div>
-      <div><h3>4</h3></div>
-      <div><h3>5</h3></div>
-      <div><h3>6</h3></div>
-      <div><h3>7</h3></div>
-      <div><h3>8</h3></div>
-      <div><h3>9</h3></div>
+      <div>
+        <img className="slider-image" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMlVu-ORUJG44NtYyXam7_78CRuAeXHfw5UUD-dNV-24qoP1udh22r49Gt" alt="alt" />
+        <div className="slider-timestamp">{new Date().toDateString().toString()}</div>
+      </div>
+      <div>
+        <img className="slider-image" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMlVu-ORUJG44NtYyXam7_78CRuAeXHfw5UUD-dNV-24qoP1udh22r49Gt" alt="alt" />
+        <div className="slider-timestamp">{new Date().toDateString().toString()}</div>
+      </div>
+      <div>
+        <img className="slider-image" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMlVu-ORUJG44NtYyXam7_78CRuAeXHfw5UUD-dNV-24qoP1udh22r49Gt" alt="alt" />
+        <div className="slider-timestamp">{new Date().toDateString().toString()}</div>
+      </div>
+      <div>
+        <img className="slider-image" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMlVu-ORUJG44NtYyXam7_78CRuAeXHfw5UUD-dNV-24qoP1udh22r49Gt" alt="alt" />
+        <div className="slider-timestamp">{new Date().toDateString().toString()}</div>
+      </div>
+      <div>
+        <img className="slider-image" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMlVu-ORUJG44NtYyXam7_78CRuAeXHfw5UUD-dNV-24qoP1udh22r49Gt" alt="alt" />
+        <div className="slider-timestamp">{new Date().toDateString().toString()}</div>
+      </div>
+      <div>
+        <img className="slider-image" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMlVu-ORUJG44NtYyXam7_78CRuAeXHfw5UUD-dNV-24qoP1udh22r49Gt" alt="alt" />
+        <div className="slider-timestamp">{new Date().toDateString().toString()}</div>
+      </div>
+      <div>
+        <img className="slider-image" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMlVu-ORUJG44NtYyXam7_78CRuAeXHfw5UUD-dNV-24qoP1udh22r49Gt" alt="alt" />
+        <div className="slider-timestamp">{new Date().toDateString().toString()}</div>
+      </div>
+      <div>
+        <img className="slider-image" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMlVu-ORUJG44NtYyXam7_78CRuAeXHfw5UUD-dNV-24qoP1udh22r49Gt" alt="alt" />
+        <div className="slider-timestamp">{new Date().toDateString().toString()}</div>
+      </div>
+      <div>
+        <img className="slider-image" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMlVu-ORUJG44NtYyXam7_78CRuAeXHfw5UUD-dNV-24qoP1udh22r49Gt" alt="alt" />
+        <div className="slider-timestamp">{new Date().toDateString().toString()}</div>
+      </div>
     </Slider>
   </div>;
 
