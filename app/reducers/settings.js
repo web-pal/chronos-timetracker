@@ -25,7 +25,7 @@ export default function settings(state = initialState, action) {
     case types.SET_LOCAL_DESKTOP_SETTINGS:
       return state.update(
         'localDesktopSettings',
-        s => s.set(action.meta, action.payload)
+        s => s.set(action.meta, action.payload),
       );
     case types.CLEAR_ALL_REDUCERS:
       return new InitialState();

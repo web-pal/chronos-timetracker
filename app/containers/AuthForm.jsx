@@ -150,7 +150,7 @@ class AuthForm extends Component {
             className="button button-primary"
             onClick={this.oAuth}
             disabled={loginRequestInProcess}
-            style={{ width: '42.75%' }}
+            style={{ width: '42.75%', maxWidth: '600px' }}
           >
             OAuth SignIn
           </button>
