@@ -7,6 +7,7 @@ import { app, Tray, ipcMain, BrowserWindow, screen } from 'electron';
 import notifier from 'node-notifier';
 import MenuBuilder from './menu';
 
+
 let mainWindow;
 let tray;
 let authWindow;
@@ -33,6 +34,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 if (process.env.NODE_ENV === 'development') {
+  app.commandLine.appendSwitch('allow-insecure-localhost');
   require('electron-debug')();
   const p = path.join(__dirname, '..', 'app', 'node_modules');
   require('module').globalPaths.push(p);
