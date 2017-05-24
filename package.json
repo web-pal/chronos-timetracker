@@ -1,6 +1,6 @@
 {
   "name": "Chronos",
-  "version": "0.1.2",
+  "version": "1.0.0",
   "description": "Full functionality time tracking software with direct JIRA integration",
   "scripts": {
     "test": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 node --trace-warnings ./test/runTests.js",
