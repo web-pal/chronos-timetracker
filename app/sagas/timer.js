@@ -245,3 +245,38 @@ export function* normalizePeriods() {
     yield put(savePeriods(periods.filter(p => p > currentTime)));
   }
 }
+
+export function* deleteScreenshot() {
+  while (true) {
+    const action = yield take(types.DELETE_SCREENSHOT_REQUEST);
+    const image = action.payload;
+    const newImage = { ...image };
+    newImage.isDeleted = true;
+    const worklogScreenshots = yield select(
+      state => state.worklogs.meta.currentWorklogScreenshots,
+    );
+
+    const screenshotIndex =
+      worklogScreenshots.findIndex(s => s.screenshotTime === image.screenshotTime);
+
+    const oldScreenshot = worklogScreenshots.get(screenshotIndex);
+    const newScreenshot = oldScreenshot;
+    newScreenshot.isDeleted = true;
+
+    yield put({
+      type: types.DELETE_SCREENSHOT_FROM_WORKLOG,
+      payload: newScreenshot,
+      meta: {
+        index: screenshotIndex,
+      }
+    });
+
+    yield put({
+      type: types.DELETE_SCREENSHOT,
+      payload: {
+        old: image,
+        new: newImage,
+      },
+    });
+  }
+}

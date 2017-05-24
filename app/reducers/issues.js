@@ -75,7 +75,8 @@ const InitialMeta = Immutable.Record({
 
 function meta(state = new InitialMeta(), action) {
   switch (action.type) {
-
+    case types.DELETE_SCREENSHOT:
+      return state.set('currentScreenshots', state.currentScreenshots.delete(action.payload.old).add(action.payload.new));
     case types.SET_ISSUES_FETCH_STATE:
       return state.set('fetching', action.payload);
     case types.SET_ISSUES_FETCHED_STATE:

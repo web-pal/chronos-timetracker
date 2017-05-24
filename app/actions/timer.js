@@ -72,3 +72,10 @@ export function savePeriods(periods) {
     payload: periods,
   };
 }
+
+export function deleteScreenshotRequest(image) {
+  return {
+    type: types.DELETE_SCREENSHOT_REQUEST,
+    payload: image,
+  };
+}

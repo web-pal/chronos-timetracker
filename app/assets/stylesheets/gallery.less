@@ -1,0 +1,58 @@
+.gallery-wrapper {
+  align-items: flex-end;
+  ::-webkit-scrollbar {
+    height: 2px;
+  }
+  margin-top: 10px;
+  .gallery__header {
+    text-align: center;
+    width: 100%;
+  }
+  .gallery {
+    padding: 0px 20px 20px 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    &__screenshot_deleted {
+      flex: 0 0 0px;
+      align-items: center;
+      justify-content: center;
+    }
+    &__screenshot {
+      flex: 0 0 150px;
+      height: 130px;
+      padding: 5px;
+      position: relative;
+      .screenshotDeletedIcon {
+        height: 71px;
+        padding: 40px 0px;
+        width: auto;
+      }
+      .trashIcon {
+        border-radius: 3px;
+        position: absolute;
+        width: 30px;
+        height: 34px;
+        top: 10px;
+        right: 10px;
+        display: none;
+        background: white;
+        cursor: pointer;
+      }
+      &:not(.gallery__screenshot_deleted) {
+        &:hover {
+          .trashIcon {
+            display: block;
+          }
+        }
+      }
+    }
+    &__image {
+      height: 100%;
+      width: 100%;
+      object-fit: contain;
+    }
+    &__timestamp {
+      text-align: center;
+    }
+  }
+}

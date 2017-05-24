@@ -24,7 +24,12 @@ import {
   watchSelectWorklogs, watchUploadScreenshot,
   watchRejectScreenshot, uploadOfflineScreenshots, uploadOfflineWorklogs,
 } from './worklogs';
-import { manageTimer, cutIddlesFromLastScreenshot, normalizePeriods } from './timer';
+import {
+  manageTimer,
+  cutIddlesFromLastScreenshot,
+  normalizePeriods,
+  deleteScreenshot,
+} from './timer';
 
 
 export default function* root() {
@@ -64,5 +69,6 @@ export default function* root() {
     fork(manageTimer),
     fork(cutIddlesFromLastScreenshot),
     fork(normalizePeriods),
+    fork(deleteScreenshot),
   ];
 }

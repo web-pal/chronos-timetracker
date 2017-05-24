@@ -11,7 +11,7 @@ import TimerControls from '../../components/Timer/TimerControls';
 import TimerDisplay from './TimerDisplay';
 import TrackerHeader from '../../components/TrackerHeader/TrackerHeader';
 import StatusBar from './StatusBar';
-import ScreenShots from './ScreenShots';
+import Gallery from '../../components/Gallery/Gallery';
 
 import { getSelectedIssue, getTrackingIssue, getIssueLoggedByUser } from '../../selectors';
 
@@ -44,6 +44,9 @@ class Tracker extends Component {
     currentTrackingIssue: ImmutablePropTypes.map.isRequired,
     description: PropTypes.string.isRequired,
     currentIssueSelfLogged: PropTypes.number.isRequired,
+
+    currentScreenshots: ImmutablePropTypes.orderedSet.isRequired,
+    deleteScreenshotRequest: PropTypes.func.isRequired,
   }
 
   componentDidMount() {
@@ -116,7 +119,7 @@ class Tracker extends Component {
   render() {
     const {
       startTimer, stopTimer, selectIssue, jumpToTrackingIssue, setDescription,
-      running, screenshotUploading, description,
+      running, screenshotUploading, description, screenshots, deleteScreenshotRequest,
       currentIssue, currentTrackingIssue, currentIssueSelfLogged,
     } = this.props;
 
@@ -164,8 +167,7 @@ class Tracker extends Component {
               </Flex>
             </Flex>
           }
-          <ScreenShots />
-          <Flex row centered style={{ minHeight: 10, height: 30 }}>
+          <Flex row centered style={{ minHeight: 10, height: 60 }}>
             {running &&
               <TextareaAutosize
                 autoFocus
@@ -179,7 +181,7 @@ class Tracker extends Component {
             }
           </Flex>
           <Flex row centered>
-            <Flex column>
+            <Flex column style={{ width: '100%' }}>
               <TimerControls
                 running={running}
                 screenshotUploading={screenshotUploading}
@@ -187,6 +189,7 @@ class Tracker extends Component {
                 stopTimer={stopTimer}
               />
               <TimerDisplay />
+              <Gallery images={screenshots} deleteScreenshot={deleteScreenshotRequest} />
             </Flex>
           </Flex>
         </Flex>
@@ -204,6 +207,7 @@ function mapStateToProps({ timer, issues, worklogs, profile }) {
     currentIssueSelfLogged: getIssueLoggedByUser({ issues, worklogs, profile }),
     currentTrackingIssue: getTrackingIssue({ issues, worklogs }),
     description: worklogs.meta.currentDescription,
+    screenshots: issues.meta.currentScreenshots,
   };
 }
 

@@ -50,6 +50,12 @@ const initialMeta = Immutable.Record({
 
 function meta(state = new initialMeta(), action) {
   switch (action.type) {
+    case types.DELETE_SCREENSHOT_FROM_WORKLOG:
+      return state
+        .set(
+          'currentWorklogScreenshots',
+          state.currentWorklogScreenshots.set(action.meta.index, action.payload),
+        );
     case types.SET_WORKLOGS_FETCH_STATE:
       return state.set('fetching', action.payload);
     case types.SET_WORKLOG_UPLOAD_STATE:
