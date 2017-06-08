@@ -83,7 +83,7 @@ export default class Socket {
         meta: {
           currentProjectId,
           toSocketId,
-        }
+        },
       };
 
       const currentBoardId = state.projects.meta.selectedProjectId;
