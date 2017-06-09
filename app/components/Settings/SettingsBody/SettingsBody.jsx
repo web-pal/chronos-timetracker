@@ -6,7 +6,9 @@ import { ScreenshotsSection, NotificationsSection } from '../Sections';
 const SettingsBody = props =>
   <Flex column className="Settings__body">
     <ScreenshotsSection {...props} />
-    <NotificationsSection {...props} />
+    {process.platform === 'darwin' &&
+      <NotificationsSection {...props} />
+    }
   </Flex>;
 
 export default SettingsBody;

@@ -28,7 +28,7 @@ const Form = ({ settings, onNativeNotificationSettingsChange }) =>
         Use popup notifications
       </label>
     </div>
-  </Flex>
+  </Flex>;
 
 Form.propTypes = {
   settings: PropTypes.object.isRequired,
