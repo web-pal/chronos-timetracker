@@ -70,6 +70,7 @@ export function* uploadWorklog({
       worklog = yield call(jiraUploadWorklog, jiraWorklogData);
       worklogId = worklog.id;
     } catch (err) {
+      Raven.captureException(err);
       yield call(
         saveWorklogAsOffline,
         err,
@@ -98,6 +99,7 @@ export function* uploadWorklog({
     try {
       yield call(chronosBackendUploadWorklog, chronosWorklogData);
     } catch (err) {
+      Raven.captureException(err);
       yield call(
         saveWorklogAsOffline,
         err,
