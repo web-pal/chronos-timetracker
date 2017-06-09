@@ -103,9 +103,31 @@
   text-align: center;
 }
 
+/* .TimerControls__button:hover + .TimerControls__warning { */
+  /* background: red; */
+/* } */
+
 .TimerControls {
+  position: relative;
+  &__warning {
+    opacity: 0;
+    position: absolute;
+    padding: 5px;
+    z-index: 10;
+    background: rgba(245, 230, 37, .6);
+    left: 40%;
+    border: 1px solid black;
+    transition: opacity .666s;
+    .fa.fa-warning {
+      line-height: 22px;
+      margin-right: 5px;
+    }
+  }
   &__button {
     position: relative;
+    &:hover + .TimerControls__warning {
+      opacity: 1;
+    }
     .button {
       position: absolute;
       top: 50%;

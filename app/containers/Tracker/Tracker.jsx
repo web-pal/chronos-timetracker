@@ -45,8 +45,8 @@ class Tracker extends Component {
     description: PropTypes.string.isRequired,
     currentIssueSelfLogged: PropTypes.number.isRequired,
 
-    currentScreenshots: ImmutablePropTypes.orderedSet.isRequired,
     deleteScreenshotRequest: PropTypes.func.isRequired,
+    time: PropTypes.number.isRequired,
   }
 
   componentDidMount() {
@@ -120,7 +120,7 @@ class Tracker extends Component {
     const {
       startTimer, stopTimer, selectIssue, jumpToTrackingIssue, setDescription,
       running, screenshotUploading, description, screenshots, deleteScreenshotRequest,
-      currentIssue, currentTrackingIssue, currentIssueSelfLogged,
+      currentIssue, currentTrackingIssue, currentIssueSelfLogged, time,
     } = this.props;
 
     if (!currentIssue.size) {
@@ -187,6 +187,7 @@ class Tracker extends Component {
                 screenshotUploading={screenshotUploading}
                 startTimer={startTimer}
                 stopTimer={stopTimer}
+                time={time}
               />
               <TimerDisplay />
               <Gallery images={screenshots} deleteScreenshot={deleteScreenshotRequest} />
@@ -202,6 +203,7 @@ class Tracker extends Component {
 function mapStateToProps({ timer, issues, worklogs, profile }) {
   return {
     running: timer.running,
+    time: timer.time,
     screenshotUploading: worklogs.meta.screenshotUploading,
     currentIssue: getSelectedIssue({ issues }),
     currentIssueSelfLogged: getIssueLoggedByUser({ issues, worklogs, profile }),
