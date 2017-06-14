@@ -56,7 +56,7 @@ function* getSettings() {
     const { payload } = yield call(fetchSettings);
     yield put({ type: types.FILL_SETTINGS, payload });
   } catch (err) {
-    console.log(err);
+    Raven.captureException(err);
   }
 }
 
@@ -127,7 +127,12 @@ export function* loginOAuthFlow() {
 
     yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: true });
 
-    const oauth = yield call(getDataForOAuth, host);
+    let oauth = {};
+    try {
+      oauth = yield call(getDataForOAuth, host);
+    } catch (err) {
+      Raven.captureException(err);
+    }
     if (!chronosBackendLoginSuccess) {
       let oauthUrlData = {};
       try {
@@ -150,36 +155,44 @@ export function* loginOAuthFlow() {
         yield loginError('OAuth denied');
         continue; // eslint-disable-line
       }
-      accessToken =
-        yield cps(
-          jira.getOAuthToken,
-          { host,
-            oauth: {
-              token,
-              token_secret: tokenSecret,
-              oauth_verifier: haveCode.code,
-              consumer_key: oauth.consumerKey,
-              private_key: oauth.privateKey,
+      try {
+        accessToken =
+          yield cps(
+            jira.getOAuthToken,
+            { host,
+              oauth: {
+                token,
+                token_secret: tokenSecret,
+                oauth_verifier: haveCode.code,
+                consumer_key: oauth.consumerKey,
+                private_key: oauth.privateKey,
+              },
             },
-          },
+          );
+        const data = yield call(
+          chronosBackendOAuth,
+          { baseUrl: host, token: accessToken, token_secret: tokenSecret },
         );
-      const data = yield call(
-        chronosBackendOAuth,
-        { baseUrl: host, token: accessToken, token_secret: tokenSecret },
-      );
-      rememberToken(data.token);
-      yield storage.set('desktop_tracker_jwt', data.token);
+        rememberToken(data.token);
+        yield storage.set('desktop_tracker_jwt', data.token);
+      } catch (err) {
+        Raven.captureException(err);
+      }
     }
-    yield call(jira.oauth,
-      { host,
-        oauth: {
-          token: accessToken,
-          token_secret: tokenSecret,
-          consumer_key: oauth.consumerKey,
-          private_key: oauth.privateKey,
+    try {
+      yield call(jira.oauth,
+        { host,
+          oauth: {
+            token: accessToken,
+            token_secret: tokenSecret,
+            consumer_key: oauth.consumerKey,
+            private_key: oauth.privateKey,
+          },
         },
-      },
-    );
+      );
+    } catch (err) {
+      Raven.captureException(err);
+    }
     let userData = {};
     let jiraProfileError = false;
     try {

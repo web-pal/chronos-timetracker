@@ -1,6 +1,7 @@
 import fs from 'fs';
 import { cancelled, call, take, race, put, select, fork, cps } from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
+import Raven from 'raven-js';
 
 import { remote, ipcRenderer } from 'electron';
 import moment from 'moment';
@@ -14,6 +15,7 @@ import * as types from '../constants/';
 import { uploadWorklog } from './worklogs';
 import { savePeriods } from '../actions/timer';
 import { randomPeriods, calculateActivity } from './timerHelper';
+import { sendInfoLog } from '../helpers/log';
 
 const system = remote.require('@paulcbetts/system-idle-time');
 
@@ -23,15 +25,19 @@ function* takeScreenshot() {
   const host = yield select(state => state.profile.host);
   const localDesktopSettings = yield select(state => state.settings.localDesktopSettings);
 
-  yield call(
-    makeScreenshot,
-    screenshotTime,
-    userData.get('key'),
-    host,
-    localDesktopSettings.get('showScreenshotPreview'),
-    localDesktopSettings.get('screenshotPreviewTime'),
-    localDesktopSettings.get('nativeNotifications'),
-  );
+  try {
+    yield call(
+      makeScreenshot,
+      screenshotTime,
+      userData.get('key'),
+      host,
+      localDesktopSettings.get('showScreenshotPreview'),
+      localDesktopSettings.get('screenshotPreviewTime'),
+      localDesktopSettings.get('nativeNotifications'),
+    );
+  } catch (err) {
+    Raven.captureException(err);
+  }
 }
 
 function timerChannel() {
@@ -49,6 +55,7 @@ function timerChannel() {
 }
 
 function* runTimer() {
+  sendInfoLog('run runTimer');
   const chan = yield call(timerChannel);
 
   const {
@@ -79,7 +86,12 @@ function* runTimer() {
   // 7/(10/1) = 1
   let nextPeriod = (periodRange * 60) - currentSeconds;
 
-  const initialPeriods = randomPeriods(screensQnt, 1, nextPeriod);
+  let initialPeriods = [];
+  try {
+    initialPeriods = randomPeriods(screensQnt, 1, nextPeriod);
+  } catch (err) {
+    Raven.captureException(err);
+  }
   yield put(savePeriods(initialPeriods));
 
   let idleState = false;
@@ -148,7 +160,9 @@ function* runTimer() {
       console.log(`timer: ${seconds}`);
     }
   } finally {
+    sendInfoLog('stop runTimer');
     if (yield cancelled()) {
+      sendInfoLog('stop runTimer cancelled');
       chan.close();
       const issueId = yield select(state => state.issues.meta.trackingIssueId);
       const timeSpentSeconds = yield select(state => state.timer.time);
@@ -156,32 +170,43 @@ function* runTimer() {
 
       yield put({ type: types.SET_TIME, payload: 0 });
       yield put({ type: types.SET_CURRENT_DESCRIPTION, payload: '' });
+      sendInfoLog('check timeSpentSeconds', { timeSpentSeconds });
       if (timeSpentSeconds >= 60) {
         const currentIdleList = yield select(state => state.timer.currentIdleList);
         const screenshots = yield select(
           state => state.worklogs.meta.currentWorklogScreenshots.toArray(),
         );
-        const activity = calculateActivity({
-          currentIdleList,
-          timeSpentSeconds,
-          screenshotsPeriod,
-          firstPeriodInMinute: periodRange,
-          secondsToMinutesGrid,
-        });
+        let activity = [];
+        try {
+          activity = calculateActivity({
+            currentIdleList,
+            timeSpentSeconds,
+            screenshotsPeriod,
+            firstPeriodInMinute: periodRange,
+            secondsToMinutesGrid,
+          });
+        } catch (err) {
+          Raven.captureException(err);
+        }
         const keepedIdles = yield select(
           state => state.timer.keepedIdles.toArray(),
         );
-        yield call(
-          uploadWorklog, {
-            issueId,
-            timeSpentSeconds,
-            activity,
-            keepedIdles,
-            screenshots,
-            screenshotsPeriod,
-            comment: description,
-          },
-        );
+        sendInfoLog('trying to call uploadWorklog');
+        try {
+          yield call(
+            uploadWorklog, {
+              issueId,
+              timeSpentSeconds,
+              activity,
+              keepedIdles,
+              screenshots,
+              screenshotsPeriod,
+              comment: description,
+            },
+          );
+        } catch (err) {
+          Raven.captureException(err);
+        }
       } else {
         // Show alert message that you have to track at least 60 seconds
         console.log('Need to track at least 60 seconds');
@@ -211,16 +236,24 @@ export function* manageTimer() {
     yield put({ type: types.SET_TEMPORARY_ID, payload: tempId });
     yield put({ type: types.SET_TRACKING_ISSUE, payload: selectedIssueId });
     remote.getGlobal('sharedObj').running = true;
-    yield race({
-      start: call(runTimer),
-      stoped: take(types.STOP_TIMER),
-    });
+    try {
+      yield race({
+        start: call(runTimer),
+        stoped: take(types.STOP_TIMER),
+      });
+    } catch (err) {
+      Raven.captureException(err);
+    }
     remote.getGlobal('sharedObj').running = false;
     yield put({ type: types.SET_TEMPORARY_ID, payload: null });
     yield put({ type: types.SET_TRACKING_ISSUE, payload: null });
     yield put({ type: types.CLEAR_CURRENT_SCREENSHOTS });
-    yield cps(rimraf, `${remote.getGlobal('appDir')}/current_screenshots/`);
-    yield call(fs.mkdirSync, `${remote.getGlobal('appDir')}/current_screenshots/`);
+    try {
+      yield cps(rimraf, `${remote.getGlobal('appDir')}/current_screenshots/`);
+      yield call(fs.mkdirSync, `${remote.getGlobal('appDir')}/current_screenshots/`);
+    } catch (err) {
+      Raven.captureException(err);
+    }
   }
 }
 
@@ -268,7 +301,7 @@ export function* deleteScreenshot() {
       payload: newScreenshot,
       meta: {
         index: screenshotIndex,
-      }
+      },
     });
 
     yield put({

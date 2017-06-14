@@ -12,6 +12,7 @@ import {
 } from 'api';
 
 import * as types from '../constants/';
+import { sendInfoLog } from '../helpers/log';
 import { getRecentWorklogsGroupedByDate } from '../selectors/worklogs';
 import { selectWorklog, setWorklogUploadState } from '../actions/worklogs';
 
@@ -50,6 +51,17 @@ export function* uploadWorklog({
   screenshots,
   worklog_id,
 }, offlineMode = false) {
+  sendInfoLog('run uploadWorklog', {
+    issueId,
+    timeSpentSeconds,
+    screenshotsPeriod,
+    comment,
+    activity,
+    keepedIdles,
+    screenshots,
+    worklog_id,
+    offlineMode,
+  });
   remote.getGlobal('sharedObj').uploading = true;
   let worklogId = worklog_id; // eslint-disable-line
 
@@ -67,22 +79,29 @@ export function* uploadWorklog({
       },
     };
     try {
+      sendInfoLog('try jiraUploadWorklog');
       worklog = yield call(jiraUploadWorklog, jiraWorklogData);
       worklogId = worklog.id;
+      sendInfoLog('success jiraUploadWorklog');
     } catch (err) {
+      sendInfoLog('catch error jiraUploadWorklog');
       Raven.captureException(err);
-      yield call(
-        saveWorklogAsOffline,
-        err,
-        {
-          ...jiraWorklogData,
-          screenshots,
-          screenshotsPeriod,
-          activity,
-          keepedIdles,
-          type: 'jiraUploadWorklog',
-        },
-      );
+      try {
+        yield call(
+          saveWorklogAsOffline,
+          err,
+          {
+            ...jiraWorklogData,
+            screenshots,
+            screenshotsPeriod,
+            activity,
+            keepedIdles,
+            type: 'jiraUploadWorklog',
+          },
+        );
+      } catch (err) {
+        Raven.captureException(err);
+      }
     }
   }
   if (worklogId) {
@@ -97,17 +116,24 @@ export function* uploadWorklog({
       keepedIdles,
     };
     try {
+      sendInfoLog('try chronosBackendUploadWorklog');
       yield call(chronosBackendUploadWorklog, chronosWorklogData);
+      sendInfoLog('success chronosBackendUploadWorklog');
     } catch (err) {
+      sendInfoLog('catch error chronosBackendUploadWorklog');
       Raven.captureException(err);
-      yield call(
-        saveWorklogAsOffline,
-        err,
-        {
-          ...chronosWorklogData,
-          type: 'chronosUploadWorklog',
-        },
-      );
+      try {
+        yield call(
+          saveWorklogAsOffline,
+          err,
+          {
+            ...chronosWorklogData,
+            type: 'chronosUploadWorklog',
+          },
+        );
+      } catch (err) {
+        Raven.captureException(err);
+      }
     }
   }
   if (!offlineMode) {
@@ -122,6 +148,7 @@ export function* uploadWorklog({
     yield put({ type: types.ADD_RECENT_WORKLOG, payload: worklog });
   }
   remote.getGlobal('sharedObj').uploading = false;
+  sendInfoLog('stop uploadWorklog');
 }
 
 export function* watchSelectWorklogs() {

@@ -5,6 +5,7 @@ const config = {
   // idleTimeThreshold: 60 * 60 * 24, // seconds of inactivity considering user is idle
   idleTimeThreshold: 300,
   checkUpdates: true,
+  infoLog: false,
 };
 
 export default config;

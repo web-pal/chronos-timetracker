@@ -1,6 +1,7 @@
 import { take, put, call, cps, select, takeLatest } from 'redux-saga/effects';
 import { normalize } from 'normalizr';
 import storage from 'electron-json-storage';
+import Raven from 'raven-js';
 
 import { fetchProjects, fetchAllBoards, fetchSprints } from 'api';
 import * as types from '../constants/';
@@ -37,14 +38,14 @@ export function* getProjects() {
     try {
       projects = yield call(fetchProjects);
     } catch (err) {
-      console.log(err);
+      Raven.captureException(err);
     }
     let boards;
     try {
       boards = yield call(fetchAllBoards);
       boards = boards.values;
     } catch (err) {
-      console.log(err);
+      Raven.captureException(err);
     }
 
     if (projects.length || boards.length) {
@@ -135,11 +136,15 @@ function* storeSprints({ sprints }) {
 function* getSprints() {
   yield put({ type: types.SET_SPRINTS_FOR_BOARD_FETCH_STATE, payload: true });
   const boardId = yield select(state => state.projects.meta.selectedProjectId);
-  const sprints = yield call(fetchSprints, { boardId });
-  yield storeSprints({
-    sprints: sprints.values,
-  });
-  yield put({ type: types.SET_SPRINTS_FOR_BOARD_FETCH_STATE, payload: false });
+  try {
+    const sprints = yield call(fetchSprints, { boardId });
+    yield storeSprints({
+      sprints: sprints.values,
+    });
+    yield put({ type: types.SET_SPRINTS_FOR_BOARD_FETCH_STATE, payload: false });
+  } catch (err) {
+    Raven.captureException(err);
+  }
 }
 
 export function* whatchBoardSelection() {

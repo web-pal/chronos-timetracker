@@ -1,6 +1,7 @@
 import { apiUrl } from 'config';
 import jira from '../jiraClient';
 import { getHeaders } from './helper';
+import { sendInfoLog } from '../../helpers/log';
 
 // Can we fetch only current author worklogs?
 export function fetchWorklogs(issues) {
@@ -22,10 +23,12 @@ export function fetchWorklogs(issues) {
 }
 
 export function jiraUploadWorklog(opts) {
+  sendInfoLog('call jiraUploadWorklog', opts);
   return jira.client.issue.addWorkLog(opts);
 }
 
 export function chronosBackendUploadWorklog(worklog) {
+  sendInfoLog('call chronosBackendUploadWorklog', worklog);
   return fetch(`${apiUrl}/api/tracker/worklog`, {
     method: 'POST',
     headers: getHeaders(),

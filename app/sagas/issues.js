@@ -2,6 +2,7 @@ import { delay } from 'redux-saga';
 import { takeLatest, take, fork, throttle, put, call, select } from 'redux-saga/effects';
 import { normalize, schema } from 'normalizr';
 import storage from 'electron-json-storage';
+import Raven from 'raven-js';
 import {
   fetchIssues, fetchIssue,
   fetchSearchIssues, fetchRecentIssues,
@@ -35,28 +36,32 @@ function* storeIssues({ issues, fillIssuesType, fillWorklogsType }) {
 }
 
 function* getAdditionalWorklogsForIssues({ incompleteIssues, fillIssuesType, fillWorklogsType }) {
-  const worklogs = yield call(fetchWorklogs, incompleteIssues);
-  const issues = incompleteIssues.map((issue) => {
-    const additionalWorklogs = worklogs.filter(w => w.issueId === issue.id);
-    if (additionalWorklogs.length) {
-      return {
-        ...issue,
-        fields: {
-          ...issue.fields,
-          worklog: {
-            total: additionalWorklogs.length,
-            worklogs: additionalWorklogs,
+  try {
+    const worklogs = yield call(fetchWorklogs, incompleteIssues);
+    const issues = incompleteIssues.map((issue) => {
+      const additionalWorklogs = worklogs.filter(w => w.issueId === issue.id);
+      if (additionalWorklogs.length) {
+        return {
+          ...issue,
+          fields: {
+            ...issue.fields,
+            worklog: {
+              total: additionalWorklogs.length,
+              worklogs: additionalWorklogs,
+            },
           },
-        },
-      };
-    }
-    return issue;
-  });
-  yield storeIssues({
-    issues,
-    fillIssuesType,
-    fillWorklogsType,
-  });
+        };
+      }
+      return issue;
+    });
+    yield storeIssues({
+      issues,
+      fillIssuesType,
+      fillWorklogsType,
+    });
+  } catch (err) {
+    Raven.captureException(err);
+  }
 }
 
 
@@ -101,58 +106,70 @@ function* storeIssuesStatuses({ issueStatuses }) {
 
 
 function* getRecentIssues() {
-  yield put({ type: types.SET_RECENT_ISSUES_FETCH_STATE, payload: true });
+  try {
+    yield put({ type: types.SET_RECENT_ISSUES_FETCH_STATE, payload: true });
 
-  const currentProjectId = yield select(state => state.projects.meta.selectedProjectId);
-  const currentSprintId = yield select(state => state.projects.meta.selectedSprintId);
-  const currentProjectType = yield select(state => state.projects.meta.selectedProjectType);
-  const worklogAuthor = yield select(state => state.profile.userData.get('key'));
+    const currentProjectId = yield select(state => state.projects.meta.selectedProjectId);
+    const currentSprintId = yield select(state => state.projects.meta.selectedSprintId);
+    const currentProjectType = yield select(state => state.projects.meta.selectedProjectType);
+    const worklogAuthor = yield select(state => state.profile.userData.get('key'));
 
-  // TODO: Handle errros with wrong project id
-  const { issues } = yield call(
-    fetchRecentIssues,
-    { currentProjectId, currentProjectType, currentSprintId, worklogAuthor },
-  );
-  const incompleteIssues = issues.filter(issue => issue.fields.worklog.total > 20);
-  if (incompleteIssues.length) {
-    yield fork(
-      getAdditionalWorklogsForIssues,
-      {
-        incompleteIssues,
-        fillIssuesType: types.MERGE_RECENT_ISSUES,
-        fillWorklogsType: types.MERGE_RECENT_WORKLOGS,
-      },
+    // TODO: Handle errros with wrong project id
+    const { issues } = yield call(
+      fetchRecentIssues,
+      { currentProjectId, currentProjectType, currentSprintId, worklogAuthor },
     );
+    const incompleteIssues = issues.filter(issue => issue.fields.worklog.total > 20);
+    if (incompleteIssues.length) {
+      yield fork(
+        getAdditionalWorklogsForIssues,
+        {
+          incompleteIssues,
+          fillIssuesType: types.MERGE_RECENT_ISSUES,
+          fillWorklogsType: types.MERGE_RECENT_WORKLOGS,
+        },
+      );
+    }
+
+    yield storeIssues({
+      issues,
+      fillIssuesType: types.FILL_RECENT_ISSUES,
+      fillWorklogsType: types.FILL_RECENT_WORKLOGS,
+    });
+
+    yield put({ type: types.SET_RECENT_ISSUES_FETCH_STATE, payload: false });
+  } catch (err) {
+    Raven.captureException(err);
   }
-
-  yield storeIssues({
-    issues,
-    fillIssuesType: types.FILL_RECENT_ISSUES,
-    fillWorklogsType: types.FILL_RECENT_WORKLOGS,
-  });
-
-  yield put({ type: types.SET_RECENT_ISSUES_FETCH_STATE, payload: false });
 }
 
 function* getIssueTypes() {
-  yield put({ type: types.SET_ISSUES_ALL_TYPES_FETCH_STATE, payload: true });
+  try {
+    yield put({ type: types.SET_ISSUES_ALL_TYPES_FETCH_STATE, payload: true });
 
-  const issueTypes = yield call(fetchIssueTypes);
+    const issueTypes = yield call(fetchIssueTypes);
 
-  yield storeIssuesTypes({
-    issueTypes,
-  });
+    yield storeIssuesTypes({
+      issueTypes,
+    });
 
-  yield put({ type: types.SET_ISSUES_ALL_TYPES_FETCH_STATE, payload: false });
+    yield put({ type: types.SET_ISSUES_ALL_TYPES_FETCH_STATE, payload: false });
+  } catch (err) {
+    Raven.captureException(err);
+  }
 }
 
 function* getIssueStatuses() {
-  yield put({ type: types.SET_ISSUES_ALL_STATUSES_FETCH_STATE, payload: true });
-  const issueStatuses = yield call(fetchIssueStatuses);
-  yield storeIssuesStatuses({
-    issueStatuses,
-  });
-  yield put({ type: types.SET_ISSUES_ALL_STATUSES_FETCH_STATE, payload: false });
+  try {
+    yield put({ type: types.SET_ISSUES_ALL_STATUSES_FETCH_STATE, payload: true });
+    const issueStatuses = yield call(fetchIssueStatuses);
+    yield storeIssuesStatuses({
+      issueStatuses,
+    });
+    yield put({ type: types.SET_ISSUES_ALL_STATUSES_FETCH_STATE, payload: false });
+  } catch (err) {
+    Raven.captureException(err);
+  }
 }
 
 function* searchIssues() {
@@ -222,16 +239,21 @@ function* getIssues({ pagination: { stopIndex, resolve } }) {
 
   const newStopIndex = stopIndex + 30;
   yield put({ type: types.SET_LAST_STOP_INDEX, payload: newStopIndex });
-  const response = yield call(fetchIssues, {
-    startIndex,
-    stopIndex: newStopIndex,
-    currentProjectId,
-    currentProjectType,
-    currentSprintId,
-    typeFiltresId,
-    statusFiltresId,
-    assigneeFiltresId,
-  });
+  let response = {};
+  try {
+    response = yield call(fetchIssues, {
+      startIndex,
+      stopIndex: newStopIndex,
+      currentProjectId,
+      currentProjectType,
+      currentSprintId,
+      typeFiltresId,
+      statusFiltresId,
+      assigneeFiltresId,
+    });
+  } catch (err) {
+    Raven.captureException(err);
+  }
   const { issues } = response;
   const { total } = response;
   const incompleteIssues = issues.filter(issue => issue.fields.worklog.total > 20);
@@ -272,7 +294,7 @@ function* getIssue(issueId) {
       fillWorklogsType: types.FILL_WORKLOGS,
     });
   } catch (err) {
-    console.log(err);
+    Raven.captureException(err);
   }
 }
 
@@ -336,7 +358,11 @@ export function* watchChangeSidebar() {
 export function* jumpToTrackingIssue() {
   while (true) {
     yield take(types.JUMP_TO_TRACKING_ISSUE);
-    yield call(findSelectedIndex, { payload: 'All' });
+    try {
+      yield call(findSelectedIndex, { payload: 'All' });
+    } catch (err) {
+      Raven.captureException(err);
+    }
   }
 }
 

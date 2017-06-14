@@ -7,6 +7,7 @@ const config = {
   socketUrl: 'https://127.0.0.1:5001', // url of socket server (dev)
   idleTimeThreshold: 300, // seconds of inactivity considering user is idle
   checkUpdates: false,
+  infoLog: false,
 };
 
 export default config;
