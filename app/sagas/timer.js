@@ -167,9 +167,11 @@ function* runTimer() {
       const issueId = yield select(state => state.issues.meta.trackingIssueId);
       const timeSpentSeconds = yield select(state => state.timer.time);
       const description = yield select(state => state.worklogs.meta.currentDescription);
+      const worklogType = yield select(state => state.worklogs.meta.currentWorklogType);
 
       yield put({ type: types.SET_TIME, payload: 0 });
       yield put({ type: types.SET_CURRENT_DESCRIPTION, payload: '' });
+      yield put({ type: types.SELECT_WORKLOG_TYPE, payload: '' });
       sendInfoLog('check timeSpentSeconds', { timeSpentSeconds });
       if (timeSpentSeconds >= 60) {
         const currentIdleList = yield select(state => state.timer.currentIdleList);
@@ -201,6 +203,7 @@ function* runTimer() {
               keepedIdles,
               screenshots,
               screenshotsPeriod,
+              worklogType,
               comment: description,
             },
           );

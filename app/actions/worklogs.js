@@ -48,3 +48,11 @@ export function setWorklogUploadState(payload) {
     payload,
   };
 }
+
+export function selectWorklogType(worklogType) {
+  return {
+    type: types.SELECT_WORKLOG_TYPE,
+    payload: worklogType,
+  };
+}
+

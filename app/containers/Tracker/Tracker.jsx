@@ -12,6 +12,7 @@ import TimerDisplay from './TimerDisplay';
 import TrackerHeader from '../../components/TrackerHeader/TrackerHeader';
 import StatusBar from './StatusBar';
 import Gallery from '../../components/Gallery/Gallery';
+import WorklogTypePicker from './WorklogTypePicker';
 
 import { getSelectedIssue, getTrackingIssue, getIssueLoggedByUser } from '../../selectors';
 
@@ -167,6 +168,7 @@ class Tracker extends Component {
               </Flex>
             </Flex>
           }
+          <WorklogTypePicker />
           <Flex row centered style={{ minHeight: 10, height: 60 }}>
             {running &&
               <TextareaAutosize

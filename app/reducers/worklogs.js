@@ -35,7 +35,8 @@ function itemsById(state = new Map(), action) {
   }
 }
 
-const initialMeta = Immutable.Record({
+const InitialMeta = Immutable.Record({
+  showWorklogTypes: false,
   fetching: false,
   worklogUploading: false,
   screenshotUploading: false,
@@ -46,9 +47,11 @@ const initialMeta = Immutable.Record({
   recentWorkLogsIds: new OrderedSet(),
   currentWorklogScreenshots: new List(),
   currentDescription: '',
+  worklogTypes: new List(),
+  currentWorklogType: '',
 });
 
-function meta(state = new initialMeta(), action) {
+function meta(state = new InitialMeta(), action) {
   switch (action.type) {
     case types.DELETE_SCREENSHOT_FROM_WORKLOG:
       return state
@@ -72,6 +75,8 @@ function meta(state = new initialMeta(), action) {
       return state.set('temporaryWorklogId', action.payload);
     case types.SELECT_WORKLOG:
       return state.set('selectedWorklogId', action.payload);
+    case types.SELECT_WORKLOG_TYPE:
+      return state.set('currentWorklogType', action.payload);
     case types.FILL_RECENT_WORKLOGS:
       return state.set('recentWorkLogsIds', new OrderedSet(action.payload.ids));
     case types.MERGE_RECENT_WORKLOGS:
@@ -83,11 +88,15 @@ function meta(state = new initialMeta(), action) {
         'currentWorklogScreenshots',
         list => list.push(action.payload),
       );
+    case types.FILL_WORKLOG_TYPES:
+      return state
+        .set('showWorklogTypes', action.payload.enabled)
+        .set('worklogTypes', fromJS(action.payload.types));
     case types.CLEAR_CURRENT_SCREENSHOTS_LIST:
       return state.set('currentWorklogScreenshots', Immutable.List());
     case types.CLEAR_WORKLOGS:
     case types.CLEAR_ALL_REDUCERS:
-      return new initialMeta();
+      return new InitialMeta();
     default:
       return state;
   }

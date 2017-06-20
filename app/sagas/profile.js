@@ -1,11 +1,11 @@
-import { race, take, put, call, cps } from 'redux-saga/effects';
+import { race, take, put, call, cps, fork } from 'redux-saga/effects';
 import storage from 'electron-json-storage';
 import Raven from 'raven-js';
 import { ipcRenderer } from 'electron';
 import {
   jiraAuth, chronosBackendAuth, chronosBackendOAuth,
   chronosBackendGetJiraCredentials, fetchSettings,
-  getDataForOAuth, jiraProfile,
+  getDataForOAuth, jiraProfile, fetchWorklogTypes,
 } from 'api';
 import { getFromStorage } from './helper';
 import * as types from '../constants/';
@@ -60,6 +60,15 @@ function* getSettings() {
   }
 }
 
+function* getWorklogTypes() {
+  try {
+    const { payload } = yield call(fetchWorklogTypes);
+    yield put({ type: types.FILL_WORKLOG_TYPES, payload });
+  } catch (err) {
+    Raven.captureException(err);
+  }
+}
+
 export function* checkJWT() {
   yield take(types.CHECK_JWT);
   yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: true });
@@ -98,6 +107,7 @@ export function* loginFlow() {
     }
     if (jiraLoginSuccess && chronosBackendLoginSuccess) {
       Raven.setExtraContext({ host: values.host });
+      yield fork(getWorklogTypes);
       yield getSettings();
       yield put({ type: types.SET_CURRENT_HOST, payload: values.host });
       yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: false });

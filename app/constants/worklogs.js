@@ -2,6 +2,7 @@ export const FILL_WORKLOGS = 'worklogs/FILL';
 export const FILL_RECENT_WORKLOGS = 'worklogs/FILL_RECENT';
 export const MERGE_RECENT_WORKLOGS = 'worklogs/MERGE_RECENT';
 export const ADD_RECENT_WORKLOG = 'worklogs/ADD_RECENT_WORKLOG';
+export const FILL_WORKLOG_TYPES = 'worklogs/FILL_TYPES';
 export const CLEAR_WORKLOGS = 'worklogs/CLEAR';
 
 export const SET_WORKLOGS_FETCH_STATE = 'worklogs/SET_FETCH_STATE';
@@ -14,6 +15,7 @@ export const SET_STATE_CHECK_OFFLINE_WORKLOGS = 'worklogs/SET_STATE_CHECK_OFFLIN
 
 export const SELECT_WORKLOG_BY_ISSUE_ID = 'worklogs/SELECT_WORKLOG_BY_ISSUE_ID';
 export const SELECT_WORKLOG = 'worklogs/SELECT_WORKLOG';
+export const SELECT_WORKLOG_TYPE = 'worklogs/SELECT_WORKLOG_TYPE';
 
 export const UPLOAD_SCREENSHOT_REQUEST = 'worklogs/UPLOAD_SCREENSHOT_REQUEST';
 export const REJECT_SCREENSHOT_REQUEST = 'worklogs/REJECT_SCREENSHOT_REQUEST';

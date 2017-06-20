@@ -45,6 +45,7 @@ export function* uploadWorklog({
   issueId,
   timeSpentSeconds,
   screenshotsPeriod,
+  worklogType,
   comment,
   activity,
   keepedIdles,
@@ -55,6 +56,7 @@ export function* uploadWorklog({
     issueId,
     timeSpentSeconds,
     screenshotsPeriod,
+    worklogType,
     comment,
     activity,
     keepedIdles,
@@ -99,8 +101,8 @@ export function* uploadWorklog({
             type: 'jiraUploadWorklog',
           },
         );
-      } catch (err) {
-        Raven.captureException(err);
+      } catch (error) {
+        Raven.captureException(error);
       }
     }
   }
@@ -110,6 +112,7 @@ export function* uploadWorklog({
       issueId,
       timeSpentSeconds,
       screenshotsPeriod,
+      worklogType,
       comment,
       screenshots,
       activity,
@@ -268,6 +271,7 @@ export function* uploadOfflineWorklogs() {
         args.timeSpentSeconds = worklog.timeSpentSeconds;
         args.worklog_id = worklog.worklogId;
         args.comment = worklog.comment;
+        args.worklogType = worklog.worklogType;
       }
       const error = yield uploadWorklog(args, true);
       offlineWorklogs.splice(index, 1);

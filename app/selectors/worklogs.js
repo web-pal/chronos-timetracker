@@ -9,6 +9,7 @@ function dateComparator(a, b) {
 
 export const getWorklogsMap = ({ worklogs }) => worklogs.byId;
 export const getWorklogsIds = ({ worklogs }) => worklogs.allIds;
+export const getWorklogTypes = ({ worklogs }) => worklogs.meta.worklogTypes;
 
 export const getSelfKey = ({ profile }) => profile.userData.get('key');
 
@@ -36,3 +37,9 @@ export const getRecentWorklogsGroupedByDate = createSelector(
   .reverse()
   .toList(),
 );
+
+export const getWorklogTypesOptions = createSelector(
+  getWorklogTypes,
+  (types) => types.toJS().map(t => ({ value: t.type, label: t.type })),
+);
+

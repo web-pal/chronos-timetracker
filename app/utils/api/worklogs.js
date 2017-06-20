@@ -61,3 +61,8 @@ export function uploadScreenshotOnS3Bucket({ url, image }) {
     body: image,
   });
 }
+
+export function fetchWorklogTypes() {
+  const url = `${apiUrl}/api/tracker/settings/worklogTypes`;
+  return fetch(url, { headers: getHeaders() }).then(res => res.json());
+}
