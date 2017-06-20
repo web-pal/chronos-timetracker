@@ -48,7 +48,7 @@ const InitialMeta = Immutable.Record({
   currentWorklogScreenshots: new List(),
   currentDescription: '',
   worklogTypes: new List(),
-  currentWorklogType: '',
+  currentWorklogType: null,
 });
 
 function meta(state = new InitialMeta(), action) {

@@ -19,7 +19,7 @@ const WorklogTypePicker = ({
       value={currentWorklogType}
       placeholder="Select worklog type"
       onChange={(option) => {
-        selectWorklogType(option ? option.value : '');
+        selectWorklogType(option ? option.value : null);
       }}
       clearable
       disabled={uploading}
@@ -31,11 +31,11 @@ WorklogTypePicker.propTypes = {
   options: PropTypes.array.isRequired,
   uploading: PropTypes.bool.isRequired,
   selectWorklogType: PropTypes.func.isRequired,
-  currentWorklogType: PropTypes.string.isRequired,
+  currentWorklogType: PropTypes.number,
 };
 
 WorklogTypePicker.defaultProps = {
-  currentWorklogType: '',
+  currentWorklogType: null,
 };
 
 function mapStateToProps({ worklogs }) {

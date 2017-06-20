@@ -42,7 +42,7 @@ export const getRecentWorklogsGroupedByDate = createSelector(
 
 export const getWorklogTypesOptions = createSelector(
   getWorklogTypes,
-  (types) => types.toJS().map(t => ({ value: t.type, label: t.type })),
+  (types) => types.toJS().map(t => ({ value: t.id, label: t.type })),
 );
 
 export const getSelectedWorklog = createSelector(
