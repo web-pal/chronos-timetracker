@@ -78,6 +78,7 @@
 .timer {
   height: 100%;
   position: relative;
+  flex: 0 1 100%;
 }
 
 .description__label {
@@ -109,15 +110,13 @@
 
 .TimerControls {
   position: relative;
+  align-items: center;
   &__warning {
-    opacity: 0;
-    position: absolute;
     padding: 5px;
     z-index: 10;
-    background: rgba(245, 230, 37, .6);
     left: 40%;
-    border: 1px solid black;
     transition: opacity .666s;
+    color: rgba(0, 0, 0, .3);
     .fa.fa-warning {
       line-height: 22px;
       margin-right: 5px;
@@ -125,9 +124,6 @@
   }
   &__button {
     position: relative;
-    &:hover + .TimerControls__warning {
-      opacity: 1;
-    }
     .button {
       position: absolute;
       top: 50%;
@@ -138,12 +134,19 @@
 }
 
 .TrackerHeader {
+  &__worklog-type {
+    padding: 0px 40px;
+    margin-top: 10px;
+    align-items: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f6f6f6;
+  }
   .IssueInfo {
     padding: 15px 13px;
     padding-bottom: 10px;
   }
   -webkit-app-region: drag;
-  flex: 0 1 400px;
+  flex: 1 0 200px;
   background: #fff;
   position: relative;
   z-index: 20;
@@ -164,6 +167,8 @@
   }
   &__times {
     padding: 0px 44px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #f6f6f6;
     b {
       color: #4288c1;
       white-space: nowrap;
@@ -178,6 +183,8 @@
   &__worklog_times {
     padding: 0px 40px;
     margin-top: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #f6f6f6;
     b {
       color: #4288c1;
       white-space: nowrap;
@@ -259,4 +266,8 @@
   99% {
     content: '...'
   }
+}
+
+.worklog-type-picker {
+  width: 56%;
 }

@@ -53,10 +53,16 @@ const TrackerHeader = ({
         </Flex>
       }
       {(sidebarType === 'Recent' && showWorklogTypes && !running) &&
-        <WorklogTypePicker
-          currentWorklogType={currentWorklog.get('worklogType')}
-          currentWorklogId={currentWorklog.get('id')}
-        />
+        <Flex row className="TrackerHeader__worklog-type">
+          <span style={{ marginRight: 10 }}>
+            Worklog type:
+          </span>
+          <WorklogTypePicker
+            currentWorklogType={currentWorklog.get('worklogType')}
+            currentWorklogId={currentWorklog.get('id')}
+            disabled={moment(currentWorklog.get('created')).calendar() !== 'Today'}
+          />
+        </Flex>
       }
     </Flex>
   );

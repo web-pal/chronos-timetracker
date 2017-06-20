@@ -7,9 +7,9 @@ import playIcon from '../../assets/images/play@2x.png';
 import stopIcon from '../../assets/images/stop@2x.png';
 
 const TimerControls = (props) => {
-  const { startTimer, stopTimer, running, screenshotUploading, time } = props;
+  const { startTimer, stopTimer, running, screenshotUploading } = props;
   return (
-    <Flex row centered className="TimerControls">
+    <Flex column centered className="TimerControls">
       <div className="TimerControls__button">
         <img
           src={buttonDecoration}
@@ -38,12 +38,6 @@ const TimerControls = (props) => {
           }
         </button>
       </div>
-      {running && time < 60 &&
-        <Flex row className="TimerControls__warning">
-          <span className="fa fa-warning" />
-          Time under 1m would not be logged!
-        </Flex>
-      }
     </Flex>
   );
 };
@@ -54,7 +48,6 @@ TimerControls.propTypes = {
 
   running: PropTypes.bool.isRequired,
   screenshotUploading: PropTypes.bool.isRequired,
-  time: PropTypes.number.isRequired,
 };
 
 export default TimerControls;

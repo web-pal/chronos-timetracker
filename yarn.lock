@@ -26,6 +26,10 @@
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/7zip/-/7zip-0.0.6.tgz#9cafb171af82329490353b4816f03347aa150a30"
 
+"@types/node@^7.0.18":
+  version "7.0.32"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.32.tgz#6afe6c66520a4c316623a14aef123908d01b4bba"
+
 JSONStream@^0.8.4:
   version "0.8.4"
   resolved "https://registry.yarnpkg.com/JSONStream/-/JSONStream-0.8.4.tgz#91657dfe6ff857483066132b4618b62e8f4887bd"
@@ -2899,10 +2903,11 @@ electron-updater@^1.14.0:
     source-map-support "^0.4.14"
     xelement "^1.0.13"
 
-electron@^1.6.5:
-  version "1.6.7"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-1.6.7.tgz#08b90812912a66f80cfb47bdaef6edfd6b78aa81"
+electron@^1.6.11:
+  version "1.6.11"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-1.6.11.tgz#be79c0ebdcefedb5bf28117409800fa53baceffa"
   dependencies:
+    "@types/node" "^7.0.18"
     electron-download "^3.0.1"
     extract-zip "^1.0.3"
 

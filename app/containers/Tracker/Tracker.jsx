@@ -188,9 +188,6 @@ class Tracker extends Component {
               </Flex>
             </Flex>
           }
-          {(running && showWorklogTypes) &&
-            <WorklogTypePicker currentWorklogType={currentWorklogType} />
-          }
           <Flex row centered style={{ minHeight: 10, height: 60 }}>
             {running &&
               <TextareaAutosize
@@ -204,6 +201,11 @@ class Tracker extends Component {
               />
             }
           </Flex>
+          <Flex row centered style={{ marginBottom: 10 }}>
+            {(running && showWorklogTypes) &&
+              <WorklogTypePicker currentWorklogType={currentWorklogType} />
+            }
+          </Flex>
           <Flex row centered>
             <Flex column style={{ width: '100%' }}>
               <TimerControls
@@ -211,9 +213,13 @@ class Tracker extends Component {
                 screenshotUploading={screenshotUploading}
                 startTimer={startTimer}
                 stopTimer={stopTimer}
-                time={time}
               />
               <TimerDisplay />
+              {running && time < 60 &&
+                <Flex row centered className="TimerControls__warning">
+                  Time under 1m would not be logged!
+                </Flex>
+              }
               <Gallery images={screenshots} deleteScreenshot={deleteScreenshotRequest} />
             </Flex>
           </Flex>
