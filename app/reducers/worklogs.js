@@ -33,6 +33,11 @@ function itemsById(state = new Map(), action) {
           }
         });
       });
+    case types.UPDATE_WORKLOG_TYPE_REQUEST:
+      return state.update(
+        action.payload.worklogId,
+        w => w.set('worklogType', action.payload.worklogType),
+      );
     case types.ADD_RECENT_WORKLOG:
       return state.set(action.payload.id, fromJS(action.payload));
     case types.CLEAR_WORKLOGS:

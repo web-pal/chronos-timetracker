@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { take, takeLatest, fork, select, put, call, cps } from 'redux-saga/effects';
+import { take, takeLatest, takeEvery, fork, select, put, call, cps } from 'redux-saga/effects';
 import storage from 'electron-json-storage';
 import Raven from 'raven-js';
 
@@ -9,7 +9,7 @@ import { remote } from 'electron';
 import {
   jiraUploadWorklog, chronosBackendUploadWorklog,
   signUploadUrlForS3Bucket, uploadScreenshotOnS3Bucket,
-  jiraSetWorklogProperty, jiraGetWorklogPropertyKeys, jiraGetWorklogProperty,
+  jiraSetWorklogProperty, chronosBackendUpdateWorklogType,
 } from 'api';
 
 import * as types from '../constants/';
@@ -318,3 +318,16 @@ export function* watchRejectScreenshot() {
     yield fork(rejectScreenshot, screenshotPath);
   }
 }
+
+export function* updateWorklogType({ payload }) {
+  try {
+    yield call(chronosBackendUpdateWorklogType, payload);
+  } catch (err) {
+    Raven.captureException(err);
+  }
+}
+
+export function* updateWorklogTypeRequest() {
+  yield takeEvery(types.UPDATE_WORKLOG_TYPE_REQUEST, updateWorklogType);
+}
+

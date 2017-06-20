@@ -60,6 +60,17 @@ export function chronosBackendUploadWorklog(worklog) {
   });
 }
 
+export function chronosBackendUpdateWorklogType({ worklogType, worklogId }) {
+  const url = `${apiUrl}/api/tracker/updateWorklogType`;
+  const options = {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify({ worklogType, worklogId }),
+  };
+  return fetch(url, options);
+}
+
+
 export function signUploadUrlForS3Bucket(fileName) {
   const url = `${apiUrl}/desktop-tracker/sign-bucket-url`;
   const options = {
