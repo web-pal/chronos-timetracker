@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect';
+import { Map } from 'immutable';
 import moment from 'moment';
 
 import { getIssuesMap } from './issues';
@@ -14,6 +15,7 @@ export const getWorklogTypes = ({ worklogs }) => worklogs.meta.worklogTypes;
 export const getSelfKey = ({ profile }) => profile.userData.get('key');
 
 export const getRecentWorklogIds = ({ worklogs }) => worklogs.meta.get('recentWorkLogsIds');
+export const getSelectedWorklogId = ({ worklogs }) => worklogs.meta.selectedWorklogId;
 
 export const getRecentWorklogs = createSelector(
   [getRecentWorklogIds, getWorklogsMap, getSelfKey],
@@ -41,5 +43,10 @@ export const getRecentWorklogsGroupedByDate = createSelector(
 export const getWorklogTypesOptions = createSelector(
   getWorklogTypes,
   (types) => types.toJS().map(t => ({ value: t.type, label: t.type })),
+);
+
+export const getSelectedWorklog = createSelector(
+  [getSelectedWorklogId, getWorklogsMap],
+  (id, map) => map.get(id) || new Map(),
 );
 

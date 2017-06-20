@@ -14,7 +14,10 @@ import StatusBar from './StatusBar';
 import Gallery from '../../components/Gallery/Gallery';
 import WorklogTypePicker from './WorklogTypePicker';
 
-import { getSelectedIssue, getTrackingIssue, getIssueLoggedByUser } from '../../selectors';
+import {
+  getSelectedIssue, getSelectedWorklog,
+  getTrackingIssue, getIssueLoggedByUser,
+} from '../../selectors';
 
 import * as timerActions from '../../actions/timer';
 import * as worklogsActions from '../../actions/worklogs';
@@ -42,9 +45,12 @@ class Tracker extends Component {
     running: PropTypes.bool.isRequired,
     screenshotUploading: PropTypes.bool.isRequired,
     currentIssue: ImmutablePropTypes.map.isRequired,
+    currentWorklog: ImmutablePropTypes.map.isRequired,
     currentTrackingIssue: ImmutablePropTypes.map.isRequired,
+    screenshots: ImmutablePropTypes.orderedSet.isRequired,
     description: PropTypes.string.isRequired,
     currentIssueSelfLogged: PropTypes.number.isRequired,
+    sidebarType: PropTypes.string.isRequired,
 
     deleteScreenshotRequest: PropTypes.func.isRequired,
     time: PropTypes.number.isRequired,
@@ -121,7 +127,8 @@ class Tracker extends Component {
     const {
       startTimer, stopTimer, selectIssue, jumpToTrackingIssue, setDescription,
       running, screenshotUploading, description, screenshots, deleteScreenshotRequest,
-      currentIssue, currentTrackingIssue, currentIssueSelfLogged, time,
+      currentIssue, currentWorklog, currentTrackingIssue, currentIssueSelfLogged, time,
+      sidebarType,
     } = this.props;
 
     if (!currentIssue.size) {
@@ -139,7 +146,12 @@ class Tracker extends Component {
 
     return (
       <Flex column className="tracker">
-        <TrackerHeader currentIssue={currentIssue} selfLogged={currentIssueSelfLogged} />
+        <TrackerHeader
+          currentIssue={currentIssue}
+          currentWorklog={currentWorklog}
+          sidebarType={sidebarType}
+          selfLogged={currentIssueSelfLogged}
+        />
         <Flex column centered className="timer">
           {(currentTrackingIssue.size > 0) &&
             <Flex
@@ -168,7 +180,9 @@ class Tracker extends Component {
               </Flex>
             </Flex>
           }
-          <WorklogTypePicker />
+          {running &&
+            <WorklogTypePicker />
+          }
           <Flex row centered style={{ minHeight: 10, height: 60 }}>
             {running &&
               <TextareaAutosize
@@ -202,16 +216,18 @@ class Tracker extends Component {
   }
 }
 
-function mapStateToProps({ timer, issues, worklogs, profile }) {
+function mapStateToProps({ timer, issues, worklogs, ui, profile }) {
   return {
     running: timer.running,
     time: timer.time,
     screenshotUploading: worklogs.meta.screenshotUploading,
     currentIssue: getSelectedIssue({ issues }),
+    currentWorklog: getSelectedWorklog({ worklogs }),
     currentIssueSelfLogged: getIssueLoggedByUser({ issues, worklogs, profile }),
     currentTrackingIssue: getTrackingIssue({ issues, worklogs }),
     description: worklogs.meta.currentDescription,
     screenshots: issues.meta.currentScreenshots,
+    sidebarType: ui.sidebarType,
   };
 }
 
