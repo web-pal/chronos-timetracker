@@ -171,7 +171,7 @@ function* runTimer() {
 
       yield put({ type: types.SET_TIME, payload: 0 });
       yield put({ type: types.SET_CURRENT_DESCRIPTION, payload: '' });
-      yield put({ type: types.SELECT_WORKLOG_TYPE, payload: '' });
+      yield put({ type: types.SELECT_WORKLOG_TYPE, payload: null });
       sendInfoLog('check timeSpentSeconds', { timeSpentSeconds });
       if (timeSpentSeconds >= 60) {
         const currentIdleList = yield select(state => state.timer.currentIdleList);

@@ -22,9 +22,33 @@ export function fetchWorklogs(issues) {
   });
 }
 
+export function fetchChronosBackendWorklogs(ids) {
+  sendInfoLog('call fetchChronosBackendWorklogs', { ids });
+  return fetch(`${apiUrl}/api/tracker/worklogs?worklogIds=${ids.join(',')}`, {
+    method: 'GET',
+    headers: getHeaders(),
+  }).then(res => res.json());
+}
+
 export function jiraUploadWorklog(opts) {
   sendInfoLog('call jiraUploadWorklog', opts);
   return jira.client.issue.addWorkLog(opts);
+}
+
+export function jiraSetWorklogProperty(opts) {
+  sendInfoLog('call jiraSetWorklogProperty', opts);
+  return jira.client.issue.setWorklogProperty(opts);
+}
+
+export function jiraGetWorklogPropertyKeys(opts) {
+  sendInfoLog('call jiraGetWorklogPropertyKeys', opts);
+  return jira.client.issue.getWorkLogProperties(opts);
+}
+
+
+export function jiraGetWorklogProperty(opts) {
+  sendInfoLog('call jiraGetWorklogProperty', opts);
+  return jira.client.issue.getWorkLogProperty(opts);
 }
 
 export function chronosBackendUploadWorklog(worklog) {

@@ -56,3 +56,10 @@ export function selectWorklogType(worklogType) {
   };
 }
 
+export function updateWorklogType(worklogType, currentWorklogId) {
+  return {
+    type: types.SELECT_WORKLOG_TYPE,
+    payload: worklogType,
+  };
+}
+

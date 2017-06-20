@@ -6,8 +6,13 @@ import { stj } from 'time-util';
 
 import Flex from '../Base/Flex/Flex';
 import IssueInfo from './IssueInfo';
+import WorklogTypePicker from '../../containers/ComponentsWrappers/WorklogTypePickerWrapper';
 
-const TrackerHeader = ({ currentIssue, currentWorklog, selfLogged, sidebarType }) => {
+const TrackerHeader = ({
+  currentIssue, currentWorklog,
+  selfLogged, sidebarType,
+  showWorklogTypes, running,
+}) => {
   const estimate = currentIssue.getIn(['fields', 'timeestimate']);
   const logged = currentIssue.getIn(['fields', 'timespent']);
   const remaining = estimate - logged < 0 ? 0 : estimate - logged;
@@ -47,6 +52,12 @@ const TrackerHeader = ({ currentIssue, currentWorklog, selfLogged, sidebarType }
           </span>
         </Flex>
       }
+      {(sidebarType === 'Recent' && showWorklogTypes && !running) &&
+        <WorklogTypePicker
+          currentWorklogType={currentWorklog.get('worklogType')}
+          currentWorklogId={currentWorklog.get('id')}
+        />
+      }
     </Flex>
   );
 };
@@ -54,6 +65,8 @@ const TrackerHeader = ({ currentIssue, currentWorklog, selfLogged, sidebarType }
 TrackerHeader.propTypes = {
   currentIssue: ImmutablePropTypes.map.isRequired,
   currentWorklog: ImmutablePropTypes.map.isRequired,
+  showWorklogTypes: PropTypes.bool.isRequired,
+  running: PropTypes.bool.isRequired,
   sidebarType: PropTypes.string.isRequired,
   selfLogged: PropTypes.number.isRequired,
 };

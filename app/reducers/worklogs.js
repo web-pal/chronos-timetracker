@@ -25,6 +25,14 @@ function itemsById(state = new Map(), action) {
     case types.FILL_RECENT_WORKLOGS:
     case types.MERGE_RECENT_WORKLOGS:
       return state.merge(fromJS(action.payload.map));
+    case types.MERGE_WORKLOGS_TYPES:
+      return state.withMutations(s => {
+        action.payload.forEach(w => {
+          if (s.get(w.worklogId)) {
+            s.update(w.worklogId, (wo) => (wo.set('worklogType', w.worklogType)));
+          }
+        });
+      });
     case types.ADD_RECENT_WORKLOG:
       return state.set(action.payload.id, fromJS(action.payload));
     case types.CLEAR_WORKLOGS:

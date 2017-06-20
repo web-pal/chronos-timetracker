@@ -9,6 +9,7 @@ import { remote } from 'electron';
 import {
   jiraUploadWorklog, chronosBackendUploadWorklog,
   signUploadUrlForS3Bucket, uploadScreenshotOnS3Bucket,
+  jiraSetWorklogProperty, jiraGetWorklogPropertyKeys, jiraGetWorklogProperty,
 } from 'api';
 
 import * as types from '../constants/';
@@ -84,6 +85,18 @@ export function* uploadWorklog({
       sendInfoLog('try jiraUploadWorklog');
       worklog = yield call(jiraUploadWorklog, jiraWorklogData);
       worklogId = worklog.id;
+      if (worklogType) {
+        try {
+          yield call(jiraSetWorklogProperty, {
+            issueId,
+            worklogId,
+            propertyKey: 'chronosWorklogType',
+            propertyValue: worklogType,
+          });
+        } catch (worklogTypeJiraError) {
+          Raven.captureException(worklogTypeJiraError);
+        }
+      }
       sendInfoLog('success jiraUploadWorklog');
     } catch (err) {
       sendInfoLog('catch error jiraUploadWorklog');

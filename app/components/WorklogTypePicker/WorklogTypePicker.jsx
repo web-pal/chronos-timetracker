@@ -1,17 +1,15 @@
 import React, { PropTypes } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import Select from 'react-select';
-
-import { getWorklogTypesOptions } from '../../selectors';
-import * as worklogsActions from '../../actions/worklogs';
 
 
 const WorklogTypePicker = ({
   options,
   uploading,
+  running,
   selectWorklogType,
+  updateWorklogType,
   currentWorklogType,
+  currentWorklogId,
 }) => (
   <span>
     <Select
@@ -19,7 +17,12 @@ const WorklogTypePicker = ({
       value={currentWorklogType}
       placeholder="Select worklog type"
       onChange={(option) => {
-        selectWorklogType(option ? option.value : null);
+        const value = option ? option.value : null;
+        if (running) {
+          selectWorklogType(value);
+        } else {
+          updateWorklogType(value, currentWorklogId);
+        }
       }}
       clearable
       disabled={uploading}
@@ -30,26 +33,16 @@ const WorklogTypePicker = ({
 WorklogTypePicker.propTypes = {
   options: PropTypes.array.isRequired,
   uploading: PropTypes.bool.isRequired,
+  running: PropTypes.bool.isRequired,
   selectWorklogType: PropTypes.func.isRequired,
+  updateWorklogType: PropTypes.func.isRequired,
   currentWorklogType: PropTypes.number,
+  currentWorklogId: PropTypes.string,
 };
 
 WorklogTypePicker.defaultProps = {
   currentWorklogType: null,
+  currentWorklogId: null,
 };
 
-function mapStateToProps({ worklogs }) {
-  return {
-    options: getWorklogTypesOptions({ worklogs }),
-    currentWorklogType: worklogs.meta.currentWorklogType,
-    uploading: worklogs.meta.worklogUploading,
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    ...worklogsActions,
-  }, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(WorklogTypePicker);
+export default WorklogTypePicker;

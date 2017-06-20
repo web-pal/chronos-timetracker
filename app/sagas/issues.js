@@ -9,6 +9,7 @@ import {
   fetchWorklogs,
   fetchIssueTypes,
   fetchIssueStatuses,
+  fetchChronosBackendWorklogs,
 } from 'api';
 import * as types from '../constants/';
 import { getAllIssues } from '../selectors';
@@ -113,8 +114,8 @@ function* getRecentIssues() {
     const currentSprintId = yield select(state => state.projects.meta.selectedSprintId);
     const currentProjectType = yield select(state => state.projects.meta.selectedProjectType);
     const worklogAuthor = yield select(state => state.profile.userData.get('key'));
+    const showWorklogTypes = yield select(state => state.worklogs.meta.showWorklogTypes);
 
-    // TODO: Handle errros with wrong project id
     const { issues } = yield call(
       fetchRecentIssues,
       { currentProjectId, currentProjectType, currentSprintId, worklogAuthor },
@@ -137,6 +138,17 @@ function* getRecentIssues() {
       fillWorklogsType: types.FILL_RECENT_WORKLOGS,
     });
 
+    if (showWorklogTypes) {
+      const recentWorkLogsIds = yield select(
+        state => state.worklogs.meta.recentWorkLogsIds.toArray(),
+      );
+      const worklogsFromChronosBackend
+        = yield call(fetchChronosBackendWorklogs, recentWorkLogsIds);
+      yield put({
+        type: types.MERGE_WORKLOGS_TYPES,
+        payload: worklogsFromChronosBackend.filter(w => w.worklogType),
+      });
+    }
     yield put({ type: types.SET_RECENT_ISSUES_FETCH_STATE, payload: false });
   } catch (err) {
     Raven.captureException(err);
