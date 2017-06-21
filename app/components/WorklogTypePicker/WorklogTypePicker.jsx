@@ -11,23 +11,29 @@ const WorklogTypePicker = ({
   currentWorklogType,
   currentWorklogId,
   disabled,
+  showText,
 }) => (
   <div className="worklog-type-picker">
-    <Select
-      options={options}
-      value={currentWorklogType}
-      placeholder="Select worklog type"
-      onChange={(option) => {
-        const value = option ? option.value : null;
-        if (running) {
-          selectWorklogType(value);
-        } else {
-          updateWorklogType(value, currentWorklogId);
-        }
-      }}
-      clearable
-      disabled={uploading || disabled}
-    />
+    {showText ?
+      <span>
+        {currentWorklogType ? options.find(o => o.value === currentWorklogType).label : '---'}
+      </span> :
+      <Select
+        options={options}
+        value={currentWorklogType}
+        placeholder="Select worklog type"
+        onChange={(option) => {
+          const value = option ? option.value : null;
+          if (running) {
+            selectWorklogType(value);
+          } else {
+            updateWorklogType(value, currentWorklogId);
+          }
+        }}
+        clearable
+        disabled={uploading || disabled}
+      />
+    }
   </div>
 );
 
@@ -40,12 +46,14 @@ WorklogTypePicker.propTypes = {
   currentWorklogType: PropTypes.number,
   currentWorklogId: PropTypes.string,
   disabled: PropTypes.bool,
+  showText: PropTypes.bool,
 };
 
 WorklogTypePicker.defaultProps = {
   currentWorklogType: null,
   currentWorklogId: null,
   disabled: false,
+  showText: false,
 };
 
 export default WorklogTypePicker;

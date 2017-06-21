@@ -16,6 +16,7 @@ const TrackerHeader = ({
   const estimate = currentIssue.getIn(['fields', 'timeestimate']);
   const logged = currentIssue.getIn(['fields', 'timespent']);
   const remaining = estimate - logged < 0 ? 0 : estimate - logged;
+  const isToday = moment(currentWorklog.get('created')).calendar() === 'Today';
 
   return (
     <Flex column className="TrackerHeader">
@@ -60,7 +61,7 @@ const TrackerHeader = ({
           <WorklogTypePicker
             currentWorklogType={currentWorklog.get('worklogType')}
             currentWorklogId={currentWorklog.get('id')}
-            disabled={moment(currentWorklog.get('created')).calendar() !== 'Today'}
+            showText={!isToday}
           />
         </Flex>
       }
