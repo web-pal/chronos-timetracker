@@ -17,6 +17,7 @@ import WorklogTypePicker from '../ComponentsWrappers/WorklogTypePickerWrapper';
 import {
   getSelectedIssue, getSelectedWorklog,
   getTrackingIssue, getIssueLoggedByUser,
+  getIssueLoggedByUserToday, getIssueLoggedToday,
 } from '../../selectors';
 
 import * as timerActions from '../../actions/timer';
@@ -52,6 +53,8 @@ class Tracker extends Component {
     screenshots: ImmutablePropTypes.orderedSet.isRequired,
     description: PropTypes.string.isRequired,
     currentIssueSelfLogged: PropTypes.number.isRequired,
+    currentIssueSelfLoggedToday: PropTypes.number.isRequired,
+    currentIssueLoggedToday: PropTypes.number.isRequired,
     sidebarType: PropTypes.string.isRequired,
 
     deleteScreenshotRequest: PropTypes.func.isRequired,
@@ -134,7 +137,8 @@ class Tracker extends Component {
       startTimer, stopTimer, selectIssue, jumpToTrackingIssue, setDescription,
       running, screenshotUploading, description, screenshots, deleteScreenshotRequest,
       currentIssue, currentWorklog, currentWorklogType, currentTrackingIssue,
-      currentIssueSelfLogged, time, sidebarType, showWorklogTypes,
+      currentIssueSelfLogged, currentIssueSelfLoggedToday, currentIssueLoggedToday,
+      time, sidebarType, showWorklogTypes,
     } = this.props;
 
     if (!currentIssue.size) {
@@ -156,7 +160,9 @@ class Tracker extends Component {
           currentIssue={currentIssue}
           currentWorklog={currentWorklog}
           sidebarType={sidebarType}
+          loggedToday={currentIssueLoggedToday}
           selfLogged={currentIssueSelfLogged}
+          selfLoggedToday={currentIssueSelfLoggedToday}
           showWorklogTypes={showWorklogTypes}
           running={running}
         />
@@ -238,6 +244,8 @@ function mapStateToProps({ timer, issues, worklogs, ui, profile }) {
     currentIssue: getSelectedIssue({ issues }),
     currentWorklog: getSelectedWorklog({ worklogs }),
     currentIssueSelfLogged: getIssueLoggedByUser({ issues, worklogs, profile }),
+    currentIssueSelfLoggedToday: getIssueLoggedByUserToday({ issues, worklogs, profile }),
+    currentIssueLoggedToday: getIssueLoggedToday({ issues, worklogs }),
     currentTrackingIssue: getTrackingIssue({ issues, worklogs }),
     currentWorklogType: worklogs.meta.currentWorklogType,
     description: worklogs.meta.currentDescription,

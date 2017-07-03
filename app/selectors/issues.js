@@ -1,5 +1,6 @@
 import { createSelector } from 'reselect';
 import { Map } from 'immutable';
+import moment from 'moment';
 
 export const getIssuesMap = ({ issues }) => issues.byId;
 export const getIssuesIds = ({ issues }) => issues.allIds;
@@ -96,6 +97,32 @@ export const getIssueLoggedByUser = createSelector(
     return worklogsIds
       .map(w => worklogs.get(w))
       .filter(worklog => worklog.get('issueId') === issue.get('id') && worklog.getIn(['author', 'key']) === selfKey)
+      .reduce((prevValue, i) => i.get('timeSpentSeconds') + prevValue, 0);
+  },
+);
+
+export const getIssueLoggedByUserToday = createSelector(
+  [getSelectedIssue, getWorklogsMap, getSelfKey],
+  (issue, worklogs, selfKey) => {
+    const worklogsIds = issue.getIn(['fields', 'worklog', 'worklogs']) || Immutable.List([]);
+    const today = new Date();
+    return worklogsIds
+      .map(w => worklogs.get(w))
+      .filter(worklog => worklog.get('issueId') === issue.get('id') && worklog.getIn(['author', 'key']) === selfKey)
+      .filter(w => moment(w.get('created')).isSame(today, 'day'))
+      .reduce((prevValue, i) => i.get('timeSpentSeconds') + prevValue, 0);
+  },
+);
+
+export const getIssueLoggedToday = createSelector(
+  [getSelectedIssue, getWorklogsMap],
+  (issue, worklogs) => {
+    const worklogsIds = issue.getIn(['fields', 'worklog', 'worklogs']) || Immutable.List([]);
+    const today = new Date();
+    return worklogsIds
+      .map(w => worklogs.get(w))
+      .filter(worklog => worklog.get('issueId') === issue.get('id'))
+      .filter(w => moment(w.get('created')).isSame(today, 'day'))
       .reduce((prevValue, i) => i.get('timeSpentSeconds') + prevValue, 0);
   },
 );

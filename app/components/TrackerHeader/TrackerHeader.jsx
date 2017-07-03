@@ -10,7 +10,8 @@ import WorklogTypePicker from '../../containers/ComponentsWrappers/WorklogTypePi
 
 const TrackerHeader = ({
   currentIssue, currentWorklog,
-  selfLogged, sidebarType,
+  selfLogged, selfLoggedToday,
+  loggedToday, sidebarType,
   showWorklogTypes, running,
 }) => {
   const estimate = currentIssue.getIn(['fields', 'timeestimate']);
@@ -27,20 +28,32 @@ const TrackerHeader = ({
         </div>
       }
       <Flex row centerd spaceBetween className="TrackerHeader__times">
-        <span className="estimate">
-          Estimated: <b>{stj(estimate, 'h[h] m[m]')}</b>
-        </span>
-        <span className="logged">
-          You logged: <b>{stj(selfLogged, 'h[h] m[m]')}</b>
-        </span>
-        <span className="logged">
-          Total logged: <b>{stj(logged, 'h[h] m[m]')}</b>
-        </span>
-        <span className="remaining">
-          Remaining: <b>{stj(remaining, 'h[h] m[m] s[s]')}</b>
-        </span>
+        <Flex column spaceBetween>
+          <span className="logged">
+            Total logged: <b>{stj(logged, 'h[h] m[m]')}</b>
+          </span>
+          <span className="logged">
+            You logged: <b>{stj(selfLogged, 'h[h] m[m]')}</b>
+          </span>
+        </Flex>
+        <Flex column spaceBetween>
+          <span className="logged">
+            Logged today: <b>{stj(loggedToday, 'h[h] m[m]')}</b>
+          </span>
+          <span className="estimate">
+            You logged today: <b>{stj(selfLoggedToday, 'h[h] m[m]')}</b>
+          </span>
+        </Flex>
+        <Flex column spaceBetween>
+          <span className="remaining">
+            Remaining: <b>{stj(remaining, 'h[h] m[m] s[s]')}</b>
+          </span>
+          <span className="estimate">
+            Estimated: <b>{stj(estimate, 'h[h] m[m]')}</b>
+          </span>
+        </Flex>
       </Flex>
-      {sidebarType === 'Recent' &&
+      {(sidebarType === 'Recent' && currentWorklog.size !== 0) &&
         <Flex row centerd spaceBetween className="TrackerHeader__worklog_times">
           <span className="logged">
             Worklog time: <b>{currentWorklog.get('timeSpent')}</b>
@@ -53,7 +66,7 @@ const TrackerHeader = ({
           </span>
         </Flex>
       }
-      {(sidebarType === 'Recent' && showWorklogTypes && !running) &&
+      {(sidebarType === 'Recent' && showWorklogTypes && !running && currentWorklog.size !== 0) &&
         <Flex row className="TrackerHeader__worklog-type">
           <span style={{ marginRight: 10 }}>
             Worklog type:
@@ -76,6 +89,8 @@ TrackerHeader.propTypes = {
   running: PropTypes.bool.isRequired,
   sidebarType: PropTypes.string.isRequired,
   selfLogged: PropTypes.number.isRequired,
+  selfLoggedToday: PropTypes.number.isRequired,
+  loggedToday: PropTypes.number.isRequired,
 };
 
 export default TrackerHeader;

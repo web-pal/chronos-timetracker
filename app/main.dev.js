@@ -117,7 +117,7 @@ function createWindow(callback) {
       show: false,
       width:  810,
       height: 675,
-      minWidth: 710,
+      minWidth: 820,
       minHeight: 640,
       ...noFrameOption,
     });
