@@ -27,7 +27,11 @@ global.sharedObj = {
   nativeNotifications: false,
   idleTime: 0,
   idleDetails: {},
-  showTimer: storage.get('showTimer'),
+  trayShowTimer: storage.get('trayShowTimer', (err, data) => {
+    if (!data) {
+      storage.set('trayShowTimer', true);
+    }
+  }) || true,
 };
 
 if (process.env.NODE_ENV === 'production') {
@@ -179,8 +183,8 @@ function showScreenPreview() {
 }
 
 ipcMain.on('startTimer', () => {
-  menu.items[2].enabled = false;
-  menu.items[3].enabled = true;
+  menu.items[0].enabled = false;
+  menu.items[1].enabled = true;
 
   if (process.platform !== 'darwin') {
     tray.setPressedImage(path.join(__dirname, './assets/images/icon-active.png'));
@@ -191,8 +195,8 @@ ipcMain.on('startTimer', () => {
 
 ipcMain.on('stopTimer', () => {
   tray.setTitle('');
-  menu.items[2].enabled = true;
-  menu.items[3].enabled = false;
+  menu.items[0].enabled = true;
+  menu.items[1].enabled = false;
 
   if (process.platform !== 'darwin') {
     tray.setPressedImage(path.join(__dirname, './assets/images/icon.png'));

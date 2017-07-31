@@ -38,7 +38,7 @@ class SettingsModal extends Component {
 
   setTraySettings = value => ev => {
     if (ev.target.checked) {
-      sharedObj.showTimer = value;
+      sharedObj.trayShowTimer = value;
       this.props.setLocalDesktopSettings('trayShowTimer', value);
     }
   }

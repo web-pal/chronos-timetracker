@@ -31,7 +31,7 @@ export default function timer(state = initialState, action) {
 
       return state.set('running', false);
     case types.TICK:
-      if (sharedObj.showTimer) {
+      if (sharedObj.trayShowTimer) {
         tray.setTitle(`${stj(state.time + 1, 'HH:MM')}`);
       }
 
