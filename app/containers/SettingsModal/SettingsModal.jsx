@@ -3,10 +3,13 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Modal from 'react-modal';
 import ImmutablePropTypes from 'react-immutable-proptypes';
+import { remote } from 'electron';
 
 import * as uiActions from '../../actions/ui';
 import Settings from '../../components/Settings/Settings';
 import Flex from '../../components/Base/Flex/Flex';
+
+const sharedObj = remote.getGlobal('sharedObj');
 
 class SettingsModal extends Component {
   static propTypes = {
@@ -33,6 +36,13 @@ class SettingsModal extends Component {
     }
   }
 
+  setTraySettings = value => ev => {
+    if (ev.target.checked) {
+      sharedObj.showTimer = value;
+      this.props.setLocalDesktopSettings('trayShowTimer', value);
+    }
+  }
+
   handleClose = () => {
     this.props.setShowSettingsModal(false);
   }
@@ -52,6 +62,7 @@ class SettingsModal extends Component {
             onScreenshotTimeChange={this.setScreenshotPreviewTime}
             onLocaDesktopSettingsChange={setLocalDesktopSettings}
             onNativeNotificationSettingsChange={this.setNativeNotificationsSettings}
+            setTraySettings={this.setTraySettings}
           />
         </Modal>
       </div>

@@ -4,6 +4,7 @@ import * as types from '../constants/timer';
 import { stj } from '../helpers/time';
 
 const tray = remote.getGlobal('tray');
+const sharedObj = remote.getGlobal('sharedObj');
 
 const InitialState = Immutable.Record({
   time: 0,
@@ -30,7 +31,9 @@ export default function timer(state = initialState, action) {
 
       return state.set('running', false);
     case types.TICK:
-      tray.setTitle(`${stj(state.time + 1, 'HH:MM')}`);
+      if (sharedObj.showTimer) {
+        tray.setTitle(`${stj(state.time + 1, 'HH:MM')}`);
+      }
 
       return state.set('time', state.time + 1);
     case types.SET_TIME:

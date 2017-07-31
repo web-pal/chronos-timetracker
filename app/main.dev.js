@@ -27,6 +27,7 @@ global.sharedObj = {
   nativeNotifications: false,
   idleTime: 0,
   idleDetails: {},
+  showTimer: storage.get('showTimer'),
 };
 
 if (process.env.NODE_ENV === 'production') {
