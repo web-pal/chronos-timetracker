@@ -33,14 +33,6 @@ class TimerControls extends Component {
     }
   }
 
-  toggleTimer = () => {
-    if (this.props.running) {
-      this.startTimer();
-    } else {
-      this.startTimer();
-    }
-  }
-
   render() {
     const { running } = this.props;
 
@@ -54,7 +46,13 @@ class TimerControls extends Component {
           />
           <button
             className={`button button-${running ? 'stop' : 'play'}`}
-            onClick={this.toggleTimer}
+            onClick={() => {
+              if (running) {
+                this.stopTimer();
+              } else {
+                this.startTimer();
+              }
+            }}
           >
             {running
               ? <img src={stopIcon} width={33} height={33} alt="stop" />

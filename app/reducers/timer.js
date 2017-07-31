@@ -1,13 +1,9 @@
-import path from 'path';
-import { remote, nativeImage } from 'electron';
+import { remote, ipcRenderer } from 'electron';
 import * as types from '../constants/timer';
 
 import { stj } from '../helpers/time';
 
 const tray = remote.getGlobal('tray');
-const menu = remote.getGlobal('menu');
-// menu.items[2] - "Start"
-// menu.items[3] - "Stop"
 
 const InitialState = Immutable.Record({
   time: 0,
@@ -26,27 +22,16 @@ const initialState = new InitialState();
 export default function timer(state = initialState, action) {
   switch (action.type) {
     case types.START_TIMER:
-      menu.items[2].enabled = false;
-      menu.items[3].enabled = true;
-
-      // DUNNO HOW TO DEAL WITH IT
-      // tray.setPressedImage(nativeImage.createFromDataURL('../assets/images/icon.png'));
-      // tray.setPressedImage(nativeImage.createFromPath('/Users/ignatif/Projects/chronos-app-jira/app/assets/images/icon.png'));
-      // tray.setPressedImage(require('../assets/images/icon.png'));
-      // tray.setPressedImage(path.join(__dirname, 'assets', 'images', 'icon.png'));
-      // tray.setPressedImage(nativeImage.createFromPath(path.join(__dirname, './assets/images/icon.png')));
-      // tray.setPressedImage(path.join(__dirname, '../assets/images/icon.png'));
+      ipcRenderer.send('startTimer');
 
       return state.set('running', true);
     case types.STOP_TIMER:
-      tray.setTitle('');
-      menu.items[2].enabled = true;
-      menu.items[3].enabled = false;
+      ipcRenderer.send('stopTimer');
 
       return state.set('running', false);
-
     case types.TICK:
       tray.setTitle(`${stj(state.time + 1, 'HH:MM')}`);
+
       return state.set('time', state.time + 1);
     case types.SET_TIME:
       return state.set('time', action.payload);

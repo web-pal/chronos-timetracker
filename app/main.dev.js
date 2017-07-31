@@ -10,6 +10,7 @@ import MenuBuilder from './menu';
 
 let mainWindow;
 let tray;
+let menu;
 let authWindow;
 let shouldQuit = process.platform !== 'darwin';
 
@@ -175,6 +176,30 @@ function showScreenPreview() {
     win.show();
   });
 }
+
+ipcMain.on('startTimer', () => {
+  menu.items[2].enabled = false;
+  menu.items[3].enabled = true;
+
+  if (process.platform !== 'darwin') {
+    tray.setPressedImage(path.join(__dirname, './assets/images/icon-active.png'));
+  } else {
+    tray.setImage(path.join(__dirname, './assets/images/icon-active.png'));
+  }
+});
+
+ipcMain.on('stopTimer', () => {
+  tray.setTitle('');
+  menu.items[2].enabled = true;
+  menu.items[3].enabled = false;
+
+  if (process.platform !== 'darwin') {
+    tray.setPressedImage(path.join(__dirname, './assets/images/icon.png'));
+  } else {
+    tray.setImage(path.join(__dirname, './assets/images/icon.png'));
+  }
+});
+
 
 ipcMain.on('showScreenPreviewPopup', () => {
   let nativeNotifications = process.platform === 'darwin';
@@ -376,14 +401,14 @@ app.on('ready', async () => {
   global.tray = tray;
 
   const menuTemplate = [
-    {
-      label: 'Logged today: 06:30',
-      sublabel: '01:30',
-      enabled: false,
-    },
-    {
-      type: 'separator',
-    },
+    // {
+    //   label: 'Logged today: 06:30',
+    //   sublabel: '01:30',
+    //   enabled: false,
+    // },
+    // {
+    //   type: 'separator',
+    // },
     {
       label: 'Start',
       click: () => {
@@ -432,7 +457,7 @@ app.on('ready', async () => {
       },
     },
   ];
-  const menu = Menu.buildFromTemplate(menuTemplate);
+  menu = Menu.buildFromTemplate(menuTemplate);
   global.menu = menu;
   tray.setContextMenu(menu);
 
