@@ -146,7 +146,7 @@ class Tracker extends Component {
         <Flex column className="tracker">
           <Flex column centered className="timer">
             <Flex row centered>
-              select an issue from the list on the left
+              Select an issue from the list on the left
             </Flex>
           </Flex>
           <StatusBar />

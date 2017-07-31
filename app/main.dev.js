@@ -3,7 +3,7 @@
 // @flow
 import path from 'path';
 import storage from 'electron-json-storage';
-import { app, Tray, ipcMain, BrowserWindow, screen } from 'electron';
+import { app, Tray, Menu, ipcMain, BrowserWindow, screen } from 'electron';
 import notifier from 'node-notifier';
 import MenuBuilder from './menu';
 
@@ -372,15 +372,80 @@ app.on('ready', async () => {
     await installExtensions();
   }
 
-  tray = new Tray(path.join(__dirname, './assets/images/icon.png'));
-  tray.setToolTip('Open chronos tracker');
-  tray.on('click', () => {
-    if (mainWindow) {
-      mainWindow.show();
-    }
-  });
+  tray = new Tray(path.join(__dirname, '/assets/images/icon.png'));
+  global.tray = tray;
+
+  const menuTemplate = [
+    {
+      label: 'Logged today: 06:30',
+      sublabel: '01:30',
+      enabled: false,
+    },
+    {
+      type: 'separator',
+    },
+    {
+      label: 'Start',
+      click: () => {
+        if (mainWindow) {
+          mainWindow.show();
+          mainWindow.webContents.send('tray-start-click');
+        }
+      },
+    },
+    {
+      label: 'Stop',
+      click: () => {
+        if (mainWindow) {
+          mainWindow.show();
+          mainWindow.webContents.send('tray-stop-click');
+        }
+      },
+      enabled: false,
+    },
+    {
+      type: 'separator',
+    },
+    // {
+    //   label: 'Support and feedback',
+    //   click: () => {
+    //     if (mainWindow) {
+    //       mainWindow.show();
+    //       mainWindow.webContents.send('tray-support-click');
+    //     }
+    //   },
+    // },
+    {
+      label: 'Settings',
+      click: () => {
+        if (mainWindow) {
+          mainWindow.show();
+          mainWindow.webContents.send('tray-settings-click');
+        }
+      },
+    },
+    {
+      label: 'Quit',
+      click: () => {
+        app.quit();
+        tray.destroy();
+      },
+    },
+  ];
+  const menu = Menu.buildFromTemplate(menuTemplate);
+  global.menu = menu;
+  tray.setContextMenu(menu);
+
   createWindow(() => {
     const menuBuilder = new MenuBuilder(mainWindow);
     menuBuilder.buildMenu();
   });
 });
+
+// const initializeTray = () => {
+
+// }
+
+// const initializeContextMenu = () => {
+
+// }
