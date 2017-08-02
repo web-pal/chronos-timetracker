@@ -9,7 +9,7 @@ const Form = ({ settings, setTraySettings }) =>
         name="trayShowTimer"
         id="showTimer"
         type="radio"
-        checked={settings.get('trayShowTimer')}
+        checked={settings.get('trayShowTimer') || settings.get('trayShowTimer') === undefined}
         onChange={setTraySettings(true)}
       />
       <label htmlFor="showTimer">
@@ -21,7 +21,7 @@ const Form = ({ settings, setTraySettings }) =>
         name="trayShowTimer"
         id="hideTimer"
         type="radio"
-        checked={!settings.get('trayShowTimer')}
+        checked={settings.get('trayShowTimer') === undefined ? false : !settings.get('trayShowTimer')}
         onChange={setTraySettings(false)}
       />
       <label htmlFor="hideTimer">
