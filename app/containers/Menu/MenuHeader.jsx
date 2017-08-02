@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react';
+import { remote } from 'electron';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ImmutablePropTypes from 'react-immutable-proptypes';
-import { remote } from 'electron';
 
 import Flex from '../../components/Base/Flex/Flex';
 import Avatar from '../../components/Avatar/Avatar';
@@ -17,11 +17,10 @@ import * as uiActions from '../../actions/ui';
 
 const cogIcon = require('../../assets/images/cog.png');
 
+
 const MenuHeader = ({
-  userData,
-  settings,
-  logout,
-  setShowSettingsModal,
+  userData, settings,
+  logout, setShowSettingsModal,
 }) => {
   const screenshotsEnabled = settings.get('screenshotsEnabled');
   const screenshotsEnabledUsers = settings.get('screenshotsEnabledUsers');
@@ -34,6 +33,7 @@ const MenuHeader = ({
     !screenshotsEnabledUsers.includes(selfKey);
 
   const willMakeScreenshots = cond1 || cond2 || cond3;
+
   return (
     <Flex className="HeaderWrapper">
       <Flex column className="header">
@@ -71,6 +71,7 @@ const MenuHeader = ({
               onClick={() => {
                 const { getGlobal } = remote;
                 const { running, uploading } = getGlobal('sharedObj');
+
                 if (running) {
                   window.alert('Tracking in progress, save worklog before logout!');
                 }

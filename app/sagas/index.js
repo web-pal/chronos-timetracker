@@ -10,7 +10,7 @@ import {
   getProjects,
   onSelectProject,
   whatchBoardSelection,
-  onSelectSprint
+  onSelectSprint,
 } from './projects';
 import {
   watchGetIssues, watchGetIssue, watchRecentIssues,
@@ -18,6 +18,7 @@ import {
   watchGetIssueTypes, watchGetIssueStatuses,
   watchIssuesCriteriaFilter, watchFilterIssues,
   watchIssuesCriteriaFilterDelete, onSetFilters,
+  watchSelectIssue,
   jumpToTrackingIssue,
 } from './issues';
 import {
@@ -62,6 +63,7 @@ export default function* root() {
     fork(watchChangeSidebar),
 
     fork(watchSelectWorklogs),
+    fork(watchSelectIssue),
     fork(watchUploadScreenshot),
     fork(watchRejectScreenshot),
     fork(uploadOfflineScreenshots),

@@ -24,7 +24,7 @@ const Sidebar = ({ sidebarType, setSidebarType, currentProjectId, projectsFetche
         <SidebarItems /> :
         <span className="sidebar-nothing-selected">
           {projectsFetched &&
-            <span>select project from dropdown above</span>
+            <span>Select project from dropdown above</span>
           }
         </span>
       }

@@ -20,7 +20,6 @@ export default function timer(state = initialState, action) {
       return state.set('running', true);
     case types.STOP_TIMER:
       return state.set('running', false);
-
     case types.TICK:
       return state.set('time', state.time + 1);
     case types.SET_TIME:

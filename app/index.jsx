@@ -9,6 +9,8 @@ import { remote, ipcRenderer as ipc } from 'electron';
 
 import Base from './components/Base/Base';
 import store from './store';
+import { startTimer, stopTimer } from './actions/timer';
+import { setShowSettingsModal } from './actions/ui';
 
 import pjson from './package.json';
 import './assets/stylesheets/main.less';
@@ -51,13 +53,27 @@ window.onerror = (...argw) => {
   ipc.send('errorInWindow', argw);
 };
 
+ipc.on('tray-start-click', () => store.dispatch(startTimer()));
+ipc.on('tray-stop-click', () => {
+  if (store.getState().worklogs.meta.screenshotUploading) {
+    // eslint-disable-next-line no-alert
+    window.alert(
+      'Currently app in process of uploading screenshot, wait few seconds please',
+    );
+  } else {
+    store.dispatch(stopTimer());
+  }
+});
+ipc.on('tray-settings-click', () => store.dispatch(setShowSettingsModal(true)));
+
+
 render(
   <AppContainer>
     <Provider store={store}>
       <Base />
     </Provider>
   </AppContainer>,
-  document.getElementById('root')
+  document.getElementById('root'),
 );
 
 if (module.hot) {
@@ -69,7 +85,7 @@ if (module.hot) {
           <Base />
         </Provider>
       </AppContainer>,
-      document.getElementById('root')
+      document.getElementById('root'),
     );
   });
 }

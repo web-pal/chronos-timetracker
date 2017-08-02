@@ -1,15 +1,15 @@
 /* eslint global-require: 1, flowtype-errors/show-errors: 0 */
 /* global sharedObj */
-// @flow
 import path from 'path';
 import storage from 'electron-json-storage';
-import { app, Tray, ipcMain, BrowserWindow, screen } from 'electron';
+import { app, Tray, Menu, MenuItem, ipcMain, BrowserWindow, screen } from 'electron';
 import notifier from 'node-notifier';
 import MenuBuilder from './menu';
 
 
 let mainWindow;
 let tray;
+let menu;
 let authWindow;
 let shouldQuit = process.platform !== 'darwin';
 
@@ -26,7 +26,66 @@ global.sharedObj = {
   nativeNotifications: false,
   idleTime: 0,
   idleDetails: {},
+  trayShowTimer: storage.get('trayShowTimer', (err, data) => {
+    if (!data) {
+      storage.set('trayShowTimer', true);
+    }
+  }) || true,
 };
+
+const menuTemplate = [
+  {
+    label: 'Logged today: 00:00',
+    enabled: false,
+  },
+  {
+    label: 'No selected issue',
+    enabled: false,
+  },
+  {
+    type: 'separator',
+  },
+  {
+    label: 'Start',
+    click: () => {
+      if (mainWindow) {
+        mainWindow.show();
+        mainWindow.webContents.send('tray-start-click');
+      }
+    },
+    enabled: false,
+  },
+  {
+    label: 'Stop',
+    click: () => {
+      if (mainWindow) {
+        mainWindow.show();
+        mainWindow.webContents.send('tray-stop-click');
+      }
+    },
+    enabled: false,
+  },
+  {
+    type: 'separator',
+  },
+  {
+    label: 'Settings',
+    click: () => {
+      if (mainWindow) {
+        mainWindow.show();
+        mainWindow.webContents.send('tray-settings-click');
+      }
+    },
+  },
+  {
+    label: 'Quit',
+    click: () => {
+      app.quit();
+      tray.destroy();
+    },
+  },
+];
+
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -50,7 +109,7 @@ const installExtensions = async () => {
   const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
   const extensions = [
     'REACT_DEVELOPER_TOOLS',
-    'REDUX_DEVTOOLS'
+    'REDUX_DEVTOOLS',
   ];
 
   return Promise
@@ -115,10 +174,11 @@ function createWindow(callback) {
     const lastWindowSize = data || {};
     mainWindow = new BrowserWindow({
       show: false,
-      width:  810,
+      width: 810,
       height: 675,
       minWidth: 820,
       minHeight: 640,
+      ...lastWindowSize,
       ...noFrameOption,
     });
     callback();
@@ -175,6 +235,49 @@ function showScreenPreview() {
     win.show();
   });
 }
+
+ipcMain.on('startTimer', () => {
+  menu.items[3].enabled = false;
+  menu.items[4].enabled = true;
+
+  if (process.platform !== 'darwin') {
+    tray.setPressedImage(path.join(__dirname, './assets/images/icon-active.png'));
+  } else {
+    tray.setImage(path.join(__dirname, './assets/images/icon-active.png'));
+  }
+});
+
+ipcMain.on('stopTimer', () => {
+  tray.setTitle('');
+  menu.items[3].enabled = true;
+  menu.items[4].enabled = false;
+
+  if (process.platform !== 'darwin') {
+    tray.setPressedImage(path.join(__dirname, './assets/images/icon.png'));
+  } else {
+    tray.setImage(path.join(__dirname, './assets/images/icon.png'));
+  }
+});
+
+ipcMain.on('selectTask', (event, selectedIssue) => {
+  menuTemplate[1].label = `Selected issue: ${selectedIssue}`;
+  menuTemplate[3].enabled = true;
+  menu.clear();
+  menuTemplate.forEach(m => {
+    menu.append(new MenuItem(m));
+  });
+  tray.setContextMenu(menu);
+});
+
+ipcMain.on('setLoggedToday', (event, logged) => {
+  menuTemplate[0].label = `Logged today: ${logged}`;
+  menu.clear();
+  menuTemplate.forEach(m => {
+    menu.append(new MenuItem(m));
+  });
+  tray.setContextMenu(menu);
+});
+
 
 ipcMain.on('showScreenPreviewPopup', () => {
   let nativeNotifications = process.platform === 'darwin';
@@ -372,13 +475,12 @@ app.on('ready', async () => {
     await installExtensions();
   }
 
-  tray = new Tray(path.join(__dirname, './assets/images/icon.png'));
-  tray.setToolTip('Open chronos tracker');
-  tray.on('click', () => {
-    if (mainWindow) {
-      mainWindow.show();
-    }
-  });
+  tray = new Tray(path.join(__dirname, '/assets/images/icon.png'));
+  global.tray = tray;
+  menu = Menu.buildFromTemplate(menuTemplate);
+  global.menu = menu;
+  tray.setContextMenu(menu);
+
   createWindow(() => {
     const menuBuilder = new MenuBuilder(mainWindow);
     menuBuilder.buildMenu();
