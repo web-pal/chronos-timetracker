@@ -56,6 +56,7 @@ function timerChannel() {
 
 function* runTimer() {
   sendInfoLog('run runTimer');
+  ipcRenderer.send('startTimer');
   const chan = yield call(timerChannel);
 
   const {
@@ -123,6 +124,11 @@ function* runTimer() {
 
       yield take(chan);
       const seconds = yield select(state => state.timer.time);
+
+      if (remote.getGlobal('sharedObj').trayShowTimer) {
+        const humanFormat = new Date(seconds * 1000).toISOString().substr(11, 5);
+        remote.getGlobal('tray').setTitle(humanFormat);
+      }
       // Check offline screenshots
       if (seconds % 240 === 0) {
         yield put({ type: types.CHECK_OFFLINE_SCREENSHOTS });
@@ -131,8 +137,8 @@ function* runTimer() {
       // Screenshots check
       if (screensShotsAllowed) {
         let periods = yield select(state => state.timer.screenShotsPeriods);
-        console.log(periods);
-        console.log(seconds);
+        // console.log(periods);
+        // console.log(seconds);
         if (seconds === periods[0]) {
           if (!idleState) {
             console.log('Need to take a screnshot');
@@ -161,6 +167,7 @@ function* runTimer() {
     }
   } finally {
     sendInfoLog('stop runTimer');
+    ipcRenderer.send('stopTimer');
     if (yield cancelled()) {
       sendInfoLog('stop runTimer cancelled');
       chan.close();

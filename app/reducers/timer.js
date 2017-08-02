@@ -1,10 +1,4 @@
-import { remote, ipcRenderer } from 'electron';
 import * as types from '../constants/timer';
-
-import { stj } from '../helpers/time';
-
-const tray = remote.getGlobal('tray');
-const sharedObj = remote.getGlobal('sharedObj');
 
 const InitialState = Immutable.Record({
   time: 0,
@@ -23,18 +17,10 @@ const initialState = new InitialState();
 export default function timer(state = initialState, action) {
   switch (action.type) {
     case types.START_TIMER:
-      ipcRenderer.send('startTimer');
-
       return state.set('running', true);
     case types.STOP_TIMER:
-      ipcRenderer.send('stopTimer');
-
       return state.set('running', false);
     case types.TICK:
-      if (sharedObj.trayShowTimer) {
-        tray.setTitle(`${stj(state.time + 1, 'HH:MM')}`);
-      }
-
       return state.set('time', state.time + 1);
     case types.SET_TIME:
       return state.set('time', action.payload);

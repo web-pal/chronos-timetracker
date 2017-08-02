@@ -14,6 +14,7 @@ import {
 
 import * as types from '../constants/';
 import { sendInfoLog } from '../helpers/log';
+import { setLoggedTodayOnTray } from '../helpers/time';
 import { getRecentWorklogsGroupedByDate } from '../selectors/worklogs';
 import { selectWorklog, setWorklogUploadState } from '../actions/worklogs';
 
@@ -162,6 +163,9 @@ export function* uploadWorklog({
 
   if (!offlineMode && worklog) {
     yield put({ type: types.ADD_RECENT_WORKLOG, payload: worklog });
+    const selfKey = yield select(state => state.profile.userData.get('key'));
+    const allWorklogs = yield select(state => state.worklogs.byId);
+    setLoggedTodayOnTray(allWorklogs, selfKey);
   }
   remote.getGlobal('sharedObj').uploading = false;
   sendInfoLog('stop uploadWorklog');

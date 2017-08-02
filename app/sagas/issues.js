@@ -1,8 +1,9 @@
 import { delay } from 'redux-saga';
-import { takeLatest, take, fork, throttle, put, call, select } from 'redux-saga/effects';
+import { takeLatest, take, takeEvery, fork, throttle, put, call, select } from 'redux-saga/effects';
 import { normalize, schema } from 'normalizr';
 import storage from 'electron-json-storage';
 import Raven from 'raven-js';
+import { ipcRenderer } from 'electron';
 import {
   fetchIssues, fetchIssue,
   fetchSearchIssues, fetchRecentIssues,
@@ -11,6 +12,7 @@ import {
   fetchIssueStatuses,
   fetchChronosBackendWorklogs,
 } from 'api';
+import { setLoggedTodayOnTray } from '../helpers/time';
 import * as types from '../constants/';
 import { getAllIssues } from '../selectors';
 import { issueSchema, issueStatusCategorySchema } from '../schemas/';
@@ -149,6 +151,8 @@ function* getRecentIssues() {
         payload: worklogsFromChronosBackend.filter(w => w.worklogType),
       });
     }
+    const allWorklogs = yield select(state => state.worklogs.byId);
+    setLoggedTodayOnTray(allWorklogs, worklogAuthor);
     yield put({ type: types.SET_RECENT_ISSUES_FETCH_STATE, payload: false });
   } catch (err) {
     Raven.captureException(err);
@@ -402,3 +406,13 @@ export function* onSetFilters() {
     yield* storeSelectedFilters(meta.criteriaName);
   }
 }
+
+function* onSelectIssue({ payload }) {
+  const issue = yield select(state => state.issues.byId.get(payload));
+  ipcRenderer.send('selectTask', issue.get('key'));
+}
+
+export function* watchSelectIssue() {
+  yield takeEvery(types.SELECT_ISSUE, onSelectIssue);
+}
+
