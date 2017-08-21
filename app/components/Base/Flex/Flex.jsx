@@ -7,6 +7,7 @@ const Flex =
     column,
     wrap,
     centered,
+    alignCenter,
     className,
     spaceBetween,
     spaceAround,
@@ -20,6 +21,7 @@ const Flex =
         `${column && 'flex-column'}`,
         `${wrap && 'wrap'}`,
         `${centered && 'flex--center'}`,
+        `${alignCenter && 'flex--align-center'}`,
         `${spaceBetween && 'flex--s-between'}`,
         `${spaceAround && 'flex--s-around'}`,
         `${className}`,
@@ -42,6 +44,7 @@ Flex.propTypes = {
   spaceAround: PropTypes.bool,
   className: PropTypes.string,
   centered: PropTypes.bool,
+  alignCenter: PropTypes.bool,
   onClick: PropTypes.func,
 };
 
@@ -55,6 +58,7 @@ Flex.defaultProps = {
   spaceAround: false,
   className: '',
   centered: false,
+  alignCenter: false,
   onClick: null,
 };
 

@@ -1,0 +1,123 @@
+* {
+  outline: none !important;
+  font: system-ui;
+}
+
+.n-m {
+  width: 560px;
+  height: 100%;
+  .login-container {
+    background: rgba(27, 38, 56, 0.5);;
+    height: 100%;
+    .login-logo {
+      width: 50%;
+      height: 50%;
+    }
+    .login-form {
+      .form-group {
+        width: 80%;
+        &__icon {
+          position: absolute;
+          margin-top: 15px;
+          margin-left: 10px;
+          &.jira {
+            margin-top: 12px;
+          }
+          &.lock {
+            margin-top: 12px;
+            margin-left: 11px;
+          }
+        }
+        .login-input {
+          width: calc(~"100% - 40px");
+          padding-left: 40px;
+          /* Background: */
+          background: rgba(250,251,252,0.20);
+          // border: 2px solid rgba(255,255,255,0.60);
+          border: 2px solid white;
+          box-shadow: 0 2px 5px 0 rgba(0,0,0,0.17);
+          border-radius: 3px;
+          /* Username: */
+          font-family: system-ui;
+          font-size: 14px;
+          color: rgba(255,255,255,0.99);
+          letter-spacing: 0;
+          height: 40px;
+          margin-bottom: 10px;
+          &.password {
+            &::-webkit-input-placeholder {
+              letter-spacing: 1px;
+            }
+          }
+          &::-webkit-input-placeholder {
+            font-size: 12px;
+            color: rgba(255,255,255,0.65);
+          }
+          &:focus {
+            background: rgba(0,0,0,0.23);
+            // border-color: white;
+            border-color: #43A9E5;
+          }
+          &:hover {
+            border-color: #43A9E5;
+          }
+        }
+      }
+    }
+    .login-btn-container {
+      margin-bottom: 40px;
+      .login-btn {
+        width: 80%;
+        height: 40px;
+        font-family: system-ui;
+        font-size: 14px;
+        color: #FFFFFF;
+        letter-spacing: 0;
+        border-radius: 3px;
+        box-shadow: 0 1px 5px 2px rgba(64,64,64,0.05);
+        &:hover {
+          border: 1px solid #B3D0FF;
+          cursor: pointer;
+        }
+        &-primary {
+          background: #0052CC;
+          border: 1px solid rgba(37,39,43,0.67);
+          margin-bottom: 10px;
+          font-weight: 600;
+          &:hover {
+            background: #0065FF;
+          }
+        }
+        &-secondary {
+          background: #30a1e4;
+          border: 1px solid rgba(91,125,170,0.67);
+          &:hover {
+            background: #4bbcff;
+            border-width: 1px;
+          }
+        }
+      }
+    }
+  }
+  .chronos-info-link {
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    /* color: rgba(225, 225,225, 1); */
+    opacity: 0.8;
+    font-family: system-ui;
+    margin-top: 15px;
+    border-bottom: 1px solid rgba(255, 255, 225, 0.3);
+    &:hover {
+      opacity: 1;
+      border-bottom: 1px solid rgba(255, 255, 225, 0.7);
+      cursor: pointer;
+    }
+  }
+}
+
+.lockicon-svg g path {
+  fill: 'red';
+  width: 40;
+  height: 40;
+}
