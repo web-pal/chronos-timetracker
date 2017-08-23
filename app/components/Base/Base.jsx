@@ -1,13 +1,14 @@
 import React from 'react';
 
 // import App from '../../containers/App';
-import LoginMarkup from '../../markup/Login';
+// import LoginMarkup from '../../markup/Login';
+import IssuesView from '../../markup/IssuesView/IssuesView';
 
 import '../../assets/stylesheets/main.less';
 
 const Base = () =>
   <div className="wrapper">
-    <LoginMarkup />
+    <IssuesView />
   </div>;
 
 export default Base;

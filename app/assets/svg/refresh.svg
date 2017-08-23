@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 46.2 (44496) - http://www.bohemiancoding.com/sketch -->
+    <title>ic-refresh-48px</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Issues-Picker-View-(Without-Project-Select)" transform="translate(-292.000000, -114.000000)">
+            <g id="Search-Bar" transform="translate(0.000000, 105.000000)">
+                <g id="Search-Bar-Content">
+                    <g id="ic-refresh-48px" transform="translate(288.000000, 5.000000)">
+                        <path d="M17.65,6.35 C16.205,4.9 14.21,4 12,4 C7.58,4 4.01,7.58 4.01,12 C4.01,16.42 7.58,20 12,20 C15.725,20 18.845,17.45 19.73,14 L17.65,14 C16.825,16.33 14.615,18 12,18 C8.685,18 6,15.315 6,12 C6,8.685 8.685,6 12,6 C13.655,6 15.14,6.69 16.225,7.775 L13,11 L20,11 L20,4 L17.65,6.35 Z" id="Shape" fill-opacity="0.628226902" fill="#000000" fill-rule="nonzero"></path>
+                        <polygon id="Shape" points="0 0 24 0 24 24 0 24"></polygon>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

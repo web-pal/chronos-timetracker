@@ -157,6 +157,7 @@
     "style-loader": "^0.16.1",
     "stylelint": "^7.10.1",
     "stylelint-config-standard": "^16.0.0",
+    "svg-react-loader": "0.4.4",
     "url-loader": "^0.5.8",
     "webpack": "^2.4.1",
     "webpack-bundle-analyzer": "^2.4.0",
@@ -165,6 +166,7 @@
     "webpack-sentry-plugin": "^1.9.2"
   },
   "dependencies": {
+    "@atlaskit/tooltip": "5.0.1",
     "bufferutil": "^3.0.0",
     "electron-json-storage": "^3.0.5",
     "electron-updater": "^1.14.0",
@@ -194,6 +196,7 @@
     "reselect": "^3.0.0",
     "socket.io-client": "^1.7.3",
     "source-map-support": "^0.4.14",
+    "styled-components": "2.1.2",
     "utf-8-validate": "^3.0.1",
     "uuid": "^3.0.1"
   },
