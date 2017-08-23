@@ -1,7 +1,7 @@
 import React from 'react';
 
 // import App from '../../containers/App';
-// import LoginMarkup from '../../markup/Login';
+// import Login from '../../markup/containers/Login/Login';
 import IssuesView from '../../markup/IssuesView/IssuesView';
 
 import '../../assets/stylesheets/main.less';
