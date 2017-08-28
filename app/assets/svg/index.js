@@ -16,6 +16,7 @@ export const star = require('./star.svg');
 export const starBlue = require('./star-blue.svg');
 export const issues = require('./issues.svg');
 export const issuesBlue = require('./issues-blue.svg');
+export const arrowLeft = require('./chevron-left.svg');
 
 export const taskType = require('./jira/types/task.svg');
 export const majorPriority = require('./jira/priorities/major.svg');

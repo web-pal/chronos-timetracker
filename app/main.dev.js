@@ -174,7 +174,7 @@ function createWindow(callback) {
     const lastWindowSize = data || {};
     mainWindow = new BrowserWindow({
       show: false,
-      width: 560,
+      width: 500,
       height: 675,
       minWidth: 560,
       minHeight: 640,
