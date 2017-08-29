@@ -5,60 +5,48 @@ import { accountBoxIcon, lockIcon, jiraIcon } from 'data/svg';
 import Flex from '../../../components/Base/Flex/Flex';
 
 import {
-  ButtonsContainer,
-  PrimaryButton,
-  SecondaryButton,
   Hint,
-  FormGroup,
-  FormIcon,
-  FormInput,
   Form,
   Container,
   Logo,
+  Input,
+  Button,
+  OauthButton,
 } from './styled';
 
 export default () => (
-  <Flex
-    column
-    style={{
-      background: `url(${loginBackground})`,
-      backgroundSize: 'cover',
-      backgroundPosition: '50% 50%',
-      height: '100%',
-    }}
-  >
-    <Container>
-      <Flex row centered>
-        <Logo src={logoShadowed} alt="Chronos" />
-      </Flex>
-      <Form>
-        <FormGroup>
-          <FormIcon alt="" src={accountBoxIcon} />
-          <FormInput
-            placeholder="Username"
-            type="text"
-          />
-        </FormGroup>
-        <FormGroup>
-          <FormIcon alt="" src={lockIcon} />
-          <FormInput
-            placeholder="••••••••"
-            type="password"
-          />
-        </FormGroup>
-        <FormGroup>
-          <FormIcon alt="" src={jiraIcon} />
-          <FormInput
-            placeholder="jira.atlassin.com"
-            type="text"
-          />
-        </FormGroup>
-      </Form>
-      <ButtonsContainer>
-        <PrimaryButton>Login</PrimaryButton>
-        <SecondaryButton>Oauth</SecondaryButton>
-        <Hint>What is Chronos?</Hint>
-      </ButtonsContainer>
-    </Container>
-  </Flex>
+  <Container style={{ height: '100%' }}>
+    <Flex row centered>
+      <Logo src={logoShadowed} alt="Chronos" />
+    </Flex>
+    <span
+      style={{
+        color: 'white',
+        fontSize: 24,
+        marginBottom: 40,
+      }}
+    >Log in to your account</span>
+    <Form>
+      <OauthButton>
+        <img src={jiraIcon} alt="" style={{ height: 20 }} />
+        Log in with JIRA
+      </OauthButton>
+      <span
+        style={{
+          margin: '30px 0px',
+          color: 'rgba(0, 0, 0, .5)',
+          fontSize: 12,
+        }}
+      >OR</span>
+      <Input
+        placeholder="Enter email"
+        type="text"
+        autoFocus
+      />
+      <Button>
+        Continue
+      </Button>
+    </Form>
+    <Hint>{"Can't log in?"}</Hint>
+  </Container>
 );
