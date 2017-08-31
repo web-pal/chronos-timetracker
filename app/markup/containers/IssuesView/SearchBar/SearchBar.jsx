@@ -1,8 +1,7 @@
 import React from 'react';
 
 import { refresh, filter, search } from 'data/svg';
-import Flex from '../../../components/Base/Flex/Flex';
-// import Flex from '@components/Base/Flex/Flex';
+// import Flex from '../../../../components/Base/Flex/Flex';
 import {
   SearchBar,
   SearchIcon,

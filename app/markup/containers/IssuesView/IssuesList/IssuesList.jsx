@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Issue from '../../components/Issue/Issue';
+import Issue from '../../../components/Issue/Issue';
 import { IssuesList } from './styled';
 
 export default () => (

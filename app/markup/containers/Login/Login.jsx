@@ -1,6 +1,6 @@
 import React from 'react';
-import { loginBackground, logoShadowed } from 'data/assets';
-import { accountBoxIcon, lockIcon, jiraIcon } from 'data/svg';
+import { logoShadowed } from 'data/assets';
+import { jiraIcon } from 'data/svg';
 
 import Flex from '../../../components/Base/Flex/Flex';
 

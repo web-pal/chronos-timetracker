@@ -1,10 +1,10 @@
 import React from 'react';
 import { ThemeProvider } from 'styled-components';
 
-import Flex from '../../components/Base/Flex/Flex';
+import Flex from '../../../components/Base/Flex/Flex';
 
-import Header from '../components/Header/Header';
-import Footer from '../components/Footer/Footer';
+import Header from '../../components/Header/Header';
+import Footer from '../../components/Footer/Footer';
 
 import Tabs from './Tabs/Tabs';
 import SearchBar from './SearchBar/SearchBar';

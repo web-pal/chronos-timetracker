@@ -7,8 +7,8 @@ import '../../assets/stylesheets/main.less';
 
 const Base = () =>
   <div className="wrapper">
-    <Login />
+    <App />
   </div>;
-    // <App />
+    // <Login />
 
 export default Base;

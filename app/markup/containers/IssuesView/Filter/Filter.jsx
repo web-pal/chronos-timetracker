@@ -1,8 +1,8 @@
 import React from 'react';
 
 import { taskType, majorPriority } from 'data/svg';
-import Flex from '../../../components/Base/Flex/Flex';
-import NavBar from '../../components/NavBar/NavBar';
+import Flex from '../../../../components/Base/Flex/Flex';
+import NavBar from '../../../components/NavBar/NavBar';
 import {
   Filters,
   FilterItem,
