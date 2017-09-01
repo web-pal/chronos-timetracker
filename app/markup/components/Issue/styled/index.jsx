@@ -10,6 +10,13 @@ export const Issue = styled.div`
   :first-child>img {
     opacity: 0.05;
   }
+  ${props => props.selected ? `
+    background-color: rgba(20, 93, 201, 0.09);
+    border: 2px solid rgba(38, 103, 198, 0.51);
+    /* border-bottom: 2px solid rgba(151,151,151,.35); */
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+  ` : ''}
 `;
 
 export const IssueLink = styled.img`

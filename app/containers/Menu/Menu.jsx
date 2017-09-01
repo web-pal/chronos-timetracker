@@ -22,28 +22,30 @@ import Issue from '../../markup/containers/IssueView/IssueView';
 /* eslint-disable */
 const IssuesListFilterView = () => <Filter />;
 const IssuesListView = () => (
-  <Flex column>
+  <Flex column style={{ minWidth: 400 }}>
     <Tabs />
     <SearchBar />
     <IssuesList />
   </Flex>
 );
-const IssueView = () => (
-  <Issue />
+const IssueView = (props) => (
+  <Issue {...props} />
 );
 /* eslint-enable */
 
-const Menu = () =>
-  <Flex
-    column
-    spaceBetween
-    style={{ height: '100%', width: '50%', minWidth: 500 }}
-  >
+const Menu = () => (
+  <Flex column spaceBetween style={{ height: '100%', width: '100%' }}>
     <Flex column>
       <Header />
-      <IssueView />
+      {window.innerWidth < 1000 ?
+        <IssuesListView /> :
+        <Flex row>
+          <IssuesListView />
+          <IssueView style={{ borderLeft: '1px solid rgba(0, 0, 0, 0.18)' }} />
+        </Flex>
+      }
     </Flex>
     <Footer />
-  </Flex>;
-
+  </Flex>
+);
 export default Menu;

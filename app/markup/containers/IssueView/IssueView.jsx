@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import styled from 'styled-components';
 
 import Flex from '../../../components/Base/Flex/Flex';
 
@@ -23,16 +24,25 @@ const tabs = [
   { label: 'Report', content: <Statistics /> },
 ];
 
+const IssueViewContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-width: 560px;
+  width: 100%
+`;
+
 class IssueView extends Component {
   state = { activeTab: 'Worklogs' }
 
   onChangeTab = (newTab) => this.setState({ activeTab: newTab });
 
   render() {
+    // eslint-disable-next-line
+    const { style } = this.props;
     const { activeTab } = this.state;
 
     return (
-      <Flex column style={{ height: '100%' }}>
+      <IssueViewContainer style={style || {}}>
         <IssueHeader />
         <Tabs
           tabs={tabs}
@@ -42,7 +52,7 @@ class IssueView extends Component {
         <Flex column style={{ padding: '20px 20px 0px 20px', overflowY: 'auto' }}>
           {tabs.find(i => i.label === activeTab).content}
         </Flex>
-      </Flex>
+      </IssueViewContainer>
     );
   }
 }

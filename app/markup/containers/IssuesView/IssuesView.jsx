@@ -15,15 +15,13 @@ const theme = {
 };
 
 export default () => (
-  <ThemeProvider theme={theme}>
-    <Flex column spaceBetween style={{ height: '100%' }}>
-      <Flex column>
-        <Header />
-        <Tabs />
-        <SearchBar />
-        <IssuesList />
-      </Flex>
-      <Footer />
+  <Flex column spaceBetween style={{ height: '100%' }}>
+    <Flex column>
+      <Header />
+      <Tabs />
+      <SearchBar />
+      <IssuesList />
     </Flex>
-  </ThemeProvider>
+    <Footer />
+  </Flex>
 );

@@ -16,9 +16,5 @@ const Main = () =>
       <Menu />
     </Flex>
   </ThemeProvider>;
-{/*
-<Tracker />
-<SettingsModal />
-*/}
 
 export default Main;

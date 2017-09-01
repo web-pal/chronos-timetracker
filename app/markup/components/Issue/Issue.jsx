@@ -20,8 +20,9 @@ const type = 'Task';
 const priority = 'Major';
 const label = 'In Progress';
 
-export default () => (
-  <Issue>
+// eslint-disable-next-line
+export default ({ selected }) => (
+  <Issue selected={selected}>
     <Flex column>
       <Flex row>
         <IssueName>
