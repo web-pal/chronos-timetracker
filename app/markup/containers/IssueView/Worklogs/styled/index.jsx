@@ -4,8 +4,8 @@ export const TimelineItem = styled.div`
   display: flex;
   flex-direction: row;
   width: 20px;
-  height: 100px;
-  min-height: 100px;
+  height: 160px;
+  min-height: 160px;
 `;
 
 export const TimelineLineContainer = styled.div`
@@ -31,18 +31,53 @@ export const TimelineLine = styled.div`
 `;
 
 export const Time = styled.span`
+  font-weight: 600;
+  margin-bottom: 5px;
 `;
-export const Screenshot = styled.div`
+export const Screenshot = styled.img`
+  height: 30px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.17);
+  width: 100%;
+  padding-bottom: 5px;
+  margin-bottom: 15px;
 `;
 export const Worklog = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border: 1px solid rgba(0, 0, 0, .1);
+  margin-right: 5px;
+  align-items: center;
+  width: 140px;
 `;
-export const WorklogTime = styled.div`
+export const WorklogTime = styled.span`
+  font-size: 12px;
+  font-weight: 500;
+  color: #42526e;
 `;
-export const ActivityLine = styled.div`
+export const ActivityLineOuter = styled.div`
+  border-radius: 6px;
+  width: 100%;
+  height: 6px;
+  background: #e8e8e8;
+  overflow: hidden;
+  margin: 5px 0px;
+`;
+export const ActivityLineInner = styled.div`
+  width: ${props => props.percent}%;
+  background: rgba(169, 246, 20, 0.9);
+  min-width: 3%;
+  height: 100%;
 `;
 export const ActivityRecord = styled.div`
+  font-weight: 500;
+  font-size: 12px;
 `;
 export const ActivityContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 export const Button = styled.div`
   border: 2px solid ${props => props.theme.primary};

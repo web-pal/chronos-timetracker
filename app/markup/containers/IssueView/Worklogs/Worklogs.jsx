@@ -10,19 +10,9 @@ import {
 export default () => (
   <Flex column>
     <Flex row alignCenter spaceBetween style={{ marginBottom: 25 }}>
-      <Flex row style={{
-        paddingBottom: 5,
-      }}>
-      <span style={{
-        color: 'rgb(112,112,112)',
-        marginRight: 5,
-      }}>Logged today: </span>
-    <span
-      style={{
-        fontWeight: 500,
-        color: '#0052cc',
-      }}
-    >2h 32min</span>
+      <Flex row style={{ paddingBottom: 5 }}>
+        <span style={{ color: 'rgb(112,112,112)', marginRight: 5 }}>Logged today: </span>
+        <span style={{ fontWeight: 500, color: '#0052cc' }}>2h 32min</span>
       </Flex>
       <Flex row>
         <Button>
