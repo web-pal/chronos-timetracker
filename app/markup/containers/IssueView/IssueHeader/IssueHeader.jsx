@@ -13,7 +13,8 @@ import {
   StartButton,
 } from './styled';
 
-export default () => (
+// eslint-disable-next-line
+export default ({ isTracking }) => (
   <Flex column style={{ margin: 20, minHeight: 102 }}>
     <Flex row alignCenter spaceBetween style={{ marginBottom: 15 }}>
       <Flex row alignCenter>
@@ -30,7 +31,7 @@ export default () => (
           </IssueLabel>
         </Flex>
       </Flex>
-      <StartButton src={play} alt="Start Tracking" />
+      <StartButton src={play} alt="Start Tracking" style={{ opacity: isTracking ? 0 : 1 }} />
     </Flex>
     <Flex row>
       <ActionButton>

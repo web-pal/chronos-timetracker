@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-import AuthForm from './AuthForm';
+import AuthForm from './AuthForm/AuthForm';
 import Main from './Main';
 
 const App = ({ isAuthorized }) =>

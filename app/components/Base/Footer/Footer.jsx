@@ -8,7 +8,7 @@ import {
   StatsLabel,
   StatsValue,
   Separator,
-  WorkDiaryLink
+  WorkDiaryLink,
 } from './styled';
 
 const today = '05:20';
@@ -16,7 +16,7 @@ const week = '23:40';
 
 export default () => (
   <Footer>
-    <Flex row centered style={{ width: '50%' }}>
+    <Flex row centered style={{ flexGrow: 1, maxWidth: 380 }}>
       <Flex row style={{ marginRight: 10 }}>
         <StatsLabel>
           Today:
@@ -35,7 +35,7 @@ export default () => (
       </Flex>
     </Flex>
     <Separator />
-    <Flex row centered style={{ width: '50%' }}>
+    <Flex row centered style={{ flexGrow: 1 }}>
       <WorkDiaryLink>
         View Work Diary
       </WorkDiaryLink>

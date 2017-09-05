@@ -342,6 +342,10 @@ ipcMain.on('open-oauth-url', (event, url) => {
   authWindow = new BrowserWindow({
     parent: mainWindow,
     modal: true,
+    useContentSize: true,
+    closable: true,
+    resizable: false,
+    center: true,
     webPreferences: {
       nodeIntegration: false,
       preload: path.join(__dirname, 'preload.js'),

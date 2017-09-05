@@ -2,13 +2,10 @@ import React from 'react';
 import { ThemeProvider } from 'styled-components';
 
 import Flex from '../components/Base/Flex/Flex';
-import Tracker from './Tracker/Tracker';
 import Menu from './Menu/Menu';
-import SettingsModal from './SettingsModal/SettingsModal';
 
-const theme = {
-  primary: '#0052CC',
-};
+// TODO: allow user to customize theme
+const theme = { primary: '#0052CC' };
 
 const Main = () =>
   <ThemeProvider theme={theme}>

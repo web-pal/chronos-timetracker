@@ -13,7 +13,8 @@ import Statistics from './Statistics/Statistics';
 import IssueHeader from './IssueHeader/IssueHeader';
 import Tabs from './Tabs/Tabs';
 
-// import TrackingBar from '../../components/TrackingBar/TrackingBar';
+import TrackingBar from '../../components/TrackingBar/TrackingBar';
+import TrackingView from '../TrackingView/TrackingView';
 
 const tabs = [
   { label: 'Details', content: <Details /> },
@@ -27,7 +28,7 @@ const tabs = [
 const IssueViewContainer = styled.div`
   display: flex;
   flex-direction: column;
-  min-width: 560px;
+  min-width: 500px;
   width: 100%
 `;
 
@@ -37,13 +38,21 @@ class IssueView extends Component {
   onChangeTab = (newTab) => this.setState({ activeTab: newTab });
 
   render() {
+    const isTracking = false;
+    const isTrackingView = false;
     // eslint-disable-next-line
     const { style } = this.props;
     const { activeTab } = this.state;
 
     return (
       <IssueViewContainer style={style || {}}>
-        <IssueHeader />
+        {isTrackingView &&
+          <TrackingView />
+        }
+        {isTracking &&
+          <TrackingBar />
+        }
+        <IssueHeader isTracking={isTracking} />
         <Tabs
           tabs={tabs}
           activeTab={activeTab}

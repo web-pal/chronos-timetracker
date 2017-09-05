@@ -10,6 +10,7 @@ export const filter = require('./filter.svg');
 export const search = require('./search.svg');
 export const link = require('./link.svg');
 export const play = require('./play.svg');
+export const pause = require('./pause.svg');
 export const recent = require('./recent.svg');
 export const recentBlue = require('./recent-blue.svg');
 export const star = require('./star.svg');

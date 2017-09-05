@@ -118,7 +118,7 @@
     "cross-spawn": "^5.1.0",
     "css-loader": "^0.28.0",
     "devtron": "^1.4.0",
-    "electron": "^1.6.11",
+    "electron": "1.7.5",
     "electron-builder": "^17.0.3",
     "electron-debug": "^1.1.0",
     "electron-devtools-installer": "^2.2.0",
@@ -166,6 +166,7 @@
     "webpack-sentry-plugin": "^1.9.2"
   },
   "dependencies": {
+    "@atlaskit/spinner": "^4.0.0",
     "@atlaskit/tooltip": "5.0.1",
     "bufferutil": "^3.0.0",
     "electron-json-storage": "^3.0.5",

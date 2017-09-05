@@ -16,6 +16,14 @@ export const Issue = styled.div`
     /* border-bottom: 2px solid rgba(151,151,151,.35); */
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
+    border: 2px solid hsla(216, 38%, 56%, 1);
+    border-left: 0;
+    /* border-right: 0; */
+    border-radius: 0;
+    border-width: 1px;
+    border-right-color: 2px solid hsla(216, 38%, 46%, 1);
+    border-right-width: 1px;
+    border-right-color: hsla(216, 28%, 76%, 1);
   ` : ''}
 `;
 

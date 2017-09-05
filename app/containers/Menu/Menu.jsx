@@ -45,7 +45,9 @@ const Menu = () => (
         </Flex>
       }
     </Flex>
+    {/*
     <Footer />
+    */}
   </Flex>
 );
 export default Menu;
