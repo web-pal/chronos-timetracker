@@ -4,7 +4,7 @@ import Flex from '../../Base/Flex/Flex';
 import SidebarHeaderTab from './SidebarHeaderTab';
 
 const SidebarHeader = ({ sidebarType, setSidebarType }) =>
-  <Flex row className="sidebar-header-wrap">
+  <Flex row spaceBetween>
     <SidebarHeaderTab
       active={sidebarType === 'Recent'}
       label="Recent"
@@ -16,6 +16,10 @@ const SidebarHeader = ({ sidebarType, setSidebarType }) =>
       onClick={setSidebarType}
     />
   </Flex>;
+
+// <TabIcon src={issuesBlue} alt="" />
+// <TabIcon src={recent} alt="" />
+// <TabIcon src={star} alt="" />
 
 SidebarHeader.propTypes = {
   sidebarType: PropTypes.string.isRequired,
