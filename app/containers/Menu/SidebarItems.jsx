@@ -54,6 +54,7 @@ function mapStateToProps({ issues, worklogs, ui, profile, projects }) {
     showSpinner = issues.meta.recentFetching;
   }
   const totalCount = searchMode ? allItems.size : issues.meta.totalCount;
+  console.log(allItems.toJS());
   return {
     sidebarType: ui.sidebarType,
     selectedIssueIndex: issues.meta.selectedIssueIndex,

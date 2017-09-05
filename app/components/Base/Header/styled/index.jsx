@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 // padding top is 15px to avoid OS X window bar
   // background-color: ${props => props.theme.primary};
-export const Header = styled.header`
+export const HeaderContainer = styled.header`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -19,7 +19,13 @@ export const Name = styled.span`
 `;
 
 export const Team = styled.span`
+  cursor: pointer;
+`;
 
+export const DropdownSeparator = styled.div`
+  width: 100%;
+  height: 1px;
+  background: #e1e4e9;
 `;
 
 export const ProfileInfo = styled.div`

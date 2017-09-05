@@ -27,6 +27,7 @@ const SidebarAllItems = ({
       // eslint-disable-next-line react/prop-types
       rowRenderer: ({ index, key, style }) => {
         const item = allItems.get(index);
+
         return (
           <SidebarItem
             key={key}

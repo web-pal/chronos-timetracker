@@ -18,6 +18,7 @@ const Sidebar = ({ sidebarType, setSidebarType, currentProjectId, projectsFetche
       setSidebarType={setSidebarType}
     />
     <Flex column className="sidebar">
+      {console.log(currentProjectId)}
       <SidebarFilter />
       <CriteriaFilters />
       {currentProjectId ?
