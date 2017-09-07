@@ -21,6 +21,8 @@ export const arrowLeft = require('./chevron-left.svg');
 export const arrowDown = require('./chevron-down.svg');
 export const projectAvatar = require('./projectavatar.svg');
 export const monitor = require('./monitor.svg');
+export const lockBlue = require('./lock-blue.svg');
+export const peopleBlue = require('./people.svg');
 
 export const taskType = require('./jira/types/task.svg');
 export const majorPriority = require('./jira/priorities/major.svg');

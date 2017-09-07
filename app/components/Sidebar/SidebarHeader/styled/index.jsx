@@ -1,6 +1,13 @@
 /* eslint-disable no-confusing-arrow */
 import styled from 'styled-components';
 
+export const TabContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  min-height: 53px;
+`;
+
 export const Tab = styled.div`
   display: flex;
   flex-direction: row;

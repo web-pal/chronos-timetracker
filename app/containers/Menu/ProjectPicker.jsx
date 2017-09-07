@@ -51,7 +51,7 @@ const ProjectPicker = enhance(({
   selectSprint,
   selectedSprint,
 }) => (
-  <span>
+  <span style={{ padding: '0 20px 20px 20px', borderBottom: '1px solid #e1e4e9' }}>
     <Select
       options={options}
       value={selectedProject}

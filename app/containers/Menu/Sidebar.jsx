@@ -1,3 +1,4 @@
+// TODO: delete project picker
 import React, { PropTypes } from 'react';
 
 import { connect } from 'react-redux';
@@ -11,8 +12,11 @@ import Flex from '../../components/Base/Flex/Flex';
 import SidebarFilter from './SidebarFilter';
 import CriteriaFilters from './CriteriaFilters';
 
+import ProjectPicker from './ProjectPicker';
+
 const Sidebar = ({ sidebarType, setSidebarType, currentProjectId, projectsFetched }) =>
   <Flex column className="SidebarWrapper">
+    <ProjectPicker />
     <SidebarHeader
       sidebarType={sidebarType}
       setSidebarType={setSidebarType}

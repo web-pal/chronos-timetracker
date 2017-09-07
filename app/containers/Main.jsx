@@ -12,12 +12,12 @@ const theme = { primary: '#0052CC' };
 
 const Main = () =>
   <ThemeProvider theme={theme}>
-    <Flex column style={{ height: '100%', width: '100%' }}>
-      <Header />
-      <Flex row>
+    <Flex row>
+      <Flex column>
+        <Header />
         <Menu />
-        <IssueView style={{ borderLeft: '1px solid rgba(0, 0, 0, 0.18)' }} />
       </Flex>
+      <IssueView style={{ borderLeft: '1px solid rgba(0, 0, 0, 0.18)' }} />
     </Flex>
   </ThemeProvider>;
 

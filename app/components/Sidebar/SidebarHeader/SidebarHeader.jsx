@@ -1,10 +1,10 @@
 import React, { PropTypes } from 'react';
 
-import Flex from '../../Base/Flex/Flex';
+import { TabContainer } from './styled';
 import SidebarHeaderTab from './SidebarHeaderTab';
 
 const SidebarHeader = ({ sidebarType, setSidebarType }) =>
-  <Flex row spaceBetween>
+  <TabContainer>
     <SidebarHeaderTab
       active={sidebarType === 'Recent'}
       label="Recent"
@@ -15,7 +15,7 @@ const SidebarHeader = ({ sidebarType, setSidebarType }) =>
       label="All"
       onClick={setSidebarType}
     />
-  </Flex>;
+  </TabContainer>;
 
 // <TabIcon src={issuesBlue} alt="" />
 // <TabIcon src={recent} alt="" />

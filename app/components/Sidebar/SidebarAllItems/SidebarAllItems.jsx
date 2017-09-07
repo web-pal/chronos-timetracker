@@ -23,7 +23,7 @@ const SidebarAllItems = ({
       scrollToIndex: selectedIssueIndex,
       scrollToAlignment: 'center',
       rowCount: totalCount,
-      rowHeight: 40,
+      rowHeight: 101,
       // eslint-disable-next-line react/prop-types
       rowRenderer: ({ index, key, style }) => {
         const item = allItems.get(index);

@@ -1,53 +1,45 @@
+// TODO: hide if recent (??)
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { refresh, filter, search } from 'data/svg';
 
 import * as issuesActions from '../../actions/issues';
 
 import Flex from '../../components/Base/Flex/Flex';
 
-import searchIcon from '../../assets/images/search@2x.png';
-import refreshIcon from '../../assets/images/refresh@2x.png';
+import {
+  SearchBar,
+  SearchIcon,
+  SearchInput,
+  SearchOptions,
+  RefreshIcon,
+  FilterIcon,
+} from './styled';
 
 
 const SidebarFilter = ({
-  searchValue, sidebarType, searchIssues, allowRefresh,
+  searchValue, searchIssues, allowRefresh,
   clearIssues, fetchIssues, fetchRecentIssues, setIssuesSearchValue,
   fetchIssuesAllTypes,
   fetchIssuesAllStatuses,
 }) =>
   <Flex column centered >
-    <Flex row className={`sidebar-filter-item ${sidebarType === 'Recent' ? 'hidden' : ''}`}>
-      <Flex column centered className="search-field">
-        <Flex column centered>
-          {(searchValue.length > 0) &&
-            <span
-              className="aui-icon aui-icon-small aui-iconfont-remove-label"
-              onClick={() => setIssuesSearchValue('')}
-            />
-          }
-          <img
-            src={searchIcon}
-            width={18}
-            height={18}
-            alt="searchIcon"
-          />
-        </Flex>
-        <input
-          className="text"
-          type="text"
-          value={searchValue}
-          onChange={(ev) => {
-            setIssuesSearchValue(ev.target.value);
-            searchIssues();
-          }}
-        />
-      </Flex>
-      <Flex column centered>
-        <img
-          className="refreshIcon"
-          alt="refreshIcon"
-          src={refreshIcon}
+    <SearchBar>
+      <SearchIcon src={search} alt="" />
+      <SearchInput
+        placeholder="Search issue"
+        type="text"
+        value={searchValue}
+        onChange={(ev) => {
+          setIssuesSearchValue(ev.target.value);
+          searchIssues();
+        }}
+      />
+      <SearchOptions>
+        <RefreshIcon
+          src={refresh}
+          alt=""
           onClick={() => {
             if (allowRefresh) {
               clearIssues();
@@ -57,16 +49,14 @@ const SidebarFilter = ({
               fetchIssuesAllStatuses();
             }
           }}
-          width={20}
-          height={19}
         />
-      </Flex>
-    </Flex>
+        <FilterIcon src={filter} alt="" />
+      </SearchOptions>
+    </SearchBar>
   </Flex>;
 
 SidebarFilter.propTypes = {
   searchValue: PropTypes.string.isRequired,
-  sidebarType: PropTypes.string.isRequired,
   clearIssues: PropTypes.func.isRequired,
   fetchIssues: PropTypes.func.isRequired,
   fetchRecentIssues: PropTypes.func.isRequired,

@@ -13,7 +13,11 @@ import FilterCriteria from '../../components/Sidebar/CriteriaFilters/FilterCrite
 import getCriteriaFilters from './getCriteriaFilters';
 
 const CriteriaFilters = props => props.showPanel && props.sidebarType === 'All'
-  ? <Flex row className="sidebar-filter-item sidebar-filter-item--criterias">
+  ? <Flex
+    row
+    className="sidebar-filter-item sidebar-filter-item--criterias"
+    style={{ display: 'none' }}
+  >
     <Flex column centered className="sidebar-filter-criterias">
       <Flex row centered>
         {getCriteriaFilters(props).map(criteria =>

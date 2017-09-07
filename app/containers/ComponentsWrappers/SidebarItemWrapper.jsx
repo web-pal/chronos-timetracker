@@ -4,14 +4,12 @@ import { bindActionCreators } from 'redux';
 
 import * as issuesActions from '../../actions/issues';
 import * as worklogsActions from '../../actions/worklogs';
-import SidebarItem from '../../components/Sidebar/SidebarAllItems/SidebarItem';
-import SidebarRecentItem from '../../components/Sidebar/SidebarRecentItems/RecentItem';
+// import SidebarItem from '../../components/Sidebar/SidebarAllItems/SidebarItem';
+// import SidebarRecentItem from '../../components/Sidebar/SidebarRecentItems/RecentItem';
 
-const SidebarItemWrapper = props =>
-  (props.itemType === 'All' ?
-    <SidebarItem {...props} /> :
-    <SidebarRecentItem {...props} />
-  );
+import Issue from '../../components/Sidebar/Issue/Issue';
+
+const SidebarItemWrapper = props => <Issue {...props} />;
 
 SidebarItemWrapper.propTypes = {
   itemType: PropTypes.string.isRequired,

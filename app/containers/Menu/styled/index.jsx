@@ -9,7 +9,6 @@ export const SearchBar = styled.div`
   min-height: 42px;
   background-color: #F7FAFF;
   border-bottom: 1px solid rgba(151, 151, 151, .2);
-
 `;
 
 export const SearchIcon = styled.img`
