@@ -49,9 +49,12 @@ export const IssuePriority = styled.img`
 `;
 
 export const IssueLabel = styled.span`
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin-left: 5px;
   height: 16px;
-  background: #4778C1;
+  background: ${props => props.backgroundColor};
   border-radius: 3px;
   font-size: 12px;
   color: #FFFFFF;
@@ -68,3 +71,75 @@ export const StartTimerButton = styled.img`
   }
 `;
 
+export const PlaceholderContainer = styled.div`
+  border-bottom: 1px solid rgba(151,151,151,.35);
+  height: 160px;
+  max-height: 80px;
+  padding: 10px 20px;
+`;
+
+// Placeholders
+//
+// .
+export const Placeholder = styled.div`
+  background: #fff;
+  position: absolute;  ${(props) => {
+    switch (props.type) {
+      case 'issueRight':
+        return `
+          width: auto;
+          right: 0;
+          top: 0px;
+          height: 20px;
+          left: 120px;
+        `;
+      case 'issueBottom':
+        return `
+          position: absolute;
+          width: auto;
+          top: 18px;
+          left: 0;
+          right: 0;
+          height: 8px;
+        `;
+      case 'descriptionRight':
+        return `
+          top: 26px;
+          left: 320px;
+          width: auto;
+          right: 0;
+          height: 16px;
+        `;
+      case 'descriptionBottom':
+        return `
+          width: auto;
+          right: 0;
+          height: 16px;
+          left: 0;
+          top: 38px;
+        `;
+      case 'attributesRight':
+        return `
+          background: #fff;
+          position: absolute;
+          width: auto;
+          right: 0;
+          top: 54px;
+          height: 14px;
+          left: 160px;
+        `;
+      case 'attributesBottom':
+        return `
+          background: #fff;
+          position: absolute;
+          width: auto;
+          top: 68px;
+          left: 0px;
+          right: 0;
+          height: 16px;
+        `;
+      default:
+        return '';
+    }
+  }}
+`;
