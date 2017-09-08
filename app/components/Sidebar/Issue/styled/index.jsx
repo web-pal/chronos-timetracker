@@ -90,12 +90,11 @@ export const Placeholder = styled.div`
           width: auto;
           right: 0;
           top: 0px;
-          height: 20px;
-          left: 120px;
+          height: 18px;
+          left: 94px;
         `;
       case 'issueBottom':
         return `
-          position: absolute;
           width: auto;
           top: 18px;
           left: 0;
@@ -105,38 +104,50 @@ export const Placeholder = styled.div`
       case 'descriptionRight':
         return `
           top: 26px;
-          left: 320px;
+          left: 380px;
           width: auto;
           right: 0;
-          height: 16px;
+          height: 12px;
         `;
       case 'descriptionBottom':
         return `
           width: auto;
           right: 0;
-          height: 16px;
+          height: 4px;
           left: 0;
           top: 38px;
         `;
-      case 'attributesRight':
+      case 'descriptionRightSecond':
         return `
-          background: #fff;
-          position: absolute;
+          top: 42px;
+          left: 300px;
           width: auto;
           right: 0;
+          height: 12px;
+        `;
+      case 'descriptionBottomSecond':
+        return `
+          width: auto;
+          right: 0;
+          height: 14px;
           top: 54px;
+          left: 0;
+        `;
+      case 'attributesRight':
+        return `
+          width: auto;
+          right: 0;
+          top: 66px;
           height: 14px;
           left: 160px;
         `;
       case 'attributesBottom':
         return `
-          background: #fff;
-          position: absolute;
           width: auto;
           top: 68px;
-          left: 0px;
+          left: 140px;
           right: 0;
-          height: 16px;
+          height: 14px;
         `;
       default:
         return '';

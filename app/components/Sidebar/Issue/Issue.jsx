@@ -34,6 +34,8 @@ const IssuePlaceholder = () => (
       <Placeholder type="issueBottom" />
       <Placeholder type="descriptionRight" />
       <Placeholder type="descriptionBottom" />
+      <Placeholder type="descriptionRightSecond" />
+      <Placeholder type="descriptionBottomSecond" />
       <Placeholder type="attributesRight" />
       <Placeholder type="attributesBottom" />
     </div>
