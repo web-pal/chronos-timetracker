@@ -22,6 +22,9 @@ import Comments from './Comments/Comments';
 import Worklogs from './Worklogs/Worklogs';
 import Statistics from './Statistics/Statistics';
 
+import TrackingBar from '../../markup/components/TrackingBar/TrackingBar';
+import TrackingView from '../../markup/containers/TrackingView/TrackingView';
+
 import {
   getSelectedIssue, getSelectedWorklog,
   getTrackingIssue, getIssueLoggedByUser,
@@ -179,6 +182,8 @@ class IssueView extends Component {
       );
     }
     console.log(this.state.activeTab);
+          // <TrackingView />
+          // <TrackingBar />
 
     return (
       <IssueViewContainer column className="tracker">

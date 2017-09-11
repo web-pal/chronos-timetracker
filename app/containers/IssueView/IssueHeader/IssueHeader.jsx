@@ -18,7 +18,7 @@ export default (props) => {
   const { isTracking, currentIssue } = props;
 
   return (
-    <Flex column style={{ margin: 20, minHeight: 102 }}>
+    <Flex column style={{ margin: '16px 20px', minHeight: 102 }}>
       <Flex row alignCenter spaceBetween style={{ marginBottom: 15 }}>
         <Flex row alignCenter>
           <ProjectAvatar
