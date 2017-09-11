@@ -5,7 +5,8 @@ import Flex from '../components/Base/Flex/Flex';
 import Menu from './Menu/Menu';
 import Header from '../components/Base/Header/Header';
 
-import IssueView from '../markup/containers/IssueView/IssueView';
+// import IssueView from '../markup/containers/IssueView/IssueView';
+import IssueView from './IssueView/IssueView';
 
 // TODO: allow user to customize theme
 const theme = { primary: '#0052CC' };
@@ -17,7 +18,12 @@ const Main = () =>
         <Header />
         <Menu />
       </Flex>
-      <IssueView style={{ borderLeft: '1px solid rgba(0, 0, 0, 0.18)' }} />
+      <IssueView
+        style={{
+          borderLeft: '1px solid rgba(0, 0, 0, 0.18)',
+          height: '100vh',
+        }}
+      />
     </Flex>
   </ThemeProvider>;
 

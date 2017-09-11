@@ -1,6 +1,6 @@
 import React from 'react';
 import { projectAvatar } from 'data/svg';
-import Flex from '../../../../components/Base/Flex/Flex';
+import Flex from '../../../components/Base/Flex/Flex';
 
 import {
   ActivitySection,

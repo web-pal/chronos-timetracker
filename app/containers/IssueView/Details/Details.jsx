@@ -1,7 +1,7 @@
 import React from 'react';
 import { taskType, majorPriority } from 'data/svg';
 import { attachments } from 'data/assets';
-import Flex from '../../../../components/Base/Flex/Flex';
+import Flex from '../../../components/Base/Flex/Flex';
 
 import {
   IssueDetails,
@@ -17,7 +17,9 @@ import {
 
 /* eslint-disable */
 export default (props) => {
-  console.log(props.selectIssue.toJS());
+  console.log(props);
+  console.log(props.currentIssue.toJS());
+  const { currentIssue } = props;
   /* eslint-enable */
   return (
     <IssueDetails>
@@ -29,8 +31,11 @@ export default (props) => {
               Type:
             </DetailsLabel>
             <DetailsValue>
-              <IssueType src={taskType} alt="" />
-              Task
+              <IssueType
+                src={currentIssue.getIn(['fields', 'issuetype', 'iconUrl'])}
+                alt={currentIssue.getIn(['fields', 'issuetype', 'name'])}
+              />
+              {currentIssue.getIn(['fields', 'issuetype', 'name'])}
             </DetailsValue>
           </Flex>
 
@@ -39,8 +44,11 @@ export default (props) => {
               Priority:
             </DetailsLabel>
             <DetailsValue>
-              <IssuePriority src={majorPriority} alt="" />
-              Medium
+              <IssuePriority
+                src={currentIssue.getIn(['fields', 'priority', 'iconUrl'])}
+                alt={currentIssue.getIn(['fields', 'priority', 'name'])}
+              />
+              {currentIssue.getIn(['fields', 'priority', 'name'])}
             </DetailsValue>
           </Flex>
 
@@ -89,7 +97,7 @@ export default (props) => {
             </DetailsLabel>
             <DetailsValue>
               <IssueLabel>
-                IN PROGRESS
+                {currentIssue.getIn(['fields', 'status', 'name']).toUpperCase()}
               </IssueLabel>
             </DetailsValue>
           </Flex>
