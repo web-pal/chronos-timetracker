@@ -1,3 +1,4 @@
+// TODO: delete onFilterIconClick and delete state from Sidebar component
 // TODO: hide if recent (??)
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
@@ -23,6 +24,7 @@ const SidebarFilter = ({
   clearIssues, fetchIssues, fetchRecentIssues, setIssuesSearchValue,
   fetchIssuesAllTypes,
   fetchIssuesAllStatuses,
+  onFilterIconClick,
 }) =>
   <Flex column centered >
     <SearchBar>
@@ -50,7 +52,11 @@ const SidebarFilter = ({
             }
           }}
         />
-        <FilterIcon src={filter} alt="" />
+        <FilterIcon
+          src={filter}
+          alt=""
+          onClick={onFilterIconClick}
+        />
       </SearchOptions>
     </SearchBar>
   </Flex>;
@@ -65,6 +71,7 @@ SidebarFilter.propTypes = {
   allowRefresh: PropTypes.bool.isRequired,
   fetchIssuesAllTypes: PropTypes.func.isRequired,
   fetchIssuesAllStatuses: PropTypes.func.isRequired,
+  onFilterIconClick: PropTypes.func.isRequired,
 };
 
 function mapStateToProps({ ui, issues }) {

@@ -7,6 +7,7 @@ export const Filters = styled.div`
 
 export const FilterItems = styled.div`
   overflow-y: auto;
+  height: calc(100vh - 265px);
 `;
 
 export const FilterItem = styled.div`

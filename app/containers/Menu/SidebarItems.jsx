@@ -16,10 +16,12 @@ import SidebarRecentItems from '../../components/Sidebar/SidebarRecentItems/Side
 
 const SidebarItems = props =>
   <Flex column style={{ height: '100%' }}>
+    {/*
     <LinearGradientSpinner
       show={props.showSpinner}
       takeAllSpace
     />
+    */}
     <SidebarNoItems
       show={!props.showSpinner && props.totalCount === 0 && props.sidebarType === 'All'}
     />

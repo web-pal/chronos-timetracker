@@ -1,3 +1,4 @@
+// TODO: move Settings/Feedback/About modals from here
 // TODO: provide team in user info
 import React, { Component, PropTypes } from 'react';
 import styled from 'styled-components';
@@ -24,6 +25,11 @@ import {
   DropdownSeparator,
 } from './styled';
 
+
+import SettingsModal from '../../Modals/SettingsModal/SettingsModal';
+import AboutModal from '../../Modals/AboutModal/AboutModal';
+import SupportModal from '../../Modals/SupportModal/SupportModal';
+
 const DropdownLogoutItem = styled(DropdownItem)`
   :hover {
     color: hsla(0, 90%, 55%, 1) !important;
@@ -31,6 +37,12 @@ const DropdownLogoutItem = styled(DropdownItem)`
 `;
 
 class Header extends Component {
+  state = {
+    showSettings: false,
+    showFeedback: false,
+    showAbout: false,
+  }
+
   onLogout = () => {
     const { logout } = this.props;
     const { getGlobal } = remote;
@@ -49,9 +61,23 @@ class Header extends Component {
 
   render() {
     const { userData } = this.props;
+    const { showSettings, showFeedback, showAbout } = this.state;
+    console.log(this.state);
 
     return (
       <HeaderContainer>
+        <SettingsModal
+          isOpen={showSettings}
+          onClose={() => this.setState({ showSettings: false })}
+        />
+        <AboutModal
+          isOpen={showAbout}
+          onClose={() => this.setState({ showAbout: false })}
+        />
+        <SupportModal
+          isOpen={showFeedback}
+          onClose={() => this.setState({ showFeedback: false })}
+        />
         <Flex row alignCenter>
           <ProfilePicture src={avatarIcon} alt="" />
           <ProfileInfo>
@@ -67,11 +93,19 @@ class Header extends Component {
             position="bottom right"
           >
             <DropdownItemGroup>
-              <DropdownItem onClick={() => {}}>Settings</DropdownItem>
-              <DropdownItem onClick={() => {}}>Support and feedback</DropdownItem>
-              <DropdownItem onClick={() => {}}>About</DropdownItem>
+              <DropdownItem onClick={() => this.setState({ showSettings: true })}>
+                Settings
+              </DropdownItem>
+              <DropdownItem onClick={() => this.setState({ showFeedback: true })}>
+                Support and feedback
+              </DropdownItem>
+              <DropdownItem onClick={() => this.setState({ showAbout: true })}>
+                About
+              </DropdownItem>
               <DropdownSeparator />
-              <DropdownLogoutItem onClick={this.onLogout}>Logout</DropdownLogoutItem>
+              <DropdownLogoutItem onClick={this.onLogout}>
+                Logout
+              </DropdownLogoutItem>
             </DropdownItemGroup>
           </DropdownMenu>
         </Flex>

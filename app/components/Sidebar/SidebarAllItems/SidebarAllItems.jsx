@@ -25,9 +25,13 @@ const SidebarAllItems = ({
       rowCount: totalCount,
       rowHeight: 101,
       // eslint-disable-next-line react/prop-types
-      rowRenderer: ({ index, key, style }) => {
+      rowRenderer: ({ index, key, style, ...kek }) => {
+        console.log(index);
+        console.log(key);
+        console.log(kek);
         // TODO implement placeholders
         const item = allItems.get(index);
+        console.log(item);
 
         return (
           <SidebarItem

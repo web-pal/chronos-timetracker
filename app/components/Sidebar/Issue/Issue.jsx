@@ -63,9 +63,9 @@ const Issue = ({
     issue.getIn(['fields', 'status', 'statusCategory', 'colorName']),
   ).replace('.25', '1');
 
-  if (+issue.get('id') > 17171) {
-    return <IssuePlaceholder />;
-  }
+  // if (+issue.get('id') > 17171) {
+  //   return <IssuePlaceholder />;
+  // }
 
   return (
     <IssueContainer

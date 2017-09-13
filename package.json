@@ -166,7 +166,10 @@
     "webpack-sentry-plugin": "^1.9.2"
   },
   "dependencies": {
+    "@atlaskit/button": "^5.2.0",
+    "@atlaskit/button-group": "^1.5.3",
     "@atlaskit/dropdown-menu": "3.10.0",
+    "@atlaskit/modal-dialog": "^2.6.0",
     "@atlaskit/spinner": "^4.0.0",
     "@atlaskit/tooltip": "5.0.1",
     "bufferutil": "^3.0.0",

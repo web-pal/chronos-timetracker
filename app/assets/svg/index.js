@@ -7,6 +7,11 @@ export const cogIcon = require('./cog.svg');
 
 export const refresh = require('./refresh.svg');
 export const filter = require('./filter.svg');
+export const paperClip = require('./paper-clip.svg');
+export const hourgrass = require('./hourglass.svg');
+export const hourgrassWhite = require('./hourglass-white.svg');
+export const hourgrassGreen = require('./hourglass-green.svg');
+export const stopwatch = require('./stopwatch.svg');
 export const search = require('./search.svg');
 export const link = require('./link.svg');
 export const play = require('./play.svg');
