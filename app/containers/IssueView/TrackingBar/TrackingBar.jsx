@@ -1,30 +1,34 @@
 import React from 'react';
-import { pause } from 'data/svg';
+import { arrowDownWhite, stopWhite } from 'data/svg';
 import Flex from '../../../components/Base/Flex/Flex';
 import {
-  TrackingBarContainer,
-  StartTimer,
-  TaskName,
-  Timer,
-  Button,
+  NavButton,
+  IssueName,
+  Dot,
+  Time,
+  StopButton,
+  Container,
 } from './styled';
 
-export default () => (
-  <TrackingBarContainer>
-    <Flex column>
-      <TaskName>TTP-340</TaskName>
-      <Flex row>
-        <Button style={{ marginRight: 5 }}>More</Button>
-        <Button>Jump</Button>
-      </Flex>
-    </Flex>
-
+// isTrackingProp
+// eslint-disable-next-line
+export default ({ toggleTrackingView, isTrackingView }) => (
+  <Container>
+    <NavButton
+      src={arrowDownWhite}
+      alt=""
+      onClick={toggleTrackingView}
+      isTrackingView={isTrackingView}
+    />
     <Flex row alignCenter>
-      <Flex column>
-        <Timer>01:24</Timer>
-      </Flex>
-      <StartTimer src={pause} alt="Start" />
+      <IssueName>
+        TTP-234
+      </IssueName>
+      <Dot />
+      <Time>
+        0:54
+      </Time>
     </Flex>
-  </TrackingBarContainer>
+    <StopButton src={stopWhite} alt="stop" />
+  </Container>
 );
-

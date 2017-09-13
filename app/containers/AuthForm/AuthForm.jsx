@@ -167,7 +167,6 @@ class AuthForm extends Component {
   render() {
     const { handleSubmit, loginRequestInProcess, loginError } = this.props;
     const { step } = this.state;
-    console.log(step);
 
                 // <Content style={{ justifyContent: 'center' }}>
                 // </Content>

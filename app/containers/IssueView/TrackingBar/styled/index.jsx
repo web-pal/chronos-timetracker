@@ -1,60 +1,54 @@
 import styled from 'styled-components';
 
-export const TrackingBarContainer = styled.div`
+// background: #32A675 !important;
+// background: #172B4D !important;
+// background: linear-gradient(to right, rgb(255, 209, 72), rgb(255, 204, 77)) !important;
+export const Container = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
+  height: 60px;
   min-height: 60px;
-  padding: 16px 20px;
-  color: hsla(216, 80%, 30%, 1);
-  border-bottom: 1px solid hsla(220, 24%, 87%, 1);
-  background: linear-gradient(to right, rgb(255, 209, 72), hsl(43, 99%, 65%)) !important;
+  padding: 15px 20px 10px 20px;
+  background: #172B4D !important;
+  color: white;
 `;
 
-export const StartTimer = styled.img`
-  width: 60px;
+export const NavButton = styled.img`
+  height: 20px;
+  cursor: pointer;
+  transition: transform .2s ease-in-out;
+  transform: ${props => props.isTrackingView ? 'rotate(0deg)' : 'rotate(180deg)'};
+`;
+
+export const IssueName = styled.span`
+  font-size: 24px;
+  font-weight: 400;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  font-weight: 300;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid white;
+  :hover {
+    color: hsla(0, 0%, 80%, 1);
+    border-color: hsla(0, 0%, 85%, 1);
+  }
+`;
+export const Dot = styled.div`
+  width: 5px;
+  height: 5px;
+  background: white;
+  margin: 0px 10px;
   border-radius: 50%;
 `;
-
-export const TaskName = styled.span`
-  font-size: 20px;
-  margin-bottom: 3px;
-  font-weight: 600;
-  color: hsla(218, 54%, 30%, 1);
+export const Time = styled.span`
+  font-size: 22px;
+  letter-spacing: 1px;
+  font-weight: 700;
 `;
-
-
-export const Timer = styled.span`
-  font-size: 30px;
-  font-weight: 600;
-  margin-right: 10px;
-`;
-
-export const Button = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  padding: 1px 12px;
-  margin-top: 5px;
-  height: 20px;
-  width: 40px;
-
-  color: hsla(218, 54%, 25%, 1);
-  background-color: hsla(43, 95%, 65%, 1);
-
-  border: 1px solid hsla(218, 54%, 25%, 1);
-  border-radius: 3px;
-
-  letter-spacing: 0.5px;
-  font-size: 12px;
-  font-weight: 500;
-
+export const StopButton = styled.img`
+  height: 50px;
   cursor: pointer;
-
-  :hover {
-    background-color: #1a2943;
-    color: #f2d488;
-  }
 `;
 

@@ -17,8 +17,6 @@ import {
 
 /* eslint-disable */
 export default (props) => {
-  console.log(props);
-  console.log(props.currentIssue.toJS());
   const { currentIssue } = props;
   /* eslint-enable */
   return (

@@ -5,7 +5,7 @@ export const TabContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  min-height: 53px;
+  min-height: 54px;
 `;
 
 export const Tab = styled.div`

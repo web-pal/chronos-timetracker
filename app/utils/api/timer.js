@@ -7,7 +7,6 @@ function getScreen(callback) {
   const screenshots = [];
 
   function handleStream(stream, finalScreenshot) {
-    // console.log('stream',stream);
     // Create hidden video tag
     const video = document.createElement('video');
     video.style.cssText = 'position:absolute;top:-10000px;left:-10000px;';

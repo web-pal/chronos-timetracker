@@ -18,12 +18,7 @@ const Main = () =>
         <Header />
         <Menu />
       </Flex>
-      <IssueView
-        style={{
-          borderLeft: '1px solid rgba(0, 0, 0, 0.18)',
-          height: '100vh',
-        }}
-      />
+      <IssueView />
     </Flex>
   </ThemeProvider>;
 

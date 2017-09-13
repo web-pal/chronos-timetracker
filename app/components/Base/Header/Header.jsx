@@ -62,7 +62,6 @@ class Header extends Component {
   render() {
     const { userData } = this.props;
     const { showSettings, showFeedback, showAbout } = this.state;
-    console.log(this.state);
 
     return (
       <HeaderContainer>

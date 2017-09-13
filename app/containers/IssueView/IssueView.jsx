@@ -1,3 +1,4 @@
+// TODO: delete state from component
 import React, { PropTypes, Component } from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import styled from 'styled-components';
@@ -23,6 +24,7 @@ import Worklogs from './Worklogs/Worklogs';
 import Statistics from './Statistics/Statistics';
 
 import TrackingBar from './TrackingBar/TrackingBar';
+import TrackingView from '../TrackingView/TrackingView';
 
 import {
   getSelectedIssue, getSelectedWorklog,
@@ -44,7 +46,6 @@ const tabs = [
 const IssueViewContainer = styled.div`
   display: flex;
   flex-direction: column;
-  border-left: 1px solid rgba(0, 0, 0, 0.18);
   height: 100vh;
 `;
 
@@ -88,7 +89,7 @@ class IssueView extends Component {
     currentWorklogType: null,
   }
 
-  state = { activeTab: 'Details' }
+  state = { activeTab: 'Details', isTrackingView: false }
 
   // TODO: delete state from this component
   onChangeTab = (newTab) => this.setState({ activeTab: newTab });
@@ -180,29 +181,16 @@ class IssueView extends Component {
         </Flex>
       );
     }
-    console.log(this.state.activeTab);
-    // <TrackingBar />
 
     return (
       <IssueViewContainer column className="tracker">
-        <IssueHeader
-          currentIssue={currentIssue}
-          currentWorklog={currentWorklog}
-          sidebarType={sidebarType}
-          loggedToday={currentIssueLoggedToday}
-          selfLogged={currentIssueSelfLogged}
-          selfLoggedToday={currentIssueSelfLoggedToday}
-          showWorklogTypes={showWorklogTypes}
-          running={running}
+        <TrackingBar
+          toggleTrackingView={() => this.setState({ isTrackingView: !this.state.isTrackingView })}
+          isTrackingView={this.state.isTrackingView}
         />
-        <Tabs
-          tabs={tabs}
-          activeTab={this.state.activeTab}
-          onChangeTab={this.onChangeTab}
-        />
-        <Flex column style={{ padding: '20px 20px 0px 20px', overflowY: 'auto' }}>
-          {/* tabs.find(i => i.label === this.state.activeTab).content */}
-          <Details
+        <TrackingView isActive={this.state.isTrackingView} />
+        <Flex column style={{ borderLeft: '1px solid rgba(0,0,0,0.18)' }}>
+          <IssueHeader
             currentIssue={currentIssue}
             currentWorklog={currentWorklog}
             sidebarType={sidebarType}
@@ -212,6 +200,34 @@ class IssueView extends Component {
             showWorklogTypes={showWorklogTypes}
             running={running}
           />
+          <Tabs
+            tabs={tabs}
+            activeTab={this.state.activeTab}
+            onChangeTab={this.onChangeTab}
+          />
+          <Flex column style={{ padding: '20px 20px 0px 20px', overflowY: 'auto' }}>
+            {this.state.activeTab === 'Details' &&
+              <Details
+                currentIssue={currentIssue}
+                currentWorklog={currentWorklog}
+                sidebarType={sidebarType}
+                loggedToday={currentIssueLoggedToday}
+                selfLogged={currentIssueSelfLogged}
+                selfLoggedToday={currentIssueSelfLoggedToday}
+                showWorklogTypes={showWorklogTypes}
+                running={running}
+              />
+            }
+            {this.state.activeTab === 'Comments' &&
+              <Comments />
+            }
+            {this.state.activeTab === 'Worklogs' &&
+              <Worklogs />
+            }
+            {this.state.activeTab === 'Report' &&
+              <Statistics />
+            }
+          </Flex>
         </Flex>
         {/*
         <Flex column centered className="timer">
