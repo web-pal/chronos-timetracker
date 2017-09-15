@@ -5,15 +5,17 @@ export const TabContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  min-height: 54px;
+  min-height: 52px;
 `;
 
 export const Tab = styled.div`
+  box-sizing: border-box;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  height: 50px;
+  height: 51px;
+  min-height: 51px;
   width: 100%;
   color: white;
   background-color: white;

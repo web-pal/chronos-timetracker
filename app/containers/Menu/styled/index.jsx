@@ -6,7 +6,8 @@ export const SearchBar = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 0px 20px;
-  min-height: 42px;
+  min-height: 38px;
+  height: 38px;
   background-color: #F7FAFF;
   border-bottom: 1px solid rgba(151, 151, 151, .2);
 `;

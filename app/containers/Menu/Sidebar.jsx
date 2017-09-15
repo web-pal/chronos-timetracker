@@ -36,7 +36,7 @@ const Sidebar = ({
       {currentProjectId ?
         <SidebarItems /> :
         <span className="sidebar-nothing-selected">
-          {projectsFetched && <span>Select project from dropdown above</span> }
+          {projectsFetched && <span>Select project from dropdown above</span>}
         </span>
       }
     </Flex>

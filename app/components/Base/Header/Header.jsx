@@ -81,7 +81,7 @@ class Header extends Component {
           <ProfilePicture src={avatarIcon} alt="" />
           <ProfileInfo>
             <Name>{userData.get('displayName')}</Name>
-            <Team onClick={() => alert('Change team')}>{'web-pal.atlassian.com'}</Team>
+            <Team>{'web-pal.atlassian.com'}</Team>
           </ProfileInfo>
         </Flex>
         <Flex row>

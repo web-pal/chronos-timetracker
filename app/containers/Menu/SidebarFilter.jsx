@@ -7,8 +7,6 @@ import { refresh, filter, search } from 'data/svg';
 import * as issuesActions from '../../actions/issues';
 import * as uiActions from '../../actions/ui';
 
-import Flex from '../../components/Base/Flex/Flex';
-
 import {
   SearchBar,
   SearchIcon,
@@ -26,40 +24,38 @@ const SidebarFilter = ({
   fetchIssuesAllStatuses,
   setShowSidebarFilters,
 }) =>
-  <Flex column centered >
-    <SearchBar>
-      <SearchIcon src={search} alt="" />
-      <SearchInput
-        placeholder="Search issue"
-        type="text"
-        value={searchValue}
-        onChange={(ev) => {
-          setIssuesSearchValue(ev.target.value);
-          searchIssues();
+  <SearchBar>
+    <SearchIcon src={search} alt="" />
+    <SearchInput
+      placeholder="Search issue"
+      type="text"
+      value={searchValue}
+      onChange={(ev) => {
+        setIssuesSearchValue(ev.target.value);
+        searchIssues();
+      }}
+    />
+    <SearchOptions>
+      <RefreshIcon
+        src={refresh}
+        alt=""
+        onClick={() => {
+          if (allowRefresh) {
+            clearIssues();
+            fetchRecentIssues();
+            fetchIssues();
+            fetchIssuesAllTypes();
+            fetchIssuesAllStatuses();
+          }
         }}
       />
-      <SearchOptions>
-        <RefreshIcon
-          src={refresh}
-          alt=""
-          onClick={() => {
-            if (allowRefresh) {
-              clearIssues();
-              fetchRecentIssues();
-              fetchIssues();
-              fetchIssuesAllTypes();
-              fetchIssuesAllStatuses();
-            }
-          }}
-        />
-        <FilterIcon
-          src={filter}
-          alt=""
-          onClick={() => setShowSidebarFilters()}
-        />
-      </SearchOptions>
-    </SearchBar>
-  </Flex>;
+      <FilterIcon
+        src={filter}
+        alt=""
+        onClick={() => setShowSidebarFilters()}
+      />
+    </SearchOptions>
+  </SearchBar>;
 
 SidebarFilter.propTypes = {
   searchValue: PropTypes.string.isRequired,

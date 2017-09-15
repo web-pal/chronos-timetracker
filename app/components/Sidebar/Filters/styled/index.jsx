@@ -1,13 +1,16 @@
 import styled from 'styled-components';
 
 export const Filters = styled.div`
-  display: flex;
-  flex-direction: column;
+  position: absolute;
+  background: white;
+  z-index: 10;
+  height: calc(100% - 39px);
+  top: 39px;
 `;
 
 export const FilterItems = styled.div`
   overflow-y: auto;
-  height: calc(100vh - 265px);
+  height: 100%;
 `;
 
 export const FilterItem = styled.div`
