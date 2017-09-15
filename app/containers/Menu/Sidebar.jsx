@@ -1,6 +1,4 @@
-// TODO: delete state from Sidebar component
-// TODO: delete project picker
-import React, { PropTypes, Component } from 'react';
+import React, { PropTypes } from 'react';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -17,60 +15,37 @@ import Filters from '../../components/Sidebar/Filters/Filters';
 import ProjectPicker from './ProjectPicker';
 
 
-class Sidebar extends Component {
-  state = { filtersOpened: false };
-
-  render() {
-    // eslint-disable-next-line
-    const { sidebarType, setSidebarType, currentProjectId, projectsFetched } = this.props;
-    const { filtersOpened } = this.state;
-
-    return (
-      <Flex column className="SidebarWrapper">
-        <ProjectPicker />
-        <SidebarHeader
-          sidebarType={sidebarType}
-          setSidebarType={setSidebarType}
-        />
-        <Flex column className="sidebar">
-          <SidebarFilter
-            onFilterIconClick={() => this.setState({ filtersOpened: !this.state.filtersOpened })}
-          />
-          {filtersOpened ?
-            <Filters /> :
-            currentProjectId ?
-              <SidebarItems /> :
-              <span className="sidebar-nothing-selected">
-                {projectsFetched && <span>Select project from dropdown above</span> }
-              </span>
-          }
-        </Flex>
-      </Flex>
-    );
-  }
-}
-// const Sidebar = ({ sidebarType, setSidebarType, currentProjectId, projectsFetched }) =>
-//   <Flex column className="SidebarWrapper">
-//     <ProjectPicker />
-//     <SidebarHeader
-//       sidebarType={sidebarType}
-//       setSidebarType={setSidebarType}
-//     />
-//     <Flex column className="sidebar">
-//       <SidebarFilter />
-//       {currentProjectId ?
-//         <SidebarItems /> :
-//         <span className="sidebar-nothing-selected">
-//           {projectsFetched &&
-//             <span>Select project from dropdown above</span>
-//           }
-//         </span>
-//       }
-//     </Flex>
-//   </Flex>;
+const Sidebar = ({
+  sidebarType,
+  setSidebarType,
+  currentProjectId,
+  projectsFetched,
+  showSidebarFilters,
+}) => (
+  <Flex column className="SidebarWrapper">
+    <ProjectPicker />
+    <SidebarHeader
+      sidebarType={sidebarType}
+      setSidebarType={setSidebarType}
+    />
+    <Flex column className="sidebar">
+      <SidebarFilter />
+      {showSidebarFilters &&
+        <Filters />
+      }
+      {currentProjectId ?
+        <SidebarItems /> :
+        <span className="sidebar-nothing-selected">
+          {projectsFetched && <span>Select project from dropdown above</span> }
+        </span>
+      }
+    </Flex>
+  </Flex>
+);
 
 Sidebar.propTypes = {
   setSidebarType: PropTypes.func.isRequired,
+  showSidebarFilters: PropTypes.bool.isRequired,
   sidebarType: PropTypes.string.isRequired,
   currentProjectId: PropTypes.string,
   projectsFetched: PropTypes.bool.isRequired,
@@ -85,6 +60,7 @@ function mapStateToProps({ projects, ui }) {
     currentProjectId: `${projects.meta.get('selectedProjectId')}`,
     projectsFetched: projects.meta.get('fetched'),
     sidebarType: ui.sidebarType,
+    showSidebarFilters: ui.showSidebarFilters,
   };
 }
 

@@ -6,6 +6,9 @@ const InitialState = Immutable.Record({
   updateFetching: false,
   downloadingUpdate: false,
   showSettingsModal: false,
+  issueViewTab: 'Details',
+  showTrackingView: false,
+  showSidebarFilters: false,
 });
 
 const initialState = new InitialState();
@@ -22,6 +25,12 @@ export default function ui(state = initialState, action) {
       return state.set('sidebarType', action.payload);
     case types.SET_SHOW_SETTINGS_MODAL:
       return state.set('showSettingsModal', action.payload);
+    case types.SET_SHOW_TRACKING_VIEW:
+      return state.set('showTrackingView', action.payload);
+    case types.SET_ISSUE_VIEW_TAB:
+      return state.set('issueViewTab', action.payload);
+    case types.SET_SHOW_SIDEBAR_FILTERS:
+      return state.set('showSidebarFilters', action.payload || !state.showSidebarFilters);
     default:
       return state;
   }

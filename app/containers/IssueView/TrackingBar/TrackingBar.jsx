@@ -1,8 +1,9 @@
 import React, { PropTypes } from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import moment from 'moment';
-import { arrowDownWhite, stopWhite, startWhite } from 'data/svg';
+import { arrowDownWhite, stopWhite } from 'data/svg';
 import Flex from '../../../components/Base/Flex/Flex';
 import {
   NavButton,
@@ -10,24 +11,26 @@ import {
   Dot,
   Time,
   StopButton,
-  StartButton,
   Container,
 } from './styled';
+
+import * as timerActions from '../../../actions/timer';
+import * as issuesActions from '../../../actions/issues';
+import * as uiActions from '../../../actions/ui';
+
+import { getTrackingIssue } from '../../../selectors';
 
 function addLeadingZero(s) {
   return s < 10 ? `0${s}` : s;
 }
 
 const TrackingBar = ({
-  toggleTrackingView,
-  isTrackingView,
-  startTimer,
+  setShowTrackingView,
+  showTrackingView,
   stopTimer,
-  running,
   screenshotUploading,
   time,
   currentTrackingIssue,
-  uploading, // TODO: get rid of uploading
   selectIssue,
   jumpToTrackingIssue,
 }) => {
@@ -42,8 +45,8 @@ const TrackingBar = ({
       <NavButton
         src={arrowDownWhite}
         alt=""
-        onClick={toggleTrackingView}
-        isTrackingView={isTrackingView}
+        onClick={() => setShowTrackingView(!showTrackingView)}
+        isTrackingView={showTrackingView}
       />
       <Flex row alignCenter>
         <IssueName
@@ -61,58 +64,56 @@ const TrackingBar = ({
       </Flex>
       <div
         onClick={() => {
-          if (running) {
-            if (screenshotUploading) {
-              // eslint-disable-next-line no-alert
-              window.alert(
-                'Currently app in process of uploading screenshot, wait few seconds please',
-              );
-            } else {
-              stopTimer();
-            }
+          if (screenshotUploading) {
+            // eslint-disable-next-line no-alert
+            window.alert(
+              'Currently app in process of uploading screenshot, wait few seconds please',
+            );
           } else {
-            startTimer();
+            stopTimer();
           }
         }}
       >
-        {running ?
-          <StopButton
-            src={stopWhite}
-            alt="stop"
-            onClick={stopTimer}
-          /> :
-          <StartButton
-            src={startWhite}
-            alt="start"
-            onClick={startTimer}
-          />
-        }
+        <StopButton
+          src={stopWhite}
+          alt="stop"
+          onClick={stopTimer}
+        />
       </div>
     </Container>
   );
 };
 
 TrackingBar.propTypes = {
-  startTimer: PropTypes.func.isRequired,
   stopTimer: PropTypes.func.isRequired,
+  selectIssue: PropTypes.func.isRequired,
+  jumpToTrackingIssue: PropTypes.func.isRequired,
 
-  running: PropTypes.bool.isRequired,
   screenshotUploading: PropTypes.bool.isRequired,
-
   time: PropTypes.number.isRequired,
-  uploading: PropTypes.bool.isRequired,
-
-  toggleTrackingView: PropTypes.func.isRequired,
-  isTrackingView: PropTypes.bool.isRequired,
-
   currentTrackingIssue: ImmutablePropTypes.map.isRequired,
+
+  setShowTrackingView: PropTypes.func.isRequired,
+  showTrackingView: PropTypes.bool.isRequired,
 };
 
-function mapStateToProps({ timer, worklogs }) {
+function mapStateToProps(state) {
+  const { timer, worklogs, issues, ui } = state;
+  console.log(state.ui.toJS());
   return {
     time: timer.time,
-    uploading: worklogs.meta.worklogUploading,
+    screenshotUploading: worklogs.meta.screenshotUploading,
+    currentTrackingIssue: getTrackingIssue({ issues, worklogs }),
+    showTrackingView: ui.showTrackingView,
   };
 }
 
-export default connect(mapStateToProps)(TrackingBar);
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({
+    ...timerActions,
+    ...issuesActions,
+    ...uiActions,
+  }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(TrackingBar);

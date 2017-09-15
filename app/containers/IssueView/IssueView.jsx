@@ -1,4 +1,3 @@
-// TODO: delete state from component
 import React, { PropTypes, Component } from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import styled from 'styled-components';
@@ -27,6 +26,7 @@ import {
 import * as timerActions from '../../actions/timer';
 import * as worklogsActions from '../../actions/worklogs';
 import * as issuesActions from '../../actions/issues';
+import * as uiActions from '../../actions/ui';
 
 const tabs = [
   { label: 'Details', content: <Details /> },
@@ -41,6 +41,19 @@ const IssueViewContainer = styled.div`
   height: 100vh;
 `;
 
+const IssueContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid rgba(0,0,0,0.18);
+`;
+
+const IssueViewTabContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 20px 20px 0px 20px;
+  overflow-y: auto;
+`;
+
 class IssueView extends Component {
   static propTypes = {
     uploadScreenshot: PropTypes.func.isRequired,
@@ -53,22 +66,19 @@ class IssueView extends Component {
 
     startTimer: PropTypes.func.isRequired,
     stopTimer: PropTypes.func.isRequired,
-    selectIssue: PropTypes.func.isRequired,
-    jumpToTrackingIssue: PropTypes.func.isRequired,
     setForceQuitFlag: PropTypes.func.isRequired,
     saveKeepedIdle: PropTypes.func.isRequired,
 
     running: PropTypes.bool.isRequired,
-    screenshotUploading: PropTypes.bool.isRequired,
     currentIssue: ImmutablePropTypes.map.isRequired,
     currentTrackingIssue: ImmutablePropTypes.map.isRequired,
     currentIssueSelfLogged: PropTypes.number.isRequired,
     currentIssueSelfLoggedToday: PropTypes.number.isRequired,
     currentIssueLoggedToday: PropTypes.number.isRequired,
-  }
 
-  // TODO: delete state from this component
-  state = { activeTab: 'Details', isTrackingView: false }
+    issueViewTab: PropTypes.string.isRequired,
+    setIssueViewTab: PropTypes.func.isRequired,
+  }
 
   componentDidMount() {
     ipcRenderer.on('screenshot-accept', this.acceptScreenshot);
@@ -102,6 +112,10 @@ class IssueView extends Component {
       lastScreenshotThumbPath,
       timestamp,
     });
+  }
+
+  changeIssueViewTab = (newTab) => {
+    this.props.setIssueViewTab(newTab);
   }
 
   rejectScreenshot = () => {
@@ -141,9 +155,14 @@ class IssueView extends Component {
 
   render() {
     const {
-      startTimer, stopTimer, selectIssue, jumpToTrackingIssue, running, screenshotUploading,
-      currentIssue, currentTrackingIssue, currentIssueSelfLogged, currentIssueSelfLoggedToday,
+      startTimer,
+      running,
+      currentIssue,
+      currentTrackingIssue,
+      currentIssueSelfLogged,
+      currentIssueSelfLoggedToday,
       currentIssueLoggedToday,
+      issueViewTab,
     } = this.props;
 
     if (!currentIssue.size) {
@@ -161,20 +180,10 @@ class IssueView extends Component {
     return (
       <IssueViewContainer column className="tracker">
         {running &&
-          <TrackingBar
-            toggleTrackingView={() => this.setState({ isTrackingView: !this.state.isTrackingView })}
-            isTrackingView={this.state.isTrackingView}
-            startTimer={startTimer}
-            stopTimer={stopTimer}
-            running={running}
-            screenshotUploading={screenshotUploading}
-            currentTrackingIssue={currentTrackingIssue}
-            selectIssue={selectIssue}
-            jumpToTrackingIssue={jumpToTrackingIssue}
-          />
+          <TrackingBar />
         }
-        <TrackingView isActive={this.state.isTrackingView} />
-        <Flex column style={{ borderLeft: '1px solid rgba(0,0,0,0.18)' }}>
+        <TrackingView />
+        <IssueContainer>
           <IssueHeader
             currentIssue={currentIssue}
             currentTrackingIssue={currentTrackingIssue}
@@ -183,44 +192,44 @@ class IssueView extends Component {
           />
           <Tabs
             tabs={tabs}
-            activeTab={this.state.activeTab}
-            onChangeTab={(newTab) => this.setState({ activeTab: newTab })}
+            activeTab={issueViewTab}
+            onChangeTab={this.changeIssueViewTab}
           />
-          <Flex column style={{ padding: '20px 20px 0px 20px', overflowY: 'auto' }}>
-            {this.state.activeTab === 'Details' &&
+          <IssueViewTabContainer>
+            {issueViewTab === 'Details' &&
               <Details
                 currentIssue={currentIssue}
               />
             }
-            {this.state.activeTab === 'Comments' &&
+            {issueViewTab === 'Comments' &&
               <Comments />
             }
-            {this.state.activeTab === 'Worklogs' &&
+            {issueViewTab === 'Worklogs' &&
               <Worklogs />
             }
-            {this.state.activeTab === 'Report' &&
+            {issueViewTab === 'Report' &&
               <Statistics
                 currentIssueSelfLogged={currentIssueSelfLogged}
                 currentIssueSelfLoggedToday={currentIssueSelfLoggedToday}
                 currentIssueLoggedToday={currentIssueLoggedToday}
               />
             }
-          </Flex>
-        </Flex>
+          </IssueViewTabContainer>
+        </IssueContainer>
       </IssueViewContainer>
     );
   }
 }
 
-function mapStateToProps({ timer, issues, worklogs, profile }) {
+function mapStateToProps({ timer, issues, worklogs, profile, ui }) {
   return {
     running: timer.running,
-    screenshotUploading: worklogs.meta.screenshotUploading,
     currentIssue: getSelectedIssue({ issues }),
     currentIssueSelfLogged: getIssueLoggedByUser({ issues, worklogs, profile }),
     currentIssueSelfLoggedToday: getIssueLoggedByUserToday({ issues, worklogs, profile }),
     currentIssueLoggedToday: getIssueLoggedToday({ issues, worklogs }),
     currentTrackingIssue: getTrackingIssue({ issues, worklogs }),
+    issueViewTab: ui.issueViewTab,
   };
 }
 
@@ -229,6 +238,7 @@ function mapDispatchToProps(dispatch) {
     ...worklogsActions,
     ...timerActions,
     ...issuesActions,
+    ...uiActions,
   }, dispatch);
 }
 

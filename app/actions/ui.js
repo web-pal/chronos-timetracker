@@ -1,6 +1,5 @@
-import * as types from '../constants/';
 import storage from 'electron-json-storage';
-
+import * as types from '../constants/';
 
 export function setUpdateDownloadState(payload) {
   return {
@@ -30,6 +29,13 @@ export function setSidebarType(payload) {
   };
 }
 
+export function setShowSidebarFilters(payload) {
+  return {
+    type: types.SET_SHOW_SIDEBAR_FILTERS,
+    payload,
+  };
+}
+
 export function setShowSettingsModal(payload) {
   return {
     type: types.SET_SHOW_SETTINGS_MODAL,
@@ -52,5 +58,19 @@ export function setLocalDesktopSettings(settingName, value) {
     type: types.SET_LOCAL_DESKTOP_SETTINGS,
     meta: settingName,
     payload: value,
+  };
+}
+
+export function setShowTrackingView(payload) {
+  return {
+    type: types.SET_SHOW_TRACKING_VIEW,
+    payload,
+  };
+}
+
+export function setIssueViewTab(payload) {
+  return {
+    type: types.SET_ISSUE_VIEW_TAB,
+    payload,
   };
 }

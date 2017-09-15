@@ -1,4 +1,3 @@
-// TODO: delete onFilterIconClick and delete state from Sidebar component
 // TODO: hide if recent (??)
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
@@ -6,6 +5,7 @@ import { bindActionCreators } from 'redux';
 import { refresh, filter, search } from 'data/svg';
 
 import * as issuesActions from '../../actions/issues';
+import * as uiActions from '../../actions/ui';
 
 import Flex from '../../components/Base/Flex/Flex';
 
@@ -24,7 +24,7 @@ const SidebarFilter = ({
   clearIssues, fetchIssues, fetchRecentIssues, setIssuesSearchValue,
   fetchIssuesAllTypes,
   fetchIssuesAllStatuses,
-  onFilterIconClick,
+  setShowSidebarFilters,
 }) =>
   <Flex column centered >
     <SearchBar>
@@ -55,7 +55,7 @@ const SidebarFilter = ({
         <FilterIcon
           src={filter}
           alt=""
-          onClick={onFilterIconClick}
+          onClick={() => setShowSidebarFilters()}
         />
       </SearchOptions>
     </SearchBar>
@@ -71,7 +71,7 @@ SidebarFilter.propTypes = {
   allowRefresh: PropTypes.bool.isRequired,
   fetchIssuesAllTypes: PropTypes.func.isRequired,
   fetchIssuesAllStatuses: PropTypes.func.isRequired,
-  onFilterIconClick: PropTypes.func.isRequired,
+  setShowSidebarFilters: PropTypes.func.isRequired,
 };
 
 function mapStateToProps({ ui, issues }) {
@@ -85,7 +85,10 @@ function mapStateToProps({ ui, issues }) {
 
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(issuesActions, dispatch);
+  return bindActionCreators({
+    ...issuesActions,
+    ...uiActions,
+  }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SidebarFilter);

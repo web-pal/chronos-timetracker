@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { stopDarkBlue } from 'data/svg';
 import { screenshot } from 'data/assets';
 import Flex from '../../components/Base/Flex/Flex';
@@ -52,7 +53,7 @@ import {
 } from '../../styles/buttons';
 
 // eslint-disable-next-line
-export default ({ isActive }) => (
+const TrackingView = ({ isActive }) => (
   <TrackingViewContainer isActive={isActive}>
     <StopButton src={stopDarkBlue} alt="stop" />
     <EditSection>
@@ -98,3 +99,11 @@ export default ({ isActive }) => (
     </WorklogsSection>
   </TrackingViewContainer>
 );
+
+function mapStateToProps({ ui }) {
+  return {
+    isActive: ui.showTrackingView,
+  };
+}
+
+export default connect(mapStateToProps)(TrackingView);
