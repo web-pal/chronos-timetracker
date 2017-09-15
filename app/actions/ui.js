@@ -74,3 +74,18 @@ export function setIssueViewTab(payload) {
     payload,
   };
 }
+
+export function setShowSupportModal(payload) {
+  return {
+    type: types.SET_SHOW_SUPPORT_MODAL,
+    payload,
+  };
+}
+
+export function setShowAboutModal(payload) {
+  return {
+    type: types.SET_SHOW_ABOUT_MODAL,
+    payload,
+  };
+}
+

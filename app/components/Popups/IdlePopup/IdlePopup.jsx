@@ -3,9 +3,11 @@ import moment from 'moment';
 import { remote, ipcRenderer as ipc } from 'electron';
 import { stj } from 'time-util';
 
-import Flex from '../components/Base/Flex/Flex';
+import {} from './styled';
 
-import '../assets/stylesheets/main.less';
+import Flex from '../../Base/Flex/Flex';
+
+import '../../../assets/stylesheets/main.less';
 
 const { getGlobal } = remote;
 

@@ -16,10 +16,10 @@ export const IssueContainer = styled.div`
   // }
   ${props => props.active && `
     background-color: hsla(216, 78%, 96%, 1);
-    border-bottom: 1px solid hsla(216, 48%, 76%, 1);
+    // border-bottom: 1px solid hsla(216, 48%, 76%, 1);
   `}
   :hover {
-    background-color: hsla(216, 58%, 98%, 1);
+    background-color: hsla(216, 18%, 98%, 1);
   }
 `;
 

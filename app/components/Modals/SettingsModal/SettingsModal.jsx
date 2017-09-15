@@ -1,6 +1,10 @@
 import React from 'react';
 import ModalDialog from '@atlaskit/modal-dialog';
 import { DropdownItemCheckbox } from '@atlaskit/dropdown-menu';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+
+import * as uiActions from '../../../actions/ui';
 
 import Flex from '../../../components/Base/Flex/Flex';
 import {
@@ -12,9 +16,9 @@ import {
 } from './styled';
 
 // eslint-disable-next-line
-export default ({ isOpen, onClose }) => (
+const SettingsModal = ({ isOpen, setShowSettingsModal }) => (
   <ModalDialog
-    onDialogDismissed={onClose}
+    onDialogDismissed={() => setShowSettingsModal(false)}
     isOpen={isOpen}
   >
     <SettingsLabel>Settings</SettingsLabel>
@@ -57,3 +61,15 @@ export default ({ isOpen, onClose }) => (
     </Flex>
   </ModalDialog>
 );
+
+function mapStateToProps({ ui }) {
+  return {
+    isOpen: ui.showSettingsModal,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(uiActions, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SettingsModal);

@@ -1,9 +1,12 @@
 import React from 'react';
 import ModalDialog from '@atlaskit/modal-dialog';
 import ButtonGroup from '@atlaskit/button-group';
-import { hourgrass, hourgrassWhite, hourgrassGreen, stopwatch } from 'data/svg';
-// import Button from '@atlaskit/button';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import styled from 'styled-components';
+import { hourgrass, hourgrassWhite, hourgrassGreen, stopwatch } from 'data/svg';
+
+import * as uiActions from '../../../actions/ui';
 
 const StopwatchImage = styled.img`
   height: 18px;
@@ -33,15 +36,15 @@ import {
 } from '../../../styles/buttons';
 
 // eslint-disable-next-line
-export default ({ isOpen, onClose }) => (
+const AboutModal = ({ isOpen, setShowAboutModal }) => (
   <ModalDialog
-    onDialogDismissed={onClose}
+    onDialogDismissed={() => setShowAboutModal(false)}
     isOpen={isOpen}
   >
     <Flex
       column
       style={{
-        margin: '10px 5px'
+        margin: '10px 5px',
       }}
     >
       <Flex column>
@@ -94,3 +97,15 @@ export default ({ isOpen, onClose }) => (
     */}
   </ModalDialog>
 );
+
+function mapStateToProps({ ui }) {
+  return {
+    isOpen: ui.showAboutModal,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(uiActions, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(AboutModal);

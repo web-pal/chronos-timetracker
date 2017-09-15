@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { remote, ipcRenderer } from 'electron';
 
-import Img from '../components/Base/Img/Img';
-import Flex from '../components/Base/Flex/Flex';
-import PopupTimer from '../components/PopupTimer/PopupTimer';
+import Img from '../../Base/Img/Img';
+import Flex from '../../Base/Flex/Flex';
+import PopupTimer from '../../PopupTimer/PopupTimer';
 
-import '../assets/stylesheets/main.less';
+import {} from './styled';
+
+import '../../../assets/stylesheets/main.less';
 
 const { getGlobal } = remote;
 let acceptLock = false;

@@ -9,6 +9,8 @@ const InitialState = Immutable.Record({
   issueViewTab: 'Details',
   showTrackingView: false,
   showSidebarFilters: false,
+  showSupportModal: false,
+  showAboutModal: false,
 });
 
 const initialState = new InitialState();
@@ -31,6 +33,10 @@ export default function ui(state = initialState, action) {
       return state.set('issueViewTab', action.payload);
     case types.SET_SHOW_SIDEBAR_FILTERS:
       return state.set('showSidebarFilters', action.payload || !state.showSidebarFilters);
+    case types.SET_SHOW_SUPPORT_MODAL:
+      return state.set('showSupportModal', action.payload);
+    case types.SET_SHOW_ABOUT_MODAL:
+      return state.set('showAboutModal', action.payload);
     default:
       return state;
   }

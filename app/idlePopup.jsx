@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 
-import IdlePopup from './containers/IdlePopup';
+import IdlePopup from './components/Popups/IdlePopup/IdlePopup';
 
 render(
   <div id="root">

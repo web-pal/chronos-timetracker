@@ -2,7 +2,11 @@ import React from 'react';
 import ModalDialog from '@atlaskit/modal-dialog';
 import ButtonGroup from '@atlaskit/button-group';
 import Button from '@atlaskit/button';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { paperClip } from 'data/svg';
+
+import * as uiActions from '../../../actions/ui';
 
 import Flex from '../../../components/Base/Flex/Flex';
 import {
@@ -15,9 +19,9 @@ import {
 import { H700, H200 } from '../../../styles/typography';
 
 // eslint-disable-next-line
-export default ({ isOpen, onClose }) => (
+const SupportModal = ({ isOpen, setShowSupportModal }) => (
   <ModalDialog
-    onDialogDismissed={onClose}
+    onDialogDismissed={() => setShowSupportModal(false)}
     isOpen={isOpen}
     footer={(
       <Flex row style={{ justifyContent: 'flex-end' }}>
@@ -45,3 +49,15 @@ export default ({ isOpen, onClose }) => (
     </Flex>
   </ModalDialog>
 );
+
+function mapStateToProps({ ui }) {
+  return {
+    isOpen: ui.showSupportModal,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(uiActions, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SupportModal);

@@ -1,4 +1,3 @@
-// TODO: move Settings/Feedback/About modals from here
 // TODO: provide team in user info
 import React, { Component, PropTypes } from 'react';
 import styled from 'styled-components';
@@ -13,7 +12,9 @@ import DropdownMenu, {
 import { avatarIcon, cogIcon } from 'data/svg';
 
 import Flex from '../../../components/Base/Flex/Flex';
+
 import * as profileActions from '../../../actions/profile';
+import * as uiActions from '../../../actions/ui';
 
 import {
   HeaderContainer,
@@ -26,10 +27,6 @@ import {
 } from './styled';
 
 
-import SettingsModal from '../../Modals/SettingsModal/SettingsModal';
-import AboutModal from '../../Modals/AboutModal/AboutModal';
-import SupportModal from '../../Modals/SupportModal/SupportModal';
-
 const DropdownLogoutItem = styled(DropdownItem)`
   :hover {
     color: hsla(0, 90%, 55%, 1) !important;
@@ -37,21 +34,17 @@ const DropdownLogoutItem = styled(DropdownItem)`
 `;
 
 class Header extends Component {
-  state = {
-    showSettings: false,
-    showFeedback: false,
-    showAbout: false,
-  }
-
   onLogout = () => {
     const { logout } = this.props;
     const { getGlobal } = remote;
     const { running, uploading } = getGlobal('sharedObj');
 
     if (running) {
+      // eslint-disable-next-line no-alert
       window.alert('Tracking in progress, save worklog before logout!');
     }
     if (uploading) {
+      // eslint-disable-next-line no-alert
       window.alert('Currently app in process of saving worklog, wait few seconds please');
     }
     if (!running && !uploading) {
@@ -59,24 +52,15 @@ class Header extends Component {
     }
   }
 
+  openModal = (modalName) => () => {
+    this.props[`setShow${modalName}Modal`](true);
+  }
+
   render() {
     const { userData } = this.props;
-    const { showSettings, showFeedback, showAbout } = this.state;
 
     return (
       <HeaderContainer>
-        <SettingsModal
-          isOpen={showSettings}
-          onClose={() => this.setState({ showSettings: false })}
-        />
-        <AboutModal
-          isOpen={showAbout}
-          onClose={() => this.setState({ showAbout: false })}
-        />
-        <SupportModal
-          isOpen={showFeedback}
-          onClose={() => this.setState({ showFeedback: false })}
-        />
         <Flex row alignCenter>
           <ProfilePicture src={avatarIcon} alt="" />
           <ProfileInfo>
@@ -92,13 +76,13 @@ class Header extends Component {
             position="bottom right"
           >
             <DropdownItemGroup>
-              <DropdownItem onClick={() => this.setState({ showSettings: true })}>
+              <DropdownItem onClick={this.openModal('Settings')}>
                 Settings
               </DropdownItem>
-              <DropdownItem onClick={() => this.setState({ showFeedback: true })}>
+              <DropdownItem onClick={this.openModal('Support')}>
                 Support and feedback
               </DropdownItem>
-              <DropdownItem onClick={() => this.setState({ showAbout: true })}>
+              <DropdownItem onClick={this.openModal('About')}>
                 About
               </DropdownItem>
               <DropdownSeparator />
@@ -125,7 +109,10 @@ function mapStateToProps({ profile }) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(profileActions, dispatch);
+  return bindActionCreators({
+    ...profileActions,
+    ...uiActions,
+  }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Header);
