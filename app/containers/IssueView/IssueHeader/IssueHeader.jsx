@@ -1,6 +1,8 @@
+// TODO: need a bug test
+// expected behavior: start button is only visible on issues which are not currently being tracked
 import React from 'react';
-import { projectAvatar, arrowDown, play } from 'data/svg';
-import { userAvatar } from 'data/assets';
+import { shell } from 'electron';
+import { arrowDown, play } from 'data/svg';
 import Flex from '../../../components/Base/Flex/Flex';
 
 import {
@@ -11,11 +13,20 @@ import {
   ActionButton,
   UserAvatar,
   StartButton,
+  StartButtonPlaceholder,
 } from './styled';
+
+function openIssueInBrowser(issue) {
+  return (ev) => {
+    ev.preventDefault();
+    const urlArr = issue.get('self').split('/');
+    shell.openExternal(`${urlArr[0]}//${urlArr[2]}/browse/${issue.get('key')}`);
+  };
+}
 
 export default (props) => {
   // eslint-disable-next-line
-  const { isTracking, currentIssue } = props;
+  const { running, currentIssue, currentTrackingIssue, startTimer } = props;
 
   return (
     <Flex column style={{ margin: '16px 20px', minHeight: 102 }}>
@@ -31,20 +42,28 @@ export default (props) => {
           />
           <Flex column>
             <Flex row>
-              <Link>{currentIssue.getIn(['fields', 'project', 'name'])}</Link>
+              {/* TODO: MAKE project name a link */}
+              <Link>
+                {currentIssue.getIn(['fields', 'project', 'name'])}
+              </Link>
               <Breadcrumb>/</Breadcrumb>
-              <Link>{currentIssue.get('key')}</Link>
+              <Link onClick={openIssueInBrowser(currentIssue)}>
+                {currentIssue.get('key')}
+              </Link>
             </Flex>
             <IssueLabel>
               {currentIssue.getIn(['fields', 'summary'])}
             </IssueLabel>
           </Flex>
         </Flex>
-        <StartButton
-          src={play}
-          alt="Start Tracking"
-          style={{ opacity: isTracking ? 0 : 1 }}
-        />
+        {(running && currentIssue.get('id') === currentTrackingIssue.get('id')) ?
+          <StartButtonPlaceholder /> :
+          <StartButton
+            src={play}
+            alt="Start Tracking"
+            onClick={startTimer}
+          />
+        }
       </Flex>
       <Flex row>
         <ActionButton>

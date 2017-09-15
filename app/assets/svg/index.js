@@ -12,7 +12,6 @@ export const stopwatch = require('./stopwatch.svg');
 export const search = require('./search.svg');
 export const link = require('./link.svg');
 export const play = require('./play.svg');
-export const pause = require('./pause.svg');
 export const recent = require('./recent.svg');
 export const recentBlue = require('./recent-blue.svg');
 export const star = require('./star.svg');
@@ -27,6 +26,7 @@ export const lockBlue = require('./lock-blue.svg');
 export const peopleBlue = require('./people.svg');
 
 export const stopWhite = require('./stop-white.svg');
+export const stopDarkBlue = require('./stop-dark-blue.svg');
 export const arrowDownWhite = require('./chevron-down-white.svg');
 
 export const taskType = require('./jira/types/task.svg');

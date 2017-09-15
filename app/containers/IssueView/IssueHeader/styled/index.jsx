@@ -17,6 +17,7 @@ export const UserAvatar = styled.img`
 `;
 
 export const Link = styled.a`
+  cursor: pointer;
 `;
 
 export const IssueLabel = styled.span`
@@ -52,11 +53,17 @@ export const ActionButton = styled.button`
 
 export const StartButton = styled.img`
   width: 60px;
+  height: 60px;
   cursor: pointer;
   border-radius: 50%;
   :hover {
     box-shadow: 0 4px 8px 0 rgba(9, 30, 66, 0.32);
   }
+`;
+
+export const StartButtonPlaceholder = styled.div`
+  width: 60px;
+  height: 60px;
 `;
 
 export const Button = styled.button`

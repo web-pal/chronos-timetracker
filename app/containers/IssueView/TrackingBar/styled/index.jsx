@@ -19,7 +19,7 @@ export const NavButton = styled.img`
   height: 20px;
   cursor: pointer;
   transition: transform .2s ease-in-out;
-  transform: ${props => props.isTrackingView ? 'rotate(0deg)' : 'rotate(180deg)'};
+  transform: ${props => !props.isTrackingView ? 'rotate(0deg)' : 'rotate(180deg)'};
 `;
 
 export const IssueName = styled.span`
@@ -48,7 +48,10 @@ export const Time = styled.span`
   font-weight: 700;
 `;
 export const StopButton = styled.img`
-  height: 50px;
+  height: 60px;
   cursor: pointer;
 `;
-
+export const StartButton = styled.img`
+  height: 60px;
+  cursor: pointer;
+`;

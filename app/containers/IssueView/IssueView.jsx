@@ -7,14 +7,7 @@ import { bindActionCreators } from 'redux';
 
 import { remote, ipcRenderer } from 'electron';
 
-// import TextareaAutosize from 'react-autosize-textarea';
 import Flex from '../../components/Base/Flex/Flex';
-// import TimerControls from '../../components/Timer/TimerControls';
-// import TimerDisplay from './TimerDisplay';
-// import TrackerHeader from '../../components/TrackerHeader/TrackerHeader';
-// import StatusBar from './StatusBar';
-// import Gallery from '../../components/Gallery/Gallery';
-// import WorklogTypePicker from '../ComponentsWrappers/WorklogTypePickerWrapper';
 
 import IssueHeader from './IssueHeader/IssueHeader';
 import Tabs from './Tabs/Tabs';
@@ -27,8 +20,7 @@ import TrackingBar from './TrackingBar/TrackingBar';
 import TrackingView from '../TrackingView/TrackingView';
 
 import {
-  getSelectedIssue, getSelectedWorklog,
-  getTrackingIssue, getIssueLoggedByUser,
+  getSelectedIssue, getTrackingIssue, getIssueLoggedByUser,
   getIssueLoggedByUserToday, getIssueLoggedToday,
 } from '../../selectors';
 
@@ -64,35 +56,19 @@ class IssueView extends Component {
     selectIssue: PropTypes.func.isRequired,
     jumpToTrackingIssue: PropTypes.func.isRequired,
     setForceQuitFlag: PropTypes.func.isRequired,
-    setDescription: PropTypes.func.isRequired,
     saveKeepedIdle: PropTypes.func.isRequired,
 
     running: PropTypes.bool.isRequired,
     screenshotUploading: PropTypes.bool.isRequired,
-    showWorklogTypes: PropTypes.bool.isRequired,
     currentIssue: ImmutablePropTypes.map.isRequired,
-    currentWorklog: ImmutablePropTypes.map.isRequired,
     currentTrackingIssue: ImmutablePropTypes.map.isRequired,
-    currentWorklogType: PropTypes.number,
-    screenshots: ImmutablePropTypes.orderedSet.isRequired,
-    description: PropTypes.string.isRequired,
     currentIssueSelfLogged: PropTypes.number.isRequired,
     currentIssueSelfLoggedToday: PropTypes.number.isRequired,
     currentIssueLoggedToday: PropTypes.number.isRequired,
-    sidebarType: PropTypes.string.isRequired,
-
-    deleteScreenshotRequest: PropTypes.func.isRequired,
-    time: PropTypes.number.isRequired,
   }
-
-  static defaultProps = {
-    currentWorklogType: null,
-  }
-
-  state = { activeTab: 'Details', isTrackingView: false }
 
   // TODO: delete state from this component
-  onChangeTab = (newTab) => this.setState({ activeTab: newTab });
+  state = { activeTab: 'Details', isTrackingView: false }
 
   componentDidMount() {
     ipcRenderer.on('screenshot-accept', this.acceptScreenshot);
@@ -139,11 +115,13 @@ class IssueView extends Component {
     const { getGlobal } = remote;
     const { running, uploading } = getGlobal('sharedObj');
 
+    // eslint-disable-next-line no-alert
     if (running && window.confirm('Tracking in progress, save worklog before quit?')) {
       this.props.setForceQuitFlag();
       this.props.stopTimer();
     }
     if (uploading) {
+      // eslint-disable-next-line no-alert
       window.alert('Currently app in process of saving worklog, wait few seconds please');
     }
   }
@@ -163,11 +141,9 @@ class IssueView extends Component {
 
   render() {
     const {
-      startTimer, stopTimer, selectIssue, jumpToTrackingIssue, setDescription,
-      running, screenshotUploading, description, screenshots, deleteScreenshotRequest,
-      currentIssue, currentWorklog, currentWorklogType, currentTrackingIssue,
-      currentIssueSelfLogged, currentIssueSelfLoggedToday, currentIssueLoggedToday,
-      time, sidebarType, showWorklogTypes,
+      startTimer, stopTimer, selectIssue, jumpToTrackingIssue, running, screenshotUploading,
+      currentIssue, currentTrackingIssue, currentIssueSelfLogged, currentIssueSelfLoggedToday,
+      currentIssueLoggedToday,
     } = this.props;
 
     if (!currentIssue.size) {
@@ -184,38 +160,36 @@ class IssueView extends Component {
 
     return (
       <IssueViewContainer column className="tracker">
-        <TrackingBar
-          toggleTrackingView={() => this.setState({ isTrackingView: !this.state.isTrackingView })}
-          isTrackingView={this.state.isTrackingView}
-        />
+        {running &&
+          <TrackingBar
+            toggleTrackingView={() => this.setState({ isTrackingView: !this.state.isTrackingView })}
+            isTrackingView={this.state.isTrackingView}
+            startTimer={startTimer}
+            stopTimer={stopTimer}
+            running={running}
+            screenshotUploading={screenshotUploading}
+            currentTrackingIssue={currentTrackingIssue}
+            selectIssue={selectIssue}
+            jumpToTrackingIssue={jumpToTrackingIssue}
+          />
+        }
         <TrackingView isActive={this.state.isTrackingView} />
         <Flex column style={{ borderLeft: '1px solid rgba(0,0,0,0.18)' }}>
           <IssueHeader
             currentIssue={currentIssue}
-            currentWorklog={currentWorklog}
-            sidebarType={sidebarType}
-            loggedToday={currentIssueLoggedToday}
-            selfLogged={currentIssueSelfLogged}
-            selfLoggedToday={currentIssueSelfLoggedToday}
-            showWorklogTypes={showWorklogTypes}
+            currentTrackingIssue={currentTrackingIssue}
             running={running}
+            startTimer={startTimer}
           />
           <Tabs
             tabs={tabs}
             activeTab={this.state.activeTab}
-            onChangeTab={this.onChangeTab}
+            onChangeTab={(newTab) => this.setState({ activeTab: newTab })}
           />
           <Flex column style={{ padding: '20px 20px 0px 20px', overflowY: 'auto' }}>
             {this.state.activeTab === 'Details' &&
               <Details
                 currentIssue={currentIssue}
-                currentWorklog={currentWorklog}
-                sidebarType={sidebarType}
-                loggedToday={currentIssueLoggedToday}
-                selfLogged={currentIssueSelfLogged}
-                selfLoggedToday={currentIssueSelfLoggedToday}
-                showWorklogTypes={showWorklogTypes}
-                running={running}
               />
             }
             {this.state.activeTab === 'Comments' &&
@@ -225,98 +199,28 @@ class IssueView extends Component {
               <Worklogs />
             }
             {this.state.activeTab === 'Report' &&
-              <Statistics />
-            }
-          </Flex>
-        </Flex>
-        {/*
-        <Flex column centered className="timer">
-          {(currentTrackingIssue.size > 0) &&
-            <Flex
-              column
-              className={[
-                'current-tracking',
-                `${currentTrackingIssue.get('id') !== currentIssue.get('id') ? 'show' : 'hide'}`,
-              ].join(' ')}
-            >
-              <Flex row centered>
-                Currently tracking
-                <span className="current-tracking__key">
-                  {currentTrackingIssue.get('key')}
-                </span>
-              </Flex>
-              <Flex row centered>
-                <span
-                  className="current-tracking__link"
-                  onClick={() => {
-                    selectIssue(currentTrackingIssue.get('id'));
-                    jumpToTrackingIssue();
-                  }}
-                >
-                  Jump to issue
-                </span>
-              </Flex>
-            </Flex>
-          }
-          <Flex row centered style={{ minHeight: 10, height: 60 }}>
-            {running &&
-              <TextareaAutosize
-                autoFocus
-                id="descriptionInput"
-                value={description}
-                style={{ minHeight: 15, maxHeight: 180 }}
-                className="descriptionInput"
-                onChange={e => setDescription(e.target.value)}
-                placeholder="What are you doing?"
+              <Statistics
+                currentIssueSelfLogged={currentIssueSelfLogged}
+                currentIssueSelfLoggedToday={currentIssueSelfLoggedToday}
+                currentIssueLoggedToday={currentIssueLoggedToday}
               />
             }
           </Flex>
-          <Flex row centered style={{ marginBottom: 10 }}>
-            {(running && showWorklogTypes) &&
-              <WorklogTypePicker currentWorklogType={currentWorklogType} />
-            }
-          </Flex>
-          <Flex row centered>
-            <Flex column style={{ width: '100%' }}>
-              <TimerControls
-                running={running}
-                screenshotUploading={screenshotUploading}
-                startTimer={startTimer}
-                stopTimer={stopTimer}
-              />
-              <TimerDisplay />
-              {running && time < 60 &&
-                <Flex row centered className="TimerControls__warning">
-                  Time under 1m would not be logged!
-                </Flex>
-              }
-              <Gallery images={screenshots} deleteScreenshot={deleteScreenshotRequest} />
-            </Flex>
-          </Flex>
         </Flex>
-        <StatusBar />
-        */}
       </IssueViewContainer>
     );
   }
 }
 
-function mapStateToProps({ timer, issues, worklogs, ui, profile }) {
+function mapStateToProps({ timer, issues, worklogs, profile }) {
   return {
     running: timer.running,
-    time: timer.time,
     screenshotUploading: worklogs.meta.screenshotUploading,
     currentIssue: getSelectedIssue({ issues }),
-    currentWorklog: getSelectedWorklog({ worklogs }),
     currentIssueSelfLogged: getIssueLoggedByUser({ issues, worklogs, profile }),
     currentIssueSelfLoggedToday: getIssueLoggedByUserToday({ issues, worklogs, profile }),
     currentIssueLoggedToday: getIssueLoggedToday({ issues, worklogs }),
     currentTrackingIssue: getTrackingIssue({ issues, worklogs }),
-    currentWorklogType: worklogs.meta.currentWorklogType,
-    description: worklogs.meta.currentDescription,
-    screenshots: issues.meta.currentScreenshots,
-    sidebarType: ui.sidebarType,
-    showWorklogTypes: worklogs.meta.showWorklogTypes,
   };
 }
 
