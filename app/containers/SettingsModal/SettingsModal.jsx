@@ -15,7 +15,7 @@ class SettingsModal extends Component {
   static propTypes = {
     showModal: PropTypes.bool.isRequired,
     settings: ImmutablePropTypes.map.isRequired,
-    setShowSettingsModal: PropTypes.func.isRequired,
+    setShowAboutModal: PropTypes.func.isRequired,
     setLocalDesktopSettings: PropTypes.func.isRequired,
     getLocalDesktopSettings: PropTypes.func.isRequired,
   };
@@ -44,17 +44,18 @@ class SettingsModal extends Component {
   }
 
   handleClose = () => {
-    this.props.setShowSettingsModal(false);
+    this.props.setShowAboutModal(false);
   }
 
   render() {
     const { showModal, settings, setLocalDesktopSettings } = this.props;
     return (
-      <div className="SettingsWrapper">
+      <div className="SettingsWrapper" style={{ zIndex: 500 }}>
         <Modal
           isOpen={showModal}
           contentLabel="Settings modal"
           onRequestClose={this.handleClose}
+          style={{ zIndex: 501 }}
         >
           <Settings
             onClose={this.handleClose}
@@ -70,9 +71,9 @@ class SettingsModal extends Component {
   }
 }
 
-function mapStateToProps({ ui, settings }) {
+function mapStateToProps({ settings }) {
   return {
-    showModal: ui.showSettingsModal,
+    showModal: true,
     settings: settings.localDesktopSettings,
   };
 }

@@ -8,6 +8,7 @@ import Header from '../components/Base/Header/Header';
 import SettingsModal from '../components/Modals/SettingsModal/SettingsModal';
 import SupportModal from '../components/Modals/SupportModal/SupportModal';
 import AboutModal from '../components/Modals/AboutModal/AboutModal';
+import AlertModal from '../components/Modals/AlertModal/AlertModal';
 
 import IssueView from './IssueView/IssueView';
 
@@ -18,8 +19,9 @@ const Main = () =>
   <ThemeProvider theme={theme}>
     <Flex row>
       <SettingsModal />
-      <AboutModal />
       <SupportModal />
+      <AboutModal />
+      <AlertModal />
 
       <Flex column>
         <Header />

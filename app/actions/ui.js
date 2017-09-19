@@ -89,3 +89,11 @@ export function setShowAboutModal(payload) {
   };
 }
 
+
+export function setShowAlertModal(payload) {
+  return {
+    type: types.SET_SHOW_ALERT_MODAL,
+    payload,
+  };
+}
+

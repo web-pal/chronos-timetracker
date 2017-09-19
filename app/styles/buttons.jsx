@@ -39,5 +39,9 @@ export const Button = styled.button`
   -webkit-user-select: none;
   vertical-align: middle;
   white-space: nowrap;
+
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;

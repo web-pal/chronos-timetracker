@@ -11,6 +11,7 @@ const InitialState = Immutable.Record({
   showSidebarFilters: false,
   showSupportModal: false,
   showAboutModal: false,
+  showAlertModal: false,
 });
 
 const initialState = new InitialState();
@@ -37,6 +38,8 @@ export default function ui(state = initialState, action) {
       return state.set('showSupportModal', action.payload);
     case types.SET_SHOW_ABOUT_MODAL:
       return state.set('showAboutModal', action.payload);
+    case types.SET_SHOW_ALERT_MODAL:
+      return state.set('showAlertModal', action.payload);
     default:
       return state;
   }

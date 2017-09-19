@@ -29,7 +29,9 @@ const Sidebar = ({
       setSidebarType={setSidebarType}
     />
     <Flex column className="sidebar">
-      <SidebarFilter />
+      {sidebarType === 'All' &&
+        <SidebarFilter />
+      }
       {showSidebarFilters &&
         <Filters />
       }

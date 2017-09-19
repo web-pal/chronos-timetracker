@@ -12,7 +12,7 @@ export const H800 = styled.span`
 
 // Welcome to the Research Operations monthly!
 export const H700 = styled.span`
-  font-weight: 600;
+  font-weight: 500;
   font-size: 24px;
   color: #172B4D;
   letter-spacing: 0.33px;
@@ -32,7 +32,7 @@ export const H600 = styled.span`
 
 // All blog articles
 export const H500 = styled.span`
-  font-weight: 600;
+  font-weight: 500;
   font-size: 16px;
   color: #172B4D;
   letter-spacing: -0.32px;
@@ -42,7 +42,7 @@ export const H500 = styled.span`
 
 // Learn how to contribute
 export const H400 = styled.span`
-  font-weight: 500;
+  font-weight: 600;
   font-size: 14px;
   color: #172B4D;
   letter-spacing: -0.15px;
@@ -52,7 +52,7 @@ export const H400 = styled.span`
 
 // Our missions, as a team
 export const H300 = styled.span`
-  font-weight: 700;
+  font-weight: 600;
   font-size: 12px;
   color: #172B4D;
   line-height: 16px;
@@ -70,7 +70,7 @@ export const H200 = styled.span`
 
 // PAGES
 export const H100 = styled.span`
-  font-weight: 700;
+  font-weight: 600;
   font-size: 11px;
   color: #6B778C;
   letter-spacing: 0.06px;

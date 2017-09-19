@@ -33,6 +33,14 @@ const DropdownLogoutItem = styled(DropdownItem)`
   }
 `;
 
+const DropdownUpdateItem = styled(DropdownItem)`
+  color: hsl(261, 90%, 55%) !important;
+  :hover {
+    background-color: hsla(261,85%,98%, 1) !important;
+    color: hsl(261, 95%, 50%) !important;
+  }
+`;
+
 class Header extends Component {
   onLogout = () => {
     const { logout } = this.props;
@@ -58,6 +66,8 @@ class Header extends Component {
 
   render() {
     const { userData } = this.props;
+    // TODO: update available
+    const updateAvailable = true;
 
     return (
       <HeaderContainer>
@@ -85,6 +95,14 @@ class Header extends Component {
               <DropdownItem onClick={this.openModal('About')}>
                 About
               </DropdownItem>
+              {updateAvailable &&
+                <DropdownSeparator />
+              }
+              {updateAvailable &&
+              <DropdownUpdateItem onClick={() => alert('TODO: start update')}>
+                Update available. Restart now
+              </DropdownUpdateItem>
+              }
               <DropdownSeparator />
               <DropdownLogoutItem onClick={this.onLogout}>
                 Logout

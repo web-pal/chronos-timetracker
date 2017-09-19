@@ -36,7 +36,7 @@ const SupportModal = ({ isOpen, setShowSupportModal }) => (
       </Flex>
     )}
   >
-    <Flex column style={{ margin: '20px 10px 10px 10px' }}>
+    <Flex column style={{ margin: '20px 10px 10px 4px' }}>
       <H700 style={{ marginBottom: 28 }}>Have a question?</H700>
       <H200>Your email</H200>
       <TextInput type="text" value="ignatif@gmail.com" />

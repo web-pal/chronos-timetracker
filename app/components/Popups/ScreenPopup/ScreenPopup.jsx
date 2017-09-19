@@ -6,6 +6,7 @@ import Flex from '../../Base/Flex/Flex';
 import PopupTimer from '../../PopupTimer/PopupTimer';
 
 import {} from './styled';
+import { Button } from '../../../styles/buttons';
 
 import '../../../assets/stylesheets/main.less';
 
@@ -57,24 +58,27 @@ export default class ScreenPopup extends Component {
 
   render() {
     const { lastScreenshotPath, currentTime, maxTime } = this.state;
+
     return (
       <Flex row centered className="popup">
         <Flex column>
           <Img src={lastScreenshotPath} className="screenshot-preview" />
           <PopupTimer time={maxTime - currentTime} />
           <Flex row centered>
-            <button
-              className="button button-info"
-              onClick={this.acceptScreenshot}
-            >
-              Accept
-            </button>
-            <button
-              className="button button-primary"
+            <Button
+              background="hsla(40, 100%, 45%, 1)"
+              style={{ marginRight: 5, width: 90 }}
               onClick={this.rejectScreenshot}
             >
               Reject
-            </button>
+            </Button>
+            <Button
+              background="#36B37E"
+              style={{ width: 90 }}
+              onClick={this.acceptScreenshot}
+            >
+              Accept
+            </Button>
           </Flex>
         </Flex>
       </Flex>

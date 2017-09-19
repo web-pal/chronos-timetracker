@@ -386,8 +386,8 @@ ipcMain.on('open-oauth-url', (event, url) => {
 
 ipcMain.on('showIdlePopup', () => {
   const options = {
-    width: 250,
-    height: 112,
+    width: 460,
+    height: 152,
     frame: false,
   };
   const win = new BrowserWindow(options);
