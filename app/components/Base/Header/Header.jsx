@@ -82,7 +82,6 @@ class Header extends Component {
           <DropdownMenu
             trigger={<SettingsIcon src={cogIcon} alt="" />}
             triggerType="default"
-            onOpenChange={e => console.log('dropdown opened', e)}
             position="bottom right"
           >
             <DropdownItemGroup>

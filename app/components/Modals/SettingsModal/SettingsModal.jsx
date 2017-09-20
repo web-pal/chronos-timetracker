@@ -38,23 +38,9 @@ class SettingsModal extends Component {
     this.props.getLocalDesktopSettings();
   }
 
-  setScreenshotPreviewTime = time => ev => {
-    if (ev.target.checked) {
-      this.props.setLocalDesktopSettings('screenshotPreviewTime', time);
-    }
-  }
-
-  setNativeNotificationsSettings = value => ev => {
-    if (ev.target.checked) {
-      this.props.setLocalDesktopSettings('nativeNotifications', value);
-    }
-  }
-
-  setTraySettings = value => ev => {
-    if (ev.target.checked) {
-      sharedObj.trayShowTimer = value;
-      this.props.setLocalDesktopSettings('trayShowTimer', value);
-    }
+  setTraySettings = value => () => {
+    sharedObj.trayShowTimer = value;
+    this.props.setLocalDesktopSettings('trayShowTimer', value);
   }
 
   onClose = () => {
@@ -62,7 +48,7 @@ class SettingsModal extends Component {
   }
 
   render() {
-    const { isOpen } = this.props;
+    const { isOpen, settings, setLocalDesktopSettings } = this.props;
     const { tab } = this.state;
 
     return (
@@ -72,10 +58,10 @@ class SettingsModal extends Component {
         footer={(
           <Flex row style={{ justifyContent: 'flex-end' }}>
             <ButtonGroup>
-              <Button appearance="primary">
-                Save
-              </Button>
-              <Button appearance="subtle">
+              <Button
+                appearance="default"
+                onClick={this.onClose}
+              >
                 Close
               </Button>
             </ButtonGroup>
@@ -84,7 +70,7 @@ class SettingsModal extends Component {
       >
         <ModalContentContainer>
           <H700 style={{ marginBottom: 28, display: 'block' }}>Settings</H700>
-          <Flex row style={{ height: 150 }}>
+          <Flex row style={{ height: 250 }}>
             <Flex column style={{ width: 85 }}>
               <SettingsSectionLabel
                 active={tab === 'General'}
@@ -101,10 +87,16 @@ class SettingsModal extends Component {
             </Flex>
             <Separator />
             {tab === 'General' &&
-              <GeneralSettings />
+              <GeneralSettings
+                settings={settings}
+                setTraySettings={this.setTraySettings}
+              />
             }
             {tab === 'Notifications' &&
-              <NotificationsSettings />
+              <NotificationsSettings
+                settings={settings}
+                setLocalDesktopSettings={setLocalDesktopSettings}
+              />
             }
           </Flex>
         </ModalContentContainer>

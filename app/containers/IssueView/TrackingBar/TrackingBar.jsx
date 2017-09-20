@@ -97,9 +97,7 @@ TrackingBar.propTypes = {
   showTrackingView: PropTypes.bool.isRequired,
 };
 
-function mapStateToProps(state) {
-  const { timer, worklogs, issues, ui } = state;
-  console.log(state.ui.toJS());
+function mapStateToProps({ timer, worklogs, issues, ui }) {
   return {
     time: timer.time,
     screenshotUploading: worklogs.meta.screenshotUploading,

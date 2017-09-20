@@ -50,6 +50,8 @@ export function getLocalDesktopSettings() {
 }
 
 export function setLocalDesktopSettings(settingName, value) {
+  console.log(settingName);
+  console.log(value);
   storage.get('localDesktopSettings', (err, settings) => {
     const updateSettings = { ...settings, [settingName]: value };
     storage.set('localDesktopSettings', updateSettings);

@@ -14,8 +14,6 @@ import {} from './styled';
 // } from '../../../styles/typography';
 import { Button } from '../../../styles/buttons';
 
-import SettingsModal from '../../../containers/SettingsModal/SettingsModal';
-
 // eslint-disable-next-line
 const AboutModal = ({ isOpen, setShowAboutModal, ...props }) => (
   <ModalDialog
@@ -23,7 +21,6 @@ const AboutModal = ({ isOpen, setShowAboutModal, ...props }) => (
     isOpen={isOpen}
   >
     <Flex column alignCenter style={{ margin: '20px 0px' }}>
-      <SettingsModal />
       <Button
         style={{ marginBottom: 18, width: 400 }}
         onClick={() => ipcRenderer.send('showIdlePopup')}

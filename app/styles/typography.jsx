@@ -70,7 +70,7 @@ export const H200 = styled.span`
 
 // PAGES
 export const H100 = styled.span`
-  font-weight: 600;
+  font-weight: 500;
   font-size: 11px;
   color: #6B778C;
   letter-spacing: 0.06px;
