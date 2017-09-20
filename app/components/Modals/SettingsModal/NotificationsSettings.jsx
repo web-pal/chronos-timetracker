@@ -12,8 +12,6 @@ const NotificationsSettings = ({
   setLocalDesktopSettings,
 /* eslint-enable */
 }) => {
-  console.log('rerender');
-  console.log(settings.toJS());
   const notificationsTypes = [
     {
       name: 'nativeNotifications',
@@ -69,10 +67,12 @@ const NotificationsSettings = ({
           }
         />
 
-        <H100 style={{ margin: '10px 0 0 6px' }}>
-          Configure whether to show native OSX notification or custom popup.
-          Native popups are visible in fullscreen apps.
-        </H100>
+        {settings.get('showScreenshotPreview') &&
+          <H100 style={{ margin: '10px 0 0 6px' }}>
+            Configure whether to show native OSX notification or custom popup.
+            Native popups are visible in fullscreen apps.
+          </H100>
+        }
         {settings.get('showScreenshotPreview') &&
           <div style={{ marginLeft: -8 }}>
             <RadioButtonGroup
@@ -85,9 +85,11 @@ const NotificationsSettings = ({
           </div>
         }
 
-        <H100 style={{ margin: '10px 0 0 6px' }}>
-          Configure the time until screenshots accept automatically.
-        </H100>
+        {settings.get('showScreenshotPreview') &&
+          <H100 style={{ margin: '10px 0 0 6px' }}>
+            Configure the time until screenshots accept automatically.
+          </H100>
+        }
         {settings.get('showScreenshotPreview') &&
           <div style={{ marginLeft: -8 }}>
             <RadioButtonGroup

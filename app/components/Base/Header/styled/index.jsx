@@ -58,3 +58,15 @@ export const ProfilePicture = styled.img`
 }
   }
 `;
+
+export const UpdateAvailableBadge = styled.div`
+  width: 8px;
+  height: 8px;
+  background: #FF8B00;
+  position: absolute;
+  border-radius: 50%;
+  right: -3px;
+  top: -3px;
+  border: 2px solid #1d61c7;
+  z-index: 2;
+`;

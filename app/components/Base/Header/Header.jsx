@@ -24,6 +24,7 @@ import {
   ProfilePicture,
   Team,
   DropdownSeparator,
+  UpdateAvailableBadge,
 } from './styled';
 
 
@@ -34,10 +35,10 @@ const DropdownLogoutItem = styled(DropdownItem)`
 `;
 
 const DropdownUpdateItem = styled(DropdownItem)`
-  color: hsl(261, 90%, 55%) !important;
+  color: #FF8B00 !important;
   :hover {
-    background-color: hsla(261,85%,98%, 1) !important;
-    color: hsl(261, 95%, 50%) !important;
+    background-color: hsla(33, 80%, 95%, 1) !important;
+    color: #FF8B00 !important;
   }
 `;
 
@@ -78,7 +79,10 @@ class Header extends Component {
             <Team>{'web-pal.atlassian.com'}</Team>
           </ProfileInfo>
         </Flex>
-        <Flex row>
+        <Flex row style={{ position: 'relative' }}>
+          {updateAvailable &&
+            <UpdateAvailableBadge />
+          }
           <DropdownMenu
             trigger={<SettingsIcon src={cogIcon} alt="" />}
             triggerType="default"
