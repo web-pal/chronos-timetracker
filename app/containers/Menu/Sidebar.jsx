@@ -9,9 +9,7 @@ import SidebarItems from './SidebarItems';
 import SidebarHeader from '../../components/Sidebar/SidebarHeader/SidebarHeader';
 import Flex from '../../components/Base/Flex/Flex';
 import SidebarFilter from './SidebarFilter';
-
-import Filters from '../../components/Sidebar/Filters/Filters';
-
+import Filters from './Filters';
 import ProjectPicker from './ProjectPicker';
 
 

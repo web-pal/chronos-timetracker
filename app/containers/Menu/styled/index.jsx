@@ -17,12 +17,24 @@ export const SearchIcon = styled.img`
 `;
 
 export const RefreshIcon = styled.img`
+  @keyframes rotating {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
   height: 16px;
   cursor: pointer;
   transition: transform .3s ease-in;
   :hover {
     transform: rotate(270deg);
   }
+  ${props => props.isFetching ? `
+    animation: rotating 0.8s linear infinite;
+  ` : ''}
 `;
 
 export const FilterIcon = styled.img`
@@ -41,3 +53,9 @@ export const SearchInput = styled.input`
 
 export const SearchOptions = styled.div`
 `;
+
+export const RadioContainer = styled.div`
+  width: 50%;
+  display: inline-block;
+`;
+

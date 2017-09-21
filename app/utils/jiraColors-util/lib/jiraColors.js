@@ -1,4 +1,4 @@
-export default function getStatusColor(colorName, opacity = '.25') {
+export default function getStatusColor(colorName, opacity = '1') {
   switch (colorName) {
     case 'medium-gray':
       return `rgba(112, 112, 112, ${opacity})`;

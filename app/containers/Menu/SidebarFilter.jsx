@@ -1,8 +1,7 @@
-// TODO: hide if recent (??)
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { refresh, filter, search } from 'data/svg';
+import { refresh, filter, filterBlue, search } from 'data/svg';
 
 import * as issuesActions from '../../actions/issues';
 import * as uiActions from '../../actions/ui';
@@ -23,6 +22,7 @@ const SidebarFilter = ({
   fetchIssuesAllTypes,
   fetchIssuesAllStatuses,
   setShowSidebarFilters,
+  showSidebarFilters,
 }) =>
   <SearchBar>
     <SearchIcon src={search} alt="" />
@@ -48,9 +48,10 @@ const SidebarFilter = ({
             fetchIssuesAllStatuses();
           }
         }}
+        isFetching={!allowRefresh}
       />
       <FilterIcon
-        src={filter}
+        src={showSidebarFilters ? filterBlue : filter}
         alt=""
         onClick={() => setShowSidebarFilters()}
       />
@@ -68,6 +69,7 @@ SidebarFilter.propTypes = {
   fetchIssuesAllTypes: PropTypes.func.isRequired,
   fetchIssuesAllStatuses: PropTypes.func.isRequired,
   setShowSidebarFilters: PropTypes.func.isRequired,
+  showSidebarFilters: PropTypes.bool.isRequired,
 };
 
 function mapStateToProps({ ui, issues }) {
@@ -76,6 +78,7 @@ function mapStateToProps({ ui, issues }) {
     showingFilterCriteriaBlock: issues.meta.showingFilterCriteriaBlock,
     sidebarType: ui.sidebarType,
     allowRefresh: !issues.meta.fetching,
+    showSidebarFilters: ui.showSidebarFilters,
   };
 }
 
