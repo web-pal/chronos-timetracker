@@ -174,10 +174,10 @@ function createWindow(callback) {
     const lastWindowSize = data || {};
     mainWindow = new BrowserWindow({
       show: false,
-      width: 500,
-      height: 675,
+      width: 1040,
+      height: 800,
       minWidth: 560,
-      minHeight: 640,
+      minHeight: 800,
       ...lastWindowSize,
       ...noFrameOption,
     });

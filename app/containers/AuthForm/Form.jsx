@@ -1,12 +1,21 @@
-import React from 'react';
+import React, { Component } from 'react';
 import styled from 'styled-components';
+import { findDOMNode } from 'react-dom';
 import Flex from '../../components/Base/Flex/Flex';
 
-const Mask = styled.span`
+const InputMaskValue = styled.div`
   position: absolute;
-  margin-top: 10px;
-  margin-left: 56px;
+  top: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: -1;
+`;
+
+const InputMask = styled.span`
+  position: absolute;
+  top: 10px;
   color: hsla(216, 77%, 23%, 1);
+  left: ${props => props.offSet + 8}px;
 `;
 
 const Input = styled.input`
@@ -32,20 +41,6 @@ const Input = styled.input`
   &:hover {
     border-color: hsla(216, 49%, 43%, 1);
   }
-
-//   border: 0px;
-//   border-bottom: 2px solid #b3b3b3;
-//   border-radius: 0px;
-//   padding: 0px;
-//   font-size: 16px;
-//   font-weight: 500;
-//   margin-bottom: 0px;
-//   &:hover {
-//     border-color: #0052cc;
-//   }
-//   &:focus {
-//     border-color: #0052cc;
-//   }
 `;
 
 const UnderlineInput = Input.extend`
@@ -58,28 +53,61 @@ const UnderlineInput = Input.extend`
   margin-bottom: 40px;
 `;
 
-export const renderField = ({
-  style, underlined, mask, input, label, type, placeholder, meta: { touched, error, warning } //eslint-disable-line
-}) => (
-  <Flex row spaceBetween style={{ width: '100%' }}>
-    {underlined ?
-      <UnderlineInput
-        {...input}
-        type={type}
-        style={style || {}}
-        placeholder={placeholder}
-      />
-      :
-      <Input
-        {...input}
-        type={type}
-        style={style || {}}
-        placeholder={placeholder}
-      />
-    }
-    {mask &&
-      <Mask>.atlassian.net</Mask>
-    }
-  </Flex>
-);
+class MaskField extends Component {
+  state = { width: 56 };
 
+  onInputChange = () => {
+    const bounds = findDOMNode(this.r).getBoundingClientRect();
+    console.log('input change');
+    console.log(bounds.width);
+    this.setState({ width: bounds.width });
+  }
+
+  render() {
+    /* eslint-disable react/prop-types */
+    const {
+      style, underlined, mask, input, label, type,
+      placeholder, meta: { touched, error, warning }
+    } = this.props;
+    const { width } = this.state;
+    /* eslint-enable react/prop-types */
+
+    return (
+      <Flex row spaceBetween style={{ width: '100%', position: 'relative' }}>
+        {underlined ?
+          <UnderlineInput
+            {...input}
+            type={type}
+            style={style || {}}
+            placeholder={placeholder}
+            onChange={(value) => {
+              console.log(input);
+              console.log(this.props);
+              this.onInputChange();
+              input.onChange(value);
+            }}
+          />
+          :
+          <Input
+            {...input}
+            type={type}
+            style={style || {}}
+            placeholder={placeholder}
+          />
+        }
+        {mask &&
+          <InputMaskValue ref={r => { this.r = r; }}>
+            {input.value}
+          </InputMaskValue>
+        }
+        {mask &&
+          <InputMask offSet={width}>
+            .atlassian.net
+          </InputMask>
+        }
+      </Flex>
+    );
+  }
+}
+
+export const renderField = (props) => <MaskField {...props} />;
