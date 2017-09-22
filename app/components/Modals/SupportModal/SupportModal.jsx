@@ -19,10 +19,11 @@ import {
 import { H700, H200 } from '../../../styles/typography';
 
 // eslint-disable-next-line
-const SupportModal = ({ isOpen, setShowSupportModal }) => (
+const SupportModal = ({ isOpen, setShowSupportModal }) => isOpen && (
   <ModalDialog
-    onDialogDismissed={() => setShowSupportModal(false)}
     isOpen={isOpen}
+    onClose={() => setShowSupportModal(false)}
+    onDialogDismissed={() => setShowSupportModal(false)}
     footer={(
       <Flex row style={{ justifyContent: 'flex-end' }}>
         <ButtonGroup>

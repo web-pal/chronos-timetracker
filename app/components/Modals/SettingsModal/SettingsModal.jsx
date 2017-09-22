@@ -53,8 +53,9 @@ class SettingsModal extends Component {
 
     return (
       <ModalDialog
-        onDialogDismissed={this.onClose}
         isOpen={isOpen}
+        onClose={this.onClose}
+        onDialogDismissed={this.onClose}
         footer={(
           <Flex row style={{ justifyContent: 'flex-end' }}>
             <ButtonGroup>

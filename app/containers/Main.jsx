@@ -18,10 +18,10 @@ const theme = { primary: '#0052CC' };
 const Main = () =>
   <ThemeProvider theme={theme}>
     <Flex row>
+      <AlertModal />
       <SettingsModal />
       <SupportModal />
       <AboutModal />
-      <AlertModal />
 
       <Flex column>
         <Header />

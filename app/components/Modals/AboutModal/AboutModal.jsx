@@ -17,8 +17,9 @@ import { Button } from '../../../styles/buttons';
 // eslint-disable-next-line
 const AboutModal = ({ isOpen, setShowAboutModal, ...props }) => (
   <ModalDialog
-    onDialogDismissed={() => setShowAboutModal(false)}
     isOpen={isOpen}
+    onClose={() => setShowAboutModal(false)}
+    onDialogDismissed={() => setShowAboutModal(false)}
   >
     <Flex column alignCenter style={{ margin: '20px 0px' }}>
       <Button

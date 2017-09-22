@@ -20,8 +20,9 @@ import {
 // eslint-disable-next-line
 const AboutModal = ({ isOpen, setShowAlertModal }) => (
   <ModalDialog
-    onDialogDismissed={() => setShowAlertModal(false)}
     isOpen={isOpen}
+    onClose={() => setShowAlertModal(false)}
+    onDialogDismissed={() => setShowAlertModal(false)}
     footer={(
       <Flex row style={{ justifyContent: 'flex-end' }}>
         <ButtonGroup>
