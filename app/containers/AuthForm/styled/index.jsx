@@ -64,7 +64,7 @@ export const Logo = styled.img`
 `;
 
 export const Hint = styled.span`
-  color: white;
+  color: #DEEBFF;
   font-size: 14px;
   border-bottom: 1px solid rgba(0, 0, 0, 0);
   &:hover {
@@ -103,29 +103,34 @@ export const PrimaryButton = Button.extend`
 
 export const OauthButton = Button.extend`
   background-color: white;
-  color: rgba(0, 0, 0, 0.64);
-  border: 1px solid rgba(0, 0, 0, .2);
-  box-shadow: 0 4px 8px 0 rgba(9,30,66,0.25);
+  border: 1px solid rgba(0, 0, 0, .05);
+  box-shadow: 1px 1px 5px 0 rgba(0, 0, 0, 0.2) !important;
+  color: #505F79;
   :hover {
-    background-color: hsla(218, 20%, 95%, 1);
+    background-color: rgba(9, 30, 66, 0.02) !important;
   }
 `;
 
 export const ContentSeparator = styled.span`
-  margin: 20px 0;
-  color: rgba(0, 0, 0, .5);
-  font-size: 12px;
+  margin: 24px 0;
+  color: #97A0AF;
+  font-size: 11px;
+  line-height: 1;
+  margin-top: 24px;
 `;
 
 export const LoginInfo = styled.span`
-  color: white;
   font-size: 24px;
+  font-weight: 500;
+  line-height: 28px;
+  letter-spacing: -.01em;
+  color: #DEEBFF;
   margin-bottom: 4vh;
 `;
 
 export const Error = styled.span`
   color: #DE350B;
-  margin-bottom: 30px;
+  margin-bottom: 15px;
   align-self: left;
   font-size: 12px;
 `;
@@ -159,9 +164,9 @@ export const Title = styled.span`
 `;
 
 export const Subtitle = styled.span`
-  color: #5E6C84;
-  margin-top: 5px;
-  margin-bottom: 25px;
+  color: #8993A4;
+  margin-top: 4px;
+  margin-bottom: 24px;
 `;
 
 export const BackButtonContainer = styled.div`

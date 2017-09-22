@@ -33,7 +33,6 @@ import {
   ContentIconContainer,
   Title,
   Subtitle,
-  SpinnerContainer,
   BackButtonContainer,
 } from './styled';
 
@@ -66,22 +65,19 @@ const TeamStep = ({ onContinue, isActiveStep }) => (
   </ContentInner>
 );
 
+const EmailStep = ({
 // eslint-disable-next-line
-const EmailStep = ({ error, onContinue, onJiraClick, isActiveStep, onBack }) => (
+  error, onContinue, onJiraClick, isActiveStep, onBack, loginRequestInProcess
+}) => (
   <ContentInner isActiveStep={isActiveStep} step={2}>
     <ContentIconContainer>
       <Lock src={lockBlue} alt="" width="18" />
     </ContentIconContainer>
-    <BackButtonContainer>
-      <Button
-        appearance="subtle"
-        onClick={onBack}
-      >
-        Back
-      </Button>
-    </BackButtonContainer>
     <Flex column alignCenter style={{ width: '100%' }}>
-      <OauthButton onClick={onJiraClick}>
+      <OauthButton
+        onClick={onJiraClick}
+        disabled={loginRequestInProcess}
+      >
         <img src={jiraIcon} alt="" style={{ height: 20 }} />
         Log in with JIRA
       </OauthButton>
@@ -92,18 +88,30 @@ const EmailStep = ({ error, onContinue, onJiraClick, isActiveStep, onBack }) => 
         component={renderField}
         type="text"
         autoFocus
+        disabled={loginRequestInProcess}
       />
       <Field
         name="password"
         placeholder="Enter password"
         component={renderField}
         type="password"
+        disabled={loginRequestInProcess}
       />
       <Error>{error}</Error>
     </Flex>
     <PrimaryButton onClick={onContinue}>
-      Continue
+      {loginRequestInProcess ?
+        <Spinner invertColor /> : 'Continue'
+      }
     </PrimaryButton>
+    <BackButtonContainer>
+      <Button
+        appearance="subtle"
+        onClick={onBack}
+      >
+        Back
+      </Button>
+    </BackButtonContainer>
   </ContentInner>
 );
 
@@ -186,11 +194,6 @@ class AuthForm extends Component {
         <Flex column alignCenter>
           <LoginInfo>Log in to your account</LoginInfo>
           <ContentOuter>
-            {loginRequestInProcess &&
-              <SpinnerContainer>
-                <Spinner size="xlarge" />
-              </SpinnerContainer>
-            }
             <TeamStep
               onContinue={() => this.setState({ step: 2 })}
               isActiveStep={step === 1}
@@ -201,6 +204,7 @@ class AuthForm extends Component {
               error={loginError}
               isActiveStep={step === 2}
               onBack={() => this.setState({ step: 1 })}
+              loginRequestInProcess={loginRequestInProcess}
             />
           </ContentOuter>
         </Flex>

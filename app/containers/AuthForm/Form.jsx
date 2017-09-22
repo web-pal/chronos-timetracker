@@ -28,25 +28,43 @@ const Input = styled.input`
   padding-left: 10px;
   margin-bottom: 10px;
 
-  background: white;
-  border: 2px solid hsla(217, 20%, 80%, 1);
-  border-radius: 3px;
+  // background: white;
+  // border: 2px solid hsla(217, 20%, 80%, 1);
+  // border-radius: 3px;
 
   font-size: 14px;
   letter-spacing: 0;
 
+  background-color: #FAFBFC;
+  border: 1px solid #F4F5F7;
+  border-radius: 5px;
+  color: #091E42;
+
   &::-webkit-input-placeholder {
     font-size: 14px;
   }
-  &:focus {
-    border-color: hsla(216, 49%, 43%, 1);
-  }
   &:hover {
-    border-color: hsla(216, 49%, 43%, 1);
+    background-color: #F4F5F7;
+    border-color: #F4F5F7;
+  }
+  &:focus {
+    border-color: #4C9AFF;
+    border-width: 2px;
+    height: 38px;
+    min-height: 38px;
+    padding-left: 9px;
+    background: white;
   }
 `;
 
-const UnderlineInput = Input.extend`
+const UnderlineInput = styled.input`
+  width: calc(100% - 10px);
+  height: 40px;
+  min-height: 40px;
+  font-size: 14px;
+  letter-spacing: 0;
+  color: #091E42;
+  background: white;
   border: 0px;
   border-bottom: 2px solid #0052cc;
   border-radius: 0px;
@@ -54,6 +72,12 @@ const UnderlineInput = Input.extend`
   font-size: 14px;
   font-weight: 500;
   margin-bottom: 40px;
+  &::-webkit-input-placeholder {
+    font-size: 14px;
+  }
+  &:focus {
+    border-color: hsla(216, 49%, 43%, 1);
+  }
 `;
 
 class MaskField extends Component {
@@ -72,7 +96,8 @@ class MaskField extends Component {
     /* eslint-disable react/prop-types */
     const {
       style, underlined, mask, input, label, type,
-      placeholder, meta: { touched, error, warning }
+      placeholder, meta: { touched, error, warning },
+      disabled,
     } = this.props;
     const { width } = this.state;
     /* eslint-enable react/prop-types */
@@ -84,6 +109,7 @@ class MaskField extends Component {
             {...input}
             type={type}
             style={style || {}}
+            disabled={disabled}
             placeholder={placeholder}
             onChange={(value) => {
               this.onInputChange(value);
@@ -95,6 +121,7 @@ class MaskField extends Component {
             {...input}
             type={type}
             style={style || {}}
+            disabled={disabled}
             placeholder={placeholder}
           />
         }
