@@ -163,3 +163,11 @@ export const Subtitle = styled.span`
   margin-top: 5px;
   margin-bottom: 25px;
 `;
+
+export const BackButtonContainer = styled.div`
+  position: absolute;
+  bottom: 8px;
+  button {
+    font-size: 12px !important;
+  }
+`;

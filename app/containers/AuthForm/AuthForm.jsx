@@ -8,6 +8,7 @@ import { Field, reduxForm, formValueSelector } from 'redux-form/immutable';
 import { ipcRenderer } from 'electron';
 import storage from 'electron-json-storage';
 import Spinner from '@atlaskit/spinner';
+import Button from '@atlaskit/button';
 
 import * as profileActions from '../../actions/profile';
 
@@ -33,6 +34,7 @@ import {
   Title,
   Subtitle,
   SpinnerContainer,
+  BackButtonContainer,
 } from './styled';
 
 
@@ -65,11 +67,19 @@ const TeamStep = ({ onContinue, isActiveStep }) => (
 );
 
 // eslint-disable-next-line
-const EmailStep = ({ error, onContinue, onJiraClick, isActiveStep }) => (
+const EmailStep = ({ error, onContinue, onJiraClick, isActiveStep, onBack }) => (
   <ContentInner isActiveStep={isActiveStep} step={2}>
     <ContentIconContainer>
       <Lock src={lockBlue} alt="" width="18" />
     </ContentIconContainer>
+    <BackButtonContainer>
+      <Button
+        appearance="subtle"
+        onClick={onBack}
+      >
+        Back
+      </Button>
+    </BackButtonContainer>
     <Flex column alignCenter style={{ width: '100%' }}>
       <OauthButton onClick={onJiraClick}>
         <img src={jiraIcon} alt="" style={{ height: 20 }} />
@@ -190,6 +200,7 @@ class AuthForm extends Component {
               onJiraClick={this.oAuth}
               error={loginError}
               isActiveStep={step === 2}
+              onBack={() => this.setState({ step: 1 })}
             />
           </ContentOuter>
         </Flex>
