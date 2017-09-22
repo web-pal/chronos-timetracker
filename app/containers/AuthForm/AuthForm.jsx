@@ -48,7 +48,7 @@ const TeamStep = ({ onContinue, isActiveStep }) => (
       <Form>
         <Field
           name="host"
-          placeholder="web-pal"
+          placeholder="team"
           component={renderField}
           type="text"
           className="host"

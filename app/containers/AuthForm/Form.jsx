@@ -3,6 +3,9 @@ import styled from 'styled-components';
 import { findDOMNode } from 'react-dom';
 import Flex from '../../components/Base/Flex/Flex';
 
+import calculateSize from 'calculate-size';
+console.log(calculateSize);
+
 const InputMaskValue = styled.div`
   position: absolute;
   top: 10px;
@@ -15,7 +18,7 @@ const InputMask = styled.span`
   position: absolute;
   top: 10px;
   color: hsla(216, 77%, 23%, 1);
-  left: ${props => props.offSet + 8}px;
+  left: ${props => (!!props.offSet && props.offSet + 1) || 34}px;
 `;
 
 const Input = styled.input`
@@ -56,11 +59,13 @@ const UnderlineInput = Input.extend`
 class MaskField extends Component {
   state = { width: 56 };
 
-  onInputChange = () => {
-    const bounds = findDOMNode(this.r).getBoundingClientRect();
-    console.log('input change');
-    console.log(bounds.width);
-    this.setState({ width: bounds.width });
+  onInputChange = (ev) => {
+    const size = calculateSize(ev.target.value, {
+      font: 'system-ui',
+      fontSize: '14px',
+      fontWeight: '500',
+    });
+    this.setState({ width: size.width });
   }
 
   render() {
@@ -81,9 +86,7 @@ class MaskField extends Component {
             style={style || {}}
             placeholder={placeholder}
             onChange={(value) => {
-              console.log(input);
-              console.log(this.props);
-              this.onInputChange();
+              this.onInputChange(value);
               input.onChange(value);
             }}
           />
@@ -95,11 +98,11 @@ class MaskField extends Component {
             placeholder={placeholder}
           />
         }
-        {mask &&
+        {/* mask &&
           <InputMaskValue ref={r => { this.r = r; }}>
             {input.value}
           </InputMaskValue>
-        }
+        */}
         {mask &&
           <InputMask offSet={width}>
             .atlassian.net
