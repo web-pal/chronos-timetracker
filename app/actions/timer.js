@@ -57,6 +57,12 @@ export function startTimer() {
   };
 }
 
+export function stopTimerRequest() {
+  return {
+    type: types.STOP_TIMER_REQUEST,
+  };
+}
+
 export function stopTimer() {
   if (checkUpdates) {
     autoUpdater.checkForUpdates();

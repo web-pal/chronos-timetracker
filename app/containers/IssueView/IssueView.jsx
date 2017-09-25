@@ -65,7 +65,7 @@ class IssueView extends Component {
     normalizeScreenshotsPeriods: PropTypes.func.isRequired,
 
     startTimer: PropTypes.func.isRequired,
-    stopTimer: PropTypes.func.isRequired,
+    stopTimerRequest: PropTypes.func.isRequired,
     setForceQuitFlag: PropTypes.func.isRequired,
     saveKeepedIdle: PropTypes.func.isRequired,
 
@@ -132,7 +132,7 @@ class IssueView extends Component {
     // eslint-disable-next-line no-alert
     if (running && window.confirm('Tracking in progress, save worklog before quit?')) {
       this.props.setForceQuitFlag();
-      this.props.stopTimer();
+      this.props.stopTimerRequest();
     }
     if (uploading) {
       // eslint-disable-next-line no-alert

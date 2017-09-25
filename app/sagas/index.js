@@ -32,6 +32,7 @@ import {
   normalizePeriods,
   deleteScreenshot,
   watchStopTimer,
+  watchStopTimerRequest,
 } from './timer';
 
 
@@ -76,5 +77,6 @@ export default function* root() {
     fork(normalizePeriods),
     fork(deleteScreenshot),
     fork(watchStopTimer),
+    fork(watchStopTimerRequest),
   ];
 }

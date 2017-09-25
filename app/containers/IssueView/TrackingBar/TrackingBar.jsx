@@ -29,7 +29,7 @@ function addLeadingZero(s) {
 const TrackingBar = ({
   setShowTrackingView,
   showTrackingView,
-  stopTimer,
+  stopTimerRequest,
   screenshotUploading,
   time,
   currentTrackingIssue,
@@ -79,14 +79,14 @@ const TrackingBar = ({
                 'Currently app in process of uploading screenshot, wait few seconds please',
               );
             } else {
-              stopTimer();
+              stopTimerRequest();
             }
           }}
         >
           <StopButton
             src={stopWhite}
             alt="stop"
-            onClick={stopTimer}
+            onClick={stopTimerRequest}
           />
         </div>
       </Container>
@@ -95,7 +95,7 @@ const TrackingBar = ({
 };
 
 TrackingBar.propTypes = {
-  stopTimer: PropTypes.func.isRequired,
+  stopTimerRequest: PropTypes.func.isRequired,
   selectIssue: PropTypes.func.isRequired,
   jumpToTrackingIssue: PropTypes.func.isRequired,
 

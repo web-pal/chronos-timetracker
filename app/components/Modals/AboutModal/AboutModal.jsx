@@ -41,19 +41,6 @@ const AboutModal = ({ isOpen, setShowAboutModal, ...props }) => (
         Display Alert Modal
       </Button>
     </Flex>
-    {/*
-    <Flex column>
-      <H800>Welcome to the Research Operations monthly!</H800>
-      <H700>Welcome to the Research Operations monthly!</H700>
-      <H600>Welcome to the Research Operations monthly!</H600>
-      <H500>Welcome to the Research Operations monthly!</H500>
-      <H400>Welcome to the Research Operations monthly!</H400>
-      <H300>Welcome to the Research Operations monthly!</H300>
-      <H200>Welcome to the Research Operations monthly!</H200>
-      <H100>Welcome to the Research Operations monthly!</H100>
-      <Link>Welcome to the Research Operations monthly!</Link>
-    </Flex>
-    */}
   </ModalDialog>
 );
 
