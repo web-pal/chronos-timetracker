@@ -9,6 +9,7 @@ import { DropdownItemCheckbox } from '@atlaskit/dropdown-menu';
 import { danger } from 'data/svg';
 
 import * as uiActions from '../../../actions/ui';
+import * as timerActions from '../../../actions/timer';
 
 import Flex from '../../../components/Base/Flex/Flex';
 import { DangerIcon } from './styled';
@@ -18,7 +19,7 @@ import {
 } from '../../../styles/modals';
 
 // eslint-disable-next-line
-const AboutModal = ({ isOpen, setShowAlertModal }) => (
+const AboutModal = ({ isOpen, setShowAlertModal, stopTimer }) => (
   <ModalDialog
     isOpen={isOpen}
     onClose={() => setShowAlertModal(false)}
@@ -26,10 +27,16 @@ const AboutModal = ({ isOpen, setShowAlertModal }) => (
     footer={(
       <Flex row style={{ justifyContent: 'flex-end' }}>
         <ButtonGroup>
-          <Button appearance="warning">
+          <Button
+            appearance="warning"
+            onClick={() => {
+              setShowAlertModal(false);
+              stopTimer();
+            }}
+          >
             Stop timer
           </Button>
-          <Button appearance="default">
+          <Button appearance="default" onClick={() => setShowAlertModal(false)}>
             Continue tracking
           </Button>
         </ButtonGroup>
@@ -61,7 +68,7 @@ function mapStateToProps({ ui }) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(uiActions, dispatch);
+  return bindActionCreators({ ...uiActions, ...timerActions }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(AboutModal);

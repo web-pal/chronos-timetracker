@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { cancelled, call, take, race, put, select, fork, cps } from 'redux-saga/effects';
+import { cancelled, call, take, race, put, select, fork, takeEvery, cps } from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
 import Raven from 'raven-js';
 
@@ -11,11 +11,14 @@ import rimraf from 'rimraf';
 import NanoTimer from 'nanotimer';
 import { makeScreenshot } from 'api';
 import { idleTimeThreshold } from 'config';
+import * as timerActions from '../actions/timer';
+import * as uiActions from '../actions/ui';
 import * as types from '../constants/';
 import { uploadWorklog } from './worklogs';
 import { savePeriods } from '../actions/timer';
 import { randomPeriods, calculateActivity } from './timerHelper';
 import { sendInfoLog } from '../helpers/log';
+import { getTimerTime } from '../selectors';
 
 const system = remote.require('@paulcbetts/system-idle-time');
 
@@ -322,4 +325,21 @@ export function* deleteScreenshot() {
       },
     });
   }
+}
+
+export function* stopTimer() {
+  try {
+    const time = yield select(getTimerTime);
+    if (time < 60) {
+      yield put(uiActions.setShowAlertModal(true));
+    } else {
+      yield put(timerActions.stopTimer());
+    }
+  } catch (e) {
+    Raven.captureException(e);
+  }
+}
+
+export function* watchStopTimerRequest() {
+  yield takeEvery(types.STOP_TIMER_REQUEST, stopTimer);
 }
