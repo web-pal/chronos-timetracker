@@ -1,119 +1,29 @@
 // goal:  https://dribbble.com/shots/3768074-Modal-windows
 import React, { PropTypes, Component } from 'react';
 import { logoShadowed } from 'data/assets';
-import { jiraIcon, lockBlue, peopleBlue } from 'data/svg';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Field, reduxForm, formValueSelector } from 'redux-form/immutable';
+import { reduxForm, formValueSelector } from 'redux-form/immutable';
 import { ipcRenderer } from 'electron';
 import storage from 'electron-json-storage';
-import Spinner from '@atlaskit/spinner';
-import Button from '@atlaskit/button';
 
 import * as profileActions from '../../actions/profile';
 
 import { validate } from './validation';
-import { renderField } from './Form';
 import { rememberToken } from '../../utils/api/helper';
 import Flex from '../../components/Base/Flex/Flex';
 
+import TeamStep from './Steps/TeamStep';
+import EmailStep from './Steps/EmailStep';
+
 import {
   Hint,
-  ContentInner,
   ContentOuter,
   Container,
   Logo,
-  PrimaryButton,
-  OauthButton,
   LoginInfo,
-  ContentSeparator,
-  Error,
-  Form,
-  Lock,
-  ContentIconContainer,
-  Title,
-  Subtitle,
-  BackButtonContainer,
 } from './styled';
 
-
-// eslint-disable-next-line
-const TeamStep = ({ onContinue, isActiveStep }) => (
-  <ContentInner isActiveStep={isActiveStep} step={1}>
-    <ContentIconContainer>
-      <Lock src={peopleBlue} alt="" width="24" />
-    </ContentIconContainer>
-    <Flex column alignCenter style={{ width: '100%' }}>
-      <Title>Enter your team</Title>
-      <Subtitle>Please fill in your JIRA host</Subtitle>
-      <Form>
-        <Field
-          name="host"
-          placeholder="team"
-          component={renderField}
-          type="text"
-          className="host"
-          mask=".atlassian.net"
-          autoFocus
-          underlined
-        />
-      </Form>
-    </Flex>
-    <PrimaryButton onClick={onContinue}>
-      Continue
-    </PrimaryButton>
-  </ContentInner>
-);
-
-const EmailStep = ({
-// eslint-disable-next-line
-  error, onContinue, onJiraClick, isActiveStep, onBack, loginRequestInProcess
-}) => (
-  <ContentInner isActiveStep={isActiveStep} step={2}>
-    <ContentIconContainer>
-      <Lock src={lockBlue} alt="" width="18" />
-    </ContentIconContainer>
-    <Flex column alignCenter style={{ width: '100%' }}>
-      <OauthButton
-        onClick={onJiraClick}
-        disabled={loginRequestInProcess}
-      >
-        <img src={jiraIcon} alt="" style={{ height: 20 }} />
-        Log in with JIRA
-      </OauthButton>
-      <ContentSeparator>OR</ContentSeparator>
-      <Field
-        name="username"
-        placeholder="Enter email"
-        component={renderField}
-        type="text"
-        autoFocus
-        disabled={loginRequestInProcess}
-      />
-      <Field
-        name="password"
-        placeholder="Enter password"
-        component={renderField}
-        type="password"
-        disabled={loginRequestInProcess}
-      />
-      <Error>{error}</Error>
-    </Flex>
-    <PrimaryButton onClick={onContinue}>
-      {loginRequestInProcess ?
-        <Spinner invertColor /> : 'Continue'
-      }
-    </PrimaryButton>
-    <BackButtonContainer>
-      <Button
-        appearance="subtle"
-        onClick={onBack}
-      >
-        Back
-      </Button>
-    </BackButtonContainer>
-  </ContentInner>
-);
 
 @reduxForm({ form: 'auth', validate })
 class AuthForm extends Component {
@@ -145,6 +55,7 @@ class AuthForm extends Component {
   componentDidMount() {
     storage.get('jira_credentials', (err, credentials) => {
       if (!err && credentials && Object.keys(credentials)) {
+        this.setState({ step: 2 });
         this.props.initialize(credentials);
       }
     });
@@ -191,8 +102,6 @@ class AuthForm extends Component {
     const { handleSubmit, loginRequestInProcess, loginError } = this.props;
     const { step } = this.state;
 
-                // <Content style={{ justifyContent: 'center' }}>
-                // </Content>
     return (
       <Container>
         <Logo src={logoShadowed} alt="Chronos" />
