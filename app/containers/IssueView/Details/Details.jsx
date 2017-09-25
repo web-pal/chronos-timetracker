@@ -1,5 +1,4 @@
 import React from 'react';
-import { taskType, majorPriority } from 'data/svg';
 import { attachments } from 'data/assets';
 import Flex from '../../../components/Base/Flex/Flex';
 
@@ -11,13 +10,18 @@ import {
   IssuePriority,
   IssueType,
   IssueLabel,
-  IssueEpic,
   Label,
 } from './styled';
 
 /* eslint-disable */
 export default (props) => {
   const { currentIssue } = props;
+  const versions = currentIssue.getIn(['fields', 'versions']);
+  const fixVersions = currentIssue.getIn(['fields', 'fixVersions']);
+  const components = currentIssue.getIn(['fields', 'components']);
+  const labels = currentIssue.getIn(['fields', 'labels']);
+  const resolution = currentIssue.getIn(['fields', 'resolution'])
+  /* TODO epic link */
   /* eslint-enable */
   return (
     <IssueDetails>
@@ -55,7 +59,8 @@ export default (props) => {
               Affects Version/s:
             </DetailsLabel>
             <DetailsValue>
-              None
+              {versions.size === 0 && 'None'}
+              {versions.map(v => <a>{v.get('name')}</a>)}
             </DetailsValue>
           </Flex>
 
@@ -64,7 +69,8 @@ export default (props) => {
               Component/s:
             </DetailsLabel>
             <DetailsValue>
-              None
+              {components.size === 0 && 'None'}
+              {components.map(v => <a>{v.get('name')}</a>)}
             </DetailsValue>
           </Flex>
 
@@ -72,18 +78,12 @@ export default (props) => {
             <DetailsLabel>
               Labels/s:
             </DetailsLabel>
-            <Label>
-              Quckie
-            </Label>
-          </Flex>
-
-          <Flex row spaceBetween>
-            <DetailsLabel>
-              Epic Link:
-            </DetailsLabel>
-            <IssueEpic>
-              Refactoring
-            </IssueEpic>
+            {labels.size === 0 &&
+              <DetailsValue>
+                None
+              </DetailsValue>
+            }
+            {labels.map(v => <Label>{v}</Label>)}
           </Flex>
 
         </Flex>
@@ -105,7 +105,10 @@ export default (props) => {
               Resolution:
             </DetailsLabel>
             <DetailsValue>
-              Unresolved
+              {resolution === null
+                ? 'Unresolved'
+                : resolution.get('name')
+              }
             </DetailsValue>
           </Flex>
 
@@ -114,7 +117,8 @@ export default (props) => {
               Fix Version/s:
             </DetailsLabel>
             <DetailsValue>
-              <a>0.1.4</a>
+              {fixVersions.size === 0 && 'None'}
+              {fixVersions.map(v => <a>{v.get('name')}</a>)}
             </DetailsValue>
           </Flex>
 

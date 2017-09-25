@@ -14,6 +14,9 @@ const requiredFields = [
   'worklog',
   'timeestimate',
   'timespent',
+  'fixVersions',
+  'versions',
+  'components',
 ];
 
 function mapAssignee(assigneeId) {
@@ -25,6 +28,10 @@ function mapAssignee(assigneeId) {
     default:
       return '';
   }
+}
+
+export function fetchFields() {
+
 }
 
 export function fetchIssues({
