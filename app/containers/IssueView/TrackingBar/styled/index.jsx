@@ -8,11 +8,10 @@ export const Container = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  height: 60px;
-  min-height: 60px;
-  padding: 15px 20px 10px 20px;
   background: #172B4D !important;
   color: white;
+  padding: 15px 20px 10px 20px;
+  height: 60px;
 `;
 
 export const NavButton = styled.img`
