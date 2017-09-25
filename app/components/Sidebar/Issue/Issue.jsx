@@ -31,7 +31,6 @@ const Issue = ({
   selectIssue,
   selectWorklog,
   selectWorklogByIssueId,
-  summary,
   active,
   onTracking,
   style,
@@ -77,26 +76,30 @@ const Issue = ({
           {description}
         </IssueDescription>
         <Flex row style={{ marginTop: 8 }}>
-          <Tooltip
-            description={type}
-            position="bottom"
-          >
-            <IssueType
-              type={type}
-              src={issue.getIn(['fields', 'issuetype', 'iconUrl'])}
-              alt="type"
-            />
-          </Tooltip>
-          <Tooltip
-            description={priority}
-            position="bottom"
-          >
-            <IssuePriority
-              priority={priority}
-              src={issue.getIn(['fields', 'priority', 'iconUrl'])}
-              alt="priority"
-            />
-          </Tooltip>
+          {type &&
+            <Tooltip
+              description={type}
+              position="bottom"
+            >
+              <IssueType
+                type={type}
+                src={issue.getIn(['fields', 'issuetype', 'iconUrl'])}
+                alt="type"
+              />
+            </Tooltip>
+          }
+          {priority &&
+            <Tooltip
+              description={priority}
+              position="bottom"
+            >
+              <IssuePriority
+                priority={priority}
+                src={issue.getIn(['fields', 'priority', 'iconUrl'])}
+                alt="priority"
+              />
+            </Tooltip>
+          }
           {label &&
             <IssueLabel
               backgroundColor={labelColor}
@@ -117,9 +120,9 @@ Issue.propTypes = {
   selectWorklogByIssueId: PropTypes.func.isRequired,
   worklog: ImmutablePropTypes.map.isRequired,
   issue: ImmutablePropTypes.map.isRequired,
-  summary: PropTypes.string.isRequired,
   active: PropTypes.bool.isRequired,
   onTracking: PropTypes.bool.isRequired,
+  style: PropTypes.object.isRequired,
 };
 
 export default Issue;

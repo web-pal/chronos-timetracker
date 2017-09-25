@@ -2,10 +2,11 @@ import React, { PropTypes } from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 
 import InfiniteLoadingList from '../../Virtualized/InfiniteLoadingList';
-import SidebarItem from '../../../containers/ComponentsWrappers/SidebarItemWrapper';
+import SidebarItemWrapper from '../../../containers/ComponentsWrappers/SidebarItemWrapper';
+import IssuePlaceholder from '../../../components/Sidebar/Issue/Placeholder';
 
 const SidebarAllItems = ({
-  totalCount, allItems, fetchIssues, selectedIssueIndex,
+  totalCount, allItems, fetchIssues, selectedIssueIndex, fetching,
 }) =>
   <InfiniteLoadingList
     isRowLoaded={({ index }) => !!allItems.get(index)}
@@ -22,21 +23,21 @@ const SidebarAllItems = ({
       autoSized: true,
       scrollToIndex: selectedIssueIndex,
       scrollToAlignment: 'center',
-      rowCount: totalCount,
+      rowCount: fetching ? 10 : totalCount,
       rowHeight: 101,
       // eslint-disable-next-line react/prop-types
       rowRenderer: ({ index, key, style }) => {
         // TODO implement placeholders
         const item = allItems.get(index);
 
-        return (
-          <SidebarItem
+        return item ? (
+          <SidebarItemWrapper
             key={key}
-            issue={item || new Immutable.Map()}
+            issue={item}
             style={style}
             itemType="All"
           />
-        );
+        ) : <IssuePlaceholder />;
       },
     }}
   />;
@@ -46,6 +47,7 @@ SidebarAllItems.propTypes = {
   allItems: ImmutablePropTypes.list.isRequired,
   fetchIssues: PropTypes.func.isRequired,
   selectedIssueIndex: PropTypes.number,
+  fetching: PropTypes.bool.isRequired,
 };
 
 SidebarAllItems.defaultProps = {

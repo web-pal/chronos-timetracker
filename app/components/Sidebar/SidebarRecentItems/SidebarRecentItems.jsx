@@ -3,7 +3,7 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 import moment from 'moment';
 
 import TimestampItem from './TimestampItem';
-import RecentItem from '../../../containers/ComponentsWrappers/SidebarItemWrapper';
+import SidebarItemWrapper from '../../../containers/ComponentsWrappers/SidebarItemWrapper';
 import Flex from '../../Base/Flex/Flex';
 
 moment.locale('en', {
@@ -24,8 +24,8 @@ const SidebarRecentItems = ({ recentItems, showSpinner, style }) =>
           worklogs={item.worklogs}
         />
         <Flex column className="RecentItems__list">
-          {item.worklogs.map(worklog =>
-            <RecentItem
+          {item.worklogs.map(worklog => worklog.get('issue') &&
+            <SidebarItemWrapper
               key={worklog.get('id')}
               worklog={worklog}
               issue={worklog.get('issue')}
