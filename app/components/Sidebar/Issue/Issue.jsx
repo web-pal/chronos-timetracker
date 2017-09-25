@@ -42,7 +42,6 @@ const IssuePlaceholder = () => (
   </PlaceholderContainer>
 );
 
-/* eslint-disable */
 const Issue = ({
   issue,
   worklog,
@@ -52,8 +51,8 @@ const Issue = ({
   summary,
   active,
   onTracking,
+  style,
 }) => {
-/* eslint-enable */
   const name = issue.get('key');
   const description = issue.getIn(['fields', 'summary']);
   const label = issue.getIn(['fields', 'status', 'statusCategory', 'name']);
@@ -63,69 +62,67 @@ const Issue = ({
     issue.getIn(['fields', 'status', 'statusCategory', 'colorName']),
   );
 
-  // if (+issue.get('id') > 17171) {
-  //   return <IssuePlaceholder />;
-  // }
-
   return (
-    <IssueContainer
-      active={active}
-      onClick={() => {
-        selectIssue(issue.get('id'));
-        if (worklog) {
-          selectWorklog(worklog.get('id'));
-        } else {
-          selectWorklogByIssueId(issue.get('id'));
-        }
-      }}
-    >
-      <Flex row style={{ alignItems: 'flex-end' }}>
-        <IssueName>
-          {name}
-        </IssueName>
-        <Tooltip
-          description="Open in browser"
-          position="bottom"
-        >
-          <IssueLink
-            src={link}
-            alt="Open in browser"
-            onClick={openIssueInBrowser(issue)}
-          />
-        </Tooltip>
-      </Flex>
-      <IssueDescription>
-        {description}
-      </IssueDescription>
-      <Flex row style={{ marginTop: 8 }}>
-        <Tooltip
-          description={type}
-          position="bottom"
-        >
-          <IssueType
-            type={type}
-            src={issue.getIn(['fields', 'issuetype', 'iconUrl'])}
-            alt="type"
-          />
-        </Tooltip>
-        <Tooltip
-          description={priority}
-          position="bottom"
-        >
-          <IssuePriority
-            priority={priority}
-            src={issue.getIn(['fields', 'priority', 'iconUrl'])}
-            alt="priority"
-          />
-        </Tooltip>
-        <IssueLabel
-          backgroundColor={labelColor}
-          label={label}
-        >
-          {label.toUpperCase()}
-        </IssueLabel>
-      </Flex>
-    </IssueContainer>
+    <div style={style}>
+      <IssueContainer
+        active={active}
+        onClick={() => {
+          selectIssue(issue.get('id'));
+          if (worklog) {
+            selectWorklog(worklog.get('id'));
+          } else {
+            selectWorklogByIssueId(issue.get('id'));
+          }
+        }}
+      >
+        <Flex row style={{ alignItems: 'flex-end' }}>
+          <IssueName>
+            {name}
+          </IssueName>
+          <Tooltip
+            description="Open in browser"
+            position="bottom"
+          >
+            <IssueLink
+              src={link}
+              alt="Open in browser"
+              onClick={openIssueInBrowser(issue)}
+            />
+          </Tooltip>
+        </Flex>
+        <IssueDescription>
+          {description}
+        </IssueDescription>
+        <Flex row style={{ marginTop: 8 }}>
+          <Tooltip
+            description={type}
+            position="bottom"
+          >
+            <IssueType
+              type={type}
+              src={issue.getIn(['fields', 'issuetype', 'iconUrl'])}
+              alt="type"
+            />
+          </Tooltip>
+          <Tooltip
+            description={priority}
+            position="bottom"
+          >
+            <IssuePriority
+              priority={priority}
+              src={issue.getIn(['fields', 'priority', 'iconUrl'])}
+              alt="priority"
+            />
+          </Tooltip>
+          <IssueLabel
+            backgroundColor={labelColor}
+            label={label}
+          >
+            {label.toUpperCase()}
+          </IssueLabel>
+        </Flex>
+      </IssueContainer>
+    </div>
   );
 };
 
