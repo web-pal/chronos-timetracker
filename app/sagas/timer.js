@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { cancelled, call, take, race, put, select, fork, cps } from 'redux-saga/effects';
+import { cancelled, call, take, race, put, select, fork, cps, takeEvery } from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
 import Raven from 'raven-js';
 
@@ -323,3 +323,15 @@ export function* deleteScreenshot() {
     });
   }
 }
+
+function* onTimerStop() {
+  yield put({
+    type: types.SET_SHOW_TRACKING_VIEW,
+    payload: false,
+  });
+}
+
+export function* watchStopTimer() {
+  yield takeEvery(types.STOP_TIMER, onTimerStop);
+}
+
