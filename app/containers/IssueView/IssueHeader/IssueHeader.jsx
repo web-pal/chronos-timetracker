@@ -24,6 +24,14 @@ function openIssueInBrowser(issue) {
   };
 }
 
+function openProjectInBrowser(project) {
+  return (ev) => {
+    ev.preventDefault();
+    const urlArr = project.get('self').split('/');
+    shell.openExternal(`${urlArr[0]}//${urlArr[2]}/projects/${project.get('key')}`);
+  };
+}
+
 export default (props) => {
   // eslint-disable-next-line
   const { running, currentIssue, currentTrackingIssue, startTimer } = props;
@@ -43,7 +51,7 @@ export default (props) => {
           <Flex column>
             <Flex row>
               {/* TODO: MAKE project name a link */}
-              <Link>
+              <Link onClick={openProjectInBrowser(currentIssue.getIn(['fields', 'project']))}>
                 {currentIssue.getIn(['fields', 'project', 'name'])}
               </Link>
               <Breadcrumb>/</Breadcrumb>

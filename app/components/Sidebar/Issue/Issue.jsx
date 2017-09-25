@@ -25,6 +25,7 @@ function openIssueInBrowser(issue) {
   };
 }
 
+
 const Issue = ({
   issue,
   worklog,
