@@ -27,6 +27,8 @@ import {
 
 @reduxForm({ form: 'auth', validate })
 class AuthForm extends Component {
+  /* eslint-disable react/require-default-props */
+  /* if default props are passed, redux-form doesn't pass props for some reason */
   static propTypes = {
     loginRequestInProcess: PropTypes.bool.isRequired,
 
@@ -42,6 +44,7 @@ class AuthForm extends Component {
     initialize: PropTypes.func,
     host: PropTypes.string.isRequired,
   }
+  /* eslint-enable react/require-default-props */
 
   state = {
     step: 1,
@@ -50,7 +53,10 @@ class AuthForm extends Component {
   componentDidMount() {
     storage.get('jira_credentials', (err, credentials) => {
       if (!err && credentials && Object.keys(credentials)) {
-        this.setState({ step: 2 });
+        console.log(credentials);
+        if (credentials.host && credentials.host !== '') {
+          this.setState({ step: 2 });
+        }
         this.props.initialize(credentials);
       }
     });
@@ -96,7 +102,6 @@ class AuthForm extends Component {
   render() {
     const { handleSubmit, loginRequestInProcess, loginError } = this.props;
     const { step } = this.state;
-    console.log(handleSubmit);
 
     return (
       <Container>
