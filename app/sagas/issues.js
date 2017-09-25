@@ -410,6 +410,10 @@ export function* onSetFilters() {
 function* onSelectIssue({ payload }) {
   const issue = yield select(state => state.issues.byId.get(payload));
   ipcRenderer.send('selectTask', issue.get('key'));
+  yield put({
+    type: types.SET_ISSUE_VIEW_TAB,
+    payload: 'Details',
+  });
 }
 
 export function* watchSelectIssue() {
