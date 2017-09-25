@@ -1,4 +1,11 @@
 {
+  "settings": {
+    "import/resolver": {
+      "webpack": {
+        "config": "./webpack.config.eslint.js"
+      }
+    }
+  },
   "rules": {
     "flowtype/boolean-style": [2, "boolean"],
     "flowtype/define-flow-type": 1,
