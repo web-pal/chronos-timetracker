@@ -3,6 +3,7 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import moment from 'moment';
+import { CSSTransitionGroup } from 'react-transition-group';
 import { arrowDownWhite, stopWhite } from 'data/svg';
 import Flex from '../../../components/Base/Flex/Flex';
 import {
@@ -13,6 +14,7 @@ import {
   StopButton,
   Container,
 } from './styled';
+
 
 import * as timerActions from '../../../actions/timer';
 import * as issuesActions from '../../../actions/issues';
@@ -41,46 +43,54 @@ const TrackingBar = ({
   ].join('');
 
   return (
-    <Container>
-      <NavButton
-        src={arrowDownWhite}
-        alt=""
-        onClick={() => setShowTrackingView(!showTrackingView)}
-        isTrackingView={showTrackingView}
-      />
-      <Flex row alignCenter>
-        <IssueName
+    <CSSTransitionGroup
+      transitionName="tracking-bar"
+      transitionAppear
+      transitionAppearTimeout={250}
+      transitionEnter={false}
+      transitionLeave={false}
+    >
+      <Container>
+        <NavButton
+          src={arrowDownWhite}
+          alt=""
+          onClick={() => setShowTrackingView(!showTrackingView)}
+          isTrackingView={showTrackingView}
+        />
+        <Flex row alignCenter>
+          <IssueName
+            onClick={() => {
+              selectIssue(currentTrackingIssue.get('id'));
+              jumpToTrackingIssue();
+            }}
+          >
+            {currentTrackingIssue.get('key')}
+          </IssueName>
+          <Dot />
+          <Time>
+            {timeString}
+          </Time>
+        </Flex>
+        <div
           onClick={() => {
-            selectIssue(currentTrackingIssue.get('id'));
-            jumpToTrackingIssue();
+            if (screenshotUploading) {
+              // eslint-disable-next-line no-alert
+              window.alert(
+                'Currently app in process of uploading screenshot, wait few seconds please',
+              );
+            } else {
+              stopTimer();
+            }
           }}
         >
-          {currentTrackingIssue.get('key')}
-        </IssueName>
-        <Dot />
-        <Time>
-          {timeString}
-        </Time>
-      </Flex>
-      <div
-        onClick={() => {
-          if (screenshotUploading) {
-            // eslint-disable-next-line no-alert
-            window.alert(
-              'Currently app in process of uploading screenshot, wait few seconds please',
-            );
-          } else {
-            stopTimer();
-          }
-        }}
-      >
-        <StopButton
-          src={stopWhite}
-          alt="stop"
-          onClick={stopTimer}
-        />
-      </div>
-    </Container>
+          <StopButton
+            src={stopWhite}
+            alt="stop"
+            onClick={stopTimer}
+          />
+        </div>
+      </Container>
+    </CSSTransitionGroup>
   );
 };
 
