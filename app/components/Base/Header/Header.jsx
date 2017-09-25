@@ -67,13 +67,17 @@ class Header extends Component {
 
   render() {
     const { userData } = this.props;
+    console.log(userData.toJS())
     // TODO: update available
     const updateAvailable = true;
 
     return (
-      <HeaderContainer>
+      <HeaderContainer className="webkit-drag">
         <Flex row alignCenter>
-          <ProfilePicture src={avatarIcon} alt="" />
+          {/*
+            <ProfilePicture src={avatarIcon} alt="" />
+          */}
+          <ProfilePicture src={userData.getIn(['avatarUrls', '48x48'])} alt="" />
           <ProfileInfo>
             <Name>{userData.get('displayName')}</Name>
             <Team>{'web-pal.atlassian.com'}</Team>

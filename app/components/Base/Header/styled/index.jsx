@@ -10,7 +10,8 @@ export const HeaderContainer = styled.header`
   height: 70px;
   min-height: 70px;
   padding: 15px 20px 0px 20px;
-  background-image: linear-gradient(to top, #4778c1 0%, #0052CC 99%, #0052CC 100%)
+  background-image: linear-gradient(to top, #4778c1 0%, #0052CC 99%, #0052CC 100%);
+  -webkit-app-region: drag;
 `;
 
 export const Name = styled.span`
@@ -39,20 +40,26 @@ export const SettingsIcon = styled.img`
   cursor: pointer;
   border-radius: 50%;
   transition: transform .5s ease-in-out;
+  -webkit-app-region: drag;
   :hover {
     transform: rotate(180deg);
   }
 `;
 
 export const ProfilePicture = styled.img`
-  height: 50px;
+  height: 48px;
+  width: 48px;
+  border: 2px solid white;
+  border-radius: 50%;
   transition: all .1s ease-in;
   margin-right: 5px;
   margin-left: 0px;
+  -webkit-app-region: drag;
   :hover {
     margin-right: 2px;
     margin-left: -3px;
     height 56px;
+    width 56px;
     box-shadow:0 1px 4px rgba(0, 0, 0, 0.4), 0 0 40px rgba(0, 0, 0, 0.1) inset;
     border-radius: 50%;
 }
