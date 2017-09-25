@@ -53,7 +53,7 @@ const SidebarFilter = ({
       <FilterIcon
         src={showSidebarFilters ? filterBlue : filter}
         alt=""
-        onClick={() => setShowSidebarFilters()}
+        onClick={() => setShowSidebarFilters(!showSidebarFilters)}
       />
     </SearchOptions>
   </SearchBar>;
