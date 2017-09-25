@@ -52,11 +52,11 @@ export const ProfilePicture = styled.img`
   border: 2px solid white;
   border-radius: 50%;
   transition: all .1s ease-in;
-  margin-right: 5px;
+  margin-right: 10px;
   margin-left: 0px;
   -webkit-app-region: drag;
   :hover {
-    margin-right: 2px;
+    margin-right: 7px;
     margin-left: -3px;
     height 56px;
     width 56px;
