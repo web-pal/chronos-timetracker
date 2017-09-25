@@ -69,6 +69,8 @@ const EmailStep = ({
   </ContentInner>
 );
 
+/* eslint-disable react/require-default-props */
+/* if default props are passed, redux-form doesn't pass props for some reason */
 EmailStep.propTypes = {
   error: PropTypes.string,
   onContinue: PropTypes.func,
@@ -77,10 +79,6 @@ EmailStep.propTypes = {
   onBack: PropTypes.func.isRequired,
   loginRequestInProcess: PropTypes.bool.isRequired,
 };
-
-EmailStep.defaultProps = {
-  error: '',
-  onContinue: () => {},
-};
+/* eslint-enable react/require-default-props */
 
 export default EmailStep;

@@ -26,7 +26,7 @@ const FilterOption = ({ option, handleCriteriaSet, showIcons }) => {
         isChecked={isChecked}
         value={isChecked ? 'true' : 'false'}
         name={name}
-        label={name}
+        label={label}
         onChange={() => handleCriteriaSet(id, isChecked)}
       />
     </OptionContainer>
