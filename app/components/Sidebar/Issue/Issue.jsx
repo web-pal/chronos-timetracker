@@ -15,8 +15,6 @@ import {
   IssueType,
   IssuePriority,
   IssueLabel,
-  PlaceholderContainer,
-  Placeholder,
 } from './styled';
 
 function openIssueInBrowser(issue) {
@@ -26,21 +24,6 @@ function openIssueInBrowser(issue) {
     shell.openExternal(`${urlArr[0]}//${urlArr[2]}/browse/${issue.get('key')}`);
   };
 }
-
-const IssuePlaceholder = () => (
-  <PlaceholderContainer>
-    <div className="animated-background">
-      <Placeholder type="issueRight" />
-      <Placeholder type="issueBottom" />
-      <Placeholder type="descriptionRight" />
-      <Placeholder type="descriptionBottom" />
-      <Placeholder type="descriptionRightSecond" />
-      <Placeholder type="descriptionBottomSecond" />
-      <Placeholder type="attributesRight" />
-      <Placeholder type="attributesBottom" />
-    </div>
-  </PlaceholderContainer>
-);
 
 const Issue = ({
   issue,
@@ -114,12 +97,14 @@ const Issue = ({
               alt="priority"
             />
           </Tooltip>
-          <IssueLabel
-            backgroundColor={labelColor}
-            label={label}
-          >
-            {label.toUpperCase()}
-          </IssueLabel>
+          {label &&
+            <IssueLabel
+              backgroundColor={labelColor}
+              label={label}
+            >
+              {label.toUpperCase()}
+            </IssueLabel>
+          }
         </Flex>
       </IssueContainer>
     </div>
@@ -128,10 +113,10 @@ const Issue = ({
 
 Issue.propTypes = {
   selectIssue: PropTypes.func.isRequired,
-  selectWorklog: PropTypes.func,
-  selectWorklogByIssueId: PropTypes.func,
+  selectWorklog: PropTypes.func.isRequired,
+  selectWorklogByIssueId: PropTypes.func.isRequired,
   worklog: ImmutablePropTypes.map.isRequired,
-  issue: ImmutablePropTypes.map,
+  issue: ImmutablePropTypes.map.isRequired,
   summary: PropTypes.string.isRequired,
   active: PropTypes.bool.isRequired,
   onTracking: PropTypes.bool.isRequired,

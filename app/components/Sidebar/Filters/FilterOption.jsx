@@ -6,6 +6,7 @@ import { OptionContainer, OptionLabel, OptionImage } from './styled';
 // StatusOptionLabel
 
 const FilterOption = ({ option, handleCriteriaSet, showIcons }) => {
+  const id = option.get('id');
   const iconUrl = option.get('iconUrl');
   const name = option.get('name');
   const isChecked = option.get('checked');
@@ -15,7 +16,7 @@ const FilterOption = ({ option, handleCriteriaSet, showIcons }) => {
       {showIcons && iconUrl && iconUrl[iconUrl.length - 1] !== '/' &&
         <OptionImage alt="" src={iconUrl} />
       }
-      {option.get('name')}
+      {name}
     </OptionLabel>
   );
 
@@ -23,9 +24,10 @@ const FilterOption = ({ option, handleCriteriaSet, showIcons }) => {
     <OptionContainer>
       <Checkbox
         isChecked={isChecked}
+        value={isChecked ? 'true' : 'false'}
         name={name}
-        label={label}
-        onChange={() => handleCriteriaSet(option.get('id'), option.get('checked'))}
+        label={name}
+        onChange={() => handleCriteriaSet(id, isChecked)}
       />
     </OptionContainer>
   );

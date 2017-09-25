@@ -10,7 +10,6 @@ const FiltersSection = ({ title, options, handleCriteriaSet, criteriaKey, showIc
     <H200 style={{ padding: '10px 0 4px 10px', display: 'block' }}>
       {title}
     </H200>
-    {console.log(options)}
     <FilterOptions>
       {options[0].values.map(option => (
         <FilterOption

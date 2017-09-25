@@ -8,8 +8,9 @@ import * as worklogsActions from '../../actions/worklogs';
 // import SidebarRecentItem from '../../components/Sidebar/SidebarRecentItems/RecentItem';
 
 import Issue from '../../components/Sidebar/Issue/Issue';
+import IssuePlaceholder from '../../components/Sidebar/Issue/Placeholder';
 
-const SidebarItemWrapper = props => <Issue {...props} />;
+const SidebarItemWrapper = props => props.issue.size ? <Issue {...props} /> : <IssuePlaceholder />
 
 SidebarItemWrapper.propTypes = {
   itemType: PropTypes.string.isRequired,

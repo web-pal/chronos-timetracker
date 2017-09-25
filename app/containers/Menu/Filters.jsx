@@ -19,7 +19,6 @@ import getCriteriaFilters from './getCriteriaFilters';
 const Filters = (props) => (
   <FiltersContainer>
     <FilterItems>
-      {console.log(getCriteriaFilters(props))}
       {getCriteriaFilters(props).map(criteria =>
         <FiltersSection
           key={criteria.criteriaKey}
