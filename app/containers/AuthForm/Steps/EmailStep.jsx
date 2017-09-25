@@ -71,7 +71,7 @@ const EmailStep = ({
 
 EmailStep.propTypes = {
   error: PropTypes.string,
-  onContinue: PropTypes.func.isRequired,
+  onContinue: PropTypes.func,
   onJiraClick: PropTypes.func.isRequired,
   isActiveStep: PropTypes.bool.isRequired,
   onBack: PropTypes.func.isRequired,
@@ -80,6 +80,7 @@ EmailStep.propTypes = {
 
 EmailStep.defaultProps = {
   error: '',
+  onContinue: () => {},
 };
 
 export default EmailStep;

@@ -43,11 +43,6 @@ class AuthForm extends Component {
     host: PropTypes.string.isRequired,
   }
 
-  static defaultProps = {
-    handleSubmit: () => {},
-    initialize: () => {},
-  }
-
   state = {
     step: 1,
   }
@@ -101,6 +96,7 @@ class AuthForm extends Component {
   render() {
     const { handleSubmit, loginRequestInProcess, loginError } = this.props;
     const { step } = this.state;
+    console.log(handleSubmit);
 
     return (
       <Container>
