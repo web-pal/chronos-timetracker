@@ -13,7 +13,7 @@ import Tabs from './Tabs/Tabs';
 import Details from './Details/Details';
 import Comments from './Comments/Comments';
 import Worklogs from './Worklogs/Worklogs';
-import Statistics from './Statistics/Statistics';
+// import Statistics from './Statistics/Statistics';
 
 import TrackingBar from './TrackingBar/TrackingBar';
 import TrackingView from '../TrackingView/TrackingView';
@@ -32,7 +32,7 @@ const tabs = [
   { label: 'Details', content: <Details /> },
   { label: 'Comments', content: <Comments /> },
   { label: 'Worklogs', content: <Worklogs /> },
-  { label: 'Report', content: <Statistics /> },
+  // { label: 'Report', content: <Statistics /> },
 ];
 
 const IssueViewContainer = styled.div`
@@ -207,13 +207,14 @@ class IssueView extends Component {
             {issueViewTab === 'Worklogs' &&
               <Worklogs />
             }
-            {issueViewTab === 'Report' &&
+            {/*
+            issueViewTab === 'Report' &&
               <Statistics
                 currentIssueSelfLogged={currentIssueSelfLogged}
                 currentIssueSelfLoggedToday={currentIssueSelfLoggedToday}
                 currentIssueLoggedToday={currentIssueLoggedToday}
               />
-            }
+            */}
           </IssueViewTabContainer>
         </IssueContainer>
       </IssueViewContainer>

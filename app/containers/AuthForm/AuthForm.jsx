@@ -128,9 +128,14 @@ class AuthForm extends Component {
     deniedOAuth: PropTypes.func.isRequired,
     throwLoginError: PropTypes.func.isRequired,
     checkJWT: PropTypes.func.isRequired,
-    handleSubmit: PropTypes.func.isRequired,
-    initialize: PropTypes.func.isRequired,
+    handleSubmit: PropTypes.func,
+    initialize: PropTypes.func,
     host: PropTypes.string.isRequired,
+  }
+
+  static defaultProps = {
+    handleSubmit: () => {},
+    initialize: () => {},
   }
 
   state = {
