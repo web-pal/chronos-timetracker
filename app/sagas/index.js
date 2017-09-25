@@ -31,9 +31,12 @@ import {
   cutIddlesFromLastScreenshot,
   normalizePeriods,
   deleteScreenshot,
-  watchStopTimer,
   watchStopTimerRequest,
 } from './timer';
+import {
+  watchStopTimer as watchStopTimerUI,
+  watchChangeSidebarTab as watchChangeSidebarTabUI,
+} from './ui';
 
 
 export default function* root() {
@@ -76,7 +79,9 @@ export default function* root() {
     fork(cutIddlesFromLastScreenshot),
     fork(normalizePeriods),
     fork(deleteScreenshot),
-    fork(watchStopTimer),
     fork(watchStopTimerRequest),
+
+    fork(watchStopTimerUI),
+    fork(watchChangeSidebarTabUI),
   ];
 }

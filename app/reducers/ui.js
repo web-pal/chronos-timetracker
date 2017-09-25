@@ -33,7 +33,7 @@ export default function ui(state = initialState, action) {
     case types.SET_ISSUE_VIEW_TAB:
       return state.set('issueViewTab', action.payload);
     case types.SET_SHOW_SIDEBAR_FILTERS:
-      return state.set('showSidebarFilters', action.payload || !state.showSidebarFilters);
+      return state.set('showSidebarFilters', action.payload);
     case types.SET_SHOW_SUPPORT_MODAL:
       return state.set('showSupportModal', action.payload);
     case types.SET_SHOW_ABOUT_MODAL:

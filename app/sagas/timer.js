@@ -327,17 +327,6 @@ export function* deleteScreenshot() {
   }
 }
 
-function* onTimerStop() {
-  yield put({
-    type: types.SET_SHOW_TRACKING_VIEW,
-    payload: false,
-  });
-}
-
-export function* watchStopTimer() {
-  yield takeEvery(types.STOP_TIMER, onTimerStop);
-}
-
 export function* stopTimer() {
   try {
     const time = yield select(getTimerTime);
