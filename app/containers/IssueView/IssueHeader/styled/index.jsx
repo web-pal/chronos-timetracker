@@ -14,15 +14,11 @@ export const UserAvatar = styled.img`
   border: 2px solid white;
   border-radius: 50%;
   box-shadow: 0 -4px 8px 0 rgba(9, 30, 66, 0.25);
+  background-color: #0052CC;
 `;
 
 export const Link = styled.a`
   cursor: pointer;
-`;
-
-export const IssueLabel = styled.span`
-  font-size: 24px;
-  margin-top: -5px;
 `;
 
 export const Breadcrumb = styled.span`
@@ -72,3 +68,13 @@ export const Button = styled.button`
   justify-content: center;
 `;
 
+export const IssueSummary = styled.span`
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: calc(100vw - 589px);
+  margin-right: 10px;
+  margin-top: -5px;
+  font-size: 24px;
+  display: block;
+`;
