@@ -8,17 +8,12 @@ import * as worklogsActions from '../../actions/worklogs';
 // import SidebarRecentItem from '../../components/Sidebar/SidebarRecentItems/RecentItem';
 
 import Issue from '../../components/Sidebar/Issue/Issue';
-import IssuePlaceholder from '../../components/Sidebar/Issue/Placeholder';
 
-const SidebarItemWrapper = props => props.issue.size ? <Issue {...props} /> : <IssuePlaceholder />
+const SidebarItemWrapper = props => <Issue {...props} />;
 
 SidebarItemWrapper.propTypes = {
   itemType: PropTypes.string.isRequired,
 };
-
-function formatSummary(summary) {
-  return summary && summary.length > 25 ? `${summary.substr(0, 25)}...` : summary;
-}
 
 function makeMapStateToProps() {
   return ({ issues, worklogs }, { issue, worklog, itemType }) => {
@@ -27,25 +22,17 @@ function makeMapStateToProps() {
     const trackingIssueId = issues.meta.trackingIssueId;
 
     let active = false;
-    let activeGroup = active;
     let onTracking = false;
-    let summary = '';
-    if (issue && issue.size) {
-      const id = issue.get('id');
-      active = id !== undefined && selectedIssueId === id;
-      onTracking = trackingIssueId === id;
-      activeGroup = active;
-      if (itemType === 'Recent') {
-        active = selectedWorklogId === worklog.get('id');
-        onTracking = trackingIssueId !== null && active;
-      }
-      summary = formatSummary(issue.get('fields').get('summary'));
+    const id = issue.get('id');
+    active = selectedIssueId === id;
+    onTracking = trackingIssueId === id;
+    if (itemType === 'Recent') {
+      active = selectedWorklogId === worklog.get('id');
+      onTracking = trackingIssueId !== null && active;
     }
     return {
       active,
-      activeGroup,
       onTracking,
-      summary,
     };
   };
 }

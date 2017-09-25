@@ -64,6 +64,7 @@ function mapStateToProps({ issues, worklogs, ui, profile, projects }) {
     totalCount,
     allItems,
     recentItems,
+    fetching: issues.meta.fetching,
   };
 }
 
