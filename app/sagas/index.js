@@ -31,6 +31,7 @@ import {
   cutIddlesFromLastScreenshot,
   normalizePeriods,
   deleteScreenshot,
+  watchStopTimer,
 } from './timer';
 
 
@@ -74,5 +75,6 @@ export default function* root() {
     fork(cutIddlesFromLastScreenshot),
     fork(normalizePeriods),
     fork(deleteScreenshot),
+    fork(watchStopTimer),
   ];
 }
