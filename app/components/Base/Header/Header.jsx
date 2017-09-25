@@ -66,7 +66,7 @@ class Header extends Component {
   }
 
   render() {
-    const { userData } = this.props;
+    const { userData, host } = this.props;
     // TODO: update available
     const updateAvailable = true;
 
@@ -79,7 +79,7 @@ class Header extends Component {
           <ProfilePicture src={userData.getIn(['avatarUrls', '48x48'])} alt="" />
           <ProfileInfo>
             <Name>{userData.get('displayName')}</Name>
-            <Team>{'web-pal.atlassian.com'}</Team>
+            <Team>{host}.atlassian.net</Team>
           </ProfileInfo>
         </Flex>
         <Flex row style={{ position: 'relative' }}>
@@ -124,11 +124,13 @@ class Header extends Component {
 Header.propTypes = {
   userData: ImmutablePropTypes.map.isRequired,
   logout: PropTypes.func.isRequired,
+  host: PropTypes.string.isRequired,
 };
 
 function mapStateToProps({ profile }) {
   return {
     userData: profile.userData,
+    host: profile.host,
   };
 }
 
