@@ -9,7 +9,7 @@ import DropdownMenu, {
   DropdownItemGroup,
   DropdownItem,
 } from '@atlaskit/dropdown-menu';
-import { avatarIcon, cogIcon } from 'data/svg';
+import { cogIcon } from 'data/svg';
 
 import Flex from '../../../components/Base/Flex/Flex';
 

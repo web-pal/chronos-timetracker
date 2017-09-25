@@ -2,18 +2,19 @@
 // expected behavior: start button is only visible on issues which are not currently being tracked
 import React from 'react';
 import { shell } from 'electron';
-import { arrowDown, play } from 'data/svg';
+import Tooltip from '@atlaskit/tooltip';
+import { arrowDown, play, avatarIcon } from 'data/svg';
 import Flex from '../../../components/Base/Flex/Flex';
 
 import {
   ProjectAvatar,
   Link,
-  IssueLabel,
   Breadcrumb,
   ActionButton,
   UserAvatar,
   StartButton,
   StartButtonPlaceholder,
+  IssueSummary,
 } from './styled';
 
 function openIssueInBrowser(issue) {
@@ -37,7 +38,7 @@ export default (props) => {
             alt=""
           />
           <UserAvatar
-            src={currentIssue.getIn(['fields', 'assignee', 'avatarUrls', '48x48'])}
+            src={currentIssue.getIn(['fields', 'assignee', 'avatarUrls', '48x48']) || avatarIcon}
             alt=""
           />
           <Flex column>
@@ -51,9 +52,14 @@ export default (props) => {
                 {currentIssue.get('key')}
               </Link>
             </Flex>
-            <IssueLabel>
-              {currentIssue.getIn(['fields', 'summary'])}
-            </IssueLabel>
+            <Tooltip
+              description={currentIssue.getIn(['fields', 'summary'])}
+              position="bottom"
+            >
+              <IssueSummary>
+                {currentIssue.getIn(['fields', 'summary'])}
+              </IssueSummary>
+            </Tooltip>
           </Flex>
         </Flex>
         {(running && currentIssue.get('id') === currentTrackingIssue.get('id')) ?
