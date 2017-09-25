@@ -67,7 +67,6 @@ class Header extends Component {
 
   render() {
     const { userData } = this.props;
-    console.log(userData.toJS())
     // TODO: update available
     const updateAvailable = true;
 

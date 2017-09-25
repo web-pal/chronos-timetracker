@@ -4,7 +4,6 @@ import { findDOMNode } from 'react-dom';
 import Flex from '../../components/Base/Flex/Flex';
 
 import calculateSize from 'calculate-size';
-console.log(calculateSize);
 
 const InputMaskValue = styled.div`
   position: absolute;
