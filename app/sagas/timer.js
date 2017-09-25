@@ -1,9 +1,5 @@
 import fs from 'fs';
-<<<<<<< HEAD
-import { cancelled, call, take, race, put, select, fork, cps, takeEvery } from 'redux-saga/effects';
-=======
 import { cancelled, call, take, race, put, select, fork, takeEvery, cps } from 'redux-saga/effects';
->>>>>>> CHRNS-4
 import { eventChannel } from 'redux-saga';
 import Raven from 'raven-js';
 
