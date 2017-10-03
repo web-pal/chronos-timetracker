@@ -9,7 +9,7 @@ const logger = createLogger({
   collapsed: true,
 });
 
- /* eslint-disable no-underscore-dangle */
+/* eslint-disable no-underscore-dangle */
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 /* eslint-enable */
 

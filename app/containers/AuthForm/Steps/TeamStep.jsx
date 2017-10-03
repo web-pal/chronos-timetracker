@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Field } from 'redux-form/immutable';
+import { Field } from 'redux-form';
+import { Flex } from 'components';
 
 import { peopleBlue } from 'data/svg';
 import { renderField } from '../Form';
-import Flex from '../../../components/Base/Flex/Flex';
 
 import {
   ContentInner,

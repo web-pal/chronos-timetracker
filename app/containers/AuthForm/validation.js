@@ -1,14 +1,17 @@
-export const validate = (values) => {
+import type { authFormData } from '../../types';
+
+const validate = (values: authFormData) => {
   const errors = {};
-  if (!values.get('host')) {
+  if (!values.host) {
     errors.host = 'Requried';
   }
-  if (!values.get('username')) {
+  if (!values.username) {
     errors.username = 'Requried';
   }
-  if (!values.get('password')) {
+  if (!values.password) {
     errors.password = 'Requried';
   }
   return errors;
 };
 
+export default validate;

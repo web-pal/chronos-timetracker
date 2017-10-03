@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { findDOMNode } from 'react-dom';
-import Flex from '../../components/Base/Flex/Flex';
+import { Flex } from 'components';
 
 import calculateSize from 'calculate-size';
 

@@ -1,25 +1,32 @@
-import React, { PropTypes } from 'react';
+// @flow
+
+import React from 'react';
 import { connect } from 'react-redux';
+import { getAuthorized } from 'selectors';
+import type { Node, StatelessFunctionalComponent } from 'react';
 
 import AuthForm from './AuthForm/AuthForm';
-import Main from './Main';
+import Main from './Main/Main';
 
-const App = ({ isAuthorized }) =>
-  <div className="wrapper">
-    {isAuthorized
+import type { State } from '../types';
+
+type Props = {
+  isAuthorized: boolean
+};
+
+const App: StatelessFunctionalComponent<Props> = (props: Props): Node => (
+  <div>
+    {props.isAuthorized
       ? <Main />
       : <AuthForm />
     }
-  </div>;
+  </div>
+);
 
-App.propTypes = {
-  isAuthorized: PropTypes.bool.isRequired,
-};
-
-function mapStateToProps({ profile }) {
+function mapStateToProps(state: State): Props {
   return {
-    isAuthorized: profile.isAuthorized,
+    isAuthorized: getAuthorized(state),
   };
 }
 
-export default connect(mapStateToProps)(App);
+export default connect(mapStateToProps, () => ({}))(App);

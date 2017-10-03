@@ -37,23 +37,20 @@ export function fetchFields() {
 export function fetchIssues({
   startIndex,
   stopIndex,
-  currentProjectId, currentProjectType,
-  currentSprintId,
-  typeFiltresId = [],
-  statusFiltresId = [],
-  assigneeFiltresId = [],
+  projectId,
+  projectType,
+  sprintId,
 }) {
-  const assigneeFiltresFields = assigneeFiltresId.map(mapAssignee);
   const jql = [
-    (currentProjectType === 'project' ? `project = ${currentProjectId}` : ''),
-    ((currentProjectType === 'scrum') && currentSprintId ? `sprint = ${currentSprintId}` : ''),
-    (typeFiltresId.length ? `issueType in (${typeFiltresId.join(',')})` : ''),
-    (statusFiltresId.length ? `status in (${statusFiltresId.join(',')})` : ''),
-    (assigneeFiltresFields.length ? `(${assigneeFiltresFields.join(' OR ')})` : ''),
+    (projectType === 'project' ? `project = ${projectId}` : ''),
+    ((projectType === 'scrum') && sprintId ? `sprint = ${sprintId}` : ''),
+    // (typeFiltresId.length ? `issueType in (${typeFiltresId.join(',')})` : ''),
+    // (statusFiltresId.length ? `status in (${statusFiltresId.join(',')})` : ''),
+    // (assigneeFiltresFields.length ? `(${assigneeFiltresFields.join(' OR ')})` : ''),
   ].filter(f => !!f).join(' AND ');
-  const api = currentProjectType === 'project'
+  const api = projectType === 'project'
     ? opts => jira.client.search.search(opts)
-    : opts => jira.client.board.getIssuesForBoard({ ...opts, boardId: currentProjectId });
+    : opts => jira.client.board.getIssuesForBoard({ ...opts, boardId: projectId });
   return api({
     jql,
     maxResults: stopIndex - startIndex,
@@ -71,21 +68,21 @@ export function fetchIssue(issueId) {
 
 
 export function fetchRecentIssues({
-  currentProjectId,
-  currentProjectType,
-  currentSprintId,
+  projectId,
+  projectType,
+  sprintId,
   worklogAuthor,
 }) {
   const jql = [
-    (currentProjectType === 'project' ? `project = ${currentProjectId}` : ''),
-    ((currentProjectType === 'scrum') && currentSprintId ? `sprint = ${currentSprintId}` : ''),
+    (projectType === 'project' ? `project = ${projectId}` : ''),
+    ((projectType === 'scrum') && sprintId ? `sprint = ${sprintId}` : ''),
     `worklogAuthor = ${worklogAuthor} `,
     'timespent > 0 AND worklogDate >= "-4w"',
   ].filter(f => !!f).join(' AND ');
 
-  const api = currentProjectType === 'project'
+  const api = projectType === 'project'
     ? opts => jira.client.search.search(opts)
-    : opts => jira.client.board.getIssuesForBoard({ ...opts, boardId: currentProjectId });
+    : opts => jira.client.board.getIssuesForBoard({ ...opts, boardId: projectId });
 
   return api({
     jql,
@@ -95,27 +92,27 @@ export function fetchRecentIssues({
 }
 
 export function fetchSearchIssues({
-  currentProjectId,
-  currentProjectType,
-  currentSprintId,
+  projectId,
+  projectType,
+  sprintId,
   projectKey,
   searchValue,
 }) {
   return new Promise((resolve) => {
     const promises = [];
-    const searchValueWithKey = (currentProjectType === 'project') && (/^\d+$/.test(searchValue))
+    const searchValueWithKey = (projectType === 'project') && (/^\d+$/.test(searchValue))
       ? `${projectKey}-${searchValue}`
       : searchValue;
 
-    const api = currentProjectType === 'project'
+    const api = projectType === 'project'
       ? (opts, callback) => jira.client.search.search(opts, callback)
       : (opts, callback) => jira.client.board.getIssuesForBoard(
-        { ...opts, boardId: currentProjectId },
+        { ...opts, boardId: projectId },
       callback,
     );
 
-    const project = currentProjectType === 'project' ? `project = ${currentProjectId}` : '';
-    const sprint = (currentProjectType === 'scrum') && currentSprintId ? `sprint = ${currentSprintId}` : '';
+    const project = projectType === 'project' ? `project = ${projectId}` : '';
+    const sprint = (projectType === 'scrum') && sprintId ? `sprint = ${sprintId}` : '';
 
     promises.push(new Promise((r) => {
       api({

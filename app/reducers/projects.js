@@ -1,115 +1,158 @@
+// @flow
 import { combineReducers } from 'redux';
-import { Record, OrderedSet, fromJS, List } from 'immutable';
 
-import * as types from '../constants';
+import { types } from 'actions';
 
-function allItems(state = new OrderedSet(), action) {
+import type {
+  ProjectsMap,
+  BoardsMap,
+  ProjectsMeta,
+  SprintsMap,
+} from '../types';
+
+//
+function allItems(state: Array<string> = [], action) {
   switch (action.type) {
     case types.FILL_PROJECTS:
-      return new OrderedSet(action.payload.ids);
-    case types.CLEAR_ALL_REDUCERS:
-      return new OrderedSet();
+      return action.payload.ids;
+    case types.___CLEAR_ALL_REDUCERS___:
+      return [];
     default:
       return state;
   }
 }
 
-function itemsById(state = new Map(), action) {
+function itemsById(state: ProjectsMap = {}, action) {
   switch (action.type) {
     case types.FILL_PROJECTS:
-      return fromJS(action.payload.map);
-    case types.CLEAR_ALL_REDUCERS:
-      return new Map();
+      return action.payload.map;
+    case types.___CLEAR_ALL_REDUCERS___:
+      return {};
     default:
       return state;
   }
 }
 
-function allScrumBoards(state = new OrderedSet(), action) {
+//
+function allBoards(state: Array<string> = [], action) {
   switch (action.type) {
-    case types.FILL_PROJECTS:
-      return new OrderedSet(action.payload.scrumBoardsIds);
-    case types.CLEAR_ALL_REDUCERS:
-      return new OrderedSet();
+    case types.FILL_BOARDS:
+      return action.payload.ids;
+    case types.___CLEAR_ALL_REDUCERS___:
+      return [];
     default:
       return state;
   }
 }
 
-function allKanbanBoards(state = new OrderedSet(), action) {
+function boardsById(state: BoardsMap = {}, action) {
   switch (action.type) {
-    case types.FILL_PROJECTS:
-      return new OrderedSet(action.payload.kanbanBoardsIds);
-    case types.CLEAR_ALL_REDUCERS:
-      return new OrderedSet();
+    case types.FILL_BOARDS:
+      return action.payload.map;
+    case types.___CLEAR_ALL_REDUCERS___:
+      return {};
     default:
       return state;
   }
 }
 
-function boardsById(state = new Map(), action) {
+//
+function allSprints(state: Array<string> = [], action) {
   switch (action.type) {
-    case types.FILL_PROJECTS:
-      return fromJS(action.payload.boardsMap);
-    case types.CLEAR_ALL_REDUCERS:
-      return new Map();
+    case types.FILL_SPRINTS:
+      return action.payload.ids;
+    case types.___CLEAR_ALL_REDUCERS___:
+      return [];
     default:
       return state;
   }
 }
 
-const initialMeta = Record({
+function sprintsById(state: SprintsMap = {}, action) {
+  switch (action.type) {
+    case types.FILL_SPRINTS:
+      return action.payload.map;
+    case types.___CLEAR_ALL_REDUCERS___:
+      return {};
+    default:
+      return state;
+  }
+}
+
+function allScrumBoards(state: Array<string> = [], action) {
+  switch (action.type) {
+    case types.FILL_BOARDS:
+      return action.meta.scrumBoards;
+    case types.___CLEAR_ALL_REDUCERS___:
+      return [];
+    default:
+      return state;
+  }
+}
+
+function allKanbanBoards(state: Array<string> = [], action) {
+  switch (action.type) {
+    case types.FILL_BOARDS:
+      return action.meta.kanbanBoards;
+    case types.___CLEAR_ALL_REDUCERS___:
+      return [];
+    default:
+      return state;
+  }
+}
+
+//
+const initialMeta: ProjectsMeta = {
   fetching: false,
-  fetched: false,
   sprintsFetching: false,
-  selectedProjectId: '',
-  selectedProjectType: '',
-  selectedSprintId: '',
-  sprintsById: new Map(),
-  sprintsId: new List(),
-});
+  selectedProjectId: null,
+  selectedProjectType: null,
+  selectedSprintId: null,
+};
 
-function meta(state = new initialMeta(), action) {
+function meta(state: ProjectsMeta = initialMeta, action) {
   switch (action.type) {
     case types.SET_PROJECTS_FETCH_STATE:
-      return state.set('fetching', action.payload);
-    case types.SET_PROJECTS_FETCHED_STATE:
-      return state.set('fetched', action.payload);
+      return {
+        ...state,
+        fetching: action.payload,
+      };
     case types.SET_SPRINTS_FOR_BOARD_FETCH_STATE:
-      return state.set('sprintsFetching', action.payload);
+      return {
+        ...state,
+        sprintsFetching: action.payload,
+      };
     case types.SELECT_SPRINT:
-      return state.set('selectedSprintId', action.payload);
+      return {
+        ...state,
+        selectedSprintId: action.payload,
+      };
     case types.SELECT_PROJECT:
-      return state.set(
-        'selectedProjectId',
-        action.payload,
-      ).set(
-        'selectedProjectType',
-        action.meta,
-      ).set(
-        'selectedSprintId',
-        '',
-      );
-    case types.FILL_SPRINTS:
-      return state.set(
-        'sprintsById',
-        fromJS(action.payload.map),
-      ).set(
-        'sprintsId',
-        fromJS(action.payload.ids),
-      );
-    case types.CLEAR_ALL_REDUCERS:
-      return new initialMeta();
+      return {
+        ...state,
+        selectedProjectId: action.payload,
+        selectedProjectType: action.meta,
+        selectedSprintId: '',
+      };
+    case types.___CLEAR_ALL_REDUCERS___:
+      return initialMeta;
     default:
       return state;
   }
 }
 
 export default combineReducers({
-  byId: itemsById,
   allIds: allItems,
+  byId: itemsById,
+
+  allBoards,
   boardsById,
+
+  allSprints,
+  sprintsById,
+
   allScrumBoards,
   allKanbanBoards,
+
   meta,
 });

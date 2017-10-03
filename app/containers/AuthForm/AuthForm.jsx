@@ -1,107 +1,95 @@
+// @flow
 // goal:  https://dribbble.com/shots/3768074-Modal-windows
-import React, { PropTypes, Component } from 'react';
-import { logoShadowed } from 'data/assets';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { reduxForm, formValueSelector } from 'redux-form/immutable';
+import { reduxForm, formValueSelector } from 'redux-form';
 import { ipcRenderer } from 'electron';
 import storage from 'electron-json-storage';
-
-import * as profileActions from '../../actions/profile';
+import { Flex } from 'components';
+import type {
+  LoginRequest,
+  LoginOAuthRequest,
+  DenyOAuth,
+  CheckJWTRequest,
+  SetAuthFormStep
+} from '../../types';
+import type { FormProps } from 'redux-form';
+import { logoShadowed } from 'data/assets';
+import { profileActions, uiActions } from 'actions';
+import { getAuthFormStep, getLoginError } from 'selectors';
 
 import { validate } from './validation';
-import { rememberToken } from '../../utils/api/helper';
-import Flex from '../../components/Base/Flex/Flex';
 
 import TeamStep from './Steps/TeamStep';
 import EmailStep from './Steps/EmailStep';
 
-import {
-  Hint,
-  ContentOuter,
-  Container,
-  Logo,
-  LoginInfo,
-} from './styled';
+import { Hint, ContentOuter, Container, Logo, LoginInfo } from './styled';
 
+type Props = {
+  loginRequest: LoginRequest,
+  loginOAuthRequest: LoginOAuthRequest,
+  denyOAuth: DenyOAuth,
+  checkJWTRequest: CheckJWTRequest,
+  setAuthFormStep: SetAuthFormStep,
 
-@reduxForm({ form: 'auth', validate })
-class AuthForm extends Component {
-  /* eslint-disable react/require-default-props */
-  /* if default props are passed, redux-form doesn't pass props for some reason */
-  static propTypes = {
-    loginRequestInProcess: PropTypes.bool.isRequired,
+  host: string | null,
+  step: number,
+  loginError: string,
+} & FormProps;
 
-    loginError: PropTypes.string.isRequired,
-
-    login: PropTypes.func.isRequired,
-    loginOAuth: PropTypes.func.isRequired,
-    continueOAuthWithCode: PropTypes.func.isRequired,
-    deniedOAuth: PropTypes.func.isRequired,
-    throwLoginError: PropTypes.func.isRequired,
-    checkJWT: PropTypes.func.isRequired,
-    handleSubmit: PropTypes.func,
-    initialize: PropTypes.func,
-    host: PropTypes.string.isRequired,
-  }
-  /* eslint-enable react/require-default-props */
-
-  state = {
-    step: 1,
+class AuthForm extends Component<Props> {
+  static defaultProps = {
+    host: '',
   }
 
   componentDidMount() {
     storage.get('jira_credentials', (err, credentials) => {
       if (!err && credentials && Object.keys(credentials)) {
-        console.log(credentials);
         if (credentials.host && credentials.host !== '') {
-          this.setState({ step: 2 });
+          this.props.setAuthFormStep(2);
         }
         this.props.initialize(credentials);
       }
     });
     storage.get('desktop_tracker_jwt', (err, token) => {
       if (!err && token && Object.keys(token).length) {
-        rememberToken(token);
-        this.props.checkJWT();
+        this.props.checkJWTRequest();
       }
     });
-    ipcRenderer.on('oauth-code', this.onOauthCode);
+    ipcRenderer.on('oauth-accepted', this.onOauthAccepted);
     ipcRenderer.on('oauth-denied', this.onOauthDenied);
   }
 
   componentWillUnmount() {
-    ipcRenderer.removeListener('oauth-code', this.onOauthCode);
+    ipcRenderer.removeListener('oauth-accepted', this.onOauthAccepted);
     ipcRenderer.removeListener('oauth-denied', this.onOauthDenied);
   }
 
-  onOauthCode = (ev, code) => {
-    this.props.continueOAuthWithCode(code);
+  onOauthAccepted = (_, code) => {
+    this.props.acceptOAuth(code);
   }
 
   onOauthDenied = () => {
-    this.props.deniedOAuth();
+    this.props.denyOAuth();
   }
 
   oAuth = () => {
     if (this.props.host && this.props.host.length) {
       storage.set('jira_credentials', { host: this.props.host });
-      this.props.throwLoginError('');
-      this.props.loginOAuth({ host: `${this.props.host}.atlassian.net` });
+      this.props.loginOAuthRequest(`${this.props.host}.atlassian.net`);
     } else {
       this.props.throwLoginError('You need to fill JIRA host at first');
     }
   }
 
-  submit = values => (
-    new Promise((resolve, reject) => {
-      this.props.login({ values: values.toJS(), resolve, reject });
-    })
-  )
-
   render() {
-    const { handleSubmit, loginRequestInProcess, loginError } = this.props;
-    const { step } = this.state;
+    const {
+      handleSubmit,
+      step,
+      setAuthFormStep,
+      loginError,
+    } = this.props;
 
     return (
       <Container>
@@ -110,16 +98,16 @@ class AuthForm extends Component {
           <LoginInfo>Log in to your account</LoginInfo>
           <ContentOuter>
             <TeamStep
-              onContinue={() => this.setState({ step: 2 })}
+              onContinue={() => setAuthFormStep(2)}
               isActiveStep={step === 1}
             />
             <EmailStep
-              onContinue={handleSubmit(this.submit)}
+              onContinue={handleSubmit(this.props.loginRequest)}
               onJiraClick={this.oAuth}
-              error={loginError}
+              loginError={loginError}
               isActiveStep={step === 2}
-              onBack={() => this.setState({ step: 1 })}
-              loginRequestInProcess={loginRequestInProcess}
+              onBack={() => setAuthFormStep(1)}
+              loginRequestInProcess={false}
             />
           </ContentOuter>
         </Flex>
@@ -130,16 +118,21 @@ class AuthForm extends Component {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(profileActions, dispatch);
+  return bindActionCreators({ ...profileActions, ...uiActions }, dispatch);
 }
 
-function mapStateToProps({ profile, form }) {
+function mapStateToProps(state) {
   const selector = formValueSelector('auth');
   return {
-    loginError: profile.loginError,
-    loginRequestInProcess: profile.loginRequestInProcess,
-    host: selector({ form }, 'host') || '',
+    host: selector(state, 'host'),
+    step: getAuthFormStep(state),
+    loginError: getLoginError(state),
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(AuthForm);
+const AuthFormDecorated = reduxForm({
+  form: 'auth',
+  validate,
+})(AuthForm);
+
+export default connect(mapStateToProps, mapDispatchToProps)(AuthFormDecorated);

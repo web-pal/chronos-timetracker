@@ -1,90 +1,66 @@
-import * as types from '../constants';
+import * as types from './actionTypes';
+import type {
+  FetchIssuesRequest, FetchIssuesRequestAction,
+  FillIssues, FillIssuesAction,
+  ClearIssues, ClearIssuesAction,
+  SetIssuesFetching, SetIssuesFetchingAction,
+  SetIssuesTotalCount, SetIssuesTotalCountAction,
+  SelectIssue, SelectIssueAction,
+  SetTrackingIssue, SetTrackingIssueAction,
+  SetIssuesSearchValue, SetIssuesSearchValueAction,
+  IssuesMap, Id,
+} from '../types';
 
-export function fetchIssues(pagination = { startIndex: 0, stopIndex: 50 }, resolve = false) {
-  return {
-    type: types.FETCH_ISSUES_REQUEST,
-    pagination,
-    resolve,
-  };
-}
+export const fetchIssuesRequest: FetchIssuesRequest = (
+  payload: {
+    startIndex: number,
+    stopIndex: number,
+  } = { startIndex: 0, stopIndex: 10 },
+): FetchIssuesRequestAction => ({
+  type: types.FETCH_ISSUES_REQUEST,
+  payload,
+});
 
-export function fetchIssuesAllTypes() {
-  return {
-    type: types.FETCH_ISSUES_ALL_TYPES_REQUEST,
-  };
-}
+export const fillIssues: FillIssues = (
+  payload: { ids: Array<Id>, map: IssuesMap },
+): FillIssuesAction => ({
+  type: types.FILL_ISSUES,
+  payload,
+});
 
-export function fetchIssuesAllStatuses() {
-  return {
-    type: types.FETCH_ISSUES_ALL_STATUSES_REQUEST,
-  };
-}
+export const clearIssues: ClearIssues = (): ClearIssuesAction => ({ type: types.CLEAR_ISSUES });
 
-export function fetchRecentIssues() {
-  return {
-    type: types.FETCH_RECENT_ISSUES_REQUEST,
-  };
-}
+export const setIssuesFetching: SetIssuesFetching = (
+  payload: boolean,
+): SetIssuesFetchingAction => ({
+  type: types.SET_ISSUES_FETCHING,
+  payload,
+});
 
-export function searchIssues() {
-  return {
-    type: types.FETCH_SEARCH_ISSUES_REQUEST,
-  };
-}
+export const setIssuesTotalCount: SetIssuesTotalCount = (
+  payload: number,
+): SetIssuesTotalCountAction => ({
+  type: types.SET_ISSUES_TOTAL_COUNT,
+  payload,
+});
 
-export function setIssuesSearchValue(value) {
-  return {
-    type: types.SET_ISSUES_SEARCH_VALUE,
-    payload: value,
-  };
-}
+export const selectIssue: SelectIssue = (
+  payload: Id,
+): SelectIssueAction => ({
+  type: types.SELECT_ISSUE,
+  payload,
+});
 
-export function setFilterOfIssuesFiltersValue(value, filterName) {
-  return {
-    type: types.SET_FILTER_OF_ISSUES_CRITERIA_FILTERS,
-    payload: { value },
-    meta: { filterName },
-  };
-}
+export const setTrackingIssue: SetTrackingIssue = (
+  payload: Id,
+): SetTrackingIssueAction => ({
+  type: types.SET_TRACKING_ISSUE,
+  payload,
+});
 
-export function setIssuesCriteriaFilter(
-  value,
-  criteriaName,
-  del,
-  pagination = { startIndex: 0, stopIndex: 50 },
-) {
-  return {
-    type: del ? types.DELETE_ISSUES_CRITERIA_FILTER : types.SET_ISSUES_CRITERIA_FILTER,
-    payload: { value },
-    meta: { criteriaName },
-    pagination,
-  };
-}
-
-
-export function setShowingFilterCriteriaBlock(key, value) {
-  return {
-    type: types.SET_SHOWING_FILTER_CRITERIA_BLOCK,
-    payload: value,
-    meta: key,
-  };
-}
-
-export function selectIssue(issueId) {
-  return {
-    type: types.SELECT_ISSUE,
-    payload: issueId,
-  };
-}
-
-export function jumpToTrackingIssue() {
-  return {
-    type: types.JUMP_TO_TRACKING_ISSUE,
-  };
-}
-
-export function clearIssues() {
-  return {
-    type: types.CLEAR_ISSUES,
-  };
-}
+export const setIssuesSearchValue: SetIssuesSearchValue = (
+  payload: string,
+): SetIssuesSearchValueAction => ({
+  type: types.SET_ISSUES_SEARCH_VALUE,
+  payload,
+});

@@ -1,87 +1,22 @@
-import { fork } from 'redux-saga/effects';
+// @flow
+import { all, fork } from 'redux-saga/effects';
 
-import {
-  loginFlow,
-  loginOAuthFlow,
-  checkJWT,
-  localDesktopSettings,
-} from './profile';
-import {
-  getProjects,
-  onSelectProject,
-  whatchBoardSelection,
-  onSelectSprint,
-} from './projects';
-import {
-  watchGetIssues, watchGetIssue, watchRecentIssues,
-  watchSearchIssues, watchChangeSidebar,
-  watchGetIssueTypes, watchGetIssueStatuses,
-  watchIssuesCriteriaFilter, watchFilterIssues,
-  watchIssuesCriteriaFilterDelete, onSetFilters,
-  watchSelectIssue,
-  jumpToTrackingIssue,
-} from './issues';
-import {
-  watchSelectWorklogs, watchUploadScreenshot,
-  watchRejectScreenshot, uploadOfflineScreenshots,
-  uploadOfflineWorklogs, updateWorklogTypeRequest,
-} from './worklogs';
-import {
-  manageTimer,
-  cutIddlesFromLastScreenshot,
-  normalizePeriods,
-  deleteScreenshot,
-  watchStopTimerRequest,
-} from './timer';
-import {
-  watchStopTimer as watchStopTimerUI,
-  watchChangeSidebarTab as watchChangeSidebarTabUI,
-} from './ui';
+import * as profileSagas from './profile';
+import * as projectSagas from './projects';
+import * as issueSagas from './issues';
 
+export default function* rootSaga(): Generator<*, *, *> {
+  yield all([
+    fork(profileSagas.loginFlow),
+    fork(profileSagas.loginOAuthFlow),
+    fork(profileSagas.checkJWT),
 
-export default function* root() {
-  yield [
-    fork(loginFlow),
-    fork(loginOAuthFlow),
-    fork(checkJWT),
-    fork(localDesktopSettings),
+    //
+    fork(projectSagas.watchFetchProjectsRequest),
+    fork(projectSagas.watchFetchSprintsRequest),
+    fork(projectSagas.watchProjectSelection),
 
-    fork(getProjects),
-    fork(onSelectProject),
-    fork(onSelectSprint),
-
-    fork(watchGetIssues),
-    fork(whatchBoardSelection),
-
-    fork(onSetFilters),
-    fork(watchIssuesCriteriaFilter),
-    fork(watchIssuesCriteriaFilterDelete),
-    fork(watchFilterIssues),
-    fork(watchGetIssue),
-    fork(watchSearchIssues),
-    fork(watchRecentIssues),
-
-    fork(watchGetIssueTypes),
-    fork(watchGetIssueStatuses),
-    fork(jumpToTrackingIssue),
-
-    fork(watchChangeSidebar),
-
-    fork(watchSelectWorklogs),
-    fork(watchSelectIssue),
-    fork(watchUploadScreenshot),
-    fork(watchRejectScreenshot),
-    fork(uploadOfflineScreenshots),
-    fork(uploadOfflineWorklogs),
-    fork(updateWorklogTypeRequest),
-
-    fork(manageTimer),
-    fork(cutIddlesFromLastScreenshot),
-    fork(normalizePeriods),
-    fork(deleteScreenshot),
-    fork(watchStopTimerRequest),
-
-    fork(watchStopTimerUI),
-    fork(watchChangeSidebarTabUI),
-  ];
+    //
+    fork(issueSagas.watchFetchIssuesRequest),
+  ]);
 }

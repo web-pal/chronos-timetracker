@@ -1,11 +1,9 @@
 /* eslint global-require: 1, flowtype-errors/show-errors: 0 */
-/* global sharedObj */
 import path from 'path';
 import storage from 'electron-json-storage';
 import { app, Tray, Menu, MenuItem, ipcMain, BrowserWindow, screen } from 'electron';
 import notifier from 'node-notifier';
 import MenuBuilder from './menu';
-
 
 let mainWindow;
 let tray;
@@ -322,7 +320,7 @@ ipcMain.on('oauthText', (event, text) => {
   if (mainWindow && authWindow) {
     try {
       const code = text.split('.')[1].split('\'')[1];
-      mainWindow.webContents.send('oauth-code', code);
+      mainWindow.webContents.send('oauth-accepted', code);
     } catch (err) {
       console.log(err);
     }

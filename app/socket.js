@@ -3,8 +3,8 @@ import moment from 'moment';
 import storage from 'electron-json-storage';
 import config from 'config';
 import { stj } from 'time-util';
+import { types } from 'actions';
 
-import * as types from './constants';
 import store from './store';
 
 export default class Socket {

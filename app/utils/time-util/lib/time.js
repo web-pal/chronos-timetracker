@@ -31,3 +31,13 @@ export function jts(jiraTimeString) { // convert JIRA time (e.g 1d 1h 20m) to se
 export function stj(seconds, format) {
   return moment.duration(seconds * 1000).format(format);
 }
+
+export function setLoggedTodayOnTray(allWorklogs, selfKey) {
+  const today = new Date();
+  const loggedToday = allWorklogs
+    .filter(w => w.getIn(['author', 'key']) === selfKey)
+    .filter(w => moment(w.get('created')).isSame(today, 'day'))
+    .reduce((prevValue, i) => i.get('timeSpentSeconds') + prevValue, 0);
+  const humanFormat = new Date(loggedToday * 1000).toISOString().substr(11, 8);
+  ipcRenderer.send('setLoggedToday', humanFormat);
+}

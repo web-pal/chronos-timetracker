@@ -43,18 +43,18 @@ export default merge.smart(baseConfig, {
       'webpack/hot/only-dev-server',
       path.join(__dirname, 'app/index.jsx'),
     ],
-    screenPopup: [
-      'react-hot-loader/patch',
-      `webpack-dev-server/client?http://localhost:${port}/`,
-      'webpack/hot/only-dev-server',
-      path.join(__dirname, 'app/screenPopup.jsx'),
-    ],
-    idleTimePopup: [
-      'react-hot-loader/patch',
-      `webpack-dev-server/client?http://localhost:${port}/`,
-      'webpack/hot/only-dev-server',
-      path.join(__dirname, 'app/idlePopup.jsx'),
-    ],
+    // screenPopup: [
+      // 'react-hot-loader/patch',
+      // `webpack-dev-server/client?http://localhost:${port}/`,
+      // 'webpack/hot/only-dev-server',
+      // path.join(__dirname, 'app/screenPopup.jsx'),
+    // ],
+    // idleTimePopup: [
+      // 'react-hot-loader/patch',
+      // `webpack-dev-server/client?http://localhost:${port}/`,
+      // 'webpack/hot/only-dev-server',
+      // path.join(__dirname, 'app/idlePopup.jsx'),
+    // ],
   },
 
   output: {
@@ -161,7 +161,7 @@ export default merge.smart(baseConfig, {
      * 'staging', for example, by changing the ENV variables in the npm scripts
      */
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
     }),
 
     // Define global vars
@@ -170,13 +170,26 @@ export default merge.smart(baseConfig, {
     }),
 
     new webpack.LoaderOptionsPlugin({
-      debug: true
+      debug: true,
     }),
 
     new ExtractTextPlugin({
-      filename: '[name].css'
-    })
+      filename: '[name].css',
+    }),
   ],
+
+  resolve: {
+    extensions: ['.js', '.jsx', '.json'],
+    modules: [
+      path.join(__dirname, 'app/actions'),
+      path.join(__dirname, 'app/types'),
+      path.join(__dirname, 'app/components'),
+      path.join(__dirname, 'app/utils'),
+      path.join(__dirname, 'app/selectors'),
+      path.join(__dirname, 'app/styles'),
+      'node_modules',
+    ],
+  },
 
   devServer: {
     port,
@@ -191,7 +204,7 @@ export default merge.smart(baseConfig, {
     contentBase: path.join(__dirname, 'dist'),
     watchOptions: {
       aggregateTimeout: 300,
-      poll: 100
+      poll: 100,
     },
     historyApiFallback: {
       verbose: true,
