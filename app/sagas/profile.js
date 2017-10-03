@@ -7,7 +7,7 @@ import * as Api from 'api';
 import type {
   ErrorObj,
   AuthFormData,
-  UserData,
+  User,
   ChronosBackendUserData,
   LoginRequestAction,
   LoginOAuthRequestAction,
@@ -28,7 +28,7 @@ function* loginError(error: ErrorObj): Generator<*, void, *> {
 
 function* jiraLogin(values: AuthFormData): Generator<*, boolean, *> {
   try {
-    const userData: UserData = yield call(Api.jiraAuth, values);
+    const userData: User = yield call(Api.jiraAuth, values);
     Raven.setUserContext({
       host: values.host,
       locale: userData.locale,
@@ -170,7 +170,7 @@ export function* loginOAuthFlow(): Generator<*, void, *> {
         },
       );
 
-      const userData: UserData = yield call(Api.jiraProfile);
+      const userData: User = yield call(Api.jiraProfile);
 
       yield put(profileActions.fillUserData(userData));
       yield put(profileActions.setHost(host));

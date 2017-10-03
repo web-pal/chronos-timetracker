@@ -8,10 +8,10 @@ export type ApplicationRole = any;
 // TODO type for jira Group
 export type Group = any;
 
-export type UserData = {
+export type User = {
   accountId: string,
   active: boolean,
-  applicationRoles: {
+  applicationRoles?: {
     size: number,
     items: Array<ApplicationRole>,
   },
@@ -23,13 +23,13 @@ export type UserData = {
   },
   displayName: string,
   emailAddress: string,
-  expand: string,
-  groups: {
+  expand?: string,
+  groups?: {
     size: number,
     items: Array<Group>,
   },
   key: string,
-  locale: string,
+  locale?: string,
   self: string,
   timeZone: string,
 };
@@ -55,7 +55,7 @@ export type LoginError = string;
 export type ProfileState = {|
   +authorized: boolean,
   +host: string | null,
-  +userData: UserData | null,
+  +userData: User | null,
   +loginError: string,
 |};
 
@@ -135,10 +135,10 @@ export type ThrowLoginError = {
 
 //
 export type FillUserDataAction =
- {| type: types.FILL_USER_DATA, payload: UserData |};
+ {| type: types.FILL_USER_DATA, payload: User |};
 
 export type FillUserData = {
-  (payload: UserData): FillUserDataAction
+  (payload: User): FillUserDataAction
 };
 
 //
@@ -159,7 +159,7 @@ export type ProfileAction =
   | SetAuthorizedAction
   | ThrowLoginErrorAction
   | FillUserDataAction
-   | SetHostAction;
+  | SetHostAction;
 
 export type ProfileActionCreator =
   LoginRequest

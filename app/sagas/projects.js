@@ -56,6 +56,7 @@ export function* watchFetchSprintsRequest(): Generator<*, *, *> {
 export function* watchProjectSelection(): Generator<*, *, *> {
   while (true) {
     yield take(types.SELECT_PROJECT);
+    yield put(issuesActions.clearIssues());
     yield put(issuesActions.fetchIssuesRequest());
   }
 }

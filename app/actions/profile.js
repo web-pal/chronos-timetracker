@@ -10,7 +10,7 @@ import type {
   ThrowLoginError, ThrowLoginErrorAction,
   FillUserData, FillUserDataAction,
   SetHost, SetHostAction,
-  LoginError, AuthFormData, UserData,
+  LoginError, AuthFormData, User,
 } from '../types';
 
 import * as types from './actionTypes/';
@@ -72,7 +72,7 @@ export const setHost: SetHost = (
 });
 
 export const fillUserData: FillUserData = (
-  payload: UserData,
+  payload: User,
 ): FillUserDataAction => ({
   type: types.FILL_USER_DATA,
   payload,

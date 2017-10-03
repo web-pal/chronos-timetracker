@@ -11,11 +11,11 @@ export type Project = {
     '32x32': string,
     '48x48': string,
   },
-  expand: string,
+  expand?: string,
   id: string,
   key: string,
   name: string,
-  projectTypeKey: string,
+  projectTypeKey?: string,
   self: string,
 };
 

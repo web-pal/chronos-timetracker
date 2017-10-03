@@ -9,9 +9,8 @@ import { getIssuesFetching, getIssuesTotalCount, getSidebarType } from 'selector
 
 import SidebarNoItems from './SidebarNoItems';
 import SidebarAllItems from './SidebarAllItems';
-// import SidebarAllItems from '../../components/Sidebar/SidebarAllItems/SidebarAllItems';
-// import SidebarRecentItems from '../../components/Sidebar/SidebarRecentItems/SidebarRecentItems';
-//
+import SidebarRecentItems from './SidebarRecentItems';
+
 import type { SidebarType } from '../../../types';
 
 type Props = {
@@ -26,12 +25,15 @@ const SidebarItems: StatelessFunctionalComponent<Props> = ({
   sidebarType,
 }: Props): Node =>
   <Flex column style={{ height: '100%' }}>
-    <SidebarNoItems show={!fetching && totalCount === 0 && sidebarType === 'all'} />
+    {!fetching && totalCount === 0 && sidebarType === 'all' &&
+      <SidebarNoItems />
+    }
     {sidebarType === 'all' && <SidebarAllItems />}
+    {sidebarType === 'recent' && <SidebarRecentItems />}
   </Flex>;
 
 /*
- * <SidebarRecentItems
+ * <sidebarrecentitems
  *   style={{ display: `${sidebarType === 'all' ? 'none' : 'block'}` }}
  * />
  */

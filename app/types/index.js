@@ -14,6 +14,10 @@ import type {
   SettingsAction,
 } from './settings';
 
+import type {
+  IssuesAction,
+} from './issues';
+
 export type Id = string;
 
 export type SelectOption = {
@@ -41,6 +45,7 @@ export type AnyAction =
   | SettingsAction
   | ReduxFormAction
   | ClearAllReducersAction
+  | IssuesAction
   | Action;
 
 export interface ErrorObj {
@@ -89,7 +94,7 @@ export type {
 export type {
   ApplicationRole,
   Group,
-  UserData,
+  User,
   ChronosBackendUserData,
   LoginError,
   ProfileState,
@@ -150,6 +155,7 @@ export type {
 export type {
   Screenshot,
   Issue,
+  Worklog,
   IssuesMap,
   IssuesMeta,
   IssuesState,
@@ -157,11 +163,21 @@ export type {
   FetchIssuesRequest,
   FillIssuesAction,
   FillIssues,
+  FillRecentIssueIdsAction,
+  FillRecentIssueIds,
+  AddIssuesAction,
+  AddIssues,
   ClearIssuesAction,
   ClearIssues,
   SetIssuesFetchingAction,
   SetIssuesFetching,
   SetIssuesTotalCountAction,
   SetIssuesTotalCount,
+  SelectIssueAction,
+  SelectIssue,
+  SetTrackingIssueAction,
+  SetTrackingIssue,
+  SetIssuesSearchValueAction,
+  SetIssuesSearchValue,
   IssuesAction,
 } from './issues';

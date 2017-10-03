@@ -5,18 +5,14 @@ import { noIssuesImage } from 'data/assets';
 import { Flex } from 'components';
 import { NoIssuesImage, Title, Subtitle } from './styled';
 
-type Props = {
-  show: boolean,
-}
+type Props = {};
 
-const NoItems: StatelessFunctionalComponent<Props> = ({
-  show,
-}: Props): Node =>
+const NoItems: StatelessFunctionalComponent<Props> = (): Node =>
   <Flex
     column
     centered
     alignCenter
-    style={{ width: '100%', height: '100%', display: `${show ? 'none' : 'flex'}` }}
+    style={{ width: '100%', height: '100%' }}
   >
     <NoIssuesImage src={noIssuesImage} alt="Not found" />
     <Title>No issues found</Title>

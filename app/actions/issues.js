@@ -2,6 +2,8 @@ import * as types from './actionTypes';
 import type {
   FetchIssuesRequest, FetchIssuesRequestAction,
   FillIssues, FillIssuesAction,
+  FillRecentIssueIds, FillRecentIssueIdsAction,
+  AddIssues, AddIssuesAction,
   ClearIssues, ClearIssuesAction,
   SetIssuesFetching, SetIssuesFetchingAction,
   SetIssuesTotalCount, SetIssuesTotalCountAction,
@@ -25,6 +27,20 @@ export const fillIssues: FillIssues = (
   payload: { ids: Array<Id>, map: IssuesMap },
 ): FillIssuesAction => ({
   type: types.FILL_ISSUES,
+  payload,
+});
+
+export const fillRecentIssueIds: FillRecentIssueIds = (
+  payload: Array<Id>,
+): FillRecentIssueIdsAction => ({
+  type: types.FILL_RECENT_ISSUE_IDS,
+  payload,
+});
+
+export const addIssues: AddIssues = (
+  payload: { ids: Array<Id>, map: IssuesMap },
+): AddIssuesAction => ({
+  type: types.ADD_ISSUES,
   payload,
 });
 

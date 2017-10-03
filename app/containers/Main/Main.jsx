@@ -25,12 +25,12 @@ type Props = {};
 
 const Main: StatelessFunctionalComponent<Props> = (): Node =>
   <ThemeProvider theme={theme}>
-    <Flex row>
+    <Flex row style={{ height: '100%' }}>
       <AlertModal />
       <SettingsModal />
       <SupportModal />
       <AboutModal />
-      <Flex column>
+      <Flex column style={{ width: 435 }}>
         <Header />
         <Sidebar />
       </Flex>

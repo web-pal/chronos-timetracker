@@ -15,7 +15,7 @@ type Props = {
 };
 
 const App: StatelessFunctionalComponent<Props> = (props: Props): Node => (
-  <div>
+  <div className="wrapper">
     {props.isAuthorized
       ? <Main />
       : <AuthForm />

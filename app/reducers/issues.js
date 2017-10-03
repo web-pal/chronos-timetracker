@@ -1,6 +1,7 @@
 // @flow
 import { combineReducers } from 'redux';
-
+import union from 'lodash.union';
+import merge from 'lodash.merge';
 import { types } from 'actions';
 
 import type { Id, IssuesMap, IssuesMeta } from '../types';
@@ -9,6 +10,11 @@ function allItems(state: Array<Id> = [], action): Array<Id> {
   switch (action.type) {
     case types.FILL_ISSUES:
       return action.payload.ids;
+    case types.ADD_ISSUES:
+      return union(
+        state,
+        action.payload.ids,
+      );
     case types.CLEAR_ISSUES:
     case types.___CLEAR_ALL_REDUCERS___:
       return [];
@@ -21,9 +27,26 @@ function itemsById(state: IssuesMap = {}, action): IssuesMap {
   switch (action.type) {
     case types.FILL_ISSUES:
       return action.payload.map;
+    case types.ADD_ISSUES:
+      return merge(
+        state,
+        action.payload.map,
+      );
     case types.CLEAR_ISSUES:
     case types.___CLEAR_ALL_REDUCERS___:
       return {};
+    default:
+      return state;
+  }
+}
+
+function recentIds(state: Array<Id> = [], action): Array<Id> {
+  switch (action.type) {
+    case types.FILL_RECENT_ISSUE_IDS:
+      return action.payload;
+    case types.CLEAR_ISSUES:
+    case types.___CLEAR_ALL_REDUCERS___:
+      return [];
     default:
       return state;
   }
@@ -101,5 +124,6 @@ function meta(state: IssuesMeta = initialMeta, action) {
 export default combineReducers({
   byId: itemsById,
   allIds: allItems,
+  recentIds,
   meta,
 });

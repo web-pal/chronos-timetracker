@@ -18,5 +18,6 @@ export default function* rootSaga(): Generator<*, *, *> {
 
     //
     fork(issueSagas.watchFetchIssuesRequest),
+    fork(issueSagas.watchSidebarTabChange),
   ]);
 }

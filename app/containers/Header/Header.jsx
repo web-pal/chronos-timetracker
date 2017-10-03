@@ -1,7 +1,5 @@
 // @flow
-// TODO: provide team in user info
-import React, { Component, PropTypes } from 'react';
-import styled from 'styled-components';
+import React, { Component } from 'react';
 import { remote } from 'electron';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -26,14 +24,14 @@ import {
 
 import type {
   LogoutRequest,
-  UserData,
+  User,
   SetSettingsModalOpen,
   SetAboutModalOpen,
-  SetSupportModalOpen
+  SetSupportModalOpen,
 } from '../../types';
 
 type Props = {
-  userData: UserData,
+  userData: User,
   host: string,
 
   logoutRequest: LogoutRequest,
@@ -71,7 +69,7 @@ class Header extends Component<Props> {
       host,
       setSettingsModalOpen,
       setSupportModalOpen,
-      setAboutModalOpen
+      setAboutModalOpen,
     } = this.props;
     // TODO: update available
     const updateAvailable = true;
@@ -85,7 +83,7 @@ class Header extends Component<Props> {
           <ProfilePicture src={userData.avatarUrls['48x48']} alt="" />
           <ProfileInfo>
             <Name>{userData.displayName}</Name>
-            <Team>{host}.atlassian.net</Team>
+            <Team>{host}</Team>
           </ProfileInfo>
         </Flex>
         <Flex row style={{ position: 'relative' }}>

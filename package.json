@@ -187,6 +187,8 @@
     "font-awesome": "^4.7.0",
     "immutable": "^3.8.1",
     "jira-connector": "github:web-pal/jira-connector",
+    "lodash.merge": "^4.6.0",
+    "lodash.union": "^4.6.0",
     "merge-images": "^1.0.5",
     "moment": "^2.18.1",
     "moment-duration-format": "^1.3.0",
