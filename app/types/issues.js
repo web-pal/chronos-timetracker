@@ -174,10 +174,10 @@ export type SetIssuesTotalCount = {
 
 //
 export type SelectIssueAction =
-  {| type: types.SELECT_ISSUE, +payload: Id |};
+  {| type: types.SELECT_ISSUE, +payload: Id | null |};
 
 export type SelectIssue = {
-  (payload: Id): SelectIssueAction,
+  (payload: Id | null): SelectIssueAction,
 }
 
 //

@@ -16,4 +16,4 @@ esproposal.class_static_fields=enable
 esproposal.class_instance_fields=enable
 esproposal.export_star_as=enable
 module.name_mapper.extension='less' -> '<PROJECT_ROOT>/app/assets/stub.js'
-
+suppress_comment= \\(.\\|\n\\)*\\$FlowFixMe

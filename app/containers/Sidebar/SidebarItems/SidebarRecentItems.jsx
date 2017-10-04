@@ -37,7 +37,7 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
   selectIssue,
 }: Props): Node =>
   <div className="RecentItems">
-    {items.map(item =>
+    {items.map(item => item.worklog &&
       <Flex key={item.day} column className="RecentItems__block">
         <TimestampItem
           date={item.day}

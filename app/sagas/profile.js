@@ -83,6 +83,7 @@ export function* checkJWT(): Generator<*, void, *> {
 export function* loginFlow(): Generator<*, void, *> {
   while (true) {
     const { payload }: LoginRequestAction = yield take(types.LOGIN_REQUEST);
+    yield put(profileActions.setHost(payload.host));
     const chronosBackendLoginSuccess: boolean = yield call(chronosBackendLogin, payload);
     if (!chronosBackendLoginSuccess) yield cancel();
     const jiraLoginSuccess: boolean = yield call(jiraLogin, payload);
@@ -93,7 +94,6 @@ export function* loginFlow(): Generator<*, void, *> {
       yield call(setToStorage, 'jira_credentials', { ...payload, password: '' });
       yield fork(getWorklogTypes);
       yield fork(getSettings);
-      yield put(profileActions.setHost(payload.host));
       // yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: false });
       yield put(profileActions.setAuthorized(true));
       // yield put({ type: types.CHECK_OFFLINE_SCREENSHOTS });
@@ -114,6 +114,7 @@ export function* loginOAuthFlow(): Generator<*, void, *> {
 
       // collecting basic oAuth data
       const host: string = payload;
+      yield put(profileActions.setHost(host));
       const oAuthData = yield call(Api.getDataForOAuth, host);
       let accessToken: string;
       let tokenSecret: string;
@@ -173,7 +174,6 @@ export function* loginOAuthFlow(): Generator<*, void, *> {
       const userData: User = yield call(Api.jiraProfile);
 
       yield put(profileActions.fillUserData(userData));
-      yield put(profileActions.setHost(host));
       yield put(profileActions.setAuthorized(true));
       yield call(getSettings);
       // yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: false });

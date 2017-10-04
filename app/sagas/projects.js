@@ -7,7 +7,11 @@ import { types, projectsActions, issuesActions } from 'actions';
 import { getSelectedBoardId } from 'selectors';
 import * as Api from 'api';
 
+import { setToStorage, getFromStorage } from './storage';
+
 import { throwError } from './ui';
+
+import type { SelectProjectAction, Id } from '../types';
 
 export function* fetchProjects(): Generator<*, *, *> {
   try {
@@ -25,6 +29,11 @@ export function* fetchProjects(): Generator<*, *, *> {
     );
     yield put(projectsActions.fillProjects(normalizedProjects));
     yield put(projectsActions.fillBoards(normalizedBoards, scrumBoards, kanbanBoards));
+    const lastProjectSelected: Id | null = yield call(getFromStorage, 'lastProjectSelected');
+    if (lastProjectSelected) {
+      yield put(projectsActions.selectProject(lastProjectSelected, 'project'));
+      yield put(issuesActions.fetchIssuesRequest());
+    }
   } catch (err) {
     yield call(throwError, err);
     Raven.captureException(err);
@@ -55,7 +64,9 @@ export function* watchFetchSprintsRequest(): Generator<*, *, *> {
 
 export function* watchProjectSelection(): Generator<*, *, *> {
   while (true) {
-    yield take(types.SELECT_PROJECT);
+    const { payload }: SelectProjectAction = yield take(types.SELECT_PROJECT);
+    yield call(setToStorage, 'lastProjectSelected', payload);
+    yield put(issuesActions.selectIssue(null))
     yield put(issuesActions.clearIssues());
     yield put(issuesActions.fetchIssuesRequest());
   }

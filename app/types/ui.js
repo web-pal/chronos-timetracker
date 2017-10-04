@@ -5,9 +5,12 @@ export type AuthFormStep = 1 | 2;
 
 export type SidebarType = 'all' | 'recent';
 
+export type TabLabel = 'Details' | 'Comments' | 'Worklogs';
+
 export type UiState = {|
   +authFormStep: AuthFormStep,
   +sidebarType: SidebarType,
+  +issueViewTab: TabLabel,
   +sidebarFiltersOpen: boolean,
   +settingsModalOpen: boolean,
   +supportModalOpen: boolean,
@@ -23,13 +26,20 @@ export type SetAuthFormStep = {
   (payload: AuthFormStep): SetAuthFormStepAction
 };
 
-
 //
 export type SetSidebarTypeAction =
   {| type: types.SET_SIDEBAR_TYPE, +payload: SidebarType |};
 
 export type SetSidebarType = {
   (payload: SidebarType): SetSidebarTypeAction
+};
+
+//
+export type SetIssueViewTabAction =
+  {| type: types.SET_ISSUE_VIEW_TAB, payload: TabLabel |};
+
+export type SetIssueViewTab = {
+  (payload: TabLabel): SetIssueViewTabAction
 };
 
 //
@@ -74,6 +84,9 @@ export type SetAlertModalOpen = {
 
 export type UiAction =
   SetAuthFormStepAction
+  | SetSidebarTypeAction
+  | SetIssueViewTabAction
+  | SetSidebarFiltersOpenAction
   | SetSettingsModalOpenAction
   | SetSupportModalOpenAction
   | SetAboutModalOpenAction

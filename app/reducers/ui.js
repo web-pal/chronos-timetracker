@@ -5,6 +5,7 @@ import type { Action, UiState } from '../types';
 const initialState: UiState = {
   authFormStep: 1,
   sidebarType: 'all',
+  issueViewTab: 'Details',
   sidebarFiltersOpen: false,
   settingsModalOpen: false,
   supportModalOpen: false,
@@ -23,6 +24,11 @@ export default function ui(state: UiState = initialState, action: Action) {
       return {
         ...state,
         sidebarType: action.payload,
+      };
+    case types.SET_ISSUE_VIEW_TAB:
+      return {
+        ...state,
+        issueViewTab: action.payload,
       };
     case types.SET_SIDEBAR_FILTERS_OPEN:
       return {

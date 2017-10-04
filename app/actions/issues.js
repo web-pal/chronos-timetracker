@@ -61,7 +61,7 @@ export const setIssuesTotalCount: SetIssuesTotalCount = (
 });
 
 export const selectIssue: SelectIssue = (
-  payload: Id,
+  payload: Id | null,
 ): SelectIssueAction => ({
   type: types.SELECT_ISSUE,
   payload,

@@ -24,7 +24,7 @@ export const loginRequest: LoginRequest = (
 
 export const loginOAuthRequest: LoginOAuthRequest = (
   host: string,
-  meta: { accessToken: string, tokenSecret: string },
+  meta?: { accessToken: string, tokenSecret: string },
 ): LoginOAuthRequestAction => ({
   type: types.LOGIN_OAUTH_REQUEST,
   payload: host,

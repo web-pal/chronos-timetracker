@@ -2,12 +2,13 @@
 import type {
   SetAuthFormStep, SetAuthFormStepAction,
   SetSidebarType, SetSidebarTypeAction,
+  SetIssueViewTab, SetIssueViewTabAction,
   SetSidebarFiltersOpen, SetSidebarFiltersOpenAction,
   SetSettingsModalOpen, SetSettingsModalOpenAction,
   SetSupportModalOpen, SetSupportModalOpenAction,
   SetAboutModalOpen, SetAboutModalOpenAction,
   SetAlertModalOpen, SetAlertModalOpenAction,
-  AuthFormStep, SidebarType,
+  AuthFormStep, SidebarType, TabLabel,
 } from '../types';
 
 import * as types from './actionTypes';
@@ -26,11 +27,18 @@ export const setSidebarType: SetSidebarType = (
   payload,
 });
 
+export const setIssueViewTab: SetIssueViewTab = (
+  payload: TabLabel,
+): SetIssueViewTabAction => ({
+  type: types.SET_ISSUE_VIEW_TAB,
+  payload,
+});
+
 export const setSidebarFiltersOpen: SetSidebarFiltersOpen = (
   payload: boolean,
 ): SetSidebarFiltersOpenAction => ({
   type: types.SET_SIDEBAR_FILTERS_OPEN,
-  payload
+  payload,
 });
 
 export const setSettingsModalOpen: SetSettingsModalOpen = (

@@ -8,15 +8,7 @@ import type { StatelessFunctionalComponent, Node } from 'react';
 import { AlertModal, SettingsModal, SupportModal, AboutModal } from '../Modals';
 import Header from '../Header/Header';
 import Sidebar from '../Sidebar/Sidebar';
-
-// import Menu from './Menu/Menu';
-// import Header from '../components/Base/Header/Header';
-
-// import SettingsModal from '../components/Modals/SettingsModal/SettingsModal';
-// import SupportModal from '../components/Modals/SupportModal/SupportModal';
-// import AboutModal from '../components/Modals/AboutModal/AboutModal';
-
-// import IssueView from './IssueView/IssueView';
+import IssueView from '../IssueView/IssueView';
 
 // TODO: allow user to customize theme
 const theme = { primary: '#0052CC' };
@@ -30,27 +22,12 @@ const Main: StatelessFunctionalComponent<Props> = (): Node =>
       <SettingsModal />
       <SupportModal />
       <AboutModal />
-      <Flex column style={{ width: 435 }}>
+      <Flex column style={{ flex: '0 0 435px' }}>
         <Header />
         <Sidebar />
       </Flex>
+      <IssueView />
     </Flex>
   </ThemeProvider>;
 
 export default Main;
-
-/*
- *     <Flex row>
- *       <AlertModal />
- *       <SettingsModal />
- *       <SupportModal />
- *       <AboutModal />
- * 
- *       <Flex column>
- *         <Header />
- *         <Menu />
- *       </Flex>
- * 
- *       <IssueView />
- *     </Flex>
- */

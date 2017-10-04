@@ -78,11 +78,11 @@ export type LoginOAuthRequestAction =
   {
     type: types.LOGIN_OAUTH_REQUEST,
     payload: string,
-    meta: { accessToken: string, tokenSecret: string },
+    meta?: { accessToken: string, tokenSecret: string },
   } & Action;
 
 export type LoginOAuthRequest = {
-  (host: string, meta: { accessToken: string, tokenSecret: string }): LoginOAuthRequestAction
+  (host: string, meta?: { accessToken: string, tokenSecret: string }): LoginOAuthRequestAction
 };
 
 //

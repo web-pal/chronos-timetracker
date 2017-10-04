@@ -1,11 +1,14 @@
 // @flow
-import type { UiState, AuthFormStep, SidebarType } from '../types';
+import type { UiState, AuthFormStep, SidebarType, TabLabel } from '../types';
 
 export const getAuthFormStep =
   ({ ui }: { ui: UiState }): AuthFormStep => ui.authFormStep;
 
 export const getSidebarType =
   ({ ui }: { ui: UiState }): SidebarType => ui.sidebarType;
+
+export const getIssueViewTab =
+  ({ ui }: { ui: UiState }): TabLabel => ui.issueViewTab;
 
 export const getSettingsModalOpen =
   ({ ui }: { ui: UiState }): boolean => ui.settingsModalOpen;
