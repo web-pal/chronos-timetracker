@@ -4,7 +4,7 @@ import type { StatelessFunctionalComponent, Node } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { issuesActions, uiActions } from 'actions';
-import { getSidebarType, getSidebarFiltersOpen } from 'selectors';
+import { getSidebarFiltersOpen, getIssuesSearchValue } from 'selectors';
 
 import {
   SearchBar,
@@ -15,18 +15,29 @@ import {
   FilterIcon,
 } from './styled';
 
-import type { SetSidebarFiltersOpen } from '../../types';
+import type {
+  SetSidebarFiltersOpen,
+  SetIssuesSearchValue,
+  ClearIssues,
+  FetchIssuesRequest,
+} from '../../types';
 
 type Props = {
   searchValue: string,
   isSidebarFiltersOpen: boolean,
   setSidebarFiltersOpen: SetSidebarFiltersOpen,
+  setIssuesSearchValue: SetIssuesSearchValue,
+  clearIssues: ClearIssues,
+  fetchIssuesRequest: FetchIssuesRequest,
 }
 
 const SidebarFilter: StatelessFunctionalComponent<Props> = ({
   searchValue,
   isSidebarFiltersOpen,
   setSidebarFiltersOpen,
+  setIssuesSearchValue,
+  clearIssues,
+  fetchIssuesRequest,
 }: Props): Node =>
   <SearchBar>
     <SearchIcon
@@ -38,7 +49,7 @@ const SidebarFilter: StatelessFunctionalComponent<Props> = ({
       type="text"
       value={searchValue}
       onChange={(ev) => {
-        console.log(ev.target.value)
+        setIssuesSearchValue(ev.target.value);
       }}
     />
     <SearchOptions>
@@ -46,7 +57,8 @@ const SidebarFilter: StatelessFunctionalComponent<Props> = ({
         label="Refresh"
         size="medium"
         onClick={() => {
-          console.log('refresh');
+          clearIssues();
+          fetchIssuesRequest();
         }}
       />
       <FilterIcon
@@ -60,13 +72,13 @@ const SidebarFilter: StatelessFunctionalComponent<Props> = ({
 
 function mapStateToProps(state) {
   return {
-    searchValue: '',
+    searchValue: getIssuesSearchValue(state),
     isSidebarFiltersOpen: getSidebarFiltersOpen(state),
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(uiActions, dispatch);
+  return bindActionCreators({ ...uiActions, ...issuesActions }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SidebarFilter);

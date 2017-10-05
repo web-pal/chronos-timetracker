@@ -33,6 +33,9 @@ export const getSelectedIssueId =
 export const getTrackingIssueId =
   ({ issues }: { issues: IssuesState }): Id | null => issues.meta.trackingIssueId;
 
+export const getIssuesSearchValue =
+  ({ issues }: { issues: IssuesState }): string => issues.meta.searchValue;
+
 export const getSelectedIssue = createSelector(
   [getSelectedIssueId, getIssuesMap],
   (id, map) => (id ? map[id] : null),

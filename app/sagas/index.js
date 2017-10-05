@@ -4,6 +4,7 @@ import { all, fork } from 'redux-saga/effects';
 import * as profileSagas from './profile';
 import * as projectSagas from './projects';
 import * as issueSagas from './issues';
+import * as timerSagas from './timer';
 
 export default function* rootSaga(): Generator<*, *, *> {
   yield all([
@@ -19,5 +20,8 @@ export default function* rootSaga(): Generator<*, *, *> {
     //
     fork(issueSagas.watchFetchIssuesRequest),
     fork(issueSagas.watchSidebarTabChange),
+
+    //
+    fork(timerSagas.watchStartTimer),
   ]);
 }

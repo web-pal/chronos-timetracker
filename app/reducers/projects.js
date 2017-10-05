@@ -112,16 +112,16 @@ const initialMeta: ProjectsMeta = {
 
 function meta(state: ProjectsMeta = initialMeta, action) {
   switch (action.type) {
-    case types.SET_PROJECTS_FETCH_STATE:
+    case types.SET_PROJECTS_FETCHING:
       return {
         ...state,
         fetching: action.payload,
       };
-    case types.SET_SPRINTS_FOR_BOARD_FETCH_STATE:
+    /* TODO case types.SET_SPRINTS_FOR_BOARD_FETCH_STATE:
       return {
         ...state,
         sprintsFetching: action.payload,
-      };
+      }; */
     case types.SELECT_SPRINT:
       return {
         ...state,

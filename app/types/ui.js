@@ -20,7 +20,7 @@ export type UiState = {|
 
 //
 export type SetAuthFormStepAction =
-  {| type: types.SET_AUTH_FORM_STEP, +payload: AuthFormStep |};
+  {| type: typeof types.SET_AUTH_FORM_STEP, +payload: AuthFormStep |};
 
 export type SetAuthFormStep = {
   (payload: AuthFormStep): SetAuthFormStepAction
@@ -28,7 +28,7 @@ export type SetAuthFormStep = {
 
 //
 export type SetSidebarTypeAction =
-  {| type: types.SET_SIDEBAR_TYPE, +payload: SidebarType |};
+  {| type: typeof types.SET_SIDEBAR_TYPE, +payload: SidebarType |};
 
 export type SetSidebarType = {
   (payload: SidebarType): SetSidebarTypeAction
@@ -36,7 +36,7 @@ export type SetSidebarType = {
 
 //
 export type SetIssueViewTabAction =
-  {| type: types.SET_ISSUE_VIEW_TAB, payload: TabLabel |};
+  {| type: typeof types.SET_ISSUE_VIEW_TAB, payload: TabLabel |};
 
 export type SetIssueViewTab = {
   (payload: TabLabel): SetIssueViewTabAction
@@ -44,7 +44,7 @@ export type SetIssueViewTab = {
 
 //
 export type SetSidebarFiltersOpenAction =
-  {| type: types.SET_SIDEBAR_FILTERS_OPEN, +payload: boolean |};
+  {| type: typeof types.SET_SIDEBAR_FILTERS_OPEN, +payload: boolean |};
 
 export type SetSidebarFiltersOpen = {
   (payload: boolean): SetSidebarFiltersOpenAction
@@ -52,7 +52,7 @@ export type SetSidebarFiltersOpen = {
 
 //
 export type SetSettingsModalOpenAction =
-  {| type: types.SET_SETTINGS_MODAL_OPEN, +payload: boolean |};
+  {| type: typeof types.SET_SETTINGS_MODAL_OPEN, +payload: boolean |};
 
 export type SetSettingsModalOpen = {
   (payload: boolean): SetSettingsModalOpenAction
@@ -60,7 +60,7 @@ export type SetSettingsModalOpen = {
 
 //
 export type SetSupportModalOpenAction =
-  {| type: types.SET_SUPPORT_MODAL_OPEN, +payload: boolean |};
+  {| type: typeof types.SET_SUPPORT_MODAL_OPEN, +payload: boolean |};
 
 export type SetSupportModalOpen = {
   (payload: boolean): SetSupportModalOpenAction
@@ -68,7 +68,7 @@ export type SetSupportModalOpen = {
 
 //
 export type SetAboutModalOpenAction =
-  {| type: types.SET_ABOUT_MODAL_OPEN, +payload: boolean |};
+  {| type: typeof types.SET_ABOUT_MODAL_OPEN, +payload: boolean |};
 
 export type SetAboutModalOpen = {
   (payload: boolean): SetAboutModalOpenAction
@@ -76,7 +76,7 @@ export type SetAboutModalOpen = {
 
 //
 export type SetAlertModalOpenAction =
-  {| type: types.SET_ALERT_MODAL_OPEN, +payload: boolean |};
+  {| type: typeof types.SET_ALERT_MODAL_OPEN, +payload: boolean |};
 
 export type SetAlertModalOpen = {
   (payload: boolean): SetAlertModalOpenAction

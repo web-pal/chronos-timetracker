@@ -12,3 +12,6 @@ export const getUserData =
 
 export const getLoginError =
   ({ profile }: { profile: ProfileState }): string => profile.loginError;
+
+export const getLoginFetching =
+  ({ profile }: { profile: ProfileState }): boolean => profile.loginFetching;

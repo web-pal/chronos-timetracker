@@ -1,4 +1,5 @@
 // @flow
+import { createSelector } from 'reselect';
 import type { SettingsState, LocalDesktopSettings } from '../types';
 
 export const getDispersion =
@@ -22,6 +23,19 @@ export const getSettingsModalTab =
 export const getScreenshotsEnabledUsers =
   ({ settings }: { settings: SettingsState }): Array<string> => settings.screenshotsEnabledUsers;
 
-export const getLocalDesktopSettings =
-  ({ settings }: { settings: SettingsState }): LocalDesktopSettings => settings.localDesktopSettings;
+export const getLocalDesktopSettings = ({
+  settings,
+}: { settings: SettingsState }): LocalDesktopSettings => settings.localDesktopSettings;
+
+export const getScreenshotsSettings = createSelector(
+  [
+    getScreenshotsEnabled,
+    getScreenshotsEnabledUsers,
+    getScreenshotsQuantity,
+    getScreenshotsPeriod,
+  ],
+  (screenshotsEnabled, screenshotsEnabledUsers, screenshotsQuantity, screenshotPeriod) => ({
+    screenshotsEnabled, screenshotsEnabledUsers, screenshotsQuantity, screenshotPeriod,
+  }),
+);
 

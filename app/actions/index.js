@@ -7,6 +7,7 @@ export * as uiActions from './ui';
 export * as settingsActions from './settings';
 export * as projectsActions from './projects';
 export * as issuesActions from './issues';
+export * as timerActions from './timer';
 
 export * as types from './actionTypes/';
 

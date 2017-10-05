@@ -79,17 +79,15 @@ class IssueView extends Component<Props> {
   }
 
   render() {
-    const { selectedIssueId, currentTab } = this.props;
+    const { selectedIssueId, currentTab, timerRunning } = this.props;
     if (!selectedIssueId) {
       return <IssueViewPlaceholder />;
     }
 
     return (
       <IssueViewContainer column className="tracker">
-        {
-          /* {running &&
-            <TrackingBar />
-            } */
+        {timerRunning &&
+          <TrackingBar />
         }
         <IssueContainer>
           <IssueViewHeader />
@@ -107,6 +105,7 @@ function mapStateToProps(state) {
   return {
     selectedIssueId: getSelectedIssueId(state),
     currentTab: getIssueViewTab(state),
+    timerRunning: getTimerRunning(state),
   };
 }
 

@@ -74,11 +74,11 @@ function meta(state: IssuesMeta = initialMeta, action) {
         ...state,
         totalCount: action.payload,
       };
-    case types.SET_LAST_STOP_INDEX:
+    /* TODO case types.SET_LAST_STOP_INDEX:
       return {
         ...state,
         lastStopIndex: action.payload,
-      };
+      }; */
     case types.SELECT_ISSUE:
       return {
         ...state,
@@ -94,7 +94,7 @@ function meta(state: IssuesMeta = initialMeta, action) {
         ...state,
         searchValue: action.payload,
       };
-    case types.DELETE_SCREENSHOT: {
+    /* TODO case types.DELETE_SCREENSHOT: {
       const newScreenshots = [...state.screenshots];
       return {
         ...state,
@@ -113,7 +113,7 @@ function meta(state: IssuesMeta = initialMeta, action) {
       return {
         ...state,
         screenshots: [],
-      };
+      }; */
     case types.___CLEAR_ALL_REDUCERS___:
       return initialMeta;
     default:

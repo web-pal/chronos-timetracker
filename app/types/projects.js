@@ -63,7 +63,7 @@ export type ProjectsState = {
 
 //
 export type FetchProjectsRequestAction =
-  {| type: types.FETCH_PROJECTS_REQUEST |};
+  {| type: typeof types.FETCH_PROJECTS_REQUEST |};
 
 export type FetchProjectsRequest = {
   (): FetchProjectsRequestAction
@@ -72,7 +72,7 @@ export type FetchProjectsRequest = {
 
 //
 export type SelectProjectAction =
-  {| type: types.SELECT_PROJECT, payload: string, meta: string |};
+  {| type: typeof types.SELECT_PROJECT, payload: string, meta: string |};
 
 export type SelectProject = {
   (projectId: Id, type: ProjectType): SelectProjectAction
@@ -80,7 +80,7 @@ export type SelectProject = {
 
 //
 export type SelectSprintAction =
-  {| type: types.SELECT_SPRINT, payload: string |};
+  {| type: typeof types.SELECT_SPRINT, payload: string |};
 
 export type SelectSprint = {
   (sprintId: Id): SelectSprintAction
@@ -88,7 +88,7 @@ export type SelectSprint = {
 
 //
 export type FillProjectsAction =
-  {| type: types.FILL_PROJECTS, payload: { map: ProjectsMap, ids: ProjectsIds } |};
+  {| type: typeof types.FILL_PROJECTS, payload: { map: ProjectsMap, ids: ProjectsIds } |};
 
 export type FillProjects = {
   (payload: { map: ProjectsMap, ids: ProjectsIds }): FillProjectsAction
@@ -97,7 +97,7 @@ export type FillProjects = {
 //
 export type FillBoardsAction =
   {|
-    type: types.FILL_BOARDS,
+    type: typeof types.FILL_BOARDS,
     payload: {
       map: BoardsMap,
       ids: BoardsIds
@@ -121,7 +121,7 @@ export type FillBoards = {
 
 //
 export type FillSprintsAction =
-  {| type: types.FILL_SPRINTS, payload: { map: SprintsMap, ids: SprintsIds } |};
+  {| type: typeof types.FILL_SPRINTS, payload: { map: SprintsMap, ids: SprintsIds } |};
 
 export type FillSprints = {
   (payload: { map: SprintsMap, ids: SprintsIds }): FillSprintsAction

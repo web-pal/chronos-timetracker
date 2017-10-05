@@ -33,7 +33,7 @@ export type Action = {
   error?: any
 };
 
-export type ClearAllReducersAction = { type: types.___CLEAR_ALL_REDUCERS___ };
+export type ClearAllReducersAction = { type: typeof types.___CLEAR_ALL_REDUCERS___ };
 
 export type ClearAllReducers = {
   (): ClearAllReducersAction
@@ -122,6 +122,8 @@ export type {
   FillUserData,
   SetHostAction,
   SetHost,
+  SetLoginFetchingAction,
+  SetLoginFetching,
   ProfileAction,
 } from './profile';
 
@@ -184,3 +186,19 @@ export type {
   SetIssuesSearchValue,
   IssuesAction,
 } from './issues';
+
+export type {
+  Idle,
+  TimerState,
+  TickAction,
+  Tick,
+  StartTimerAction,
+  StartTimer,
+  StopTimerAction,
+  StopTimer,
+  SetIdleStateAction,
+  SetIdleState,
+  SetLastScreenshotTimeAction,
+  SetLastScreenshotTime,
+  TimerAction,
+} from './timer';

@@ -10,6 +10,7 @@ import type {
   ThrowLoginError, ThrowLoginErrorAction,
   FillUserData, FillUserDataAction,
   SetHost, SetHostAction,
+  SetLoginFetching, SetLoginFetchingAction,
   LoginError, AuthFormData, User,
 } from '../types';
 
@@ -24,7 +25,7 @@ export const loginRequest: LoginRequest = (
 
 export const loginOAuthRequest: LoginOAuthRequest = (
   host: string,
-  meta?: { accessToken: string, tokenSecret: string },
+  meta?: { accessToken?: string, tokenSecret?: string },
 ): LoginOAuthRequestAction => ({
   type: types.LOGIN_OAUTH_REQUEST,
   payload: host,
@@ -75,5 +76,12 @@ export const fillUserData: FillUserData = (
   payload: User,
 ): FillUserDataAction => ({
   type: types.FILL_USER_DATA,
+  payload,
+});
+
+export const setLoginFetching: SetLoginFetching = (
+  payload: boolean,
+): SetLoginFetchingAction => ({
+  type: types.SET_LOGIN_FETCHING,
   payload,
 });

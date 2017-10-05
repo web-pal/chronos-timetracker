@@ -11,7 +11,7 @@ import SidebarItems from './SidebarItems/SidebarItems';
 // import Filters from './Filters';
 import ProjectPicker from './ProjectPicker';
 import SidebarHeader from './SidebarHeader';
-// import SidebarFilter from './SidebarFilter';
+import SidebarFilter from './SidebarFilter';
 
 import type { SetSidebarType, SidebarType, Id } from '../../types';
 
@@ -35,6 +35,9 @@ const Sidebar: StatelessFunctionalComponent<Props> = ({
       setSidebarType={setSidebarType}
     />
     <Flex column className="sidebar">
+      {sidebarType === 'all' &&
+        <SidebarFilter />
+      }
       {selectedProjectId ?
         <SidebarItems /> :
         <span className="sidebar-nothing-selected">

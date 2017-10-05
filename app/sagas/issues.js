@@ -66,8 +66,8 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
       ); */
     }
     const normalizedIssues = yield call(normalizePayload, response.issues, 'issues');
-    yield put(issuesActions.fillRecentIssueIds(normalizedIssues.ids));
     yield put(issuesActions.addIssues(normalizedIssues));
+    yield put(issuesActions.fillRecentIssueIds(normalizedIssues.ids));
     /* TODO
     if (showWorklogTypes) {
       const recentWorkLogsIds = yield select(

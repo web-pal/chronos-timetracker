@@ -1,5 +1,5 @@
 // @flow
-export const FETCH_ISSUES_REQUEST: string = 'issues/FETCH_REQUEST';
+export const FETCH_ISSUES_REQUEST: 'issues/FETCH_REQUEST' = 'issues/FETCH_REQUEST';
 export const FILL_ISSUES: string = 'issues/FILL';
 export const FILL_RECENT_ISSUE_IDS: string = 'issues/FILL_RECENT_IDS';
 export const ADD_ISSUES: string = 'issues/ADD';

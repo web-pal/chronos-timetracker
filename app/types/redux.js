@@ -4,6 +4,7 @@ import type { UiState } from './ui';
 import type { SettingsState } from './settings';
 import type { ProjectsState } from './projects';
 import type { IssuesState } from './issues';
+import type { TimerState } from './timer';
 
 export type RegisteredField<T> = {
   name: $Keys<T>,
@@ -22,4 +23,6 @@ export type State = {
   settings: SettingsState,
   projects: ProjectsState,
   issues: IssuesState,
+  timer: TimerState,
+  form: any,
 };

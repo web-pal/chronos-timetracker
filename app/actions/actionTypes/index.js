@@ -5,6 +5,6 @@ export * from './ui';
 export * from './settings';
 export * from './projects';
 export * from './issues';
+export * from './timer';
 
-// eslint-disable-next-line no-underscore-dangle
-export const ___CLEAR_ALL_REDUCERS___: string = '___CLEAR_ALL_REDUCERS___';
+export const ___CLEAR_ALL_REDUCERS___: '___CLEAR_ALL_REDUCERS___' = '___CLEAR_ALL_REDUCERS___';

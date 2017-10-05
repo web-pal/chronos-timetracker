@@ -21,3 +21,6 @@ export const getAboutModalOpen =
 
 export const getAlertModalOpen =
   ({ ui }: { ui: UiState }): boolean => ui.alertModalOpen;
+
+export const getSidebarFiltersOpen =
+  ({ ui }: { ui: UiState }): boolean => ui.sidebarFiltersOpen;

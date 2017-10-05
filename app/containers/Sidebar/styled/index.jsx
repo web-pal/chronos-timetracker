@@ -1,4 +1,7 @@
 import styled from 'styled-components';
+import FilterIconAK from '@atlaskit/icon/glyph/filter';
+import SearchIconAK from '@atlaskit/icon/glyph/search';
+import RefreshIconAK from '@atlaskit/icon/glyph/refresh';
 
 export const SearchBar = styled.div`
   display: flex;
@@ -12,11 +15,11 @@ export const SearchBar = styled.div`
   border-bottom: 1px solid hsla(217, 15%, 90%, 1);
 `;
 
-export const SearchIcon = styled.img`
+export const SearchIcon = styled(SearchIconAK)`
   height: 18px;
 `;
 
-export const RefreshIcon = styled.img`
+export const RefreshIcon = styled(RefreshIconAK)`
   @keyframes rotating {
     from {
       transform: rotate(0deg);
@@ -37,9 +40,9 @@ export const RefreshIcon = styled.img`
   ` : '')}
 `;
 
-export const FilterIcon = styled.img`
+export const FilterIcon = styled(FilterIconAK)`
   height: 16px;
-  margin-left: 10px;
+  margin-left: 5px;
   cursor: pointer;
 `;
 
@@ -57,6 +60,18 @@ export const SearchOptions = styled.div`
 export const RadioContainer = styled.div`
   width: 50%;
   display: inline-block;
+`;
+
+
+export const FiltersAppliedBadge = styled.div`
+  width: 8px;
+  height: 8px;
+  background: #0052cc;
+  position: absolute;
+  border-radius: 50%;
+  right: 11px;
+  top: 6px;
+  border: 2px solid white;
 `;
 
 export const TabContainer = styled.div`

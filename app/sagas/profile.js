@@ -58,7 +58,7 @@ function* chronosBackendLogin(values: AuthFormData): Generator<*, boolean, *> {
 
 export function* checkJWT(): Generator<*, void, *> {
   yield take(types.CHECK_JWT_REQUEST);
-  // yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: true });
+  yield put(profileActions.setLoginFetching(true));
   try {
     const userData: ChronosBackendUserData = yield call(Api.chronosBackendGetJiraCredentials);
     if (userData.authType === 'basic_auth' || userData.authType === undefined) {
@@ -75,35 +75,41 @@ export function* checkJWT(): Generator<*, void, *> {
       }));
     }
   } catch (err) {
+    yield put(profileActions.setLoginFetching(false));
     yield loginError(err);
-    // yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: false });
   }
 }
 
 export function* loginFlow(): Generator<*, void, *> {
   while (true) {
-    const { payload }: LoginRequestAction = yield take(types.LOGIN_REQUEST);
-    yield put(profileActions.setHost(payload.host));
-    const chronosBackendLoginSuccess: boolean = yield call(chronosBackendLogin, payload);
-    if (!chronosBackendLoginSuccess) yield cancel();
-    const jiraLoginSuccess: boolean = yield call(jiraLogin, payload);
-    if (!jiraLoginSuccess) yield cancel();
+    try {
+      const { payload }: LoginRequestAction = yield take(types.LOGIN_REQUEST);
+      yield put(profileActions.setLoginFetching(true));
+      yield put(profileActions.setHost(payload.host));
+      const chronosBackendLoginSuccess: boolean = yield call(chronosBackendLogin, payload);
+      if (!chronosBackendLoginSuccess) yield cancel();
+      const jiraLoginSuccess: boolean = yield call(jiraLogin, payload);
+      if (!jiraLoginSuccess) yield cancel();
 
-    // yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: true });
-    if (jiraLoginSuccess && chronosBackendLoginSuccess) {
-      yield call(setToStorage, 'jira_credentials', { ...payload, password: '' });
-      yield fork(getWorklogTypes);
-      yield fork(getSettings);
-      // yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: false });
-      yield put(profileActions.setAuthorized(true));
-      // yield put({ type: types.CHECK_OFFLINE_SCREENSHOTS });
-      // yield put({ type: types.CHECK_OFFLINE_WORKLOGS });
-      Socket.login();
-      yield take(types.LOGOUT_REQUEST);
-      yield call(removeFromStorage, 'desktop_tracker_jwt');
-      yield put(clearAllReducers());
+      if (jiraLoginSuccess && chronosBackendLoginSuccess) {
+        yield call(setToStorage, 'jira_credentials', { ...payload, password: '' });
+        yield fork(getWorklogTypes);
+        yield fork(getSettings);
+        yield put(profileActions.setLoginFetching(false));
+        yield put(profileActions.setAuthorized(true));
+        // yield put({ type: types.CHECK_OFFLINE_SCREENSHOTS });
+        // yield put({ type: types.CHECK_OFFLINE_WORKLOGS });
+        Socket.login();
+        yield take(types.LOGOUT_REQUEST);
+        yield call(removeFromStorage, 'desktop_tracker_jwt');
+        yield put(clearAllReducers());
+      }
+      yield put(profileActions.setLoginFetching(true));
+    } catch (err) {
+      yield put(profileActions.setLoginFetching(false));
+      yield call(loginError, err);
+      Raven.captureException(err);
     }
-    // yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: false });
   }
 }
 
@@ -134,6 +140,7 @@ export function* loginOAuthFlow(): Generator<*, void, *> {
           code: take(types.ACCEPT_OAUTH),
           denied: take(types.DENY_OAUTH),
         });
+        yield put(profileActions.setLoginFetching(true));
 
         if (denied) {
           throw new Error('OAuth denied');
@@ -174,16 +181,17 @@ export function* loginOAuthFlow(): Generator<*, void, *> {
       const userData: User = yield call(Api.jiraProfile);
 
       yield put(profileActions.fillUserData(userData));
+      yield put(profileActions.setLoginFetching(false));
       yield put(profileActions.setAuthorized(true));
       yield call(getSettings);
-      // yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: false });
       // yield put({ type: types.CHECK_OFFLINE_SCREENSHOTS });
       // yield put({ type: types.CHECK_OFFLINE_WORKLOGS });
-      // Socket.login();
+      Socket.login();
       yield take(types.LOGOUT_REQUEST);
       yield call(removeFromStorage, 'desktop_tracker_jwt');
       yield put(clearAllReducers());
     } catch (err) {
+      yield put(profileActions.setLoginFetching(false));
       yield call(loginError, err);
       Raven.captureException(err);
     }

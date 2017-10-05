@@ -1,11 +1,12 @@
 // @flow
 
-export const FETCH_PROJECTS_REQUEST: string = 'projects/FETCH_REQUEST';
-export const FETCH_SPRINTS_REQUEST: string = 'projects/FETCH_SPRINTS_REQUEST';
-export const SELECT_PROJECT: string = 'projects/SELECT';
-export const SELECT_SPRINT: string = 'projects/SELECT_SPRINT';
+export const FETCH_PROJECTS_REQUEST: 'projects/FETCH_REQUEST' = 'projects/FETCH_REQUEST';
+export const FETCH_SPRINTS_REQUEST: 'projects/FETCH_SPRINTS_REQUEST' = 'projects/FETCH_SPRINTS_REQUEST';
+export const SELECT_PROJECT: 'projects/SELECT' = 'projects/SELECT';
+export const SELECT_SPRINT: 'projects/SELECT_SPRINT' = 'projects/SELECT_SPRINT';
+export const SET_PROJECTS_FETCHING: 'projects/SET_FETCHING' = 'projects/SET_FETCHING';
 
-export const FILL_PROJECTS: string = 'projects/FILL';
-export const FILL_BOARDS: string = 'projects/FILL_BOARDS';
-export const FILL_SPRINTS: string = 'projects/FILL_SPRINTS';
+export const FILL_PROJECTS: 'projects/FILL' = 'projects/FILL';
+export const FILL_BOARDS: 'projects/FILL_BOARDS' = 'projects/FILL_BOARDS';
+export const FILL_SPRINTS: 'projects/FILL_SPRINTS' = 'projects/FILL_SPRINTS';
 

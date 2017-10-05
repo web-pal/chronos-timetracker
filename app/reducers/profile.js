@@ -1,12 +1,13 @@
 // @flow
-import type { ProfileState, Action } from '../types';
 import { types } from 'actions';
+import type { ProfileState, Action } from '../types';
 
 const initialState: ProfileState = {
   authorized: false,
   host: null,
   userData: null,
   loginError: '',
+  loginFetching: false,
 };
 
 function profile(state: ProfileState = initialState, action: Action) {
@@ -30,6 +31,11 @@ function profile(state: ProfileState = initialState, action: Action) {
       return {
         ...state,
         loginError: action.payload,
+      };
+    case types.SET_LOGIN_FETCHING:
+      return {
+        ...state,
+        loginFetching: action.payload,
       };
     case types.___CLEAR_ALL_REDUCERS___:
       return initialState;

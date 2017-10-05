@@ -7,17 +7,17 @@ import { reduxForm, formValueSelector } from 'redux-form';
 import { ipcRenderer } from 'electron';
 import storage from 'electron-json-storage';
 import { Flex } from 'components';
+import type { FormProps } from 'redux-form';
+import { logoShadowed } from 'data/assets';
+import { profileActions, uiActions } from 'actions';
+import { getAuthFormStep, getLoginError, getLoginFetching } from 'selectors';
 import type {
   LoginRequest,
   LoginOAuthRequest,
   DenyOAuth,
   CheckJWTRequest,
-  SetAuthFormStep
+  SetAuthFormStep,
 } from '../../types';
-import type { FormProps } from 'redux-form';
-import { logoShadowed } from 'data/assets';
-import { profileActions, uiActions } from 'actions';
-import { getAuthFormStep, getLoginError } from 'selectors';
 
 import { validate } from './validation';
 
@@ -36,6 +36,7 @@ type Props = {
   host: string | null,
   step: number,
   loginError: string,
+  fetching: boolean,
 } & FormProps;
 
 class AuthForm extends Component<Props> {
@@ -89,6 +90,7 @@ class AuthForm extends Component<Props> {
       step,
       setAuthFormStep,
       loginError,
+      fetching,
     } = this.props;
 
     return (
@@ -107,7 +109,7 @@ class AuthForm extends Component<Props> {
               loginError={loginError}
               isActiveStep={step === 2}
               onBack={() => setAuthFormStep(1)}
-              loginRequestInProcess={false}
+              loginRequestInProcess={fetching}
             />
           </ContentOuter>
         </Flex>
@@ -127,6 +129,7 @@ function mapStateToProps(state) {
     host: selector(state, 'host'),
     step: getAuthFormStep(state),
     loginError: getLoginError(state),
+    fetching: getLoginFetching(state),
   };
 }
 

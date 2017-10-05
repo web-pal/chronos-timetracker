@@ -26,8 +26,8 @@ const IssueWorklogs: StatelessFunctionalComponent<{}> = (): Node => (
       </Flex>
     </Flex>
     <Flex column style={{ overflowY: 'auto' }}>
-      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(() => (
-        <WorklogItem />
+      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
+        <WorklogItem key={i} />
       ))}
     </Flex>
   </Flex>

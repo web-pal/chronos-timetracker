@@ -1,0 +1,19 @@
+// @flow
+import type {
+  TimerState,
+} from '../types';
+
+export const getTimerTime =
+  ({ timer }: { timer: TimerState }): number => timer.time;
+
+export const getTimerRunning =
+  ({ timer }: { timer: TimerState }): boolean => timer.running;
+
+export const getTimerIdleState =
+  ({ timer }: { timer: TimerState }): boolean => timer.idleState;
+
+export const getLastScreenshotTimer =
+  ({ timer }: { timer: TimerState }): number => timer.lastScreenshotTime;
+
+export const getScreenshotPeriods =
+  ({ timer }: { timer: TimerState }): Array<number> => timer.screenshotPeriods;

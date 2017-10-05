@@ -53,6 +53,15 @@
     prop-types "^15.5.10"
     styled-components "^1.3.0"
 
+"@atlaskit/button@^1.0.0":
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/@atlaskit/button/-/button-1.1.4.tgz#e294fee6dd02c5b05c40fa6db6966a8a3c12ad4a"
+  dependencies:
+    "@atlaskit/util-shared-styles" "^2.1.1"
+    babel-runtime "^6.11.6"
+    classnames "^2.2.5"
+    styled-components "^1.3.0"
+
 "@atlaskit/checkbox@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@atlaskit/checkbox/-/checkbox-1.0.0.tgz#78817f351f2ccab5229ec8a3fca4b469b10498ae"
@@ -106,6 +115,18 @@
     prop-types "^15.5.10"
     styled-components "^1.3.0"
 
+"@atlaskit/field-base@^8.0.1":
+  version "8.1.1"
+  resolved "https://registry.yarnpkg.com/@atlaskit/field-base/-/field-base-8.1.1.tgz#7634567be674022e8dbfb9d3d73c7464acbee911"
+  dependencies:
+    "@atlaskit/icon" "^8.1.0"
+    "@atlaskit/inline-dialog" "^5.0.1"
+    "@atlaskit/spinner" "^4.0.0"
+    "@atlaskit/theme" "^2.0.0"
+    babel-runtime "^6.11.6"
+    prop-types "^15.5.10"
+    styled-components "^1.3.0"
+
 "@atlaskit/field-radio-group@^1.6.4":
   version "1.6.4"
   resolved "https://registry.yarnpkg.com/@atlaskit/field-radio-group/-/field-radio-group-1.6.4.tgz#980951f51b9d40abdd91f82d2092675697d6fc28"
@@ -114,6 +135,24 @@
     "@atlaskit/theme" "^2.0.1"
     babel-runtime "^6.11.6"
     classnames "^2.2.5"
+    prop-types "^15.5.10"
+    styled-components "^1.3.0"
+
+"@atlaskit/icon@^10.0.0":
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/@atlaskit/icon/-/icon-10.0.0.tgz#63c215f4dd18c606d787eddf8b97774b4d0dd760"
+  dependencies:
+    babel-runtime "^6.11.6"
+    prop-types "^15.5.10"
+    styled-components "^1.3.0"
+
+"@atlaskit/icon@^6.5.2":
+  version "6.6.0"
+  resolved "https://registry.yarnpkg.com/@atlaskit/icon/-/icon-6.6.0.tgz#770c7e0c4fa4ff126099bfc2f7d8f70d9e603900"
+  dependencies:
+    babel-runtime "^6.11.6"
+    classnames "^2.2.5"
+    create-error "^0.3.1"
     prop-types "^15.5.10"
     styled-components "^1.3.0"
 
@@ -140,6 +179,29 @@
     "@atlaskit/layer" "^2.0.0"
     "@atlaskit/theme" "^2.0.0"
     babel-runtime "^6.11.6"
+    prop-types "^15.5.10"
+    styled-components "^1.3.0"
+
+"@atlaskit/inline-edit@^4.5.0":
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/@atlaskit/inline-edit/-/inline-edit-4.5.0.tgz#4f286e9669a174cb2ba430e589168aa653d6735a"
+  dependencies:
+    "@atlaskit/button" "^1.0.0"
+    "@atlaskit/field-base" "^8.0.1"
+    "@atlaskit/icon" "^6.5.2"
+    "@atlaskit/theme" "^2.0.0"
+    babel-runtime "^6.11.6"
+    classnames "^2.2.5"
+    prop-types "^15.5.10"
+    styled-components "^1.3.0"
+
+"@atlaskit/input@^1.5.3":
+  version "1.5.3"
+  resolved "https://registry.yarnpkg.com/@atlaskit/input/-/input-1.5.3.tgz#04fd1240a600861e5fd6de425e18c650f80beba6"
+  dependencies:
+    "@atlaskit/util-shared-styles" "^1.0.0"
+    babel-runtime "^6.11.6"
+    keycode "^2.1.8"
     prop-types "^15.5.10"
     styled-components "^1.3.0"
 
@@ -203,7 +265,13 @@
     prop-types "^15.5.10"
     styled-components "^1.3.0"
 
-"@atlaskit/util-shared-styles@^2.0.1", "@atlaskit/util-shared-styles@^2.10.0", "@atlaskit/util-shared-styles@^2.10.3", "@atlaskit/util-shared-styles@^2.6.0":
+"@atlaskit/util-shared-styles@^1.0.0":
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/@atlaskit/util-shared-styles/-/util-shared-styles-1.7.1.tgz#0832cb6cc1797431c4ccf67d178aa4112df305e2"
+  dependencies:
+    babel-runtime "^6.11.6"
+
+"@atlaskit/util-shared-styles@^2.0.1", "@atlaskit/util-shared-styles@^2.1.1", "@atlaskit/util-shared-styles@^2.10.0", "@atlaskit/util-shared-styles@^2.10.3", "@atlaskit/util-shared-styles@^2.6.0":
   version "2.10.3"
   resolved "https://registry.yarnpkg.com/@atlaskit/util-shared-styles/-/util-shared-styles-2.10.3.tgz#5b9dfa1ebd9f6c062aa6309dc7236bdbd50acea9"
   dependencies:
@@ -2793,6 +2861,10 @@ create-error-class@^3.0.0:
   resolved "https://registry.yarnpkg.com/create-error-class/-/create-error-class-3.0.2.tgz#06be7abef947a3f14a30fd610671d401bca8b7b6"
   dependencies:
     capture-stack-trace "^1.0.0"
+
+create-error@^0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/create-error/-/create-error-0.3.1.tgz#69810245a629e654432bf04377360003a5351a23"
 
 create-hash@^1.1.0, create-hash@^1.1.1:
   version "1.1.2"
@@ -6170,7 +6242,7 @@ keyboardevents-areequal@^0.2.1:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/keyboardevents-areequal/-/keyboardevents-areequal-0.2.2.tgz#88191ec738ce9f7591c25e9056de928b40277194"
 
-keycode@^2.1.9:
+keycode@^2.1.8, keycode@^2.1.9:
   version "2.1.9"
   resolved "https://registry.yarnpkg.com/keycode/-/keycode-2.1.9.tgz#964a23c54e4889405b4861a5c9f0480d45141dfa"
 

@@ -21,7 +21,7 @@ export type SettingsState = {|
 
 //
 export type FillSettingsAction =
-  {| type: types.FILL_SETTINGS, payload: Settings |} & Action;
+  {| type: typeof types.FILL_SETTINGS, payload: Settings |} & Action;
 
 export type FillSettings = {
   (payload: Settings): FillSettingsAction
@@ -29,7 +29,7 @@ export type FillSettings = {
 
 //
 export type FillLocalDesktopSettingsAction =
-  {| type: types.FILL_LOCAL_DESKTOP_SETTINGS, payload: LocalDesktopSettings |};
+  {| type: typeof types.FILL_LOCAL_DESKTOP_SETTINGS, payload: LocalDesktopSettings |};
 
 export type FillLocalDesktopSettings = {
   (payload: LocalDesktopSettings): FillLocalDesktopSettingsAction
@@ -37,7 +37,7 @@ export type FillLocalDesktopSettings = {
 
 //
 export type SetLocalDesktopSettingAction =
-  {| type: types.SET_LOCAL_DESKTOP_SETTING, payload: any, meta: string |};
+  {| type: typeof types.SET_LOCAL_DESKTOP_SETTING, payload: any, meta: string |};
 
 export type SetLocalDesktopSetting = {
   (payload: any, setting: string): SetLocalDesktopSettingAction
@@ -45,7 +45,7 @@ export type SetLocalDesktopSetting = {
 
 //
 export type SetSettingsModalTabAction =
-  {| type: types.SET_SETTINGS_MODAL_TAB, payload: string |};
+  {| type: typeof types.SET_SETTINGS_MODAL_TAB, payload: string |};
 
 export type SetSettingsModalTab = {
   (payload: string): SetSettingsModalTabAction
@@ -53,7 +53,7 @@ export type SetSettingsModalTab = {
 
 //
 export type RequestLocalDesktopSettingsAction =
-  {| type: types.REQUEST_LOCAL_DESKTOP_SETTINGS |};
+  {| type: typeof types.REQUEST_LOCAL_DESKTOP_SETTINGS |};
 
 export type RequestLocalDesktopSettings = {
   (): RequestLocalDesktopSettingsAction

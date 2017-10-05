@@ -57,17 +57,18 @@ export type ProfileState = {|
   +host: string | null,
   +userData: User | null,
   +loginError: string,
+  +loginFetching: boolean,
 |};
 
 export type AuthFormData = {|
   +host: string,
-  +username: string,
-  +password: string,
+  +username?: string,
+  +password?: string,
 |};
 
 //
 export type LoginRequestAction =
-  {| type: types.LOGIN_REQUEST, payload: AuthFormData |} & Action;
+  {| type: typeof types.LOGIN_REQUEST, payload: AuthFormData |} & Action;
 
 export type LoginRequest = {
   (payload: AuthFormData): LoginRequestAction
@@ -76,18 +77,18 @@ export type LoginRequest = {
 //
 export type LoginOAuthRequestAction =
   {
-    type: types.LOGIN_OAUTH_REQUEST,
+    type: typeof types.LOGIN_OAUTH_REQUEST,
     payload: string,
-    meta?: { accessToken: string, tokenSecret: string },
+    meta?: { accessToken?: string, tokenSecret?: string },
   } & Action;
 
 export type LoginOAuthRequest = {
-  (host: string, meta?: { accessToken: string, tokenSecret: string }): LoginOAuthRequestAction
+  (host: string, meta?: { accessToken?: string, tokenSecret?: string }): LoginOAuthRequestAction
 };
 
 //
 export type DenyOAuthAction =
-  {| type: types.DENY_OAUTH |} & Action;
+  {| type: typeof types.DENY_OAUTH |} & Action;
 
 export type DenyOAuth = {
   (): DenyOAuthAction
@@ -95,7 +96,7 @@ export type DenyOAuth = {
 
 //
 export type AcceptOAuthAction =
- {| type: types.ACCEPT_OAUTH, payload: string |} & Action;
+ {| type: typeof types.ACCEPT_OAUTH, payload: string |} & Action;
 
 export type AcceptOAuth = {
   (payload: string): AcceptOAuthAction;
@@ -103,7 +104,7 @@ export type AcceptOAuth = {
 
 //
 export type CheckJWTRequestAction =
- {| type: types.CHECK_JWT_REQUEST |} & Action;
+ {| type: typeof types.CHECK_JWT_REQUEST |} & Action;
 
 export type CheckJWTRequest = {
   (): CheckJWTRequestAction
@@ -111,7 +112,7 @@ export type CheckJWTRequest = {
 
 //
 export type LogoutRequestAction =
- {| type: types.LOGOUT_REQUEST |} & Action;
+ {| type: typeof types.LOGOUT_REQUEST |} & Action;
 
 export type LogoutRequest = {
   (): LogoutRequestAction
@@ -119,7 +120,7 @@ export type LogoutRequest = {
 
 //
 export type SetAuthorizedAction =
- {| type: types.SET_AUTHORIZED, payload: boolean |} & Action;
+ {| type: typeof types.SET_AUTHORIZED, payload: boolean |} & Action;
 
 export type SetAuthorized = {
   (payload: boolean): SetAuthorizedAction
@@ -127,7 +128,7 @@ export type SetAuthorized = {
 
 //
 export type ThrowLoginErrorAction =
- {| type: types.THROW_LOGIN_ERROR, payload: LoginError |} & Action;
+ {| type: typeof types.THROW_LOGIN_ERROR, payload: LoginError |} & Action;
 
 export type ThrowLoginError = {
   (payload: LoginError): ThrowLoginErrorAction
@@ -135,7 +136,7 @@ export type ThrowLoginError = {
 
 //
 export type FillUserDataAction =
- {| type: types.FILL_USER_DATA, payload: User |};
+ {| type: typeof types.FILL_USER_DATA, payload: User |} & Action;
 
 export type FillUserData = {
   (payload: User): FillUserDataAction
@@ -143,10 +144,18 @@ export type FillUserData = {
 
 //
 export type SetHostAction =
- {| type: types.SET_HOST, payload: string |};
+ {| type: typeof types.SET_HOST, payload: string |} & Action;
 
 export type SetHost = {
   (payload: string): SetHostAction
+};
+
+//
+export type SetLoginFetchingAction =
+ {| type: typeof types.SET_LOGIN_FETCHING, payload: boolean |} & Action;
+
+export type SetLoginFetching = {
+  (payload: boolean): SetLoginFetchingAction
 };
 
 export type ProfileAction =
@@ -159,17 +168,5 @@ export type ProfileAction =
   | SetAuthorizedAction
   | ThrowLoginErrorAction
   | FillUserDataAction
-  | SetHostAction;
-
-export type ProfileActionCreator =
-  LoginRequest
-  | LoginOAuthRequest
-  | DenyOAuth
-  | AcceptOAuth
-  | CheckJWTRequest
-  | LogoutRequest
-  | SetAuthorized
-  | ThrowLoginError
-  | FillUserData
-  | SetHost;
-
+  | SetHostAction
+  | SetLoginFetchingAction;

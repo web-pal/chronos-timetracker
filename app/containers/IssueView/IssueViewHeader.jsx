@@ -3,7 +3,7 @@ import React from 'react';
 import type { StatelessFunctionalComponent, Node } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getSelectedIssue, getTrackingIssueId } from 'selectors';
+import { getSelectedIssue, getTrackingIssueId, getTimerRunning } from 'selectors';
 import { Flex } from 'components';
 import { openProjectInBrowser, openIssueInBrowser } from 'external-open-util';
 import Tooltip from '@atlaskit/tooltip';
@@ -13,8 +13,9 @@ import DropdownMenu, {
 } from '@atlaskit/dropdown-menu';
 import Button, { ButtonGroup } from '@atlaskit/button';
 import { play } from 'data/svg';
+import { timerActions } from 'actions';
 
-import type { Issue, Id } from '../../types';
+import type { Issue, Id, StartTimer } from '../../types';
 import {
   ProjectAvatar,
   Link,
@@ -31,13 +32,15 @@ import {
 type Props = {
   selectedIssue: Issue,
   trackingIssueId: Id | null,
-  timerRunning: boolean
+  timerRunning: boolean,
+  startTimer: StartTimer,
 };
 
 const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
   selectedIssue,
   trackingIssueId,
   timerRunning,
+  startTimer,
 }: Props):Node => (
   <Flex column style={{ margin: '16px 20px', minHeight: 102 }}>
     <Flex row alignCenter spaceBetween style={{ marginBottom: 15 }}>
@@ -86,7 +89,7 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
         : <StartButton
           src={play}
           alt="Start Tracking"
-          onClick={() => { /* startTimer() */ }}
+          onClick={() => { startTimer(); }}
         />
       }
     </Flex>
@@ -121,12 +124,12 @@ function mapStateToProps(state) {
   return {
     selectedIssue: getSelectedIssue(state),
     trackingIssueId: getTrackingIssueId(state),
-    timerRunning: false,
+    timerRunning: getTimerRunning(state),
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({}, dispatch);
+  return bindActionCreators(timerActions, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(IssueViewHeader);

@@ -118,7 +118,7 @@ export type IssuesState = {|
 
 //
 export type FetchIssuesRequestAction =
-  {| type: types.FETCH_ISSUES_REQUEST, payload: { startIndex: ?number, stopIndex: ?number }|}
+  {| type: typeof types.FETCH_ISSUES_REQUEST, payload: { startIndex: ?number, stopIndex: ?number }|}
 
 export type FetchIssuesRequest = {
   (startIndex: ?number, stopIndex: ?number): FetchIssuesRequestAction
@@ -126,7 +126,7 @@ export type FetchIssuesRequest = {
 
 //
 export type FillIssuesAction =
-  {| type: types.FILL_ISSUES, payload: { ids: Array<Id>, map: IssuesMap }|};
+  {| type: typeof types.FILL_ISSUES, payload: { ids: Array<Id>, map: IssuesMap }|};
 
 export type FillIssues = {
   (payload: { ids: Array<Id>, map: IssuesMap }): FillIssuesAction
@@ -134,7 +134,7 @@ export type FillIssues = {
 
 //
 export type FillRecentIssueIdsAction =
-  {| type: types.FILL_RECENT_ISSUE_IDS, payload: Array<Id> |};
+  {| type: typeof types.FILL_RECENT_ISSUE_IDS, payload: Array<Id> |};
 
 export type FillRecentIssueIds = {
   (payload: Array<Id>): FillRecentIssueIdsAction
@@ -142,7 +142,7 @@ export type FillRecentIssueIds = {
 
 //
 export type AddIssuesAction =
-  {| type: types.ADD_ISSUES, payload: { ids: Array<Id>, map: IssuesMap }|};
+  {| type: typeof types.ADD_ISSUES, payload: { ids: Array<Id>, map: IssuesMap }|};
 
 export type AddIssues = {
   (payload: { ids: Array<Id>, map: IssuesMap }): AddIssuesAction
@@ -150,7 +150,7 @@ export type AddIssues = {
 
 //
 export type ClearIssuesAction =
-  {| type: types.CLEAR_ISSUES |};
+  {| type: typeof types.CLEAR_ISSUES |};
 
 export type ClearIssues = {
   (): ClearIssuesAction
@@ -158,7 +158,7 @@ export type ClearIssues = {
 
 //
 export type SetIssuesFetchingAction =
-  {| type: types.SET_ISSUES_FETCHING, +payload: boolean |};
+  {| type: typeof types.SET_ISSUES_FETCHING, +payload: boolean |};
 
 export type SetIssuesFetching = {
   (payload: boolean): SetIssuesFetchingAction
@@ -166,7 +166,7 @@ export type SetIssuesFetching = {
 
 //
 export type SetIssuesTotalCountAction =
-  {| type: types.SET_ISSUES_TOTAL_COUNT, +payload: number |};
+  {| type: typeof types.SET_ISSUES_TOTAL_COUNT, +payload: number |};
 
 export type SetIssuesTotalCount = {
   (payload: number): SetIssuesTotalCountAction
@@ -174,7 +174,7 @@ export type SetIssuesTotalCount = {
 
 //
 export type SelectIssueAction =
-  {| type: types.SELECT_ISSUE, +payload: Id | null |};
+  {| type: typeof types.SELECT_ISSUE, +payload: Id | null |};
 
 export type SelectIssue = {
   (payload: Id | null): SelectIssueAction,
@@ -182,7 +182,7 @@ export type SelectIssue = {
 
 //
 export type SetTrackingIssueAction =
-  {| type: types.SET_TRACKING_ISSUE, +payload: Id |};
+  {| type: typeof types.SET_TRACKING_ISSUE, +payload: Id |};
 
 export type SetTrackingIssue = {
   (payload: Id): SetTrackingIssueAction,
@@ -190,7 +190,7 @@ export type SetTrackingIssue = {
 
 //
 export type SetIssuesSearchValueAction =
-  {| type: types.SET_ISSUES_SEARCH_VALUE, +payload: string |};
+  {| type: typeof types.SET_ISSUES_SEARCH_VALUE, +payload: string |};
 
 export type SetIssuesSearchValue = {
   (payload: string): SetIssuesSearchValueAction
