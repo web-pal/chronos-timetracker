@@ -246,6 +246,10 @@ export type {
   ResetTimer,
   AddScreenshotAction,
   AddScreenshot,
+  SetScreenshotPeriodsAction,
+  SetScreenshotPeriods,
+  AddIdleTimeAction,
+  AddIdleTime,
   TimerAction,
 } from './timer';
 

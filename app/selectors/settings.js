@@ -20,8 +20,9 @@ export const getScreenshotsEnabled =
 export const getSettingsModalTab =
   ({ settings }: { settings: SettingsState }): string => settings.modalTab;
 
-export const getScreenshotsEnabledUsers =
-  ({ settings }: { settings: SettingsState }): Array<string> => settings.screenshotsEnabledUsers;
+export const getScreenshotsEnabledUsers = ({
+  settings,
+}: { settings: SettingsState }): Array<string | null> => settings.screenshotsEnabledUsers;
 
 export const getLocalDesktopSettings = ({
   settings,
@@ -34,8 +35,8 @@ export const getScreenshotsSettings = createSelector(
     getScreenshotsQuantity,
     getScreenshotsPeriod,
   ],
-  (screenshotsEnabled, screenshotsEnabledUsers, screenshotsQuantity, screenshotPeriod) => ({
-    screenshotsEnabled, screenshotsEnabledUsers, screenshotsQuantity, screenshotPeriod,
+  (screenshotsEnabled, screenshotsEnabledUsers, screenshotsQuantity, screenshotsPeriod) => ({
+    screenshotsEnabled, screenshotsEnabledUsers, screenshotsQuantity, screenshotsPeriod,
   }),
 );
 

@@ -12,7 +12,7 @@ export const getTimerRunning =
 export const getTimerIdleState =
   ({ timer }: { timer: TimerState }): boolean => timer.idleState;
 
-export const getLastScreenshotTimer =
+export const getLastScreenshotTime =
   ({ timer }: { timer: TimerState }): number => timer.lastScreenshotTime;
 
 export const getScreenshotPeriods =

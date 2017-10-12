@@ -9,6 +9,8 @@ import type {
   SetLastScreenshotTime, SetLastScreenshotTimeAction,
   ResetTimer, ResetTimerAction,
   AddScreenshot, AddScreenshotAction,
+  SetScreenshotPeriods, SetScreenshotPeriodsAction,
+  AddIdleTime, AddIdleTimeAction,
   Screenshot,
 } from '../types';
 
@@ -42,4 +44,18 @@ export const addScreenshot: AddScreenshot = (
   type: types.ADD_SCREENSHOT,
   payload: screenshot,
   meta: screenshotTime,
+});
+
+export const setScreenshotPeriods: SetScreenshotPeriods = (
+  payload: Array<number>,
+): SetScreenshotPeriodsAction => ({
+  type: types.SET_SCREENSHOT_PERIODS,
+  payload,
+});
+
+export const addIdleTime: AddIdleTime = (
+  payload: number,
+): AddIdleTimeAction => ({
+  type: types.ADD_IDLE_TIME,
+  payload,
 });

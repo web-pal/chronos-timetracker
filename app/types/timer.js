@@ -81,6 +81,22 @@ export type AddScreenshot = {
   (screenshot: Screenshot, screenshotTime: number): AddScreenshotAction
 };
 
+//
+export type SetScreenshotPeriodsAction =
+  {| type: typeof types.SET_SCREENSHOT_PERIODS, +payload: Array<number> |};
+
+export type SetScreenshotPeriods = {
+  (payload: Array<number>): SetScreenshotPeriodsAction
+};
+
+//
+export type AddIdleTimeAction =
+  {| type: typeof types.ADD_IDLE_TIME, +payload: number |};
+
+export type AddIdleTime = {
+  (payload: number): AddIdleTimeAction
+};
+
 export type TimerAction =
   TickAction
   | StartTimerAction
@@ -88,4 +104,6 @@ export type TimerAction =
   | SetIdleStateAction
   | SetLastScreenshotTimeAction
   | ResetTimerAction
-  | AddScreenshotAction;
+  | AddScreenshotAction
+  | SetScreenshotPeriodsAction
+  | AddIdleTimeAction;

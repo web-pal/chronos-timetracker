@@ -15,7 +15,7 @@ export type SettingsState = {|
   +screenshotsQuantity: number,
   +screenshotsEnabled: string,
   +modalTab: string,
-  +screenshotsEnabledUsers: Array<string>,
+  +screenshotsEnabledUsers: Array<string | null>,
   +localDesktopSettings: LocalDesktopSettings,
 |};
 

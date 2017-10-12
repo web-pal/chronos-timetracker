@@ -1,5 +1,6 @@
 import { call, take, fork, select, put, takeEvery, cancel } from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
+import moment from 'moment';
 import NanoTimer from 'nanotimer';
 import { remote, ipcRenderer } from 'electron';
 import {
@@ -18,6 +19,7 @@ import {
 import Raven from 'raven-js';
 import { uiActions, timerActions, issuesActions, types } from 'actions';
 import { idleTimeThreshold } from 'config';
+import { randomPeriods } from 'timer-helper';
 
 import { throwError } from './ui';
 import { uploadWorklog } from './worklogs';
@@ -60,58 +62,57 @@ function timerChannel() {
 }
 
 let prevIdleTime = 0;
-/* let totalIdleTimeDuringOneMinute = 0; */
+let totalIdleTimeDuringOneMinute = 0;
 
-function* idleCheck() {
+function* idleCheck(secondsToMinutesGrid) {
   try {
     const idleTime = system.getIdleTime();
     const idleState = yield select(getTimerIdleState);
+    const currentTime = yield select(getTimerTime);
     if (idleState && idleTime < idleTimeThreshold * 1000) {
       yield put(timerActions.setIdleState(false));
-      const currentTime = yield select(getTimerTime);
       remote.getGlobal('sharedObj').idleTime = prevIdleTime;
       remote.getGlobal('sharedObj').idleDetails =
         { from: currentTime - (Math.ceil(prevIdleTime / 1000)), to: currentTime };
-      // ipcRenderer.send('showIdlePopup');
+      ipcRenderer.send('showIdlePopup');
     }
     if (!idleState && idleTime >= idleTimeThreshold * 1000) {
       yield put(timerActions.setIdleState(true));
     }
     if ((prevIdleTime >= 5 * 1000) && prevIdleTime > idleTime) {
-      /* totalIdleTimeDuringOneMinute += prevIdleTime; */
+      totalIdleTimeDuringOneMinute += prevIdleTime;
     }
     prevIdleTime = idleTime;
+    if (currentTime % 60 === secondsToMinutesGrid) {
+      yield put(timerActions.addIdleTime(totalIdleTimeDuringOneMinute));
+      totalIdleTimeDuringOneMinute = 0;
+    }
   } catch (err) {
     yield call(throwError, err);
     Raven.captureException(err);
   }
 }
 
+let nextPeriod;
+
 function* screenshotsCheck() {
   try {
-    const time = yield select(getTimerTime);
-    if (time % 10 === 0) {
-      yield fork(takeScreenshot);
-    }
-    /* const currentSeconds = moment().format('ss');
-    const periodRange = (periodNumber * minutePeriod) - minutes;
-    let nextPeriod = (periodRange * 60) - currentSeconds;
+    const { screenshotsQuantity, screenshotsPeriod } = yield select(getScreenshotsSettings);
     const time = yield select(getTimerTime);
     const idleState = yield select(getTimerIdleState);
-    const periods = yield select(getScreenshotPeriods);
+    let periods = yield select(getScreenshotPeriods);
     if (time === periods[0]) {
       if (!idleState) {
         yield fork(takeScreenshot);
         periods.shift();
-        yield put(timerActions.savePeriods(periods));
+        yield put(timerActions.setScreenshotPeriods(periods));
       }
     }
     if (time === nextPeriod) {
       nextPeriod += screenshotsPeriod;
-      periods = randomPeriods(screenshotsQuantity, seconds, nextPeriod);
-      yield put(savePeriods(periods));
+      periods = randomPeriods(screenshotsQuantity, time, nextPeriod);
+      yield put(timerActions.setScreenshotPeriods(periods));
     }
-  */
   } catch (err) {
     yield call(throwError, err);
     Raven.captureException(err);
@@ -125,12 +126,12 @@ function setTimeToTray(time) {
   }
 }
 
-function* timerStep(screenshotsAllowed) {
+function* timerStep(screenshotsAllowed, secondsToMinutesGrid) {
   try {
     yield put(timerActions.tick());
-    yield call(idleCheck);
+    yield call(idleCheck, secondsToMinutesGrid);
     if (screenshotsAllowed) {
-      yield call(screenshotsCheck);
+      yield call(screenshotsCheck, nextPeriod);
     }
     const time = yield select(getTimerTime);
     yield call(setTimeToTray, time);
@@ -140,9 +141,21 @@ function* timerStep(screenshotsAllowed) {
   }
 }
 
+
 export function* runTimer(channel) {
+  const { screenshotsPeriod } = yield select(getScreenshotsSettings);
   const screenshotsAllowed = yield call(isScreenshotsAllowed);
-  yield takeEvery(channel, timerStep, true); // TODO screenshotsAllowed
+  const currentSeconds = moment().format('ss');
+  const secondsToMinutesGrid = 60 - currentSeconds;
+  // second remaining to end of current Idle-minute period
+  const minutes = moment().format('mm');
+  // 33
+  const minutePeriod = screenshotsPeriod / 60;
+  // 10
+  const periodNumber = Math.floor(minutes / minutePeriod) + 1;
+  const periodRange = (periodNumber * minutePeriod) - minutes;
+  nextPeriod = (periodRange * 60) - currentSeconds;
+  yield takeEvery(channel, timerStep, true, nextPeriod, secondsToMinutesGrid);
 }
 
 function* stopTimer(channel, timerInstance) {
@@ -214,10 +227,10 @@ export function* cutIddlesFromLastScreenshot() {
   const lastScreenshotTime = yield select(getLastScreenshotTime);
   const time = yield select(getTimerTime);
   const iddles = Math.ceil((time - lastScreenshotTime) / 60);
-  yield put({
+  /* TBD wtf is this yield put({
     type: types.CUT_IDDLES,
     payload: iddles,
-  });
+  }); */
 }
 
 /* function forceSave() {

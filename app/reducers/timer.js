@@ -3,7 +3,7 @@ import { types } from 'actions';
 import type { TimerState, Action } from '../types';
 
 const initialState: TimerState = {
-  time: 180,
+  time: 0,
   running: false,
   idleState: false,
   lastScreenshotTime: 0,
@@ -43,6 +43,19 @@ export default function timer(state: TimerState = initialState, action: Action) 
           action.payload,
         ],
         lastScreenshotTime: action.meta,
+      };
+    case types.SET_SCREENSHOT_PERIODS:
+      return {
+        ...state,
+        screenshotPeriods: action.payload,
+      };
+    case types.ADD_IDLE_TIME:
+      return {
+        ...state,
+        idles: [
+          ...state.idles,
+          action.payload,
+        ],
       };
     case types.RESET_TIMER:
     case types.___CLEAR_ALL_REDUCERS___:
