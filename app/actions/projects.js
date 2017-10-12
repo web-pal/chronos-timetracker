@@ -2,6 +2,7 @@
 import * as types from './actionTypes';
 import type {
   FetchProjectsRequest, FetchProjectsRequestAction,
+  SetProjectsFetching, SetProjectsFetchingAction,
   SelectProject, SelectProjectAction,
   SelectSprint, SelectSprintAction,
   FillProjects, FillProjectsAction,
@@ -14,6 +15,13 @@ export const fetchProjectsRequest: FetchProjectsRequest =
   (): FetchProjectsRequestAction => ({
     type: types.FETCH_PROJECTS_REQUEST,
   });
+
+export const setProjectsFetching: SetProjectsFetching = (
+  payload: boolean,
+): SetProjectsFetchingAction => ({
+  type: types.SET_PROJECTS_FETCHING,
+  payload,
+});
 
 export const selectProject: SelectProject = (
   projectId: string,

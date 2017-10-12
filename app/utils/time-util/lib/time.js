@@ -1,13 +1,17 @@
+// @flow
 import moment from 'moment';
+import { ipcRenderer } from 'electron';
+import 'moment-duration-format';
 
-require('moment-duration-format');
+import type { Worklog } from '../../../types';
 
-export function jts(jiraTimeString) { // convert JIRA time (e.g 1d 1h 20m) to seconds
-  const jiraTimeArray = jiraTimeString.split(' ');
-  let resultSeconds = 0;
-  jiraTimeArray.forEach((unit) => {
-    const value = Number(unit.slice(0, -1));
-    const postfix = unit[unit.length - 1];
+// convert JIRA time (e.g 1d 1h 20m) to seconds
+export function jts(jiraTimeString: string): number {
+  const jiraTimeArray: Array<string> = jiraTimeString.split(' ');
+  let resultSeconds: number = 0;
+  jiraTimeArray.forEach((unit: string) => {
+    const value: number = Number(unit.slice(0, -1));
+    const postfix: string = unit[unit.length - 1];
     switch (postfix) {
       case 'd':
         resultSeconds += value * 86400;
@@ -28,11 +32,12 @@ export function jts(jiraTimeString) { // convert JIRA time (e.g 1d 1h 20m) to se
   return resultSeconds;
 }
 
-export function stj(seconds, format) {
+export function stj(seconds: number, format: string): string {
+  // $FlowFixMe
   return moment.duration(seconds * 1000).format(format);
 }
 
-export function setLoggedTodayOnTray(allWorklogs, selfKey) {
+export function setLoggedTodayOnTray(allWorklogs: Array<Worklog>, selfKey: string): void {
   const today = new Date();
   const loggedToday = allWorklogs
     .filter(w => w.getIn(['author', 'key']) === selfKey)

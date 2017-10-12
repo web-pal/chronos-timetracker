@@ -84,7 +84,7 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
           </Tooltip>
         </Flex>
       </Flex>
-      {(timerRunning && selectedIssue.id === trackingIssueId)
+      {timerRunning
         ? <StartButtonPlaceholder />
         : <StartButton
           src={play}

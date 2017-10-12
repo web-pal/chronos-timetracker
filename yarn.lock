@@ -87,7 +87,7 @@
     prop-types "^15.5.10"
     styled-components "^1.4.6"
 
-"@atlaskit/droplist@^4.11.0":
+"@atlaskit/droplist@^4.11.0", "@atlaskit/droplist@^4.9.0":
   version "4.11.1"
   resolved "https://registry.yarnpkg.com/@atlaskit/droplist/-/droplist-4.11.1.tgz#7d387ce4535b0656f82d69cd0ee733c32fe36eaa"
   dependencies:
@@ -115,7 +115,7 @@
     prop-types "^15.5.10"
     styled-components "^1.3.0"
 
-"@atlaskit/field-base@^8.0.1":
+"@atlaskit/field-base@^8.0.0", "@atlaskit/field-base@^8.0.1":
   version "8.1.1"
   resolved "https://registry.yarnpkg.com/@atlaskit/field-base/-/field-base-8.1.1.tgz#7634567be674022e8dbfb9d3d73c7464acbee911"
   dependencies:
@@ -232,6 +232,21 @@
     "@atlaskit/blanket" "^2.4.2"
     "@atlaskit/util-shared-styles" "^2.10.3"
     babel-runtime "^6.25.0"
+    prop-types "^15.5.10"
+    styled-components "^1.3.0"
+
+"@atlaskit/single-select@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@atlaskit/single-select/-/single-select-2.0.1.tgz#66b00c8df1fda5064e298e9c20ea66b600b8eb94"
+  dependencies:
+    "@atlaskit/button" "^1.0.0"
+    "@atlaskit/droplist" "^4.9.0"
+    "@atlaskit/field-base" "^8.0.0"
+    "@atlaskit/icon" "^6.5.2"
+    "@atlaskit/spinner" "^4.0.0"
+    "@atlaskit/theme" "^2.0.1"
+    babel-runtime "^6.11.6"
+    classnames "^2.2.5"
     prop-types "^15.5.10"
     styled-components "^1.3.0"
 
@@ -6490,6 +6505,10 @@ lodash.get@^4.4.2:
   version "4.4.2"
   resolved "https://registry.yarnpkg.com/lodash.get/-/lodash.get-4.4.2.tgz#2d177f652fa31e939b4438d5341499dfa3825e99"
 
+lodash.groupby@4.6.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/lodash.groupby/-/lodash.groupby-4.6.0.tgz#0b08a1dcf68397c397855c3239783832df7403d1"
+
 lodash.isarguments@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/lodash.isarguments/-/lodash.isarguments-3.1.0.tgz#2f573d85c6a24289ff00663b491c1d338ff3458a"
@@ -6521,6 +6540,14 @@ lodash.memoize@^4.1.2:
 lodash.merge@^4.6.0:
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.0.tgz#69884ba144ac33fe699737a6086deffadd0f89c5"
+
+lodash.pull@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/lodash.pull/-/lodash.pull-4.1.0.tgz#60060cc6bd625b4d4567ec27dc45cd1be9eec012"
+
+lodash.remove@^4.7.0:
+  version "4.7.0"
+  resolved "https://registry.yarnpkg.com/lodash.remove/-/lodash.remove-4.7.0.tgz#f31d31e7c39a0690d5074ec0d3627162334ee626"
 
 lodash.restparam@^3.0.0:
   version "3.6.1"
@@ -8208,7 +8235,7 @@ react-dom@^15.6.2:
     object-assign "^4.1.0"
     prop-types "^15.5.10"
 
-react-hot-loader@3.0.0:
+react-hot-loader@3.0.7-beta.7:
   version "3.0.0-beta.7"
   resolved "https://registry.yarnpkg.com/react-hot-loader/-/react-hot-loader-3.0.0-beta.7.tgz#d5847b8165d731c4d5b30d86d5d4716227a0fa83"
   dependencies:
@@ -8297,15 +8324,14 @@ react-transform-hmr@^1.0.3:
     global "^4.3.0"
     react-proxy "^1.1.7"
 
-react-transition-group@2.x:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-2.2.0.tgz#793bf8cb15bfe91b3101b24bce1c1d2891659575"
+react-transition-group@1.x:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-1.2.1.tgz#e11f72b257f921b213229a774df46612346c7ca6"
   dependencies:
     chain-function "^1.0.0"
-    classnames "^2.2.5"
     dom-helpers "^3.2.0"
     loose-envify "^1.3.1"
-    prop-types "^15.5.8"
+    prop-types "^15.5.6"
     warning "^3.0.0"
 
 react-transition-group@^1.2.0:

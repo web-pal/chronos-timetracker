@@ -1,5 +1,5 @@
 // @flow
-import React, { PropTypes } from 'react';
+import React from 'react';
 import type{ StatelessFunctionalComponent, Node } from 'react';
 import { CheckboxStateless as Checkbox, CheckboxGroup } from '@atlaskit/checkbox';
 import { H100 } from 'styles/typography';
@@ -11,13 +11,13 @@ import type { LocalDesktopSettings } from '../../../types';
 type Props = {
   settings: LocalDesktopSettings,
   setTraySettings: {
-    (value: boolean): void,
+    (value: boolean): any,
   }
 }
 
 const GeneralSettings: StatelessFunctionalComponent<Props> = ({
   settings,
-  setTraySettings
+  setTraySettings,
 }: Props): Node => {
   const isIconHidden = !!settings.trayShowTimer;
   const isTimerHidden = false;

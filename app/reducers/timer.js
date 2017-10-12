@@ -3,13 +3,14 @@ import { types } from 'actions';
 import type { TimerState, Action } from '../types';
 
 const initialState: TimerState = {
-  time: 0,
+  time: 180,
   running: false,
   idleState: false,
   lastScreenshotTime: 0,
   idles: [],
   keepedIdles: [],
   screenshotPeriods: [],
+  screenshots: [],
 };
 
 export default function timer(state: TimerState = initialState, action: Action) {
@@ -24,11 +25,6 @@ export default function timer(state: TimerState = initialState, action: Action) 
         ...state,
         running: true,
       };
-    case types.STOP_TIMER:
-      return {
-        ...state,
-        running: false,
-      };
     case types.SET_IDLE_STATE:
       return {
         ...state,
@@ -39,6 +35,16 @@ export default function timer(state: TimerState = initialState, action: Action) 
         ...state,
         lastScreenshotTime: action.payload,
       };
+    case types.ADD_SCREENSHOT:
+      return {
+        ...state,
+        screenshots: [
+          ...state.screenshots,
+          action.payload,
+        ],
+        lastScreenshotTime: action.meta,
+      };
+    case types.RESET_TIMER:
     case types.___CLEAR_ALL_REDUCERS___:
       return initialState;
     default:

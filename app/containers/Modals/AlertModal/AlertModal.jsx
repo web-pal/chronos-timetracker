@@ -15,19 +15,18 @@ import { uiActions, timerActions } from 'actions';
 import { getAlertModalOpen } from 'selectors';
 
 import { DangerIcon, ModalContentContainer } from './styled';
-import type { SetAlertModalOpen } from '../../../types';
+import type { SetAlertModalOpen, StopTimer } from '../../../types';
 
 type Props = {
   isOpen: boolean,
   setAlertModalOpen: SetAlertModalOpen,
-  // TODO stopTimer type
-  stopTimer: any,
+  stopTimer: StopTimer,
 };
 
 const AlertModal: StatelessFunctionalComponent<Props> = ({
   isOpen,
   setAlertModalOpen,
-  stopTimer
+  stopTimer,
 }: Props): Node => (
   <ModalDialog
     isOpen={isOpen}
@@ -39,8 +38,11 @@ const AlertModal: StatelessFunctionalComponent<Props> = ({
           <Button
             appearance="warning"
             onClick={() => {
-              setAlertModalOpen(false);
+              // !! important to call stopTimer before setAlertModalOpen because of saga logic
+              // see sagas/timer:144-149
               stopTimer();
+              //
+              setAlertModalOpen(false);
             }}
           >
             Stop timer

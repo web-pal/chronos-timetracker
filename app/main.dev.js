@@ -1,8 +1,9 @@
-/* eslint global-require: 1, flowtype-errors/show-errors: 0 */
+/* eslint global-require: 1 */
 import path from 'path';
 import storage from 'electron-json-storage';
 import { app, Tray, Menu, MenuItem, ipcMain, BrowserWindow, screen } from 'electron';
 import notifier from 'node-notifier';
+import fs from 'fs';
 import MenuBuilder from './menu';
 
 let mainWindow;
@@ -11,7 +12,9 @@ let menu;
 let authWindow;
 let shouldQuit = process.platform !== 'darwin';
 
-global.appDir = app.getPath('userData');
+const appDir = app.getPath('userData');
+
+global.appDir = appDir;
 global.appSrcDir = __dirname;
 global.sharedObj = {
   running: false,
@@ -30,6 +33,27 @@ global.sharedObj = {
     }
   }) || true,
 };
+
+try {
+  fs.accessSync(`${appDir}/screens/`, fs.constants.R_OK | fs.constants.W_OK); // eslint-disable-line
+} catch (err) {
+  fs.mkdirSync(`${appDir}/screens/`);
+}
+try {
+  fs.accessSync(`${appDir}/offline_screens/`, fs.constants.R_OK | fs.constants.W_OK); // eslint-disable-line
+} catch (err) {
+  fs.mkdirSync(`${appDir}/offline_screens/`);
+}
+try {
+  fs.accessSync(`${appDir}/current_screenshots/`, fs.constants.R_OK | fs.constants.W_OK); // eslint-disable-line
+} catch (err) {
+  fs.mkdirSync(`${appDir}/current_screenshots/`);
+}
+try {
+  fs.accessSync(`${appDir}/worklogs/`, fs.constants.R_OK | fs.constants.W_OK) // eslint-disable-line
+} catch (err) {
+  fs.mkdirSync(`${appDir}/worklogs/`);
+}
 
 const menuTemplate = [
   {
@@ -129,17 +153,19 @@ app.on('window-all-closed', () => {
 function checkRunning(e) {
   if (mainWindow) {
     const contentSize = mainWindow.getContentSize();
-    const lastWindowSize = {
-      width: contentSize[0],
-      height: contentSize[1],
-    };
-    storage.set('lastWindowSize', lastWindowSize, (err) => {
-      if (err) {
-        console.log('error saving last window size', err);
-      } else {
-        console.log('saved last window size');
-      }
-    });
+    if (contentSize) {
+      const lastWindowSize = {
+        width: contentSize[0],
+        height: contentSize[1],
+      };
+      storage.set('lastWindowSize', lastWindowSize, (err) => {
+        if (err) {
+          console.log('error saving last window size', err);
+        } else {
+          console.log('saved last window size');
+        }
+      });
+    }
     if (global.sharedObj.running || global.sharedObj.uploading) {
       console.log('RUNNING');
       mainWindow.webContents.send('force-save');
@@ -168,6 +194,7 @@ function createWindow(callback) {
   storage.get('lastWindowSize', (err, data) => {
     if (err) {
       console.log(err);
+      throw err;
     }
     const lastWindowSize = data || {};
     mainWindow = new BrowserWindow({
@@ -274,46 +301,6 @@ ipcMain.on('setLoggedToday', (event, logged) => {
     menu.append(new MenuItem(m));
   });
   tray.setContextMenu(menu);
-});
-
-
-ipcMain.on('showScreenPreviewPopup', () => {
-  let nativeNotifications = process.platform === 'darwin';
-  if (process.platform === 'darwin' && mainWindow) {
-    nativeNotifications = global.sharedObj.nativeNotifications;
-  }
-  if (nativeNotifications) {
-    const nc = new notifier.NotificationCenter();
-    nc.notify(
-      {
-        title: 'Screenshot preview',
-        message: 'Accept or Reject this screenshot',
-        contentImage: global.sharedObj.lastScreenshotPath,
-        sound: 'Glass',
-        closeLabel: 'Accept',
-        actions: ['Reject', 'Show preview'],
-        dropdownLabel: 'Additional',
-        wait: false,
-        timeout: global.sharedObj.screenshotPreviewTime,
-      },
-      (err, response, metadata) => {
-        if (response === 'closed') {
-          acceptScreenshot();
-        }
-        if (response === 'activate') {
-          if (metadata.activationValue === 'Reject') {
-            rejectScreenshot();
-          }
-          if (metadata.activationValue === 'Show preview') {
-            showScreenPreview();
-          }
-        }
-      },
-    );
-    nc.on('timeout', acceptScreenshot);
-  } else {
-    showScreenPreview();
-  }
 });
 
 ipcMain.on('oauthText', (event, text) => {
@@ -435,6 +422,45 @@ function acceptScreenshot() {
   }
 }
 ipcMain.on('screenshot-accept', acceptScreenshot);
+
+ipcMain.on('showScreenPreviewPopup', () => {
+  let nativeNotifications = process.platform === 'darwin';
+  if (process.platform === 'darwin' && mainWindow) {
+    nativeNotifications = global.sharedObj.nativeNotifications;
+  }
+  if (nativeNotifications) {
+    const nc = new notifier.NotificationCenter();
+    nc.notify(
+      {
+        title: 'Screenshot preview',
+        message: 'Accept or Reject this screenshot',
+        contentImage: global.sharedObj.lastScreenshotPath,
+        sound: 'Glass',
+        closeLabel: 'Accept',
+        actions: ['Reject', 'Show preview'],
+        dropdownLabel: 'Additional',
+        wait: false,
+        timeout: global.sharedObj.screenshotPreviewTime,
+      },
+      (err, response, metadata) => {
+        if (response === 'closed') {
+          acceptScreenshot();
+        }
+        if (response === 'activate') {
+          if (metadata.activationValue === 'Reject') {
+            rejectScreenshot();
+          }
+          if (metadata.activationValue === 'Show preview') {
+            showScreenPreview();
+          }
+        }
+      },
+    );
+    nc.on('timeout', acceptScreenshot);
+  } else {
+    showScreenPreview();
+  }
+});
 
 ipcMain.on('errorInWindow', (e, error) => {
   console.log(`${error[0]} @ ${error[1]} ${error[2]}:${error[3]}`);

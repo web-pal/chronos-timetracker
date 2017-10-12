@@ -10,7 +10,7 @@ type StorageKeys =
 
 const prefixedKeys: Array<StorageKeys> = ['lastProjectSelected'];
 
-export const storageGetPromise = (key: string): Promise<string | null> => new Promise((resolve) => {
+export const storageGetPromise = (key: string): Promise<mixed> => new Promise((resolve) => {
   storage.get(key, (err, data) => {
     if (err) {
       throw new Error(`Error getting from storage: ${err}`);
@@ -41,7 +41,7 @@ export const storageRemovePromise = (key: string): Promise<void> => new Promise(
   });
 });
 
-export function* getFromStorage(key: string): Generator<*, string | null, *> {
+export function* getFromStorage(key: string): Generator<*, mixed, *> {
   const host: string = yield select(getHost);
   let _key: string = key;
   // $FlowFixMe: array methods buggy with Enums

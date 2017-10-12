@@ -31,7 +31,7 @@ type Props = {
   fetchIssuesRequest: FetchIssuesRequest,
 }
 
-const SidebarFilter: StatelessFunctionalComponent<Props> = ({
+const SidebarSearch: StatelessFunctionalComponent<Props> = ({
   searchValue,
   isSidebarFiltersOpen,
   setSidebarFiltersOpen,
@@ -81,4 +81,4 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ ...uiActions, ...issuesActions }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SidebarFilter);
+export default connect(mapStateToProps, mapDispatchToProps)(SidebarSearch);

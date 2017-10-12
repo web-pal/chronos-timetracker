@@ -5,7 +5,7 @@ import type { HOC } from 'recompose';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { lifecycle } from 'recompose';
-import Select from 'react-select';
+import SingleSelect from '@atlaskit/single-select';
 
 import {
   getSelectedProjectOption,
@@ -56,7 +56,6 @@ const ProjectPicker: HOC<*, Props> = enhance(({
   projectsFetching,
   sprintsFetching,
   projectType,
-  disabled,
 }): Node => (
   <div
     style={{
@@ -64,33 +63,33 @@ const ProjectPicker: HOC<*, Props> = enhance(({
       borderBottom: '1px solid #e1e4e9',
     }}
   >
-    <Select
-      options={options}
-      value={selectedProjectOption}
-      placeholder="Select project"
-      className="project_picker"
-      onChange={(option) => {
-        const type = option.meta.board ? option.meta.board.type : 'project';
-        selectProject(String(option.value), type);
+    <SingleSelect
+      items={options}
+      hasAutocomplete
+      selectedItem={selectedProjectOption}
+      placeholder="Select Project"
+      onSelected={({ item }) => {
+        const type = item.meta.board ? item.meta.board.type : 'project';
+        selectProject(String(item.value), type);
       }}
       isLoading={projectsFetching}
-      clearable={false}
-      disabled={disabled}
-      optionRenderer={renderOption}
+      loadingMessage="Fetching Projects..."
+      shouldFitContainer
+      noMatchesFound="Nothing found"
     />
     { (projectType === 'scrum') &&
-      <Select
+      <SingleSelect
+        items={sprintsOptions}
+        hasAutocomplete
+        selectedItem={selectedSprintOption}
         placeholder="Select sprint"
-        className="sprint_picker"
-        isLoading={sprintsFetching}
-        options={sprintsOptions}
-        disabled={disabled}
-        clearable
-        value={selectedSprintOption}
-        onChange={(value) => {
-          selectSprint(value);
+        onSelected={({ item }) => {
+          selectSprint(item.value);
         }}
-        simpleValue
+        isLoading={sprintsFetching}
+        loadingMessage="Fetching Sprints..."
+        shouldFitContainer
+        noMatchesFound="Nothing found"
       />
     }
   </div>

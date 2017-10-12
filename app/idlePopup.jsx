@@ -1,7 +1,8 @@
+// @flow
 import React from 'react';
 import { render } from 'react-dom';
 
-import IdlePopup from './components/Popups/IdlePopup/IdlePopup';
+import IdlePopup from './containers/Popups/IdlePopup/IdlePopup';
 
 render(
   <div id="root">

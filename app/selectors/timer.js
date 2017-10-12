@@ -17,3 +17,6 @@ export const getLastScreenshotTimer =
 
 export const getScreenshotPeriods =
   ({ timer }: { timer: TimerState }): Array<number> => timer.screenshotPeriods;
+
+export const getScreenshots =
+  ({ timer }: { timer: TimerState }): Array<any> => timer.screenshots;

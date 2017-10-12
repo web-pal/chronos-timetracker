@@ -80,6 +80,10 @@ const UnderlineInput = styled.input`
 `;
 
 class MaskField extends Component {
+  static defaultProps = {
+    autoFocus: false,
+  }
+
   state = { width: 56 };
 
   onInputChange = (ev) => {
@@ -96,7 +100,7 @@ class MaskField extends Component {
     const {
       style, underlined, mask, input, label, type,
       placeholder, meta: { touched, error, warning },
-      disabled,
+      disabled, autoFocus,
     } = this.props;
     const { width } = this.state;
     /* eslint-enable react/prop-types */
@@ -114,6 +118,7 @@ class MaskField extends Component {
               this.onInputChange(value);
               input.onChange(value);
             }}
+            autoFocus={autoFocus}
           />
           :
           <Input
@@ -122,6 +127,7 @@ class MaskField extends Component {
             style={style || {}}
             disabled={disabled}
             placeholder={placeholder}
+            autoFocus={autoFocus}
           />
         }
         {/* mask &&

@@ -1,8 +1,8 @@
 // @flow
 import { race, take, put, call, fork, cancel } from 'redux-saga/effects';
 import Raven from 'raven-js';
-import { ipcRenderer } from 'electron';
-import { types, profileActions, clearAllReducers } from 'actions';
+import { ipcRenderer, remote } from 'electron';
+import { types, profileActions, clearAllReducers, settingsActions } from 'actions';
 import * as Api from 'api';
 import type {
   ErrorObj,
@@ -16,9 +16,10 @@ import type {
 
 import { getSettings } from './settings';
 import { getWorklogTypes } from './worklogTypes';
+import { fetchIssueTypes, fetchIssueStatuses } from './issues';
 import { setToStorage, removeFromStorage } from './storage';
 
-import Socket from '../socket';
+// import Socket from '../socket';
 import jira from '../utils/jiraClient';
 
 function* loginError(error: ErrorObj): Generator<*, void, *> {
@@ -95,14 +96,14 @@ export function* loginFlow(): Generator<*, void, *> {
         yield call(setToStorage, 'jira_credentials', { ...payload, password: '' });
         yield fork(getWorklogTypes);
         yield fork(getSettings);
+        yield put(settingsActions.requestLocalDesktopSettings());
         yield put(profileActions.setLoginFetching(false));
         yield put(profileActions.setAuthorized(true));
+        yield fork(fetchIssueTypes);
+        yield fork(fetchIssueStatuses);
         // yield put({ type: types.CHECK_OFFLINE_SCREENSHOTS });
         // yield put({ type: types.CHECK_OFFLINE_WORKLOGS });
-        Socket.login();
-        yield take(types.LOGOUT_REQUEST);
-        yield call(removeFromStorage, 'desktop_tracker_jwt');
-        yield put(clearAllReducers());
+        // Socket.login();
       }
       yield put(profileActions.setLoginFetching(true));
     } catch (err) {
@@ -184,16 +185,34 @@ export function* loginOAuthFlow(): Generator<*, void, *> {
       yield put(profileActions.setLoginFetching(false));
       yield put(profileActions.setAuthorized(true));
       yield call(getSettings);
+      yield fork(fetchIssueTypes);
+      yield fork(fetchIssueStatuses);
       // yield put({ type: types.CHECK_OFFLINE_SCREENSHOTS });
       // yield put({ type: types.CHECK_OFFLINE_WORKLOGS });
-      Socket.login();
-      yield take(types.LOGOUT_REQUEST);
-      yield call(removeFromStorage, 'desktop_tracker_jwt');
-      yield put(clearAllReducers());
+      // Socket.login();
     } catch (err) {
       yield put(profileActions.setLoginFetching(false));
       yield call(loginError, err);
       Raven.captureException(err);
     }
+  }
+}
+
+export function* logoutFlow(): Generator<*, *, *> {
+  while (true) {
+    yield take(types.LOGOUT_REQUEST);
+    const { getGlobal } = remote;
+    const { running, uploading } = getGlobal('sharedObj');
+
+    if (running) {
+      // eslint-disable-next-line no-alert
+      window.alert('Tracking in progress, save worklog before logout!');
+    }
+    if (uploading) {
+      // eslint-disable-next-line no-alert
+      window.alert('Currently app in process of saving worklog, wait few seconds please');
+    }
+    yield call(removeFromStorage, 'desktop_tracker_jwt');
+    yield put(clearAllReducers());
   }
 }

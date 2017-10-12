@@ -17,7 +17,17 @@ import {
 } from '../styled';
 
 const TeamStep = ({ onContinue, isActiveStep }) => (
-  <ContentInner isActiveStep={isActiveStep} step={1}>
+  <ContentInner
+    onKeyDown={(ev) => {
+      if (ev.key === 'Enter') {
+        ev.preventDefault();
+        ev.stopPropagation();
+        onContinue();
+      }
+    }}
+    isActiveStep={isActiveStep}
+    step={1}
+  >
     <ContentIconContainer>
       <Lock src={peopleBlue} alt="" width="24" />
     </ContentIconContainer>
@@ -32,8 +42,8 @@ const TeamStep = ({ onContinue, isActiveStep }) => (
           type="text"
           className="host"
           mask=".atlassian.net"
-          autoFocus
           underlined
+          autoFocus
         />
       </Form>
     </Flex>

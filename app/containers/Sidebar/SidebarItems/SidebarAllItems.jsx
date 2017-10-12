@@ -4,8 +4,9 @@ import type { StatelessFunctionalComponent, Node } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  getAllIssues,
+  getSidebarIssues,
   getIssuesFetching,
+  getIssuesSearching,
   getIssuesTotalCount,
   getSelectedIssueId,
   getTrackingIssueId,
@@ -25,6 +26,7 @@ import type {
 type Props = {
   items: IssuesMap,
   fetching: boolean,
+  searching: boolean,
   totalCount: number,
   selectedIssueId: Id | null,
   trackingIssueId: Id | null,
@@ -35,6 +37,7 @@ type Props = {
 const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
   items,
   fetching,
+  searching,
   totalCount,
   selectedIssueId,
   trackingIssueId,
@@ -46,9 +49,8 @@ const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
     minimumBatchSize={50}
     threshold={20}
     loadMoreRows={(data) => {
-      console.log(data);
       const promise = new Promise((resolve) => {
-        fetchIssuesRequest(data);
+        fetchIssuesRequest({ ...data, search: false });
         resolve();
       });
       return promise;
@@ -58,11 +60,14 @@ const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
       autoSized: true,
       // scrollToIndex: selectedIssueIndex,
       scrollToAlignment: 'center',
-      rowCount: fetching && totalCount === 0 ? 10 : totalCount - 1,
+      rowCount: (totalCount === 0 && fetching) ? 10 : totalCount,
       rowHeight: 101,
       // eslint-disable-next-line react/prop-types
       rowRenderer: ({ index, key, style }) => {
         const item: ?Issue = items[index];
+        if (searching && fetching) {
+          return <IssuePlaceholder />;
+        }
 
         return <div style={style} key={key}>
           {item
@@ -81,8 +86,9 @@ const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
 
 function mapStateToProps(state) {
   return {
-    items: getAllIssues(state),
+    items: getSidebarIssues(state),
     fetching: getIssuesFetching(state),
+    searching: getIssuesSearching(state),
     totalCount: getIssuesTotalCount(state),
     selectedIssueId: getSelectedIssueId(state),
     trackingIssueId: getTrackingIssueId(state),

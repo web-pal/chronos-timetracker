@@ -1,4 +1,8 @@
-export default function getStatusColor(colorName, opacity = '1') {
+// @flow
+
+type JiraColor = 'medium-gray' | 'green' | 'yellow' | 'brown' | 'warm-red' | 'blue-gray';
+
+export default function getStatusColor(colorName: JiraColor, opacity: string = '1'): string {
   switch (colorName) {
     case 'medium-gray':
       return `rgba(112, 112, 112, ${opacity})`;

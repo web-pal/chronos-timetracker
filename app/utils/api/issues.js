@@ -40,13 +40,19 @@ export function fetchIssues({
   projectId,
   projectType,
   sprintId,
+  searchValue,
+  filters,
 }) {
+  const typeFilters = filters.type;
+  const statusFilters = filters.status;
+  const assigneeFilter = filters.assignee[0];
   const jql = [
     (projectType === 'project' ? `project = ${projectId}` : ''),
     ((projectType === 'scrum') && sprintId ? `sprint = ${sprintId}` : ''),
-    // (typeFiltresId.length ? `issueType in (${typeFiltresId.join(',')})` : ''),
-    // (statusFiltresId.length ? `status in (${statusFiltresId.join(',')})` : ''),
-    // (assigneeFiltresFields.length ? `(${assigneeFiltresFields.join(' OR ')})` : ''),
+    (searchValue ? `summary ~ ${searchValue}` : ''),
+    (typeFilters.length ? `issueType in (${typeFilters.join(',')})` : ''),
+    (statusFilters.length ? `status in (${statusFilters.join(',')})` : ''),
+    (assigneeFilter !== 'unassigned' ? 'assignee = currentUser()' : 'assignee is EMPTY'),
   ].filter(f => !!f).join(' AND ');
   const api = projectType === 'project'
     ? opts => jira.client.search.search(opts)

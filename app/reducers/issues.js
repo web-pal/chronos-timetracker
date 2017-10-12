@@ -4,7 +4,7 @@ import union from 'lodash.union';
 import merge from 'lodash.merge';
 import { types } from 'actions';
 
-import type { Id, IssuesMap, IssuesMeta } from '../types';
+import type { Id, IssuesMap, IssuesMeta, IssueTypesMap, IssueStatusesMap } from '../types';
 
 function allItems(state: Array<Id> = [], action): Array<Id> {
   switch (action.type) {
@@ -52,18 +52,90 @@ function recentIds(state: Array<Id> = [], action): Array<Id> {
   }
 }
 
+function foundIds(state: Array<Id> = [], action): Array<Id> {
+  switch (action.type) {
+    case types.FILL_FOUND_ISSUE_IDS:
+      return action.payload;
+    case types.ADD_FOUND_ISSUE_IDS:
+      return union(
+        state,
+        action.payload,
+      );
+    case types.CLEAR_FOUND_ISSUE_IDS:
+    case types.CLEAR_ISSUES:
+    case types.___CLEAR_ALL_REDUCERS___:
+      return [];
+    default:
+      return state;
+  }
+}
+
+function issueTypesIds(state: Array<Id> = [], action): Array<Id> {
+  switch (action.type) {
+    case types.FILL_ISSUE_TYPES:
+      return action.payload.ids;
+    case types.___CLEAR_ALL_REDUCERS___:
+      return [];
+    default:
+      return state;
+  }
+}
+
+function issueTypesById(state: IssueTypesMap = {}, action) {
+  switch (action.type) {
+    case types.FILL_ISSUE_TYPES:
+      return action.payload.map;
+    case types.___CLEAR_ALL_REDUCERS___:
+      return [];
+    default:
+      return state;
+  }
+}
+
+function issueStatusesIds(state: Array<Id> = [], action): Array<Id> {
+  switch (action.type) {
+    case types.FILL_ISSUE_STATUSES:
+      return action.payload.ids;
+    case types.___CLEAR_ALL_REDUCERS___:
+      return [];
+    default:
+      return state;
+  }
+}
+
+function issueStatusesById(state: IssueStatusesMap = {}, action) {
+  switch (action.type) {
+    case types.FILL_ISSUE_STATUSES:
+      return action.payload.map;
+    case types.___CLEAR_ALL_REDUCERS___:
+      return [];
+    default:
+      return state;
+  }
+}
+
 const initialMeta: IssuesMeta = {
   fetching: false,
+  searching: false,
   totalCount: 0,
   lastStopIndex: 0,
   selectedIssueId: null,
   trackingIssueId: null,
   searchValue: '',
-  screenshots: [],
+  filters: {
+    type: [],
+    status: [],
+    assignee: [],
+  },
 };
 
 function meta(state: IssuesMeta = initialMeta, action) {
   switch (action.type) {
+    case types.FETCH_ISSUES_REQUEST:
+      return {
+        ...state,
+        searching: action.payload.search,
+      };
     case types.SET_ISSUES_FETCHING:
       return {
         ...state,
@@ -74,11 +146,6 @@ function meta(state: IssuesMeta = initialMeta, action) {
         ...state,
         totalCount: action.payload,
       };
-    /* TODO case types.SET_LAST_STOP_INDEX:
-      return {
-        ...state,
-        lastStopIndex: action.payload,
-      }; */
     case types.SELECT_ISSUE:
       return {
         ...state,
@@ -94,26 +161,14 @@ function meta(state: IssuesMeta = initialMeta, action) {
         ...state,
         searchValue: action.payload,
       };
-    /* TODO case types.DELETE_SCREENSHOT: {
-      const newScreenshots = [...state.screenshots];
+    case types.SET_ISSUES_FILTER:
       return {
         ...state,
-        screenshots: newScreenshots.splice(action.payload, 1),
+        filters: {
+          ...state.filters,
+          [action.meta.filterName]: action.payload,
+        },
       };
-    }
-    case types.ADD_SCREENSHOT:
-      return {
-        ...state,
-        screenshots: [
-          ...state.screenshots,
-          action.payload,
-        ],
-      };
-    case types.CLEAR_SCREENSHOTS:
-      return {
-        ...state,
-        screenshots: [],
-      }; */
     case types.___CLEAR_ALL_REDUCERS___:
       return initialMeta;
     default:
@@ -124,6 +179,11 @@ function meta(state: IssuesMeta = initialMeta, action) {
 export default combineReducers({
   byId: itemsById,
   allIds: allItems,
+  issueTypesIds,
+  issueTypesById,
+  issueStatusesIds,
+  issueStatusesById,
   recentIds,
+  foundIds,
   meta,
 });

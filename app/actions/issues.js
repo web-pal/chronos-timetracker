@@ -3,6 +3,10 @@ import type {
   FetchIssuesRequest, FetchIssuesRequestAction,
   FillIssues, FillIssuesAction,
   FillRecentIssueIds, FillRecentIssueIdsAction,
+  FillFoundIssueIds, FillFoundIssueIdsAction,
+  FillIssueTypes, FillIssueTypesAction,
+  FillIssueStatuses, FillIssueStatusesAction,
+  AddFoundIssueIds, AddFoundIssueIdsAction,
   AddIssues, AddIssuesAction,
   ClearIssues, ClearIssuesAction,
   SetIssuesFetching, SetIssuesFetchingAction,
@@ -10,14 +14,16 @@ import type {
   SelectIssue, SelectIssueAction,
   SetTrackingIssue, SetTrackingIssueAction,
   SetIssuesSearchValue, SetIssuesSearchValueAction,
-  IssuesMap, Id,
+  SetIssuesFilter, SetIssuesFilterAction,
+  IssuesMap, Id, IssueTypesMap, IssueStatusesMap,
 } from '../types';
 
 export const fetchIssuesRequest: FetchIssuesRequest = (
   payload: {
     startIndex: number,
     stopIndex: number,
-  } = { startIndex: 0, stopIndex: 10 },
+    search: boolean,
+  } = { startIndex: 0, stopIndex: 10, search: false },
 ): FetchIssuesRequestAction => ({
   type: types.FETCH_ISSUES_REQUEST,
   payload,
@@ -36,6 +42,36 @@ export const fillRecentIssueIds: FillRecentIssueIds = (
   type: types.FILL_RECENT_ISSUE_IDS,
   payload,
 });
+
+export const fillFoundIssueIds: FillFoundIssueIds = (
+  payload: Array<Id>,
+): FillFoundIssueIdsAction => ({
+  type: types.FILL_FOUND_ISSUE_IDS,
+  payload,
+});
+
+export const fillIssueTypes: FillIssueTypes = (
+  payload: { ids: Array<Id>, map: IssueTypesMap },
+): FillIssueTypesAction => ({
+  type: types.FILL_ISSUE_TYPES,
+  payload,
+});
+
+export const fillIssueStatuses: FillIssueStatuses = (
+  payload: { ids: Array<Id>, map: IssueStatusesMap },
+): FillIssueStatusesAction => ({
+  type: types.FILL_ISSUE_STATUSES,
+  payload,
+});
+
+export const addFoundIssueIds: AddFoundIssueIds = (
+  payload: Array<Id>,
+): AddFoundIssueIdsAction => ({
+  type: types.ADD_FOUND_ISSUE_IDS,
+  payload,
+});
+
+export const clearFoundIssueIds = () => ({ type: types.CLEAR_FOUND_ISSUE_IDS });
 
 export const addIssues: AddIssues = (
   payload: { ids: Array<Id>, map: IssuesMap },
@@ -79,4 +115,15 @@ export const setIssuesSearchValue: SetIssuesSearchValue = (
 ): SetIssuesSearchValueAction => ({
   type: types.SET_ISSUES_SEARCH_VALUE,
   payload,
+});
+
+export const setIssuesFilter: SetIssuesFilter = (
+  value: Array<string>,
+  filterName: string,
+): SetIssuesFilterAction => ({
+  type: types.SET_ISSUES_FILTER,
+  payload: value,
+  meta: {
+    filterName,
+  },
 });

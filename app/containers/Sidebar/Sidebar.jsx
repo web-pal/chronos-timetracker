@@ -5,13 +5,13 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Flex } from 'components';
 import { uiActions } from 'actions';
-import { getSidebarType, getSelectedProjectId } from 'selectors';
+import { getSidebarType, getSelectedProjectId, getSidebarFiltersOpen } from 'selectors';
 
-import SidebarItems from './SidebarItems/SidebarItems';
-// import Filters from './Filters';
 import ProjectPicker from './ProjectPicker';
 import SidebarHeader from './SidebarHeader';
-import SidebarFilter from './SidebarFilter';
+import SidebarSearch from './SidebarSearch';
+import SidebarFilters from './SidebarFilters/SidebarFilters';
+import SidebarItems from './SidebarItems/SidebarItems';
 
 import type { SetSidebarType, SidebarType, Id } from '../../types';
 
@@ -19,14 +19,14 @@ type Props = {
   sidebarType: SidebarType,
   setSidebarType: SetSidebarType,
   selectedProjectId: Id | null,
-  // showSidebarFilters: boolean,
+  sidebarFiltersOpen: boolean,
 };
 
 const Sidebar: StatelessFunctionalComponent<Props> = ({
   sidebarType,
   setSidebarType,
   selectedProjectId,
-  // showSidebarFilters,
+  sidebarFiltersOpen,
 }: Props): Node => (
   <Flex column className="SidebarWrapper">
     <ProjectPicker />
@@ -36,7 +36,10 @@ const Sidebar: StatelessFunctionalComponent<Props> = ({
     />
     <Flex column className="sidebar">
       {sidebarType === 'all' &&
-        <SidebarFilter />
+        <SidebarSearch />
+      }
+      {sidebarFiltersOpen &&
+        <SidebarFilters />
       }
       {selectedProjectId ?
         <SidebarItems /> :
@@ -48,25 +51,11 @@ const Sidebar: StatelessFunctionalComponent<Props> = ({
   </Flex>
 );
 
-/*
- *   {sidebarType === 'All' &&
- *     <SidebarFilter />
- *   }
- *   {showSidebarFilters &&
- *     <Filters />
- *   }
- *   {selectedProjectId ?
- *     <SidebarItems /> :
- *     <span className="sidebar-nothing-selected">
- *       <span>Select project from dropdown above</span>
- *     </span>
- *   }
- */
-
 function mapStateToProps(state) {
   return {
     sidebarType: getSidebarType(state),
     selectedProjectId: getSelectedProjectId(state),
+    sidebarFiltersOpen: getSidebarFiltersOpen(state),
   };
 }
 

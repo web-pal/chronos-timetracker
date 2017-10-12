@@ -9,6 +9,7 @@ import { issuesActions } from 'actions';
 import {
   getRecentIssues,
   getIssuesFetching,
+  getRecentItems,
 } from 'selectors';
 
 import TimestampItem from './SidebarTimestampItem';
@@ -37,14 +38,16 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
   selectIssue,
 }: Props): Node =>
   <div className="RecentItems">
-    {items.map(item =>
-      <Flex key={item.day} column className="RecentItems__block">
+    {Object.keys(items).map((key) => {
+      const item = items[key];
+      return <Flex key={key} column className="RecentItems__block">
+        {console.log(item)}
         <TimestampItem
-          date={item.day}
-          worklogs={item.fields.worklog.worklogs}
+          date={moment(key)}
+          worklogs={item}
         />
         <Flex column className="RecentItems__list">
-          {item.fields.worklog.worklogs.map(worklog => worklog.issue &&
+          {item.map(worklog =>
             <SidebarItem
               key={worklog.id}
               issue={worklog.issue}
@@ -53,8 +56,8 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
             />,
           )}
         </Flex>
-      </Flex>,
-    )}
+      </Flex>;
+    })}
     {items.length === 0 && !fetching &&
       <Flex column centered className="RecentEmptyItem">
         Nothing has been tracked recently
@@ -64,7 +67,7 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
 
 function mapStateToProps(state) {
   return {
-    items: getRecentIssues(state),
+    items: getRecentItems(state),
     fetching: getIssuesFetching(state),
   };
 }

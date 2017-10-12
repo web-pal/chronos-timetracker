@@ -2,10 +2,10 @@
 import React from 'react';
 import type { StatelessFunctionalComponent, Node } from 'react';
 import { Flex } from 'components';
-import { shell } from 'electron';
 import { getStatusColor } from 'jiraColors-util';
 import Tooltip from '@atlaskit/tooltip';
 import ShortcutIcon from '@atlaskit/icon/glyph/shortcut';
+import { openIssueInBrowser } from 'external-open-util';
 import {
   IssueContainer,
   IssueName,
@@ -18,14 +18,6 @@ import {
 import type { Issue, SelectIssue } from '../../../types';
 
 // import SidebarItemLoader from '../../Spinners/SidebarItemLoader';
-
-function openIssueInBrowser(issue: Issue) {
-  return (ev): void => {
-    ev.preventDefault();
-    const urlArr = issue.self.split('/');
-    shell.openExternal(`${urlArr[0]}//${urlArr[2]}/browse/${issue.get('key')}`);
-  };
-}
 
 type Props = {
   issue: Issue,

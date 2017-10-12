@@ -23,6 +23,7 @@
   "globals": {
     "Generator": true,
     "$Keys": true,
+    "SyntheticMouseEvent": true,
   },
   "plugins": [
     "flowtype",

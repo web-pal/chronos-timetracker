@@ -69,6 +69,13 @@ export type FetchProjectsRequest = {
   (): FetchProjectsRequestAction
 };
 
+//
+export type SetProjectsFetchingAction =
+  {| type: typeof types.SET_PROJECTS_FETCHING, +payload: boolean |};
+
+export type SetProjectsFetching = {
+  (payload: boolean): SetProjectsFetchingAction
+};
 
 //
 export type SelectProjectAction =
@@ -129,5 +136,9 @@ export type FillSprints = {
 
 export type ProjectsAction =
   FetchProjectsRequestAction
+  | SetProjectsFetchingAction
   | SelectProjectAction
-  | SelectSprintAction;
+  | SelectSprintAction
+  | FillProjectsAction
+  | FillBoardsAction
+  | FillSprintsAction;

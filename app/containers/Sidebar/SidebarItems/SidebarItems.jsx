@@ -32,12 +32,6 @@ const SidebarItems: StatelessFunctionalComponent<Props> = ({
     {sidebarType === 'recent' && <SidebarRecentItems />}
   </Flex>;
 
-/*
- * <sidebarrecentitems
- *   style={{ display: `${sidebarType === 'all' ? 'none' : 'block'}` }}
- * />
- */
-
 function mapStateToProps(state) {
   return {
     fetching: getIssuesFetching(state),

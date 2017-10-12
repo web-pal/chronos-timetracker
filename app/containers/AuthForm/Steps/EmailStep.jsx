@@ -46,14 +46,16 @@ const EmailStep = ({
         Log in with JIRA
       </OauthButton>
       <ContentSeparator>OR</ContentSeparator>
-      <Field
-        name="username"
-        placeholder="Enter email"
-        component={renderField}
-        type="text"
-        autoFocus
-        disabled={loginRequestInProcess}
-      />
+      {isActiveStep &&
+        <Field
+          name="username"
+          placeholder="Enter email"
+          component={renderField}
+          type="text"
+          autoFocus
+          disabled={loginRequestInProcess}
+        />
+      }
       <Field
         name="password"
         placeholder="Enter password"

@@ -5,6 +5,8 @@ const Schemas = {
   sprints: new schema.Array(new schema.Entity('sprints', {})),
   boards: new schema.Array(new schema.Entity('boards', {})),
   issues: new schema.Array(new schema.Entity('issues', {})),
+  issueTypes: new schema.Array(new schema.Entity('issueTypes', {})),
+  issueStatuses: new schema.Array(new schema.Entity('issueStatuses', {})),
 };
 
 export default function normalizedPayload(entities, entityName) {

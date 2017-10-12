@@ -7,6 +7,10 @@ import type {
 } from './profile';
 
 import type {
+  WorklogAction,
+} from './worklogs';
+
+import type {
   UiAction,
 } from './ui';
 
@@ -19,6 +23,25 @@ import type {
 } from './issues';
 
 export type Id = string;
+
+export type FilterOption = {
+  id: Id | null,
+  iconUrl?: string,
+  name: string,
+  isChecked?: boolean,
+};
+
+
+export type CriteriaFilterName = 'Type' | 'Status' | 'Assignee';
+
+export type CriteriaFilter = {
+  name: CriteriaFilterName,
+  key: string,
+  options: Array<FilterOption>,
+  showIcons: boolean,
+};
+
+export type CriteriaFilters = Array<CriteriaFilter>;
 
 export type SelectOption = {
   value: string | number,
@@ -46,6 +69,7 @@ export type AnyAction =
   | ReduxFormAction
   | ClearAllReducersAction
   | IssuesAction
+  | WorklogAction
   | Action;
 
 export interface ErrorObj {
@@ -144,6 +168,8 @@ export type {
   ProjectsState,
   FetchProjectsRequestAction,
   FetchProjectsRequest,
+  SetProjectsFetchingAction,
+  SetProjectsFetching,
   SelectProjectAction,
   SelectProject,
   SelectSprintAction,
@@ -160,8 +186,12 @@ export type {
 export type {
   Screenshot,
   Issue,
-  Worklog,
+  IssueType,
+  IssueStatus,
   IssuesMap,
+  IssueTypesMap,
+  IssueStatusesMap,
+  IssueFilters,
   IssuesMeta,
   IssuesState,
   FetchIssuesRequestAction,
@@ -170,6 +200,14 @@ export type {
   FillIssues,
   FillRecentIssueIdsAction,
   FillRecentIssueIds,
+  FillFoundIssueIdsAction,
+  FillFoundIssueIds,
+  FillIssueTypesAction,
+  FillIssueTypes,
+  FillIssueStatusesAction,
+  FillIssueStatuses,
+  AddFoundIssueIdsAction,
+  AddFoundIssueIds,
   AddIssuesAction,
   AddIssues,
   ClearIssuesAction,
@@ -184,6 +222,8 @@ export type {
   SetTrackingIssue,
   SetIssuesSearchValueAction,
   SetIssuesSearchValue,
+  SetIssuesFilterAction,
+  SetIssuesFilter,
   IssuesAction,
 } from './issues';
 
@@ -196,9 +236,40 @@ export type {
   StartTimer,
   StopTimerAction,
   StopTimer,
+  StopTimerRequestAction,
+  StopTimerRequest,
   SetIdleStateAction,
   SetIdleState,
   SetLastScreenshotTimeAction,
   SetLastScreenshotTime,
+  ResetTimerAction,
+  ResetTimer,
+  AddScreenshotAction,
+  AddScreenshot,
   TimerAction,
 } from './timer';
+
+export type {
+  Worklog,
+  WorklogsMap,
+  WorklogsMeta,
+  FillWorklogsAction,
+  FillWorklogs,
+  AddWorklogsAction,
+  AddWorklogs,
+  ClearWorklogsAction,
+  ClearWorklogs,
+  FillRecentWorklogIdsAction,
+  FillRecentWorklogIds,
+  AddRecentWorklogIdsAction,
+  AddRecentWorklogIds,
+  SetWorklogsFetchingAction,
+  SetWorklogsFetching,
+  SetWorklogCommentAction,
+  SetWorklogComment,
+  SelectWorklogAction,
+  SelectWorklog,
+  SetTemporaryWorklogIdAction,
+  SetTemporaryWorklogId,
+  WorklogAction,
+} from './worklogs';

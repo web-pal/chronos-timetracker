@@ -1,7 +1,9 @@
-import { call, take, put } from 'redux-saga/effects';
+import { call, take, put, select, fork } from 'redux-saga/effects';
 import * as Api from 'api';
+import { remote } from 'electron';
 import Raven from 'raven-js';
 import { types, settingsActions } from 'actions';
+import { getLocalDesktopSettings } from 'selectors';
 
 import { getFromStorage, setToStorage } from './storage';
 
@@ -14,18 +16,29 @@ export function* getSettings() {
   }
 }
 
-export function* localDesktopSettingsFlow() {
+export function* watchLocalDesktopSettingsChange() {
   while (true) {
-    yield take(types.LOCAL_DESKTOP_SETTINGS_REQUEST);
-    let settings = yield call(getFromStorage, 'localDesktopSettings');
-    if (!Object.keys(settings).length) {
-      settings = {
-        showScreenshotPreview: true,
-        screenshotPreviewTime: 15,
-        nativeNotifications: true,
-      };
-      yield call(setToStorage, 'localDesktopSettings', settings);
+    const { payload, meta } = yield take(types.SET_LOCAL_DESKTOP_SETTING);
+    if (meta === 'trayShowTimer') {
+      const sharedObj = remote.getGlobal('sharedObj');
+      sharedObj.trayShowTimer = payload;
     }
-    yield put({ type: types.FILL_LOCAL_DESKTOP_SETTINGS, payload: settings });
+    const localSettings = yield select(getLocalDesktopSettings);
+    yield call(setToStorage, 'localDesktopSettings', localSettings);
   }
+}
+
+export function* localDesktopSettingsFlow() {
+  yield take(types.REQUEST_LOCAL_DESKTOP_SETTINGS);
+  let settings = yield call(getFromStorage, 'localDesktopSettings');
+  if (!settings || !Object.keys(settings).length) {
+    settings = {
+      showScreenshotPreview: true,
+      screenshotPreviewTime: 15,
+      nativeNotifications: true,
+    };
+    yield call(setToStorage, 'localDesktopSettings', settings);
+  }
+  yield put(settingsActions.fillLocalDesktopSettings(settings));
+  yield fork(watchLocalDesktopSettingsChange);
 }

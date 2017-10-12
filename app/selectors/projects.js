@@ -70,7 +70,7 @@ export const getSelectedProject = createSelector(
 export const getSelectedProjectOption = createSelector(
   [getSelectedProject],
   (project) => (project
-    ? ({ value: project.id, label: project.name, meta: { project } })
+    ? ({ value: project.id, content: project.name, meta: { project } })
     : null
   ),
 );
@@ -83,18 +83,32 @@ export const getSelectedSprint = createSelector(
 export const getSelectedSprintOption = createSelector(
   [getSelectedSprint],
   (sprint) => (sprint
-    ? ({ value: sprint.id, label: sprint.name, meta: { sprint } })
+    ? ({ value: sprint.id, content: sprint.name, meta: { sprint } })
     : null
   ),
 );
 
 export const getProjectsOptions = createSelector(
   [getProjects, getBoards],
-  (map, bMap) =>
-    map.map((project) => ({ value: project.id, label: project.name, meta: { project } }))
-      .concat(
-        bMap.map((board) => ({ value: board.id, label: board.name, meta: { board } })),
-      ),
+  (projects, boards) => [
+    {
+      heading: 'Projects',
+      items: projects.map((project) =>
+        ({ value: project.id, content: project.name, meta: { project } })),
+    },
+    {
+      heading: 'Boards',
+      items: boards.map((board) =>
+        ({ value: board.id, content: board.name, meta: { board } })),
+    },
+  ],
 );
 
-export const getSprintsOptions = () => [];
+export const getSprintsOptions = createSelector(
+  [getSprints],
+  (sprints) => [{
+    heading: 'Sprints',
+    items: sprints.map((sprint) =>
+      ({ value: sprint.id, content: sprint.name, meta: { sprint } })),
+  }],
+);

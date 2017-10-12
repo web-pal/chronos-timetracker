@@ -15,6 +15,7 @@ import type { SelectProjectAction, Id } from '../types';
 
 export function* fetchProjects(): Generator<*, *, *> {
   try {
+    yield put(projectsActions.setProjectsFetching(true));
     const projects = yield call(Api.fetchProjects);
     const boards = yield call(Api.fetchAllBoards);
     const normalizedBoards = yield call(normalizePayload, boards.values, 'boards');
@@ -34,7 +35,9 @@ export function* fetchProjects(): Generator<*, *, *> {
       yield put(projectsActions.selectProject(lastProjectSelected, 'project'));
       yield put(issuesActions.fetchIssuesRequest());
     }
+    yield put(projectsActions.setProjectsFetching(false));
   } catch (err) {
+    yield put(projectsActions.setProjectsFetching(false));
     yield call(throwError, err);
     Raven.captureException(err);
   }
@@ -66,7 +69,7 @@ export function* watchProjectSelection(): Generator<*, *, *> {
   while (true) {
     const { payload }: SelectProjectAction = yield take(types.SELECT_PROJECT);
     yield call(setToStorage, 'lastProjectSelected', payload);
-    yield put(issuesActions.selectIssue(null))
+    yield put(issuesActions.selectIssue(null));
     yield put(issuesActions.clearIssues());
     yield put(issuesActions.fetchIssuesRequest());
   }

@@ -5,8 +5,9 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getSelectedIssue } from 'selectors';
 import { Flex } from 'components';
+import ReactMarkdown from 'react-markdown';
 
-import IssueAttachments from './IssueAttachments';
+// import IssueAttachments from './IssueAttachments';
 import type { Issue } from '../../../types';
 import {
   IssueDetailsContainer,
@@ -135,26 +136,18 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
       <div
         style={{
           borderTop: '2px solid rgba(0, 0, 0, .1)',
-          fontWeight: 600,
           marginTop: 10,
           paddingTop: 10,
         }}
       >
-        Description
+        <strong>
+          Description
+        </strong>
+        <ReactMarkdown source={issue.fields.description || '*no description*'} />
       </div>
-
-      <ul style={{ paddingLeft: 20 }}>
-        <li style={{ marginBottom: 5 }}>
-          {'add a channel to channels list called Homeaway API (with some API-ish logo beside homeaway log), and change the current homeaway channel to homeaway ical'}
-        </li>
-        <li style={{ marginBottom: 5 }}>
-          {"I added status of homeaway api to /accounts/info... Remember, it's different fromr homeaway ical.."}
-        </li>
-        <li style={{ marginBottom: 5 }}>
-          {"if it's false, we will show users how they can request to activate it, but if it's true, we will show users which listings are active in listingmap matrix and in a configure button. currently users can't change anything in configure button, they only can see which listings are active (using field homeawayApiActive of each listingMap)"}
-        </li>
-      </ul>
-      <IssueAttachments />
+      {
+        /* TODO <IssueAttachments /> */
+      }
     </IssueDetailsContainer>
   );
 };

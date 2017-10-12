@@ -1,6 +1,6 @@
 // @flow
-import React, { Component } from 'react';
-import { remote } from 'electron';
+import React from 'react';
+import type { StatelessFunctionalComponent, Node } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import DropdownMenu, { DropdownItemGroup, DropdownItem } from '@atlaskit/dropdown-menu';
@@ -40,90 +40,60 @@ type Props = {
   setAboutModalOpen: SetAboutModalOpen,
 };
 
-class Header extends Component<Props> {
-  onLogout = () => {
-    const { logoutRequest } = this.props;
-    const { getGlobal } = remote;
-    const { running, uploading } = getGlobal('sharedObj');
-
-    if (running) {
-      // eslint-disable-next-line no-alert
-      window.alert('Tracking in progress, save worklog before logout!');
-    }
-    if (uploading) {
-      // eslint-disable-next-line no-alert
-      window.alert('Currently app in process of saving worklog, wait few seconds please');
-    }
-    if (!running && !uploading) {
-      logoutRequest();
-    }
-  }
-
-  openModal = (modalName) => () => {
-    this.props[`setShow${modalName}Modal`](true);
-  }
-
-  render() {
-    const {
-      userData,
-      host,
-      setSettingsModalOpen,
-      setSupportModalOpen,
-      setAboutModalOpen,
-    } = this.props;
-    // TODO: update available
-    const updateAvailable = true;
-
-    return (
-      <HeaderContainer className="webkit-drag">
-        <Flex row alignCenter>
-          {/*
-            <ProfilePicture src={avatarIcon} alt="" />
-          */}
-          <ProfilePicture src={userData.avatarUrls['48x48']} alt="" />
-          <ProfileInfo>
-            <Name>{userData.displayName}</Name>
-            <Team>{host}</Team>
-          </ProfileInfo>
-        </Flex>
-        <Flex row style={{ position: 'relative' }}>
-          {updateAvailable &&
-            <UpdateAvailableBadge />
+const Header: StatelessFunctionalComponent<Props> = ({
+  userData,
+  host,
+  logoutRequest,
+  setSettingsModalOpen,
+  setSupportModalOpen,
+  setAboutModalOpen,
+}: Props): Node =>
+  <HeaderContainer className="webkit-drag">
+    <Flex row alignCenter>
+      {/*
+        <ProfilePicture src={avatarIcon} alt="" />
+      */}
+      <ProfilePicture src={userData.avatarUrls['48x48']} alt="" />
+      <ProfileInfo>
+        <Name>{userData.displayName}</Name>
+        <Team>{host}</Team>
+      </ProfileInfo>
+    </Flex>
+    <Flex row style={{ position: 'relative' }}>
+      {true &&
+        <UpdateAvailableBadge />
+      }
+      <DropdownMenu
+        trigger={<SettingsIcon src={cogIcon} alt="" />}
+        triggerType="default"
+        position="bottom right"
+      >
+        <DropdownItemGroup>
+          <DropdownItem onClick={() => setSettingsModalOpen(true)}>
+            Settings
+          </DropdownItem>
+          <DropdownItem onClick={() => setSupportModalOpen(true)}>
+            Support and feedback
+          </DropdownItem>
+          <DropdownItem onClick={() => setAboutModalOpen(true)}>
+            About
+          </DropdownItem>
+          {true &&
+            <DropdownSeparator />
           }
-          <DropdownMenu
-            trigger={<SettingsIcon src={cogIcon} alt="" />}
-            triggerType="default"
-            position="bottom right"
-          >
-            <DropdownItemGroup>
-              <DropdownItem onClick={() => setSettingsModalOpen(true)}>
-                Settings
-              </DropdownItem>
-              <DropdownItem onClick={() => setSupportModalOpen(true)}>
-                Support and feedback
-              </DropdownItem>
-              <DropdownItem onClick={() => setAboutModalOpen(true)}>
-                About
-              </DropdownItem>
-              {updateAvailable &&
-                <DropdownSeparator />
-              }
-              {updateAvailable &&
-              <DropdownUpdateItem onClick={() => alert('TODO: start update')}>
-                Update available. Restart now
-              </DropdownUpdateItem>
-              }
-              <DropdownSeparator />
-              <DropdownLogoutItem onClick={this.onLogout}>
-                Logout
-              </DropdownLogoutItem>
-            </DropdownItemGroup>
-          </DropdownMenu>
-        </Flex>
-      </HeaderContainer>
-    );
-  }
-}
+          {true &&
+            <DropdownUpdateItem onClick={() => alert('TODO: start update')}>
+              Update available. Restart now
+            </DropdownUpdateItem>
+          }
+          <DropdownSeparator />
+          <DropdownLogoutItem onClick={logoutRequest}>
+            Logout
+          </DropdownLogoutItem>
+        </DropdownItemGroup>
+      </DropdownMenu>
+    </Flex>
+  </HeaderContainer>;
 
 function mapStateToProps(state) {
   return {

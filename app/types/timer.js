@@ -4,6 +4,8 @@ import { types } from 'actions';
 // TODO type for idle
 export type Idle = any;
 
+export type Screenshot = any;
+
 export type TimerState = {|
   +time: number,
   +running: boolean,
@@ -12,6 +14,7 @@ export type TimerState = {|
   +idles: Array<Idle>,
   +keepedIdles: Array<Idle>,
   +screenshotPeriods: Array<number>,
+  +screenshots: Array<Screenshot>,
 |};
 
 //
@@ -28,6 +31,14 @@ export type StartTimerAction =
 
 export type StartTimer = {
   (): StartTimerAction
+};
+
+//
+export type StopTimerRequestAction =
+  {| type: typeof types.STOP_TIMER_REQUEST |};
+
+export type StopTimerRequest = {
+  (): StopTimerRequestAction
 };
 
 //
@@ -54,9 +65,27 @@ export type SetLastScreenshotTime = {
   (payload: number): SetLastScreenshotTimeAction
 };
 
+//
+export type ResetTimerAction =
+  {| type: typeof types.RESET_TIMER |};
+
+export type ResetTimer = {
+  (): ResetTimerAction
+};
+
+//
+export type AddScreenshotAction =
+  {| type: typeof types.ADD_SCREENSHOT, +payload: Screenshot, +meta: number |};
+
+export type AddScreenshot = {
+  (screenshot: Screenshot, screenshotTime: number): AddScreenshotAction
+};
+
 export type TimerAction =
   TickAction
   | StartTimerAction
   | StopTimerAction
   | SetIdleStateAction
-  | SetLastScreenshotTimeAction;
+  | SetLastScreenshotTimeAction
+  | ResetTimerAction
+  | AddScreenshotAction;

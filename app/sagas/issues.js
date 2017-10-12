@@ -1,33 +1,58 @@
 // @flow
-import { call, select, put, fork, takeEvery } from 'redux-saga/effects';
+import { delay } from 'redux-saga';
+import { call, select, put, fork, takeEvery, takeLatest } from 'redux-saga/effects';
 import * as Api from 'api';
 import Raven from 'raven-js';
-import { getSelectedProject, getSelectedSprintId, getUserData, getRecentIssueIds } from 'selectors';
+import {
+  getSelectedProject,
+  getSelectedSprintId,
+  getUserData,
+  getRecentIssueIds,
+  getIssuesSearchValue,
+  getFoundIssueIds,
+  getIssueFilters,
+} from 'selectors';
 import { issuesActions, types } from 'actions';
 import normalizePayload from 'normalize-util';
 
 import { throwError } from './ui';
 
-import type { FetchIssuesRequestAction, Project, Id, User } from '../types';
+import type { FetchIssuesRequestAction, Project, Id, User, IssueFilters } from '../types';
 
 export function* fetchIssues({
-  payload: { startIndex, stopIndex },
+  payload: { startIndex, stopIndex, search },
 }: FetchIssuesRequestAction): Generator<*, *, *> {
   try {
     yield put(issuesActions.setIssuesFetching(true));
+    if (search) {
+      yield put(issuesActions.setIssuesTotalCount(0));
+      yield put(issuesActions.clearFoundIssueIds());
+    }
     const selectedProject: Project = yield select(getSelectedProject);
     const selectedSprintId: Id = yield select(getSelectedSprintId);
+    const searchValue: string = yield select(getIssuesSearchValue);
+    const filters: IssueFilters = yield select(getIssueFilters);
     const opts = {
       startIndex,
       stopIndex,
       projectId: selectedProject.id,
       projectType: selectedProject.type || 'project',
       sprintId: selectedSprintId,
+      searchValue,
+      filters,
     };
     const response = yield call(Api.fetchIssues, opts);
     const normalizedIssues = yield call(normalizePayload, response.issues, 'issues');
     yield put(issuesActions.setIssuesTotalCount(response.total));
     yield put(issuesActions.addIssues(normalizedIssues));
+    if (search) {
+      yield put(issuesActions.fillFoundIssueIds(normalizedIssues.ids));
+    } else {
+      const foundIssueIds = yield select(getFoundIssueIds);
+      if (foundIssueIds.length !== 0) {
+        yield put(issuesActions.addFoundIssueIds(normalizedIssues.ids));
+      }
+    }
     yield put(issuesActions.setIssuesFetching(false));
   } catch (err) {
     yield call(throwError, err);
@@ -89,6 +114,30 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
   }
 }
 
+export function* fetchIssueTypes(): Generator<*, *, *> {
+  try {
+    const issueTypes = yield call(Api.fetchIssueTypes);
+    console.log('issuesTypes', issueTypes);
+    const normalizedData = normalizePayload(issueTypes, 'issueTypes');
+    yield put(issuesActions.fillIssueTypes(normalizedData));
+  } catch (err) {
+    yield call(throwError, err);
+    Raven.captureException(err);
+  }
+}
+
+export function* fetchIssueStatuses(): Generator<*, *, *> {
+  try {
+    const issueStatuses = yield call(Api.fetchIssueStatuses);
+    console.log('issueStatuses', issueStatuses);
+    const normalizedData = normalizePayload(issueStatuses, 'issueStatuses');
+    yield put(issuesActions.fillIssueStatuses(normalizedData));
+  } catch (err) {
+    yield call(throwError, err);
+    Raven.captureException(err);
+  }
+}
+
 function* onSidebarTabChange({ payload }: { payload: string }): Generator<*, *, *> {
   try {
     const tab: string = payload;
@@ -105,3 +154,16 @@ function* onSidebarTabChange({ payload }: { payload: string }): Generator<*, *, 
 export function* watchSidebarTabChange(): Generator<*, *, *> {
   yield takeEvery(types.SET_SIDEBAR_TYPE, onSidebarTabChange);
 }
+
+function* handleIssueFiltersChange(): Generator<*, *, *> {
+  yield call(delay, 500);
+  yield put(issuesActions.fetchIssuesRequest({ startIndex: 0, stopIndex: 10, search: true }));
+}
+
+export function* watchFiltersChange(): Generator<*, *, *> {
+  yield takeLatest(
+    [types.SET_ISSUES_SEARCH_VALUE, types.SET_ISSUES_FILTER],
+    handleIssueFiltersChange,
+  );
+}
+
