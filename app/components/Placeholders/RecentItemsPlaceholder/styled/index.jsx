@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const TimestampPlaceholderContainer = styled.div`
   height: 24px;
-  padding: 0px 13px;
+  padding: 0px 20px;
   background: #fff;
   text-align: right;
   color: rgba(0, 0, 0, 0.7);
