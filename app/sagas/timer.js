@@ -15,6 +15,7 @@ import {
   getTrackingIssueId,
   getWorklogComment,
   getLastScreenshotTime,
+  getIdles,
 } from 'selectors';
 import Raven from 'raven-js';
 import { uiActions, timerActions, issuesActions, types } from 'actions';
@@ -23,7 +24,12 @@ import { randomPeriods } from 'timer-helper';
 
 import { throwError } from './ui';
 import { uploadWorklog } from './worklogs';
-import { uploadScreenshot, rejectScreenshot, takeScreenshot } from './screenshots';
+import {
+  uploadScreenshot,
+  rejectScreenshot,
+  takeScreenshot,
+  cleanExcessScreenshotPeriods,
+} from './screenshots';
 
 const system = remote.require('@paulcbetts/system-idle-time');
 
@@ -74,7 +80,7 @@ function* idleCheck(secondsToMinutesGrid) {
       remote.getGlobal('sharedObj').idleTime = prevIdleTime;
       remote.getGlobal('sharedObj').idleDetails =
         { from: currentTime - (Math.ceil(prevIdleTime / 1000)), to: currentTime };
-      ipcRenderer.send('showIdlePopup');
+      ipcRenderer.send('show-idle-popup');
     }
     if (!idleState && idleTime >= idleTimeThreshold * 1000) {
       yield put(timerActions.setIdleState(true));
@@ -84,7 +90,7 @@ function* idleCheck(secondsToMinutesGrid) {
     }
     prevIdleTime = idleTime;
     if (currentTime % 60 === secondsToMinutesGrid) {
-      yield put(timerActions.addIdleTime(totalIdleTimeDuringOneMinute));
+      // yield put(timerActions.addIdleTime(totalIdleTimeDuringOneMinute));
       totalIdleTimeDuringOneMinute = 0;
     }
   } catch (err) {
@@ -155,23 +161,24 @@ export function* runTimer(channel) {
   const periodNumber = Math.floor(minutes / minutePeriod) + 1;
   const periodRange = (periodNumber * minutePeriod) - minutes;
   nextPeriod = (periodRange * 60) - currentSeconds;
-  yield takeEvery(channel, timerStep, true, nextPeriod, secondsToMinutesGrid);
+  yield takeEvery(channel, timerStep, screenshotsAllowed, nextPeriod, secondsToMinutesGrid);
 }
 
 function* stopTimer(channel, timerInstance) {
   try {
     yield call(setTimeToTray, 0);
+    yield call(ipcRenderer.send, 'stop-timer');
     channel.close();
     yield cancel(timerInstance);
     const trackingIssueId = yield select(getTrackingIssueId);
     const time = yield select(getTimerTime);
     const comment = yield select(getWorklogComment);
     const screenshots = yield select(getScreenshots);
+    const keepedIdles = yield select(getIdles);
+    const { screenshotsPeriod } = yield select(getScreenshotsSettings);
     // TODO
-    const screenshotsPeriod = 600;
     const worklogType = null;
     const activity = [];
-    const keepedIdles = [];
     //
     yield put(timerActions.resetTimer());
     yield call(uploadWorklog, {
@@ -194,7 +201,7 @@ export function* timerFlow(): Generator<*, *, *> {
   try {
     const selectedIssueId = yield select(getSelectedIssueId);
     yield put(issuesActions.setTrackingIssue(selectedIssueId));
-    yield call(ipcRenderer.send, 'startTimer');
+    yield call(ipcRenderer.send, 'start-timer');
     const channel = yield call(timerChannel);
     const timerInstance = yield fork(runTimer, channel);
     while (true) {
@@ -264,6 +271,7 @@ function keepIdleTime() {
 function createIpcChannel(listener, channel) {
   return eventChannel(emit => {
     const handler = (ev) => {
+      console.log(`${channel} emitted ${ev}`);
       emit({ ev, channel });
     };
     listener.on(channel, handler);
@@ -276,6 +284,8 @@ function createIpcChannel(listener, channel) {
 
 let acceptScreenshotChannel;
 let rejectScreenshotChannel;
+let keepIdleTimeChannel;
+let dismissIdleTimeChannel;
 
 export function* watchAcceptScreenshot() {
   while (true) {
@@ -312,6 +322,26 @@ export function* watchRejectScreenshot() {
   }
 }
 
+export function* watchKeepIdleTime() {
+  while (true) {
+    yield take(keepIdleTimeChannel);
+    const { getGlobal } = remote;
+    const { idleDetails } = getGlobal('sharedObj');
+    console.log(idleDetails);
+    yield put(timerActions.addIdleTime(idleDetails));
+    yield call(cleanExcessScreenshotPeriods);
+  }
+}
+
+export function* watchDismissIdleTime() {
+  while (true) {
+    yield take(dismissIdleTimeChannel);
+    // const seconds = Math.ceil(time / 1000);
+    // cutIddles(Math.ceil(seconds / 60));
+    // dismissIdleTime(seconds);
+  }
+}
+
 export function* createIpcListeners(): void {
   acceptScreenshotChannel = yield call(
     createIpcChannel,
@@ -326,7 +356,21 @@ export function* createIpcListeners(): void {
   );
   yield fork(watchRejectScreenshot);
 
+  keepIdleTimeChannel = yield call(
+    createIpcChannel,
+    ipcRenderer,
+    'keep-idle-time',
+  );
+  console.log('created keepIdleTimeChannel', keepIdleTimeChannel)
+  yield fork(watchKeepIdleTime);
+
+  dismissIdleTimeChannel = yield call(
+    createIpcChannel,
+    ipcRenderer,
+    'dismiss-idle-time',
+  );
+  yield fork(watchDismissIdleTime);
+
   // ipcRenderer.on('force-save', forceSave);
   // ipcRenderer.on('dismissIdleTime', dismissIdleTime);
-  // ipcRenderer.on('keepIdleTime', keepIdleTime);
 }

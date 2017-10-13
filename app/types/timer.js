@@ -2,7 +2,10 @@
 import { types } from 'actions';
 
 // TODO type for idle
-export type Idle = any;
+export type Idle = {
+  from: number,
+  to: number,
+};
 
 export type Screenshot = any;
 
@@ -91,10 +94,10 @@ export type SetScreenshotPeriods = {
 
 //
 export type AddIdleTimeAction =
-  {| type: typeof types.ADD_IDLE_TIME, +payload: number |};
+  {| type: typeof types.ADD_IDLE_TIME, +payload: Idle |};
 
 export type AddIdleTime = {
-  (payload: number): AddIdleTimeAction
+  (payload: Idle): AddIdleTimeAction
 };
 
 export type TimerAction =

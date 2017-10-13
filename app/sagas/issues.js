@@ -1,6 +1,7 @@
 // @flow
 import { delay } from 'redux-saga';
-import { call, select, put, fork, takeEvery, takeLatest } from 'redux-saga/effects';
+import { call, take, select, put, fork, takeEvery, takeLatest } from 'redux-saga/effects';
+import { ipcRenderer } from 'electron';
 import * as Api from 'api';
 import Raven from 'raven-js';
 import {
@@ -167,3 +168,9 @@ export function* watchFiltersChange(): Generator<*, *, *> {
   );
 }
 
+export function* watchIssueSelect(): Generator<*, *, *> {
+  while (true) {
+    const { payload }: { payload: Id } = yield take(types.SELECT_ISSUE);
+    yield call(ipcRenderer.send, 'select-issue', payload);
+  }
+}
