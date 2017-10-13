@@ -205,6 +205,7 @@
     "nanotimer": "^0.3.15",
     "normalizr": "^3.2.3",
     "raven-js": "^3.17.0",
+    "rc-time-picker": "2.4.1",
     "react": "^15.6.2",
     "react-autosize-textarea": "^0.4.8",
     "react-dom": "^15.6.2",

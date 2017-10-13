@@ -3,6 +3,7 @@ import styled from 'styled-components';
 export const CalendarContainer = styled.div`
   margin-top: 5px;
   position: absolute;
+  z-index: 2; // bigger than rc-time-picker popup
 `;
 
 export const CalendarIconContainer = styled.div`
