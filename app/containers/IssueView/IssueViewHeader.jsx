@@ -7,15 +7,16 @@ import { getSelectedIssue, getTrackingIssueId, getTimerRunning } from 'selectors
 import { Flex } from 'components';
 import { openProjectInBrowser, openIssueInBrowser } from 'external-open-util';
 import Tooltip from '@atlaskit/tooltip';
-import DropdownMenu, {
-  DropdownItemGroup,
-  DropdownItem,
-} from '@atlaskit/dropdown-menu';
+// import DropdownMenu, {
+//   DropdownItemGroup,
+//   DropdownItem,
+// } from '@atlaskit/dropdown-menu';
 import Button, { ButtonGroup } from '@atlaskit/button';
 import { play } from 'data/svg';
-import { timerActions } from 'actions';
 
-import type { Issue, Id, StartTimer } from '../../types';
+import { timerActions, uiActions } from 'actions';
+
+import type { Issue, Id, StartTimer, SetWorklogModalOpen } from '../../types';
 import {
   ProjectAvatar,
   Link,
@@ -34,6 +35,7 @@ type Props = {
   trackingIssueId: Id | null,
   timerRunning: boolean,
   startTimer: StartTimer,
+  setWorklogModalOpen: SetWorklogModalOpen
 };
 
 const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
@@ -41,6 +43,7 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
   trackingIssueId,
   timerRunning,
   startTimer,
+  setWorklogModalOpen,
 }: Props):Node => (
   <Flex column style={{ margin: '16px 20px', minHeight: 102 }}>
     <Flex row alignCenter spaceBetween style={{ marginBottom: 15 }}>
@@ -95,6 +98,7 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
     </Flex>
     <Flex row>
       <ButtonGroup>
+        {/*
         <Button>
           Comment
         </Button>
@@ -112,8 +116,12 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
             <DropdownItem>Done</DropdownItem>
           </DropdownItemGroup>
         </DropdownMenu>
-        <Button>
-          Add to favorites
+          <Button>
+            Add to favorites
+          </Button>
+        */}
+        <Button onClick={() => setWorklogModalOpen(true)}>
+          Log work
         </Button>
       </ButtonGroup>
     </Flex>
@@ -129,7 +137,10 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(timerActions, dispatch);
+  return bindActionCreators({
+    ...timerActions,
+    ...uiActions,
+  }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(IssueViewHeader);
