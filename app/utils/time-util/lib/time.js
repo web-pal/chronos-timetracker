@@ -40,9 +40,9 @@ export function stj(seconds: number, format: string): string {
 export function setLoggedTodayOnTray(allWorklogs: Array<Worklog>, selfKey: string): void {
   const today = new Date();
   const loggedToday = allWorklogs
-    .filter(w => w.getIn(['author', 'key']) === selfKey)
-    .filter(w => moment(w.get('created')).isSame(today, 'day'))
-    .reduce((prevValue, i) => i.get('timeSpentSeconds') + prevValue, 0);
+    .filter(w => w.author.key === selfKey)
+    .filter(w => moment(w.created).isSame(today, 'day'))
+    .reduce((prevValue, i) => i.timeSpentSeconds + prevValue, 0);
   const humanFormat = new Date(loggedToday * 1000).toISOString().substr(11, 8);
-  ipcRenderer.send('setLoggedToday', humanFormat);
+  ipcRenderer.send('set-logged-today', humanFormat);
 }

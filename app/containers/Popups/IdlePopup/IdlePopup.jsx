@@ -33,12 +33,12 @@ class IdlePopup extends Component<{}, State> {
   }
 
   dismissTime = () => {
-    ipc.send('dismissIdleTime', this.state.idleTime);
+    ipc.send('dismiss-idle-time', this.state.idleTime);
     remote.getCurrentWindow().destroy();
   }
 
   keepTime = () => {
-    ipc.send('keepIdleTime', this.state.idleTime);
+    ipc.send('keep-idle-time', this.state.idleTime);
     remote.getCurrentWindow().destroy();
   }
 

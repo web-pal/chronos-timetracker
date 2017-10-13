@@ -11,7 +11,7 @@ import type {
   AddScreenshot, AddScreenshotAction,
   SetScreenshotPeriods, SetScreenshotPeriodsAction,
   AddIdleTime, AddIdleTimeAction,
-  Screenshot,
+  Screenshot, Idle,
 } from '../types';
 
 export const tick: Tick = (): TickAction => ({ type: types.TICK });
@@ -54,7 +54,7 @@ export const setScreenshotPeriods: SetScreenshotPeriods = (
 });
 
 export const addIdleTime: AddIdleTime = (
-  payload: number,
+  payload: Idle,
 ): AddIdleTimeAction => ({
   type: types.ADD_IDLE_TIME,
   payload,

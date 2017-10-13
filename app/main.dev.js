@@ -153,7 +153,7 @@ app.on('window-all-closed', () => {
 function checkRunning(e) {
   if (mainWindow) {
     const contentSize = mainWindow.getContentSize();
-    if (contentSize) {
+    if (contentSize.length > 1) {
       const lastWindowSize = {
         width: contentSize[0],
         height: contentSize[1],
@@ -261,7 +261,7 @@ function showScreenPreview() {
   });
 }
 
-ipcMain.on('startTimer', () => {
+ipcMain.on('start-timer', () => {
   menu.items[3].enabled = false;
   menu.items[4].enabled = true;
 
@@ -272,7 +272,7 @@ ipcMain.on('startTimer', () => {
   }
 });
 
-ipcMain.on('stopTimer', () => {
+ipcMain.on('stop-timer', () => {
   tray.setTitle('');
   menu.items[3].enabled = true;
   menu.items[4].enabled = false;
@@ -284,7 +284,7 @@ ipcMain.on('stopTimer', () => {
   }
 });
 
-ipcMain.on('selectTask', (event, selectedIssue) => {
+ipcMain.on('select-issue', (event, selectedIssue) => {
   menuTemplate[1].label = `Selected issue: ${selectedIssue}`;
   menuTemplate[3].enabled = true;
   menu.clear();
@@ -294,7 +294,7 @@ ipcMain.on('selectTask', (event, selectedIssue) => {
   tray.setContextMenu(menu);
 });
 
-ipcMain.on('setLoggedToday', (event, logged) => {
+ipcMain.on('set-logged-today', (event, logged) => {
   menuTemplate[0].label = `Logged today: ${logged}`;
   menu.clear();
   menuTemplate.forEach(m => {
@@ -303,7 +303,7 @@ ipcMain.on('setLoggedToday', (event, logged) => {
   tray.setContextMenu(menu);
 });
 
-ipcMain.on('oauthText', (event, text) => {
+ipcMain.on('oauth-response', (event, text) => {
   if (mainWindow && authWindow) {
     try {
       const code = text.split('.')[1].split('\'')[1];
@@ -315,7 +315,7 @@ ipcMain.on('oauthText', (event, text) => {
   }
 });
 
-ipcMain.on('oauthDenied', () => {
+ipcMain.on('oauth-denied', () => {
   if (mainWindow && authWindow) {
     mainWindow.webContents.send('oauth-denied');
     authWindow.close();
@@ -350,12 +350,11 @@ ipcMain.on('open-oauth-url', (event, url) => {
         if (authWindow) {
           authWindow.webContents.executeJavaScript(`
             var text = document.querySelector('#content p').textContent;
-            console.log(text);
             if (text.includes('You have successfully authorized')) {
-              ipcRenderer.send('oauthText', text);
+              ipcRenderer.send('oauth-response', text);
             }
             if (text.includes('You have denied')) {
-              ipcRenderer.send('oauthDenied', text);
+              ipcRenderer.send('oauth-denied', text);
             }
           `);
         }
@@ -369,11 +368,13 @@ ipcMain.on('open-oauth-url', (event, url) => {
 });
 
 
-ipcMain.on('showIdlePopup', () => {
+ipcMain.on('show-idle-popup', () => {
   const options = {
     width: 460,
     height: 152,
     frame: false,
+    resizable: false,
+    alwaysOnTop: true,
   };
   const win = new BrowserWindow(options);
   win.loadURL(`file://${__dirname}/idlePopup.html`);
@@ -418,12 +419,12 @@ ipcMain.on('screenshot-reject', rejectScreenshot);
 
 function acceptScreenshot() {
   if (mainWindow) {
-    mainWindow.webContents.send('screenshot-accept');
+    mainWindow.webContents.send(';screenshot-accept');
   }
 }
 ipcMain.on('screenshot-accept', acceptScreenshot);
 
-ipcMain.on('showScreenPreviewPopup', () => {
+ipcMain.on('show-screenshot-popup', () => {
   let nativeNotifications = process.platform === 'darwin';
   if (process.platform === 'darwin' && mainWindow) {
     nativeNotifications = global.sharedObj.nativeNotifications;
@@ -462,25 +463,15 @@ ipcMain.on('showScreenPreviewPopup', () => {
   }
 });
 
-ipcMain.on('errorInWindow', (e, error) => {
-  console.log(`${error[0]} @ ${error[1]} ${error[2]}:${error[3]}`);
-});
-
-ipcMain.on('dismissIdleTime', (e, time) => {
+ipcMain.on('dismiss-idle-time', (e, time) => {
   if (mainWindow) {
-    mainWindow.webContents.send('dismissIdleTime', time);
+    mainWindow.webContents.send('dismiss-idle-time', time);
   }
 });
 
-ipcMain.on('keepIdleTime', () => {
+ipcMain.on('keep-idle-time', () => {
   if (mainWindow) {
-    mainWindow.webContents.send('keepIdleTime');
-  }
-});
-
-ipcMain.on('dismissAndRestart', (e, time) => {
-  if (mainWindow) {
-    mainWindow.webContents.send('dismissAndRestart', time);
+    mainWindow.webContents.send('keep-idle-time');
   }
 });
 

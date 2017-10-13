@@ -11,6 +11,7 @@ import {
   getUserData,
   getTimerTime,
   getLocalDesktopSettings,
+  getScreenshotPeriods,
 } from 'selectors';
 
 import { throwError } from './ui';
@@ -113,4 +114,12 @@ export function* takeScreenshot() {
     yield call(throwError, err);
     Raven.captureException(err);
   }
+}
+
+export function* cleanExcessScreenshotPeriods() {
+  const currentTime = yield select(getTimerTime);
+  const periods = yield select(getScreenshotPeriods);
+  const newPeriods = periods.filter(p => p > currentTime);
+
+  yield put(timerActions.setScreenshotPeriods(newPeriods));
 }

@@ -33,13 +33,13 @@ const AboutModal: StatelessFunctionalComponent<Props> = ({
     <Flex column alignCenter style={{ margin: '20px 0px' }}>
       <Button
         style={{ marginBottom: 18, width: 400 }}
-        onClick={() => ipcRenderer.send('showIdlePopup')}
+        onClick={() => ipcRenderer.send('show-idle-popup')}
       >
         Display Idle Popup
       </Button>
       <Button
         style={{ marginBottom: 18, width: 400 }}
-        onClick={() => ipcRenderer.send('showScreenPreviewPopup')}
+        onClick={() => ipcRenderer.send('show-screenshot-popup')}
       >
         Display ScreenshotPopup Popup
       </Button>
