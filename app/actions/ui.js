@@ -8,6 +8,7 @@ import type {
   SetSupportModalOpen, SetSupportModalOpenAction,
   SetAboutModalOpen, SetAboutModalOpenAction,
   SetAlertModalOpen, SetAlertModalOpenAction,
+  SetWorklogModalOpen, SetWorklogModalOpenAction,
   AuthFormStep, SidebarType, TabLabel,
 } from '../types';
 
@@ -66,5 +67,12 @@ export const setAlertModalOpen: SetAlertModalOpen = (
   payload: boolean,
 ): SetAlertModalOpenAction => ({
   type: types.SET_ALERT_MODAL_OPEN,
+  payload,
+});
+
+export const setWorklogModalOpen: SetWorklogModalOpen = (
+  payload: boolean,
+): SetWorklogModalOpenAction => ({
+  type: types.SET_WORKLOG_MODAL_OPEN,
   payload,
 });

@@ -10,19 +10,20 @@ import { Button } from 'styles/buttons';
 import { uiActions } from 'actions';
 import { getAboutModalOpen } from 'selectors';
 
-import type { SetAboutModalOpen, SetAlertModalOpen } from '../../../types';
+import type { SetAboutModalOpen, SetAlertModalOpen, SetWorklogModalOpen } from '../../../types';
 
 type Props = {
   isOpen: boolean,
   setAboutModalOpen: SetAboutModalOpen,
   setAlertModalOpen: SetAlertModalOpen,
+  setWorklogModalOpen: SetWorklogModalOpen,
 };
 
 const AboutModal: StatelessFunctionalComponent<Props> = ({
   isOpen,
   setAboutModalOpen,
   setAlertModalOpen,
-  ...props
+  setWorklogModalOpen,
 }: Props): Node => (
   <ModalDialog
     isOpen={isOpen}
@@ -43,10 +44,16 @@ const AboutModal: StatelessFunctionalComponent<Props> = ({
         Display ScreenshotPopup Popup
       </Button>
       <Button
-        style={{ width: 400 }}
+        style={{ marginBottom: 18, width: 400 }}
         onClick={() => setAlertModalOpen(true)}
       >
         Display Alert Modal
+      </Button>
+      <Button
+        style={{ width: 400 }}
+        onClick={() => setWorklogModalOpen(true)}
+      >
+        Display Worklog Modal
       </Button>
     </Flex>
   </ModalDialog>

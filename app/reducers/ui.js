@@ -11,6 +11,7 @@ const initialState: UiState = {
   supportModalOpen: false,
   aboutModalOpen: false,
   alertModalOpen: false,
+  worklogModalOpen: false,
 };
 
 export default function ui(state: UiState = initialState, action: Action) {
@@ -54,6 +55,11 @@ export default function ui(state: UiState = initialState, action: Action) {
       return {
         ...state,
         alertModalOpen: action.payload,
+      };
+    case types.SET_WORKLOG_MODAL_OPEN:
+      return {
+        ...state,
+        worklogModalOpen: action.payload,
       };
     case types.___CLEAR_ALL_REDUCERS___:
       return initialState;

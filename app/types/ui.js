@@ -16,6 +16,7 @@ export type UiState = {|
   +supportModalOpen: boolean,
   +aboutModalOpen: boolean,
   +alertModalOpen: boolean,
+  +worklogModalOpen: boolean,
 |};
 
 //
@@ -82,6 +83,14 @@ export type SetAlertModalOpen = {
   (payload: boolean): SetAlertModalOpenAction
 };
 
+//
+export type SetWorklogModalOpenAction =
+  {| type: typeof types.SET_WORKLOG_MODAL_OPEN, +payload: boolean |};
+
+export type SetWorklogModalOpen = {
+  (payload: boolean): SetWorklogModalOpenAction
+};
+
 export type UiAction =
   SetAuthFormStepAction
   | SetSidebarTypeAction
@@ -90,4 +99,5 @@ export type UiAction =
   | SetSettingsModalOpenAction
   | SetSupportModalOpenAction
   | SetAboutModalOpenAction
-  | SetAlertModalOpenAction;
+  | SetAlertModalOpenAction
+  | SetWorklogModalOpen;
