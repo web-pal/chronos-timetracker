@@ -24,6 +24,7 @@
     "Generator": true,
     "$Keys": true,
     "SyntheticMouseEvent": true,
+    "EventEmitter": true,
   },
   "plugins": [
     "flowtype",

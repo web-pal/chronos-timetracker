@@ -3,6 +3,7 @@ import { eventChannel } from 'redux-saga';
 import moment from 'moment';
 import NanoTimer from 'nanotimer';
 import { remote, ipcRenderer } from 'electron';
+import createIpcChannel from './ipc';
 import {
   getUserData,
   getTimerTime,
@@ -268,20 +269,6 @@ function keepIdleTime() {
   normalizeScreenshotsPeriods();
 } */
 
-function createIpcChannel(listener, channel) {
-  return eventChannel(emit => {
-    const handler = (ev) => {
-      console.log(`${channel} emitted ${ev}`);
-      emit({ ev, channel });
-    };
-    listener.on(channel, handler);
-    // eventChannel must return unsubcribe function
-    return () => {
-      ipcRenderer.removeListener(channel, handler);
-    };
-  });
-}
-
 let acceptScreenshotChannel;
 let rejectScreenshotChannel;
 let keepIdleTimeChannel;
@@ -343,34 +330,17 @@ export function* watchDismissIdleTime() {
 }
 
 export function* createIpcListeners(): void {
-  acceptScreenshotChannel = yield call(
-    createIpcChannel,
-    ipcRenderer,
-    'screenshot-accept',
-  );
+  acceptScreenshotChannel = yield call(createIpcChannel, 'screenshot-accept');
   yield fork(watchAcceptScreenshot);
-  rejectScreenshotChannel = yield call(
-    createIpcChannel,
-    ipcRenderer,
-    'screenshot-reject',
-  );
+
+  rejectScreenshotChannel = yield call(createIpcChannel, 'screenshot-reject');
   yield fork(watchRejectScreenshot);
 
-  keepIdleTimeChannel = yield call(
-    createIpcChannel,
-    ipcRenderer,
-    'keep-idle-time',
-  );
-  console.log('created keepIdleTimeChannel', keepIdleTimeChannel)
+  keepIdleTimeChannel = yield call(createIpcChannel, 'keep-idle-time');
   yield fork(watchKeepIdleTime);
 
-  dismissIdleTimeChannel = yield call(
-    createIpcChannel,
-    ipcRenderer,
-    'dismiss-idle-time',
-  );
+  dismissIdleTimeChannel = yield call(createIpcChannel, 'dismiss-idle-time');
   yield fork(watchDismissIdleTime);
 
   // ipcRenderer.on('force-save', forceSave);
-  // ipcRenderer.on('dismissIdleTime', dismissIdleTime);
 }

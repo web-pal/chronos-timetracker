@@ -3,12 +3,15 @@ import type {
   SetAuthFormStep, SetAuthFormStepAction,
   SetSidebarType, SetSidebarTypeAction,
   SetIssueViewTab, SetIssueViewTabAction,
+  SetUpdateCheckRunning, SetUpdateCheckRunningAction,
+  SetUpdateAvailable, SetUpdateAvailableAction,
+  InstallUpdateRequest, InstallUpdateRequestAction,
   SetSidebarFiltersOpen, SetSidebarFiltersOpenAction,
   SetSettingsModalOpen, SetSettingsModalOpenAction,
   SetSupportModalOpen, SetSupportModalOpenAction,
   SetAboutModalOpen, SetAboutModalOpenAction,
   SetAlertModalOpen, SetAlertModalOpenAction,
-  AuthFormStep, SidebarType, TabLabel,
+  AuthFormStep, SidebarType, TabLabel, UpdateInfo,
 } from '../types';
 
 import * as types from './actionTypes';
@@ -33,6 +36,25 @@ export const setIssueViewTab: SetIssueViewTab = (
   type: types.SET_ISSUE_VIEW_TAB,
   payload,
 });
+
+export const setUpdateCheckRunning: SetUpdateCheckRunning = (
+  payload: boolean,
+): SetUpdateCheckRunningAction => ({
+  type: types.SET_UPDATE_CHECK_RUNNING,
+  payload,
+});
+
+export const setUpdateAvailableAction: SetUpdateAvailable = (
+  payload: UpdateInfo,
+): SetUpdateAvailableAction => ({
+  type: types.SET_UPDATE_AVAILABLE,
+  payload,
+});
+
+export const installUpdateRequest: InstallUpdateRequest =
+  (): InstallUpdateRequestAction => ({
+    type: types.INSTALL_UPDATE_REQUEST,
+  });
 
 export const setSidebarFiltersOpen: SetSidebarFiltersOpen = (
   payload: boolean,

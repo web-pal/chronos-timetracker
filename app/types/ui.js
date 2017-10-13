@@ -7,10 +7,15 @@ export type SidebarType = 'all' | 'recent';
 
 export type TabLabel = 'Details' | 'Comments' | 'Worklogs';
 
+// TODO update info type
+export type UpdateInfo = any;
+
 export type UiState = {|
   +authFormStep: AuthFormStep,
   +sidebarType: SidebarType,
   +issueViewTab: TabLabel,
+  +updateCheckRunning: boolean,
+  +updateAvailable: UpdateInfo | null,
   +sidebarFiltersOpen: boolean,
   +settingsModalOpen: boolean,
   +supportModalOpen: boolean,
@@ -40,6 +45,30 @@ export type SetIssueViewTabAction =
 
 export type SetIssueViewTab = {
   (payload: TabLabel): SetIssueViewTabAction
+};
+
+//
+export type SetUpdateCheckRunningAction =
+  {| type: typeof types.SET_UPDATE_CHECK_RUNNING, payload: boolean |};
+
+export type SetUpdateCheckRunning = {
+  (payload: boolean): SetUpdateCheckRunningAction
+};
+
+//
+export type SetUpdateAvailableAction =
+  {| type: typeof types.SET_UPDATE_AVAILABLE, payload: UpdateInfo |};
+
+export type SetUpdateAvailable = {
+  (payload: UpdateInfo): SetUpdateAvailableAction
+};
+
+//
+export type InstallUpdateRequestAction =
+  {| type: typeof types.INSTALL_UPDATE_REQUEST |};
+
+export type InstallUpdateRequest = {
+  (): InstallUpdateRequestAction
 };
 
 //

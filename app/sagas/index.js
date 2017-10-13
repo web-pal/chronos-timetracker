@@ -6,6 +6,7 @@ import * as profileSagas from './profile';
 import * as projectSagas from './projects';
 import * as issueSagas from './issues';
 import * as timerSagas from './timer';
+import * as updaterSagas from './updater';
 
 export default function* rootSaga(): Generator<*, *, *> {
   yield all([
@@ -31,5 +32,9 @@ export default function* rootSaga(): Generator<*, *, *> {
 
     // settings
     fork(settingsSagas.localDesktopSettingsFlow),
+
+    // update
+    fork(updaterSagas.watchInstallUpdateRequest),
+    fork(updaterSagas.initializeUpdater),
   ]);
 }

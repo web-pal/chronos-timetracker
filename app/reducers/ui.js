@@ -6,6 +6,8 @@ const initialState: UiState = {
   authFormStep: 1,
   sidebarType: 'all',
   issueViewTab: 'Details',
+  updateCheckRunning: false,
+  updateAvailable: null,
   sidebarFiltersOpen: false,
   settingsModalOpen: false,
   supportModalOpen: false,
@@ -29,6 +31,16 @@ export default function ui(state: UiState = initialState, action: Action) {
       return {
         ...state,
         issueViewTab: action.payload,
+      };
+    case types.SET_UPDATE_CHECK_RUNNING:
+      return {
+        ...state,
+        updateCheckRunning: action.payload,
+      };
+    case types.SET_UPDATE_AVAILABLE:
+      return {
+        ...state,
+        updateAvailable: action.payload,
       };
     case types.SET_SIDEBAR_FILTERS_OPEN:
       return {
