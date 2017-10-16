@@ -22,6 +22,7 @@
 
 @import "~react-select/less/default.less";
 @import "~font-awesome/css/font-awesome.css";
+@import "~rc-time-picker/assets/index.css";
 
 @import "./settings.less";
 @import "./variables.less";
@@ -58,4 +59,59 @@ a {
   // :active {
   //   color: #3b73af;
   // }
+}
+
+.TimePicker {
+  align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  -webkit-align-items: center;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  min-height: 36px;
+  outline: none;
+  width: 100%;
+  color: #091E42;
+  background-color: #FAFBFC;
+  border-color: #F4F5F7;
+  border-radius: 5px;
+  border-style: solid;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  flex: 0 1 auto;
+  -ms-flex: 0 1 auto;
+  -webkit-flex: 0 1 auto;
+  font-size: 14px;
+  justify-content: space-between;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  -webkit-justify-content: space-between;
+  line-height: 1.4285714285714286;
+  max-width: 100%;
+  /* min-height: 20px; */
+  overflow: hidden;
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+  -webkit-transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+  word-wrap: break-word;
+  border-width: 1px;
+  padding: 0;
+  cursor: pointer;
+}
+
+.rc-time-picker-input {
+  border: 0;
+  background: inherit;
+  margin-left: 4px;
+  color: #091E42;
+  color: #7A869A;
+  font-size: 14px;
+  cursor: pointer;
 }

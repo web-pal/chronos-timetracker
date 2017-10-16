@@ -122,6 +122,10 @@ export type {
   SetAboutModalOpen,
   SetAlertModalOpenAction,
   SetAlertModalOpen,
+  SetWorklogModalOpenAction,
+  SetWorklogModalOpen,
+  SetUpdateFetchingAction,
+  SetUpdateFetching,
   UiAction,
 } from './ui';
 

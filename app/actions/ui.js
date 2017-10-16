@@ -5,12 +5,14 @@ import type {
   SetIssueViewTab, SetIssueViewTabAction,
   SetUpdateCheckRunning, SetUpdateCheckRunningAction,
   SetUpdateAvailable, SetUpdateAvailableAction,
+  SetUpdateFetching, SetUpdateFetchingAction,
   InstallUpdateRequest, InstallUpdateRequestAction,
   SetSidebarFiltersOpen, SetSidebarFiltersOpenAction,
   SetSettingsModalOpen, SetSettingsModalOpenAction,
   SetSupportModalOpen, SetSupportModalOpenAction,
   SetAboutModalOpen, SetAboutModalOpenAction,
   SetAlertModalOpen, SetAlertModalOpenAction,
+  SetWorklogModalOpen, SetWorklogModalOpenAction,
   AuthFormStep, SidebarType, TabLabel, UpdateInfo,
 } from '../types';
 
@@ -44,10 +46,17 @@ export const setUpdateCheckRunning: SetUpdateCheckRunning = (
   payload,
 });
 
-export const setUpdateAvailableAction: SetUpdateAvailable = (
+export const setUpdateAvailable: SetUpdateAvailable = (
   payload: UpdateInfo,
 ): SetUpdateAvailableAction => ({
   type: types.SET_UPDATE_AVAILABLE,
+  payload,
+});
+
+export const setUpdateFetching: SetUpdateFetching = (
+  payload: boolean,
+): SetUpdateFetchingAction => ({
+  type: types.SET_UPDATE_FETCHING,
   payload,
 });
 
@@ -88,5 +97,12 @@ export const setAlertModalOpen: SetAlertModalOpen = (
   payload: boolean,
 ): SetAlertModalOpenAction => ({
   type: types.SET_ALERT_MODAL_OPEN,
+  payload,
+});
+
+export const setWorklogModalOpen: SetWorklogModalOpen = (
+  payload: boolean,
+): SetWorklogModalOpenAction => ({
+  type: types.SET_WORKLOG_MODAL_OPEN,
   payload,
 });

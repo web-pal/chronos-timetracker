@@ -8,11 +8,13 @@ const initialState: UiState = {
   issueViewTab: 'Details',
   updateCheckRunning: false,
   updateAvailable: null,
+  updateFetching: false,
   sidebarFiltersOpen: false,
   settingsModalOpen: false,
   supportModalOpen: false,
   aboutModalOpen: false,
   alertModalOpen: false,
+  worklogModalOpen: false,
 };
 
 export default function ui(state: UiState = initialState, action: Action) {
@@ -42,6 +44,11 @@ export default function ui(state: UiState = initialState, action: Action) {
         ...state,
         updateAvailable: action.payload,
       };
+    case types.SET_UPDATE_FETCHING:
+      return {
+        ...state,
+        updateFetching: action.payload,
+      };
     case types.SET_SIDEBAR_FILTERS_OPEN:
       return {
         ...state,
@@ -66,6 +73,11 @@ export default function ui(state: UiState = initialState, action: Action) {
       return {
         ...state,
         alertModalOpen: action.payload,
+      };
+    case types.SET_WORKLOG_MODAL_OPEN:
+      return {
+        ...state,
+        worklogModalOpen: action.payload,
       };
     case types.___CLEAR_ALL_REDUCERS___:
       return initialState;

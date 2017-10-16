@@ -6,7 +6,7 @@ import { Flex } from 'components';
 
 import { EditButton } from './styled';
 
-const WorklogEditDialogContent = () => (
+const WorklogEditDialogContent = (
   <div style={{ width: 300 }}>
     <h5>Edit worklog</h5>
     <Flex column>

@@ -4,10 +4,11 @@ import type { StatelessFunctionalComponent, Node } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import DropdownMenu, { DropdownItemGroup, DropdownItem } from '@atlaskit/dropdown-menu';
+import Spinner from '@atlaskit/spinner';
 import { cogIcon } from 'data/svg';
 import { Flex } from 'components';
 import { profileActions, uiActions } from 'actions';
-import { getUserData, getHost } from 'selectors';
+import { getUserData, getHost, getUpdateAvailable, getUpdateCheckRunning, getUpdateFetching } from 'selectors';
 
 import {
   HeaderContainer,
@@ -25,6 +26,8 @@ import {
 import type {
   LogoutRequest,
   User,
+  UpdateInfo,
+  InstallUpdateRequest,
   SetSettingsModalOpen,
   SetAboutModalOpen,
   SetSupportModalOpen,
@@ -33,8 +36,12 @@ import type {
 type Props = {
   userData: User,
   host: string,
+  updateCheckRunning: boolean,
+  updateAvailable: UpdateInfo,
+  updateFetching: boolean,
 
   logoutRequest: LogoutRequest,
+  installUpdateRequest: InstallUpdateRequest,
   setSettingsModalOpen: SetSettingsModalOpen,
   setSupportModalOpen: SetSupportModalOpen,
   setAboutModalOpen: SetAboutModalOpen,
@@ -43,16 +50,17 @@ type Props = {
 const Header: StatelessFunctionalComponent<Props> = ({
   userData,
   host,
+  updateCheckRunning,
+  updateAvailable,
+  updateFetching,
   logoutRequest,
+  installUpdateRequest,
   setSettingsModalOpen,
   setSupportModalOpen,
   setAboutModalOpen,
 }: Props): Node =>
   <HeaderContainer className="webkit-drag">
     <Flex row alignCenter>
-      {/*
-        <ProfilePicture src={avatarIcon} alt="" />
-      */}
       <ProfilePicture src={userData.avatarUrls['48x48']} alt="" />
       <ProfileInfo>
         <Name>{userData.displayName}</Name>
@@ -60,7 +68,7 @@ const Header: StatelessFunctionalComponent<Props> = ({
       </ProfileInfo>
     </Flex>
     <Flex row style={{ position: 'relative' }}>
-      {true &&
+      {updateAvailable &&
         <UpdateAvailableBadge />
       }
       <DropdownMenu
@@ -78,13 +86,36 @@ const Header: StatelessFunctionalComponent<Props> = ({
           <DropdownItem onClick={() => setAboutModalOpen(true)}>
             About
           </DropdownItem>
-          {true &&
-            <DropdownSeparator />
-          }
-          {true &&
-            <DropdownUpdateItem onClick={() => alert('TODO: start update')}>
-              Update available. Restart now
+          <DropdownSeparator />
+          {updateAvailable && !updateFetching &&
+            <DropdownUpdateItem onClick={installUpdateRequest}>
+              {updateAvailable} is out! Update now
             </DropdownUpdateItem>
+          }
+          {updateCheckRunning &&
+            <DropdownItem>
+              <Flex row spaceBetween>
+                <span>
+                  Checking for updates
+                </span>
+                <Spinner />
+              </Flex>
+            </DropdownItem>
+          }
+          {updateFetching &&
+            <DropdownItem>
+              <Flex row spaceBetween>
+                <span>
+                  Downloading update
+                </span>
+                <Spinner size={16} />
+              </Flex>
+            </DropdownItem>
+          }
+          {!updateCheckRunning && !updateAvailable &&
+            <DropdownItem>
+              Latest version
+            </DropdownItem>
           }
           <DropdownSeparator />
           <DropdownLogoutItem onClick={logoutRequest}>
@@ -99,6 +130,9 @@ function mapStateToProps(state) {
   return {
     userData: getUserData(state),
     host: getHost(state),
+    updateCheckRunning: getUpdateCheckRunning(state),
+    updateAvailable: getUpdateAvailable(state),
+    updateFetching: getUpdateFetching(state),
   };
 }
 

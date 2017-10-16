@@ -55,6 +55,7 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
     transitionLeave={false}
   >
     <Container>
+      <WorklogEditDialog />
       <Flex row alignCenter>
         <IssueName
           onClick={() => {

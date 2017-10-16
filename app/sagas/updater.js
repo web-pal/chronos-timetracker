@@ -3,21 +3,26 @@
 import { call, fork, take, put } from 'redux-saga/effects';
 import { delay } from 'redux-saga';
 import { remote, ipcRenderer } from 'electron';
+import { uiActions, timerActions, types } from 'actions';
 import { checkUpdates } from '../utils/config';
 import createIpcChannel from './ipc';
-import { uiActions, timerActions, types } from './ui';
 
 const { autoUpdater } = remote.require('electron-updater');
+const log = remote.require('electron-log');
 
 let checkingForUpdatesChannel;
 let updateAvailableChannel;
 let updateNotAvailableChannel;
 let updateDownloadedChannel;
 
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = 'info';
+
 export function* watchInstallUpdateRequest(): Generator<*, *, *> {
   while (true) {
     yield take(types.INSTALL_UPDATE_REQUEST);
-    autoUpdater.downloadUpdate();
+    yield put(uiActions.setUpdateFetching(true));
+    yield call(autoUpdater.downloadUpdate);
   }
 }
 
@@ -30,10 +35,10 @@ function* watchCheckingForUpdates(): Generator<*, *, *> {
 
 function* watchUpdateAvailable(): Generator<*, *, *> {
   while (true) {
-    const meta = yield take(updateAvailableChannel);
+    const { ev } = yield take(updateAvailableChannel);
     yield put(uiActions.setUpdateCheckRunning(false));
-    console.log('update available meta', meta);
-    yield put(uiActions.setUpdateAvailable(meta));
+    const newVersion = ev.version;
+    yield put(uiActions.setUpdateAvailable(newVersion));
   }
 }
 
@@ -48,6 +53,7 @@ function* watchUpdateNotAvailable(): Generator<*, *, *> {
 function* watchUpdateDownloaded(): Generator<*, *, *> {
   while (true) {
     yield take(updateDownloadedChannel);
+    yield put(uiActions.setUpdateFetching(false));
     const { getGlobal } = remote;
     yield call(delay, 500);
     if (window.confirm('App updated, restart now?')) {
@@ -79,7 +85,7 @@ export function* initializeUpdater(): Generator<*, *, *> {
   yield fork(watchUpdateDownloaded);
   if (checkUpdates) {
     while (true) {
-      autoUpdater.checkForUpdates();
+      yield call(autoUpdater.checkForUpdates);
       yield call(delay, 1 * 60 * 1000); // check for update every minute
     }
   }

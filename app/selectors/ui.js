@@ -1,5 +1,5 @@
 // @flow
-import type { UiState, AuthFormStep, SidebarType, TabLabel } from '../types';
+import type { UiState, AuthFormStep, SidebarType, TabLabel, UpdateInfo } from '../types';
 
 export const getAuthFormStep =
   ({ ui }: { ui: UiState }): AuthFormStep => ui.authFormStep;
@@ -9,6 +9,15 @@ export const getSidebarType =
 
 export const getIssueViewTab =
   ({ ui }: { ui: UiState }): TabLabel => ui.issueViewTab;
+
+export const getUpdateCheckRunning =
+  ({ ui }: { ui: UiState }): boolean => ui.updateCheckRunning;
+
+export const getUpdateAvailable =
+  ({ ui }: { ui: UiState }): UpdateInfo | null => ui.updateAvailable;
+
+export const getUpdateFetching =
+  ({ ui }: { ui: UiState }): boolean => ui.updateFetching;
 
 export const getSettingsModalOpen =
   ({ ui }: { ui: UiState }): boolean => ui.settingsModalOpen;
@@ -21,6 +30,9 @@ export const getAboutModalOpen =
 
 export const getAlertModalOpen =
   ({ ui }: { ui: UiState }): boolean => ui.alertModalOpen;
+
+export const getWorklogModalOpen =
+  ({ ui }: { ui: UiState }): boolean => ui.worklogModalOpen;
 
 export const getSidebarFiltersOpen =
   ({ ui }: { ui: UiState }): boolean => ui.sidebarFiltersOpen;

@@ -9,7 +9,7 @@ type Handler = {
 
 export default function createIpcChannel(
   channel: string,
-  listener: EventEmitter = ipcRenderer,
+  listener: EventEmitter | any = ipcRenderer,
 ) {
   return eventChannel(emit => {
     const handler: Handler = (ev) => {

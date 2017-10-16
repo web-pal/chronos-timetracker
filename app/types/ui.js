@@ -16,11 +16,13 @@ export type UiState = {|
   +issueViewTab: TabLabel,
   +updateCheckRunning: boolean,
   +updateAvailable: UpdateInfo | null,
+  +updateFetching: boolean,
   +sidebarFiltersOpen: boolean,
   +settingsModalOpen: boolean,
   +supportModalOpen: boolean,
   +aboutModalOpen: boolean,
   +alertModalOpen: boolean,
+  +worklogModalOpen: boolean,
 |};
 
 //
@@ -61,6 +63,14 @@ export type SetUpdateAvailableAction =
 
 export type SetUpdateAvailable = {
   (payload: UpdateInfo): SetUpdateAvailableAction
+};
+
+//
+export type SetUpdateFetchingAction =
+  {| type: typeof types.SET_UPDATE_FETCHING, payload: boolean |};
+
+export type SetUpdateFetching = {
+  (payload: boolean): SetUpdateFetchingAction
 };
 
 //
@@ -111,12 +121,22 @@ export type SetAlertModalOpen = {
   (payload: boolean): SetAlertModalOpenAction
 };
 
+//
+export type SetWorklogModalOpenAction =
+  {| type: typeof types.SET_WORKLOG_MODAL_OPEN, +payload: boolean |};
+
+export type SetWorklogModalOpen = {
+  (payload: boolean): SetWorklogModalOpenAction
+};
+
 export type UiAction =
   SetAuthFormStepAction
   | SetSidebarTypeAction
   | SetIssueViewTabAction
+  | SetUpdateFetchingAction
   | SetSidebarFiltersOpenAction
   | SetSettingsModalOpenAction
   | SetSupportModalOpenAction
   | SetAboutModalOpenAction
-  | SetAlertModalOpenAction;
+  | SetAlertModalOpenAction
+  | SetWorklogModalOpenAction;
