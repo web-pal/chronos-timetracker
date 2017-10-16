@@ -11,7 +11,7 @@ import {
   getSelectedIssueId,
   getTrackingIssueId,
 } from 'selectors';
-import { InfiniteLoadingList, IssuePlaceholder } from 'components';
+import { InfiniteLoadingList, IssueItemPlaceholder } from 'components';
 import { issuesActions } from 'actions';
 
 import SidebarItem from './SidebarItem';
@@ -66,7 +66,7 @@ const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
       rowRenderer: ({ index, key, style }) => {
         const item: ?Issue = items[index];
         if (searching && fetching) {
-          return <IssuePlaceholder />;
+          return <IssueItemPlaceholder />;
         }
 
         return <div style={style} key={key}>
@@ -77,7 +77,7 @@ const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
               tracking={trackingIssueId === item.id}
               selectIssue={selectIssue}
             />
-            : <IssuePlaceholder />
+            : <IssueItemPlaceholder />
           }
         </div>;
       },

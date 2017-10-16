@@ -4,13 +4,14 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import type { StatelessFunctionalComponent, Node } from 'react';
 import moment from 'moment';
-import { Flex } from 'components';
+import { Flex, RecentItemsPlaceholder } from 'components';
 import { issuesActions } from 'actions';
 import {
   getRecentIssues,
   getIssuesFetching,
   getRecentItems,
 } from 'selectors';
+console.log(RecentItemsPlaceholder);
 
 import TimestampItem from './SidebarTimestampItem';
 import SidebarItem from './SidebarItem';
@@ -37,33 +38,34 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
   fetching,
   selectIssue,
 }: Props): Node =>
-  <div className="RecentItems">
-    {Object.keys(items).map((key) => {
-      const item = items[key];
-      return <Flex key={key} column className="RecentItems__block">
-        {console.log(item)}
-        <TimestampItem
-          date={moment(key)}
-          worklogs={item}
-        />
-        <Flex column className="RecentItems__list">
-          {item.map(worklog =>
-            <SidebarItem
-              key={worklog.id}
-              issue={worklog.issue}
-              active={false}
-              selectIssue={selectIssue}
-            />,
-          )}
-        </Flex>
-      </Flex>;
-    })}
-    {items.length === 0 && !fetching &&
-      <Flex column centered className="RecentEmptyItem">
-        Nothing has been tracked recently
-      </Flex>
-    }
-  </div>;
+  <RecentItemsPlaceholder />;
+  // <div className="RecentItems">
+  //   {Object.keys(items).map((key) => {
+  //     const item = items[key];
+  //     return <Flex key={key} column className="RecentItems__block">
+  //       {console.log(item)}
+  //       <TimestampItem
+  //         date={moment(key)}
+  //         worklogs={item}
+  //       />
+  //       <Flex column className="RecentItems__list">
+  //         {item.map(worklog =>
+  //           <SidebarItem
+  //             key={worklog.id}
+  //             issue={worklog.issue}
+  //             active={false}
+  //             selectIssue={selectIssue}
+  //           />,
+  //         )}
+  //       </Flex>
+  //     </Flex>;
+  //   })}
+  //   {items.length === 0 && !fetching &&
+  //     <Flex column centered className="RecentEmptyItem">
+  //       Nothing has been tracked recently
+  //     </Flex>
+  //   }
+  // </div>;
 
 function mapStateToProps(state) {
   return {

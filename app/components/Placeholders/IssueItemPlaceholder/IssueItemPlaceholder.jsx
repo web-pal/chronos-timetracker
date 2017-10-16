@@ -4,7 +4,7 @@ import type { StatelessFunctionalComponent, Node } from 'react';
 
 import { PlaceholderContainer, Placeholder } from './styled';
 
-const IssuePlaceholder: StatelessFunctionalComponent<{}> = (): Node => (
+const IssueItemPlaceholder: StatelessFunctionalComponent<{}> = (): Node => (
   <PlaceholderContainer>
     <div className="animated-background">
       <Placeholder type="issueRight" />
@@ -19,4 +19,4 @@ const IssuePlaceholder: StatelessFunctionalComponent<{}> = (): Node => (
   </PlaceholderContainer>
 );
 
-export default IssuePlaceholder;
+export default IssueItemPlaceholder;
