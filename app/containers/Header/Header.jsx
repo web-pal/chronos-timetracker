@@ -99,9 +99,11 @@ const Header: StatelessFunctionalComponent<Props> = ({
             Support and feedback
           </DropdownItem>
           */}
-          <DropdownItem onClick={() => setAboutModalOpen(true)}>
-            About
-          </DropdownItem>
+          {/* TODO: use link to the landing when it's there
+            <DropdownItem onClick={() => setAboutModalOpen(true)}>
+              About
+            </DropdownItem>
+          */}
           <DropdownSeparator />
           {updateAvailable && !updateFetching &&
             <DropdownUpdateItem onClick={installUpdateRequest}>

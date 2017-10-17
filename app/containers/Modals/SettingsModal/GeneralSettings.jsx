@@ -20,7 +20,7 @@ const GeneralSettings: StatelessFunctionalComponent<Props> = ({
   setTraySettings,
 }: Props): Node => {
   const isIconHidden = !!settings.trayShowTimer;
-  const isTimerHidden = false;
+  // const isTimerHidden = false;
 
   return (
     <SettingsSectionContent>
@@ -39,6 +39,7 @@ const GeneralSettings: StatelessFunctionalComponent<Props> = ({
             label="Hide tray icon"
             onChange={() => setTraySettings(!isIconHidden)}
           />
+          {/*
           <Checkbox
             isChecked={isTimerHidden}
             value={isTimerHidden}
@@ -46,6 +47,7 @@ const GeneralSettings: StatelessFunctionalComponent<Props> = ({
             label="Hide timer in tray (TODO)"
             onChange={() => alert('TODO')}
           />
+          */}
         </CheckboxGroup>
       </Flex>
     </SettingsSectionContent>
