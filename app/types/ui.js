@@ -4,13 +4,13 @@ import { types } from 'actions';
 
 export type AuthFormStep = 1 | 2;
 
-export type FlagsArray = Array<any>;
 export type FlagType = {
   title: string,
   appearance: string,
   description: string,
   icon: Node,
-}
+};
+export type FlagsArray = Array<FlagType>;
 
 export type SidebarType = 'all' | 'recent';
 

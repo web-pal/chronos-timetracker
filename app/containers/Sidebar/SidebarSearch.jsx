@@ -4,7 +4,12 @@ import type { StatelessFunctionalComponent, Node } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { issuesActions, uiActions } from 'actions';
-import { getSidebarFiltersOpen, getIssuesSearchValue } from 'selectors';
+import {
+  getSidebarFiltersOpen,
+  getIssuesSearchValue,
+  getIssuesSearching,
+  getFiltersApplied,
+} from 'selectors';
 
 import {
   SearchBar,
@@ -13,6 +18,7 @@ import {
   SearchOptions,
   RefreshIcon,
   FilterIcon,
+  FiltersAppliedBadge,
 } from './styled';
 
 import type {
@@ -29,6 +35,8 @@ type Props = {
   setIssuesSearchValue: SetIssuesSearchValue,
   clearIssues: ClearIssues,
   fetchIssuesRequest: FetchIssuesRequest,
+  searching: boolean,
+  filtersApplied: boolean,
 }
 
 const SidebarSearch: StatelessFunctionalComponent<Props> = ({
@@ -38,6 +46,8 @@ const SidebarSearch: StatelessFunctionalComponent<Props> = ({
   setIssuesSearchValue,
   clearIssues,
   fetchIssuesRequest,
+  searching,
+  filtersApplied,
 }: Props): Node =>
   <SearchBar>
     <SearchIcon
@@ -56,6 +66,7 @@ const SidebarSearch: StatelessFunctionalComponent<Props> = ({
       <RefreshIcon
         label="Refresh"
         size="medium"
+        isFetching={searching}
         onClick={() => {
           clearIssues();
           fetchIssuesRequest();
@@ -67,13 +78,18 @@ const SidebarSearch: StatelessFunctionalComponent<Props> = ({
         primaryColor={isSidebarFiltersOpen ? '#0052CC' : '#333333'}
         onClick={() => setSidebarFiltersOpen(!isSidebarFiltersOpen)}
       />
+      {filtersApplied &&
+        <FiltersAppliedBadge />
+      }
     </SearchOptions>
   </SearchBar>;
 
 function mapStateToProps(state) {
   return {
     searchValue: getIssuesSearchValue(state),
+    searching: getIssuesSearching(state),
     isSidebarFiltersOpen: getSidebarFiltersOpen(state),
+    filtersApplied: getFiltersApplied(state),
   };
 }
 
