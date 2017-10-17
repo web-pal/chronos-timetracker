@@ -60,7 +60,7 @@ const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
       autoSized: true,
       // scrollToIndex: selectedIssueIndex,
       scrollToAlignment: 'center',
-      rowCount: (totalCount === 0 && fetching) ? 10 : totalCount,
+      rowCount: (totalCount === 0 && fetching) ? 10 : totalCount - 1,
       rowHeight: 101,
       // eslint-disable-next-line react/prop-types
       rowRenderer: ({ index, key, style }) => {
