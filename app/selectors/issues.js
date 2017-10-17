@@ -117,3 +117,8 @@ export const getTrackingIssue = createSelector(
 
 export const getIssueFilters =
   ({ issues }: { issues: IssuesState }): IssueFilters => issues.meta.filters;
+
+export const getFiltersApplied = createSelector(
+  [getIssueFilters],
+  (filters) => (!!filters.type.length || !!filters.status.length || !!filters.assignee.length),
+);

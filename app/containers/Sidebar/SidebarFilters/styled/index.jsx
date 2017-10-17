@@ -58,7 +58,17 @@ export const OptionContainer = styled.label`
 
 export const FilterActionsContainer = styled.div`
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   padding: 16px;
   border-top: 1px solid rgb(225, 228, 233);
+`;
+
+export const IssuesFoundText = styled.div`
+  height: 23px;
+  display: flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 500;
+  color: #5e6c84;
 `;

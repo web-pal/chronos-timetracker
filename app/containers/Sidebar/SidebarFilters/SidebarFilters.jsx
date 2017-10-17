@@ -3,14 +3,17 @@ import React from 'react';
 import pull from 'lodash.pull';
 import type { StatelessFunctionalComponent, Node } from 'react';
 import Button, { ButtonGroup } from '@atlaskit/button';
+import Spinner from '@atlaskit/spinner';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { issuesActions } from 'actions';
+import { issuesActions, uiActions } from 'actions';
 import {
   getIssueTypes,
   getUserData,
   getIssueStatuses,
   getIssueFilters,
+  getFoundIssueIds,
+  getIssuesSearching,
 } from 'selectors';
 import { H200 } from 'styles/typography';
 
@@ -19,12 +22,19 @@ import {
   FilterItems,
   FilterItem,
   FilterOptions,
-  FilterActionsContainer
+  FilterActionsContainer,
+  IssuesFoundText,
 } from './styled';
 import FilterOption from './FilterOption';
 import getCriteriaFilters from './getCriteriaFilters';
 
-import type { SetIssuesFilter, IssueType, IssueStatus, IssueFilters } from '../../../types';
+import type {
+  SetIssuesFilter,
+  IssueType,
+  IssueStatus,
+  IssueFilters,
+  SetSidebarFiltersOpen,
+} from '../../../types';
 
 // const sortOptions = fromJS([
 //   { label: 'Proprity', value: 'all' },
@@ -38,6 +48,9 @@ type Props = {
   issueStatuses: Array<IssueStatus>,
   filters: IssueFilters,
   selfKey: string,
+  foundIdsCount: number,
+  searching: boolean,
+  setSidebarFiltersOpen: SetSidebarFiltersOpen
 };
 
 const SidebarFilters: StatelessFunctionalComponent<Props> = ({
@@ -46,6 +59,9 @@ const SidebarFilters: StatelessFunctionalComponent<Props> = ({
   issueStatuses,
   filters,
   selfKey,
+  foundIdsCount,
+  searching,
+  setSidebarFiltersOpen,
 }: Props): Node => (
   <FiltersContainer>
     <FilterItems>
@@ -82,9 +98,26 @@ const SidebarFilters: StatelessFunctionalComponent<Props> = ({
       )}
     </FilterItems>
     <FilterActionsContainer>
+      <IssuesFoundText>
+        <span style={{ marginRight: 3 }}>Issues found:</span>
+        {searching ? <Spinner size="small" /> : <span>{foundIdsCount}</span>}
+      </IssuesFoundText>
       <ButtonGroup>
-        <Button>Clear filters</Button>
-        <Button appearance="primary">Apply</Button>
+        <Button
+          onClick={() => {
+            setIssuesFilter([], 'assignee');
+            setIssuesFilter([], 'status');
+            setIssuesFilter([], 'type');
+          }}
+        >
+          Clear filters
+        </Button>
+        <Button
+          appearance="primary"
+          onClick={() => setSidebarFiltersOpen(false)}
+        >
+          Apply
+        </Button>
       </ButtonGroup>
     </FilterActionsContainer>
   </FiltersContainer>
@@ -96,11 +129,13 @@ function mapStateToProps(state) {
     issueStatuses: getIssueStatuses(state),
     filters: getIssueFilters(state),
     selfKey: getUserData(state).key,
+    foundIdsCount: getFoundIssueIds(state).length,
+    searching: getIssuesSearching(state),
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(issuesActions, dispatch);
+  return bindActionCreators({ ...uiActions, ...issuesActions }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SidebarFilters);
