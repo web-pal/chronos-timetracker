@@ -13,6 +13,8 @@ import type {
   SetAboutModalOpen, SetAboutModalOpenAction,
   SetAlertModalOpen, SetAlertModalOpenAction,
   SetWorklogModalOpen, SetWorklogModalOpenAction,
+  RemoveFlag, RemoveFlagAction,
+  AddFlag, AddFlagAction, FlagType,
   AuthFormStep, SidebarType, TabLabel, UpdateInfo,
 } from '../types';
 
@@ -105,4 +107,16 @@ export const setWorklogModalOpen: SetWorklogModalOpen = (
 ): SetWorklogModalOpenAction => ({
   type: types.SET_WORKLOG_MODAL_OPEN,
   payload,
+});
+
+export const addFlag: AddFlag = (
+  payload: FlagType,
+): AddFlagAction => ({
+  type: types.ADD_FLAG,
+  payload,
+});
+
+export const removeFlag: RemoveFlag = (
+): RemoveFlagAction => ({
+  type: types.REMOVE_FLAG,
 });

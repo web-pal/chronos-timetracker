@@ -99,6 +99,8 @@ export type {
   SidebarType,
   TabLabel,
   UpdateInfo,
+  FlagsArray,
+  FlagType,
   UiState,
   SetAuthFormStepAction,
   SetAuthFormStep,
@@ -126,6 +128,10 @@ export type {
   SetWorklogModalOpen,
   SetUpdateFetchingAction,
   SetUpdateFetching,
+  RemoveFlagAction,
+  RemoveFlag,
+  AddFlagAction,
+  AddFlag,
   UiAction,
 } from './ui';
 
