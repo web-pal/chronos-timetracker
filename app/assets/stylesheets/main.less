@@ -96,6 +96,15 @@ a {
   border-width: 1px;
   padding: 0;
   cursor: pointer;
+  &.invalid {
+    border-color: #FFAB00;
+    border-width: 2px;
+  }
+  &+.error {
+    font-size: .8em;
+    color: #DE350B;
+    text-align: center;
+  }
 }
 
 .rc-time-picker-input {

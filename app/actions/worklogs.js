@@ -10,7 +10,8 @@ import type {
   SetWorklogComment, SetWorklogCommentAction,
   SelectWorklog, SelectWorklogAction,
   SetTemporaryWorklogId, SetTemporaryWorklogIdAction,
-  Id, WorklogsMap,
+  AddManualWorklogRequest, AddManualWorklogRequestAction,
+  Id, WorklogsMap, ManualWorklogData,
 } from '../types';
 
 export const fillWorklogs: FillWorklogs = (
@@ -69,5 +70,12 @@ export const setTemporaryWorklogId: SetTemporaryWorklogId = (
   payload: Id,
 ): SetTemporaryWorklogIdAction => ({
   type: types.SET_TEMPORARY_WORKLOG_ID,
+  payload,
+});
+
+export const addManualWorklogRequest: AddManualWorklogRequest = (
+  payload: ManualWorklogData,
+): AddManualWorklogRequestAction => ({
+  type: types.ADD_MANUAL_WORKLOG_REQUEST,
   payload,
 });

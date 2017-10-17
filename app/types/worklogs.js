@@ -3,6 +3,13 @@ import { types } from 'actions';
 
 import type { Id } from './index';
 
+export type ManualWorklogData = {
+  date: mixed,
+  startTime: mixed,
+  endTime: mixed,
+  comment: string | null,
+};
+
 // TODO type for worklog
 export type Worklog = any;
 
@@ -85,6 +92,14 @@ export type SetTemporaryWorklogIdAction =
 
 export type SetTemporaryWorklogId = {
   (payload: Id): SetTemporaryWorklogIdAction
+};
+
+//
+export type AddManualWorklogRequestAction =
+  {| type: typeof types.ADD_MANUAL_WORKLOG_REQUEST, payload: ManualWorklogData |};
+
+export type AddManualWorklogRequest = {
+  (payload: ManualWorklogData): AddManualWorklogRequestAction
 };
 
 export type WorklogAction =

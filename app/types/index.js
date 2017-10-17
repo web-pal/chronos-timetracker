@@ -265,6 +265,7 @@ export type {
 } from './timer';
 
 export type {
+  ManualWorklogData,
   Worklog,
   WorklogsMap,
   WorklogsMeta,
@@ -286,5 +287,7 @@ export type {
   SelectWorklog,
   SetTemporaryWorklogIdAction,
   SetTemporaryWorklogId,
+  AddManualWorklogRequestAction,
+  AddManualWorklogRequest,
   WorklogAction,
 } from './worklogs';

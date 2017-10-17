@@ -4,3 +4,5 @@ export IssueItemPlaceholder from './Placeholders/IssueItemPlaceholder/IssueItemP
 export IssueViewPlaceholder from './Placeholders/IssueViewPlaceholder/IssueViewPlaceholder';
 export RecentItemsPlaceholder from './Placeholders/RecentItemsPlaceholder/RecentItemsPlaceholder';
 export Img from './Img/Img';
+export Calendar from './Calendar/Calendar';
+export TextField from './TextField/TextField';

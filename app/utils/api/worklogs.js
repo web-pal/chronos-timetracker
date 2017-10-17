@@ -103,3 +103,11 @@ export async function fetchWorklogTypes() {
   const url = `${apiUrl}/api/tracker/settings/worklogTypes`;
   return fetch(url, { headers: await getHeaders() }).then(res => res.json());
 }
+
+export function addWorklog({
+  date,
+  startTime,
+  endTime,
+  comment,
+}) {
+}

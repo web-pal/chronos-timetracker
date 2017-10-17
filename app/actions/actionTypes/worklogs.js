@@ -9,3 +9,4 @@ export const SET_WORKLOGS_FETCHING: 'worklogs/SET_FETCHING' = 'worklogs/SET_FETC
 export const SET_WORKLOG_COMMENT: 'worklogs/SET_COMMENT' = 'worklogs/SET_COMMENT';
 export const SELECT_WORKLOG: 'worklogs/SELECT' = 'worklogs/SELECT';
 export const SET_TEMPORARY_WORKLOG_ID: 'worklogs/SET_TEMPORARY_ID' = 'worklogs/SET_TEMPORARY_ID';
+export const ADD_MANUAL_WORKLOG_REQUEST: 'worklogs/ADD_MANUAL_WORKLOG_REQUEST' = 'worklogs/ADD_MANUAL_WORKLOG_REQUEST';

@@ -3,12 +3,10 @@ import React, { Component } from 'react';
 import ModalDialog from '@atlaskit/modal-dialog';
 import ButtonGroup from '@atlaskit/button-group';
 import Button from '@atlaskit/button';
-import TextField from '@atlaskit/field-text';
 import SingleSelect from '@atlaskit/single-select';
 import InlineEditor from '@atlaskit/inline-edit';
 import CalendarIcon from '@atlaskit/icon/glyph/calendar';
 import EditorCloseIcon from '@atlaskit/icon/glyph/editor/close';
-import Calendar from '@atlaskit/calendar';
 import Tooltip from '@atlaskit/tooltip';
 import TimePicker from 'rc-time-picker';
 import moment from 'moment';
@@ -16,8 +14,8 @@ import { H700 } from 'styles/typography';
 import { ModalContentContainer } from 'styles/modals';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Flex } from 'components';
-import { uiActions } from 'actions';
+import { Flex, Calendar, TextField } from 'components';
+import { uiActions, worklogsActions } from 'actions';
 import { getWorklogModalOpen } from 'selectors';
 
 import {
@@ -26,11 +24,12 @@ import {
   CalendarIconContainer,
 } from './styled';
 
-import type { SetWorklogModalOpen } from '../../../types';
+import type { SetWorklogModalOpen, AddManualWorklogRequest } from '../../../types';
 
 type Props = {
   isOpen: boolean,
   setWorklogModalOpen: SetWorklogModalOpen,
+  addManualWorklogRequest: AddManualWorklogRequest,
 };
 
 type State = {
@@ -38,9 +37,10 @@ type State = {
   date: mixed,
   startTime: any,
   endTime: any,
+  comment: string,
 };
 
-const worklogTypes = [
+/* const worklogTypes = [
   {
     heading: 'Default worklog types',
     items: [
@@ -56,24 +56,26 @@ const worklogTypes = [
       { content: 'Play CIV6', value: 'civ6', isDisabled: true },
     ],
   },
-];
+]; */
 
 
 class WorklogModal extends Component<Props, State> {
   state = {
     calendarOpened: false,
-    date: undefined,
+    date: moment().format('MM/DD/YYYY'),
     startTime: moment(),
     endTime: moment(),
+    comment: '',
   }
 
-  handleTimeChange = (value) => label => {
+  handleTimeChange = (label) => value => {
     this.setState({ [label]: value });
   }
 
   render() {
     const { isOpen, setWorklogModalOpen }: Props = this.props;
-    const { calendarOpened, date, startTime, endTime }: State = this.state;
+    const { calendarOpened, date, startTime, endTime, comment }: State = this.state;
+    console.log('DATE STATE', date);
 
     return (
       <ModalDialog
@@ -83,7 +85,12 @@ class WorklogModal extends Component<Props, State> {
         footer={
           <Flex row style={{ justifyContent: 'flex-end' }}>
             <ButtonGroup>
-              <Button appearance="primary">
+              <Button
+                appearance="primary"
+                onClick={() => {
+                  this.props.addManualWorklogRequest({ startTime, endTime, comment, date });
+                }}
+              >
                 Log
               </Button>
               <Button appearance="subtle" onClick={() => setWorklogModalOpen(false)}>
@@ -108,8 +115,7 @@ class WorklogModal extends Component<Props, State> {
                 onClick={() => this.setState({ calendarOpened: !calendarOpened })}
               >
                 <TextField
-                  placeholder="09/10/2017"
-                  value={date || ''}
+                  value={date}
                   isLabelHidden
                   isReadOnly
                 />
@@ -132,7 +138,9 @@ class WorklogModal extends Component<Props, State> {
           </Flex>
           {calendarOpened &&
             <CalendarContainer>
-              <Calendar onUpdate={value => this.setState({ date: value, calendarOpened: false })} />
+              <Calendar
+                onUpdate={value => this.setState({ date: value, calendarOpened: false })}
+              />
             </CalendarContainer>
           }
           <Flex row>
@@ -155,25 +163,22 @@ class WorklogModal extends Component<Props, State> {
                 <TimePicker
                   value={endTime}
                   onChange={this.handleTimeChange('endTime')}
-                  className="TimePicker"
+                  className={`TimePicker ${endTime.isBefore(startTime) ? 'invalid' : ''}`}
                   popupClassName="TimePickerPopup"
                   format="hh:mm"
                   showSeconds={false}
                 />
+                {endTime.isBefore(startTime) &&
+                  <span className="error">End time must be after start time!</span>
+                }
               </Flex>
             </div>
           </Flex>
-          <div style={{ width: '50%' }}>
-            <SingleSelect
-              items={worklogTypes}
-              label="Worklog type"
-              placeholder="Automatic"
-              shouldFitContainer
-            />
-          </div>
           <TextField
             shouldFitContainer
             label="Worklog comment"
+            value={comment}
+            onChange={(ev) => this.setState({ comment: ev.target.value })}
           />
         </ModalContentContainer>
       </ModalDialog>
@@ -188,7 +193,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(uiActions, dispatch);
+  return bindActionCreators({ ...uiActions, ...worklogsActions }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(WorklogModal);

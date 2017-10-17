@@ -106,15 +106,10 @@ const Header: StatelessFunctionalComponent<Props> = ({
             <DropdownItem>
               <Flex row spaceBetween>
                 <span>
-                  Downloading update
+                  Fetching update
                 </span>
                 <Spinner size={16} />
               </Flex>
-            </DropdownItem>
-          }
-          {!updateCheckRunning && !updateAvailable &&
-            <DropdownItem>
-              Latest version
             </DropdownItem>
           }
           <DropdownSeparator />

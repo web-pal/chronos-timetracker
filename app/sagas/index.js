@@ -6,6 +6,7 @@ import * as profileSagas from './profile';
 import * as projectSagas from './projects';
 import * as issueSagas from './issues';
 import * as timerSagas from './timer';
+import * as worklogsSagas from './worklogs';
 import * as updaterSagas from './updater';
 
 export default function* rootSaga(): Generator<*, *, *> {
@@ -33,7 +34,10 @@ export default function* rootSaga(): Generator<*, *, *> {
     // settings
     fork(settingsSagas.localDesktopSettingsFlow),
 
-    // update
+    // worklogs
+    fork(worklogsSagas.addManualWorklogFlow),
+
+    // updater
     fork(updaterSagas.watchInstallUpdateRequest),
     fork(updaterSagas.initializeUpdater),
   ]);

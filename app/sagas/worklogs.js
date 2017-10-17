@@ -1,7 +1,8 @@
 // @flow
-import { call } from 'redux-saga/effects';
+import { call, take } from 'redux-saga/effects';
 import Raven from 'raven-js';
 import * as Api from 'api';
+import { types } from 'actions';
 
 import { getFromStorage, setToStorage } from './storage';
 import { throwError } from './ui';
@@ -76,5 +77,13 @@ export function* uploadWorklog({
     });
     yield call(throwError, err);
     Raven.captureException(err);
+  }
+}
+
+export function* addManualWorklogFlow(): Generator<*, *, *> {
+  while (true) {
+    const { payload } = yield take(types.ADD_MANUAL_WORKLOG_REQUEST);
+    console.log('add manual worklog', payload);
+    yield call(Api.addWorklog, payload);
   }
 }
