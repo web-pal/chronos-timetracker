@@ -11,7 +11,7 @@ export const FiltersContainer = styled.div`
 
 export const FilterItems = styled.div`
   overflow-y: auto;
-  height: 100%;
+  height: calc(100% - 64px);
 `;
 
 export const FilterItem = styled.div`
@@ -54,4 +54,11 @@ export const StatusOptionLabel = styled.label`
 export const OptionContainer = styled.label`
   width: 50%;
   display: inline-block;
+`;
+
+export const FilterActionsContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px;
+  border-top: 1px solid rgb(225, 228, 233);
 `;

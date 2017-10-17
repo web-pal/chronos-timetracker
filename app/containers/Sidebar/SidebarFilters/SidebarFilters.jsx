@@ -2,6 +2,7 @@
 import React from 'react';
 import pull from 'lodash.pull';
 import type { StatelessFunctionalComponent, Node } from 'react';
+import Button, { ButtonGroup } from '@atlaskit/button';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { issuesActions } from 'actions';
@@ -13,7 +14,13 @@ import {
 } from 'selectors';
 import { H200 } from 'styles/typography';
 
-import { FiltersContainer, FilterItems, FilterItem, FilterOptions } from './styled';
+import {
+  FiltersContainer,
+  FilterItems,
+  FilterItem,
+  FilterOptions,
+  FilterActionsContainer
+} from './styled';
 import FilterOption from './FilterOption';
 import getCriteriaFilters from './getCriteriaFilters';
 
@@ -74,6 +81,12 @@ const SidebarFilters: StatelessFunctionalComponent<Props> = ({
         </FilterItem>,
       )}
     </FilterItems>
+    <FilterActionsContainer>
+      <ButtonGroup>
+        <Button>Clear filters</Button>
+        <Button appearance="primary">Apply</Button>
+      </ButtonGroup>
+    </FilterActionsContainer>
   </FiltersContainer>
 );
 
