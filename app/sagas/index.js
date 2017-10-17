@@ -8,6 +8,7 @@ import * as issueSagas from './issues';
 import * as timerSagas from './timer';
 import * as worklogsSagas from './worklogs';
 import * as updaterSagas from './updater';
+import * as uiSagas from './ui';
 
 export default function* rootSaga(): Generator<*, *, *> {
   yield all([
@@ -40,5 +41,9 @@ export default function* rootSaga(): Generator<*, *, *> {
     // updater
     fork(updaterSagas.watchInstallUpdateRequest),
     fork(updaterSagas.initializeUpdater),
+
+    // ui
+    fork(uiSagas.watchSidebarTypeChange),
+    fork(uiSagas.watchSelectIssue),
   ]);
 }
