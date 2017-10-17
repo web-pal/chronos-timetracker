@@ -8,7 +8,14 @@ import Spinner from '@atlaskit/spinner';
 import { cogIcon } from 'data/svg';
 import { Flex } from 'components';
 import { profileActions, uiActions } from 'actions';
-import { getUserData, getHost, getUpdateAvailable, getUpdateCheckRunning, getUpdateFetching } from 'selectors';
+import { shell } from 'electron';
+import {
+  getUserData,
+  getHost,
+  getUpdateAvailable,
+  getUpdateCheckRunning,
+  getUpdateFetching,
+} from 'selectors';
 
 import {
   HeaderContainer,
@@ -56,7 +63,7 @@ const Header: StatelessFunctionalComponent<Props> = ({
   logoutRequest,
   installUpdateRequest,
   setSettingsModalOpen,
-  setSupportModalOpen,
+  // setSupportModalOpen,
   setAboutModalOpen,
 }: Props): Node =>
   <HeaderContainer className="webkit-drag">
@@ -80,9 +87,18 @@ const Header: StatelessFunctionalComponent<Props> = ({
           <DropdownItem onClick={() => setSettingsModalOpen(true)}>
             Settings
           </DropdownItem>
+          <DropdownItem
+            onClick={() =>
+              shell.openExternal('https://web-pal.atlassian.net/servicedesk/customer/portal/2')
+            }
+          >
+            Support and feedback
+          </DropdownItem>
+          {/*
           <DropdownItem onClick={() => setSupportModalOpen(true)}>
             Support and feedback
           </DropdownItem>
+          */}
           <DropdownItem onClick={() => setAboutModalOpen(true)}>
             About
           </DropdownItem>
