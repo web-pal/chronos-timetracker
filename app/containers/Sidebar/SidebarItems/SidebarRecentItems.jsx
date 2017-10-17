@@ -11,7 +11,6 @@ import {
   getIssuesFetching,
   getRecentItems,
 } from 'selectors';
-console.log(RecentItemsPlaceholder);
 
 import TimestampItem from './SidebarTimestampItem';
 import SidebarItem from './SidebarItem';
@@ -37,35 +36,37 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
   items,
   fetching,
   selectIssue,
-}: Props): Node =>
-  <RecentItemsPlaceholder />;
-  // <div className="RecentItems">
-  //   {Object.keys(items).map((key) => {
-  //     const item = items[key];
-  //     return <Flex key={key} column className="RecentItems__block">
-  //       {console.log(item)}
-  //       <TimestampItem
-  //         date={moment(key)}
-  //         worklogs={item}
-  //       />
-  //       <Flex column className="RecentItems__list">
-  //         {item.map(worklog =>
-  //           <SidebarItem
-  //             key={worklog.id}
-  //             issue={worklog.issue}
-  //             active={false}
-  //             selectIssue={selectIssue}
-  //           />,
-  //         )}
-  //       </Flex>
-  //     </Flex>;
-  //   })}
-  //   {items.length === 0 && !fetching &&
-  //     <Flex column centered className="RecentEmptyItem">
-  //       Nothing has been tracked recently
-  //     </Flex>
-  //   }
-  // </div>;
+}: Props): Node => fetching ?
+  <RecentItemsPlaceholder /> :
+  <div className="RecentItems">
+    {Object.keys(items).map((key) => {
+      const item = items[key];
+
+      return (
+        <Flex key={key} column className="RecentItems__block">
+          <TimestampItem
+            date={moment(key)}
+            worklogs={item}
+          />
+          <Flex column className="RecentItems__list">
+            {item.map(worklog =>
+              <SidebarItem
+                key={worklog.id}
+                issue={worklog.issue}
+                active={false}
+                selectIssue={selectIssue}
+              />,
+            )}
+          </Flex>
+        </Flex>
+      );
+    })}
+    {items.length === 0 && !fetching &&
+      <Flex column centered className="RecentEmptyItem">
+        Nothing has been tracked recently
+      </Flex>
+    }
+  </div>;
 
 function mapStateToProps(state) {
   return {
