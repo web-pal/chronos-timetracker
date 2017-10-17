@@ -114,10 +114,13 @@ if (process.env.NODE_ENV === 'production') {
   sourceMapSupport.install();
 }
 
+if (process.env.NODE_ENV === 'development') {
   app.commandLine.appendSwitch('allow-insecure-localhost');
   require('electron-debug')();
   const p = path.join(__dirname, '..', 'app', 'node_modules');
   require('module').globalPaths.push(p);
+}
+
 
 process.on('uncaughtExecption', (err) => {
   console.error('Uncaught exception in main process', err);
@@ -213,7 +216,9 @@ function createWindow(callback) {
 
     mainWindow.on('ready-to-show', () => {
       if (mainWindow) {
+        if (process.NODE_ENV === 'development') {
           mainWindow.webContents.openDevTools();
+        }
         mainWindow.show();
         mainWindow.focus();
       }
