@@ -7,6 +7,7 @@ import type {
   FillRecentWorklogIds, FillRecentWorklogIdsAction,
   AddRecentWorklogIds, AddRecentWorklogIdsAction,
   SetWorklogsFetching, SetWorklogsFetchingAction,
+  SetAddWorklogFetching, SetAddWorklogFetchingAction,
   SetWorklogComment, SetWorklogCommentAction,
   SelectWorklog, SelectWorklogAction,
   SetTemporaryWorklogId, SetTemporaryWorklogIdAction,
@@ -49,6 +50,13 @@ export const setWorklogsFetching: SetWorklogsFetching = (
   payload: boolean,
 ): SetWorklogsFetchingAction => ({
   type: types.SET_WORKLOGS_FETCHING,
+  payload,
+});
+
+export const setAddWorklogFetching: SetAddWorklogFetching = (
+  payload: boolean,
+): SetAddWorklogFetchingAction => ({
+  type: types.SET_ADD_WORKLOG_FETCHING,
   payload,
 });
 

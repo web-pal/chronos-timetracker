@@ -59,6 +59,7 @@ function recentWorklogIds(state: Array<Id> = [], action) {
 
 const initialMeta: WorklogsMeta = {
   fetching: false,
+  addWorklogFetching: false,
   worklogComment: '',
   selectedWorklogId: null,
   temporaryWorklogId: null,
@@ -70,6 +71,11 @@ function meta(state: WorklogsMeta = initialMeta, action) {
       return {
         ...state,
         fetching: action.payload,
+      };
+    case types.SET_ADD_WORKLOG_FETCHING:
+      return {
+        ...state,
+        addWorklogFetching: action.payload,
       };
     case types.SET_WORKLOG_COMMENT:
       return {

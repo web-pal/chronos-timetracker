@@ -104,10 +104,7 @@ export async function fetchWorklogTypes() {
   return fetch(url, { headers: await getHeaders() }).then(res => res.json());
 }
 
-export function addWorklog({
-  date,
-  startTime,
-  endTime,
-  comment,
-}) {
+export function addWorklog(opts) {
+  console.log('add manual worklog', opts);
+  return jira.client.issue.addWorkLog(opts);
 }

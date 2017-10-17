@@ -17,9 +17,17 @@ export type WorklogsMap = { [Id]: Worklog };
 
 export type WorklogsMeta = {|
   +fetching: boolean,
+  +addWorklogFetching: boolean,
   +worklogComment: string,
   +selectedWorklogId: Id | null,
   +temporaryWorklogId: Id | null,
+|};
+
+export type WorklogsState = {|
+  allIds: Array<Id>,
+  byId: WorklogsMap,
+  recentWorklogIds: Array<Id>,
+  meta: WorklogsMeta,
 |};
 
 //
@@ -68,6 +76,14 @@ export type SetWorklogsFetchingAction =
 
 export type SetWorklogsFetching = {
   (payload: boolean): SetWorklogsFetchingAction
+};
+
+//
+export type SetAddWorklogFetchingAction =
+  {| type: typeof types.SET_ADD_WORKLOG_FETCHING, payload: boolean |};
+
+export type SetAddWorklogFetching = {
+  (payload: boolean): SetAddWorklogFetchingAction
 };
 
 //

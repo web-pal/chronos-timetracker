@@ -1,8 +1,10 @@
 // @flow
-import { call, take } from 'redux-saga/effects';
+import { call, take, select, put } from 'redux-saga/effects';
 import Raven from 'raven-js';
 import * as Api from 'api';
-import { types } from 'actions';
+import { types, worklogsActions, uiActions } from 'actions';
+import { getSelectedIssueId } from 'selectors';
+import moment from 'moment';
 
 import { getFromStorage, setToStorage } from './storage';
 import { throwError } from './ui';
@@ -41,12 +43,14 @@ export function* uploadWorklog({
   try {
     const jiraUploadOptions: {
       issueId: Id,
+      adjustEstimate: 'auto',
       worklog: {
         timeSpentSeconds: number,
         comment: string,
       },
     } = {
       issueId,
+      adjustEstimate: 'auto',
       worklog: {
         timeSpentSeconds,
         comment,
@@ -81,9 +85,36 @@ export function* uploadWorklog({
 }
 
 export function* addManualWorklogFlow(): Generator<*, *, *> {
-  while (true) {
-    const { payload } = yield take(types.ADD_MANUAL_WORKLOG_REQUEST);
-    console.log('add manual worklog', payload);
-    yield call(Api.addWorklog, payload);
+  try {
+    while (true) {
+      const { payload } = yield take(types.ADD_MANUAL_WORKLOG_REQUEST);
+      yield put(worklogsActions.setAddWorklogFetching(true));
+      const issueId = yield select(getSelectedIssueId);
+      const { comment, startTime, endTime, date } = payload;
+      const timeSpentSeconds = endTime.diff(startTime, 's');
+      const jiraUploadOptions: {
+        issueId: Id,
+          adjustEstimate: 'auto',
+          worklog: {
+            timeSpentSeconds: number,
+              comment: string,
+          },
+      } = {
+        issueId,
+        adjustEstimate: 'auto',
+        worklog: {
+          started: moment(date).utc().format().replace('Z', '.000+0000'),
+          timeSpentSeconds,
+          comment,
+        },
+      };
+      yield call(Api.addWorklog, jiraUploadOptions);
+      yield put(worklogsActions.setAddWorklogFetching(false));
+      yield put(uiActions.setWorklogModalOpen(false));
+    }
+  } catch (err) {
+    yield put(worklogsActions.setAddWorklogFetching(false));
+    yield call(throwError, err);
+    Raven.captureException(err);
   }
 }
