@@ -5,7 +5,7 @@ import type { HOC } from 'recompose';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { lifecycle } from 'recompose';
-import SingleSelect from '@atlaskit/single-select';
+import SingleSelect, { StatelessSelect } from '@atlaskit/single-select';
 
 import {
   getSelectedProjectOption,
@@ -63,20 +63,23 @@ const ProjectPicker: HOC<*, Props> = enhance(({
       borderBottom: '1px solid #e1e4e9',
     }}
   >
-    <SingleSelect
-      items={options}
-      hasAutocomplete
-      selectedItem={selectedProjectOption}
-      placeholder="Select Project"
-      onSelected={({ item }) => {
-        const type = item.meta.board ? item.meta.board.type : 'project';
-        selectProject(String(item.value), type);
-      }}
-      isLoading={projectsFetching}
-      loadingMessage="Fetching Projects..."
-      shouldFitContainer
-      noMatchesFound="Nothing found"
-    />
+    {selectedProjectOption // temp hack because Atlaskit is somewhat broken
+      ? <SingleSelect
+        items={options}
+        hasAutocomplete
+        defaultSelected={selectedProjectOption}
+        placeholder="Select Project"
+        onSelected={({ item }) => {
+          const type = item.meta.board ? item.meta.board.type : 'project';
+          selectProject(String(item.value), type);
+        }}
+        isLoading={projectsFetching}
+        loadingMessage="Fetching Projects..."
+        shouldFitContainer
+        noMatchesFound="Nothing found"
+      />
+      : <StatelessSelect isLoading={projectsFetching} isDisabled shouldFitContainer />
+    }
     { (projectType === 'scrum') &&
       <SingleSelect
         items={sprintsOptions}
