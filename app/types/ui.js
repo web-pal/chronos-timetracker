@@ -1,7 +1,16 @@
 // @flow
+import type { Node } from 'react';
 import { types } from 'actions';
 
 export type AuthFormStep = 1 | 2;
+
+export type FlagsArray = Array<any>;
+export type FlagType = {
+  title: string,
+  appearance: string,
+  description: string,
+  icon: Node,
+}
 
 export type SidebarType = 'all' | 'recent';
 
@@ -23,6 +32,7 @@ export type UiState = {|
   +aboutModalOpen: boolean,
   +alertModalOpen: boolean,
   +worklogModalOpen: boolean,
+  +flags: FlagsArray,
 |};
 
 //
@@ -129,6 +139,22 @@ export type SetWorklogModalOpen = {
   (payload: boolean): SetWorklogModalOpenAction
 };
 
+//
+export type RemoveFlagAction =
+  {| type: typeof types.REMOVE_FLAG |};
+
+export type RemoveFlag = {
+  (): RemoveFlagAction
+};
+
+//
+export type AddFlagAction =
+  {| type: typeof types.ADD_FLAG, +payload: FlagType |};
+
+export type AddFlag = {
+  (): AddFlagAction
+};
+
 export type UiAction =
   SetAuthFormStepAction
   | SetSidebarTypeAction
@@ -139,4 +165,6 @@ export type UiAction =
   | SetSupportModalOpenAction
   | SetAboutModalOpenAction
   | SetAlertModalOpenAction
-  | SetWorklogModalOpenAction;
+  | SetWorklogModalOpenAction
+  | RemoveFlagAction
+  | AddFlagAction;

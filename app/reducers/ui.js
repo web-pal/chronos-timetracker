@@ -15,6 +15,7 @@ const initialState: UiState = {
   aboutModalOpen: false,
   alertModalOpen: false,
   worklogModalOpen: false,
+  flags: [],
 };
 
 export default function ui(state: UiState = initialState, action: Action) {
@@ -78,6 +79,19 @@ export default function ui(state: UiState = initialState, action: Action) {
       return {
         ...state,
         worklogModalOpen: action.payload,
+      };
+    case types.REMOVE_FLAG:
+      return {
+        ...state,
+        flags: state.flags.slice(1),
+      };
+    case types.ADD_FLAG:
+      return {
+        ...state,
+        flags: [...state.flags, {
+          ...action.payload,
+          id: state.flags.length,
+        }],
       };
     case types.___CLEAR_ALL_REDUCERS___:
       return initialState;

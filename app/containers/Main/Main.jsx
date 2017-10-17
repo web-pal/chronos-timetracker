@@ -9,6 +9,8 @@ import { AlertModal, SettingsModal, SupportModal, AboutModal, WorklogModal } fro
 import Header from '../Header/Header';
 import Sidebar from '../Sidebar/Sidebar';
 import IssueView from '../IssueView/IssueView';
+import FlagsContainer from '../FlagsContainer/FlagsContainer';
+
 
 // TODO: allow user to customize theme
 const theme = { primary: '#0052CC' };
@@ -18,6 +20,8 @@ type Props = {};
 const Main: StatelessFunctionalComponent<Props> = (): Node =>
   <ThemeProvider theme={theme}>
     <Flex row style={{ height: '100%' }}>
+      <FlagsContainer />
+
       <AlertModal />
       <SettingsModal />
       <SupportModal />

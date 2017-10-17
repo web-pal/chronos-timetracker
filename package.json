@@ -178,6 +178,7 @@
     "@atlaskit/dropdown-menu": "3.10.2",
     "@atlaskit/field-radio-group": "^1.6.4",
     "@atlaskit/field-text": "4.0.1",
+    "@atlaskit/flag": "6.1.2",
     "@atlaskit/icon": "^10.0.0",
     "@atlaskit/inline-dialog": "^5.0.1",
     "@atlaskit/inline-edit": "^4.5.0",
