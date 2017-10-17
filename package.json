@@ -79,7 +79,8 @@
       "target": [
         "deb",
         "AppImage"
-      ]
+      ],
+      "category": "Clock"
     },
     "directories": {
       "buildResources": "resources",

@@ -63,7 +63,7 @@ const ProjectPicker: HOC<*, Props> = enhance(({
       borderBottom: '1px solid #e1e4e9',
     }}
   >
-    {selectedProjectOption // temp hack because Atlaskit is somewhat broken
+    {selectedProjectOption && !projectsFetching // temp hack because Atlaskit is somewhat broken
       ? <SingleSelect
         items={options}
         hasAutocomplete
