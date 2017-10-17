@@ -3,11 +3,10 @@ import React, { Component } from 'react';
 import ModalDialog from '@atlaskit/modal-dialog';
 import ButtonGroup from '@atlaskit/button-group';
 import Button from '@atlaskit/button';
-import SingleSelect from '@atlaskit/single-select';
-import InlineEditor from '@atlaskit/inline-edit';
 import CalendarIcon from '@atlaskit/icon/glyph/calendar';
 import EditorCloseIcon from '@atlaskit/icon/glyph/editor/close';
 import Tooltip from '@atlaskit/tooltip';
+import Spinner from '@atlaskit/spinner';
 import TimePicker from 'rc-time-picker';
 import moment from 'moment';
 import { H700 } from 'styles/typography';
@@ -16,7 +15,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Flex, Calendar, TextField } from 'components';
 import { uiActions, worklogsActions } from 'actions';
-import { getWorklogModalOpen } from 'selectors';
+import { getWorklogModalOpen, getAddWorklogFetching } from 'selectors';
 
 import {
   InputLabel,
@@ -28,6 +27,7 @@ import type { SetWorklogModalOpen, AddManualWorklogRequest } from '../../../type
 
 type Props = {
   isOpen: boolean,
+  fetching: boolean,
   setWorklogModalOpen: SetWorklogModalOpen,
   addManualWorklogRequest: AddManualWorklogRequest,
 };
@@ -64,7 +64,7 @@ class WorklogModal extends Component<Props, State> {
     calendarOpened: false,
     date: moment().format('MM/DD/YYYY'),
     startTime: moment(),
-    endTime: moment(),
+    endTime: moment().add(10, 'm'),
     comment: '',
   }
 
@@ -73,9 +73,8 @@ class WorklogModal extends Component<Props, State> {
   }
 
   render() {
-    const { isOpen, setWorklogModalOpen }: Props = this.props;
+    const { isOpen, setWorklogModalOpen, fetching }: Props = this.props;
     const { calendarOpened, date, startTime, endTime, comment }: State = this.state;
-    console.log('DATE STATE', date);
 
     return (
       <ModalDialog
@@ -87,11 +86,13 @@ class WorklogModal extends Component<Props, State> {
             <ButtonGroup>
               <Button
                 appearance="primary"
+                disabled={fetching}
                 onClick={() => {
                   this.props.addManualWorklogRequest({ startTime, endTime, comment, date });
                 }}
               >
-                Log
+                Log work&nbsp;
+                {fetching && <Spinner invertColor size={16} />}
               </Button>
               <Button appearance="subtle" onClick={() => setWorklogModalOpen(false)}>
                 Cancel
@@ -163,12 +164,12 @@ class WorklogModal extends Component<Props, State> {
                 <TimePicker
                   value={endTime}
                   onChange={this.handleTimeChange('endTime')}
-                  className={`TimePicker ${endTime.isBefore(startTime) ? 'invalid' : ''}`}
+                  className={`TimePicker ${endTime.isSameOrBefore(startTime) ? 'invalid' : ''}`}
                   popupClassName="TimePickerPopup"
                   format="hh:mm"
                   showSeconds={false}
                 />
-                {endTime.isBefore(startTime) &&
+                {endTime.isSameOrBefore(startTime) &&
                   <span className="error">End time must be after start time!</span>
                 }
               </Flex>
@@ -189,6 +190,7 @@ class WorklogModal extends Component<Props, State> {
 function mapStateToProps(state) {
   return {
     isOpen: getWorklogModalOpen(state),
+    fetching: getAddWorklogFetching(state),
   };
 }
 
