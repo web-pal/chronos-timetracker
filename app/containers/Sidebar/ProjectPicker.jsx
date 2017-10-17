@@ -3,6 +3,7 @@ import React from 'react';
 import type { Node } from 'react';
 import type { HOC } from 'recompose';
 import { connect } from 'react-redux';
+import Spinner from '@atlaskit/spinner';
 import { bindActionCreators } from 'redux';
 import { lifecycle } from 'recompose';
 import SingleSelect, { StatelessSelect } from '@atlaskit/single-select';
@@ -63,7 +64,7 @@ const ProjectPicker: HOC<*, Props> = enhance(({
       borderBottom: '1px solid #e1e4e9',
     }}
   >
-    {selectedProjectOption && !projectsFetching // temp hack because Atlaskit is somewhat broken
+    {selectedProjectOption
       ? <SingleSelect
         items={options}
         hasAutocomplete
@@ -78,7 +79,17 @@ const ProjectPicker: HOC<*, Props> = enhance(({
         shouldFitContainer
         noMatchesFound="Nothing found"
       />
-      : <StatelessSelect isLoading={projectsFetching} isDisabled shouldFitContainer />
+      : <SingleSelect
+        items={options}
+        hasAutocomplete
+        placeholder="Select Project"
+        onSelected={({ item }) => {
+          const type = item.meta.board ? item.meta.board.type : 'project';
+          selectProject(String(item.value), type);
+        }}
+        shouldFitContainer
+        noMatchesFound="Nothing found"
+      />
     }
     { (projectType === 'scrum') &&
       <SingleSelect
