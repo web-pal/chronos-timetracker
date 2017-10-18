@@ -121,6 +121,8 @@ const initialMeta: IssuesMeta = {
   lastStopIndex: 0,
   selectedIssueId: null,
   trackingIssueId: null,
+  selectedIssue: null,
+  trackingIssue: null,
   searchValue: '',
   filters: {
     type: [],
@@ -149,12 +151,14 @@ function meta(state: IssuesMeta = initialMeta, action) {
     case types.SELECT_ISSUE:
       return {
         ...state,
-        selectedIssueId: action.payload,
+        selectedIssueId: action.payload ? action.payload.id : null,
+        selectedIssue: action.payload,
       };
     case types.SET_TRACKING_ISSUE:
       return {
         ...state,
-        trackingIssueId: action.payload,
+        trackingIssueId: action.payload ? action.payload.id : null,
+        trackingIssue: action.payload,
       };
     case types.SET_ISSUES_SEARCH_VALUE:
       return {

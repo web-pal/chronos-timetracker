@@ -9,8 +9,7 @@ import type {
   IssuesMap,
   IssueTypesMap,
   IssueStatusesMap,
-  IssueStatus,
-  IssueType,
+  Issue,
   Id,
 } from '../types';
 
@@ -63,6 +62,11 @@ export const getSidebarIssues = createSelector(
 export const getRecentIssueIds =
   ({ issues }: { issues: IssuesState }): Array<Id> => issues.recentIds;
 
+export const getRecentIssuesTotalCount = createSelector(
+  [getRecentIssueIds],
+  (ids) => ids.length,
+);
+
 export const getRecentIssues = createSelector(
   [getRecentIssueIds, getIssuesMap],
   (ids, map) => ids.map(id => map[id]),
@@ -105,15 +109,11 @@ export const getTrackingIssueId =
 export const getIssuesSearchValue =
   ({ issues }: { issues: IssuesState }): string => issues.meta.searchValue;
 
-export const getSelectedIssue = createSelector(
-  [getSelectedIssueId, getIssuesMap],
-  (id, map) => (id ? map[id] : null),
-);
+export const getSelectedIssue =
+  ({ issues }: { issues: IssuesState }): Issue | null => issues.meta.selectedIssue;
 
-export const getTrackingIssue = createSelector(
-  [getTrackingIssueId, getIssuesMap],
-  (id, map) => (id ? map[id] : null),
-);
+export const getTrackingIssue =
+  ({ issues }: { issues: IssuesState }): Issue | null => issues.meta.trackingIssue;
 
 export const getIssueFilters =
   ({ issues }: { issues: IssuesState }): IssueFilters => issues.meta.filters;

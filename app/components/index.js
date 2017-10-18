@@ -6,3 +6,4 @@ export RecentItemsPlaceholder from './Placeholders/RecentItemsPlaceholder/Recent
 export Img from './Img/Img';
 export Calendar from './Calendar/Calendar';
 export TextField from './TextField/TextField';
+export SingleSelect from './SingleSelect/SingleSelect';

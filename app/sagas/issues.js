@@ -17,6 +17,7 @@ import { issuesActions, types } from 'actions';
 import normalizePayload from 'normalize-util';
 
 import { throwError } from './ui';
+import { getAdditionalWorklogsForIssues } from './worklogs';
 
 import type { FetchIssuesRequestAction, Project, Id, User, IssueFilters } from '../types';
 
@@ -56,6 +57,7 @@ export function* fetchIssues({
     }
     yield put(issuesActions.setIssuesFetching(false));
   } catch (err) {
+    yield put(issuesActions.setIssuesFetching(false));
     yield call(throwError, err);
     Raven.captureException(err);
   }
@@ -78,20 +80,13 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
       worklogAuthor: self.key,
     };
     const response = yield call(Api.fetchRecentIssues, opts);
+    let issues = response.issues;
 
     const incompleteIssues = response.issues.filter(issue => issue.fields.worklog.total > 20);
     if (incompleteIssues.length) {
-      /* TODO
-      yield fork(
-        getAdditionalWorklogsForIssues,
-        {
-          incompleteIssues,
-          fillIssuesType: types.MERGE_RECENT_ISSUES,
-          fillWorklogsType: types.MERGE_RECENT_WORKLOGS,
-        },
-      ); */
+      issues = yield call(getAdditionalWorklogsForIssues, incompleteIssues);
     }
-    const normalizedIssues = yield call(normalizePayload, response.issues, 'issues');
+    const normalizedIssues = yield call(normalizePayload, issues, 'issues');
     yield put(issuesActions.addIssues(normalizedIssues));
     yield put(issuesActions.fillRecentIssueIds(normalizedIssues.ids));
     /* TODO

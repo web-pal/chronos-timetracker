@@ -4,12 +4,15 @@ import { types } from 'actions';
 
 export type AuthFormStep = 1 | 2;
 
+export type FlagAppearance = 'error' | 'info' | 'normal' | 'success' | 'warning';
+
 export type FlagType = {
   title: string,
   appearance: string,
   description: string,
   icon: Node,
 };
+
 export type FlagsArray = Array<FlagType>;
 
 export type SidebarType = 'all' | 'recent';
@@ -152,7 +155,7 @@ export type AddFlagAction =
   {| type: typeof types.ADD_FLAG, +payload: FlagType |};
 
 export type AddFlag = {
-  (): AddFlagAction
+  (payload: FlagType): AddFlagAction
 };
 
 export type UiAction =

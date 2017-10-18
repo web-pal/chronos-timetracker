@@ -7,7 +7,7 @@ import { issuesActions, uiActions } from 'actions';
 import {
   getSidebarFiltersOpen,
   getIssuesSearchValue,
-  getIssuesSearching,
+  getIssuesFetching,
   getFiltersApplied,
 } from 'selectors';
 
@@ -35,7 +35,7 @@ type Props = {
   setIssuesSearchValue: SetIssuesSearchValue,
   clearIssues: ClearIssues,
   fetchIssuesRequest: FetchIssuesRequest,
-  searching: boolean,
+  fetching: boolean,
   filtersApplied: boolean,
 }
 
@@ -46,7 +46,7 @@ const SidebarSearch: StatelessFunctionalComponent<Props> = ({
   setIssuesSearchValue,
   clearIssues,
   fetchIssuesRequest,
-  searching,
+  fetching,
   filtersApplied,
 }: Props): Node =>
   <SearchBar>
@@ -66,7 +66,7 @@ const SidebarSearch: StatelessFunctionalComponent<Props> = ({
       <RefreshIcon
         label="Refresh"
         size="medium"
-        isFetching={searching}
+        isFetching={fetching}
         onClick={() => {
           clearIssues();
           fetchIssuesRequest();
@@ -87,7 +87,7 @@ const SidebarSearch: StatelessFunctionalComponent<Props> = ({
 function mapStateToProps(state) {
   return {
     searchValue: getIssuesSearchValue(state),
-    searching: getIssuesSearching(state),
+    fetching: getIssuesFetching(state),
     isSidebarFiltersOpen: getSidebarFiltersOpen(state),
     filtersApplied: getFiltersApplied(state),
   };

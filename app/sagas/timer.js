@@ -3,7 +3,6 @@ import { eventChannel } from 'redux-saga';
 import moment from 'moment';
 import NanoTimer from 'nanotimer';
 import { remote, ipcRenderer } from 'electron';
-import createIpcChannel from './ipc';
 import {
   getUserData,
   getTimerTime,
@@ -12,7 +11,7 @@ import {
   getScreenshots,
   getScreenshotPeriods,
   getTimerIdleState,
-  getSelectedIssueId,
+  getSelectedIssue,
   getTrackingIssueId,
   getWorklogComment,
   getLastScreenshotTime,
@@ -23,6 +22,7 @@ import { uiActions, timerActions, issuesActions, types } from 'actions';
 import { idleTimeThreshold } from 'config';
 import { randomPeriods } from 'timer-helper';
 
+import createIpcChannel from './ipc';
 import { throwError } from './ui';
 import { uploadWorklog } from './worklogs';
 import {
@@ -200,8 +200,9 @@ function* stopTimer(channel, timerInstance) {
 
 export function* timerFlow(): Generator<*, *, *> {
   try {
-    const selectedIssueId = yield select(getSelectedIssueId);
-    yield put(issuesActions.setTrackingIssue(selectedIssueId));
+    const selectedIssue = yield select(getSelectedIssue);
+    const selectedIssueId = selectedIssue.id;
+    yield put(issuesActions.setTrackingIssue(selectedIssue));
     yield call(ipcRenderer.send, 'start-timer');
     const channel = yield call(timerChannel);
     const timerInstance = yield fork(runTimer, channel);

@@ -13,27 +13,30 @@ import {
   IssueType,
   IssuePriority,
   IssueLabel,
+  TimeLogged,
 } from './styled';
 
-import type { Issue, SelectIssue } from '../../../types';
+import type { Issue, SelectIssue, Worklog } from '../../../types';
 
 // import SidebarItemLoader from '../../Spinners/SidebarItemLoader';
 
 type Props = {
   issue: Issue,
+  worklog?: Worklog,
   active: boolean,
   selectIssue: SelectIssue,
 }
 
 const SidebarItem: StatelessFunctionalComponent<Props> = ({
   issue,
+  worklog,
   active,
   selectIssue,
 }: Props): Node =>
   <IssueContainer
     active={active}
     onClick={() => {
-      selectIssue(issue.id);
+      selectIssue(issue);
       // if (worklog) {
       // selectWorklog(worklog.get('id'));
       // } else {
@@ -87,6 +90,16 @@ const SidebarItem: StatelessFunctionalComponent<Props> = ({
       >
         {issue.fields.status.statusCategory.name.toUpperCase()}
       </IssueLabel>
+      {worklog &&
+        <Tooltip
+          description="Time logged"
+          position="bottom"
+        >
+          <TimeLogged>
+            {worklog.timeSpent}
+          </TimeLogged>
+        </Tooltip>
+      }
     </Flex>
   </IssueContainer>;
 

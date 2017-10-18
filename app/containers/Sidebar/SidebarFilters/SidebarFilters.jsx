@@ -12,8 +12,8 @@ import {
   getUserData,
   getIssueStatuses,
   getIssueFilters,
-  getFoundIssueIds,
-  getIssuesSearching,
+  getIssuesTotalCount,
+  getIssuesFetching,
 } from 'selectors';
 import { H200 } from 'styles/typography';
 
@@ -48,8 +48,8 @@ type Props = {
   issueStatuses: Array<IssueStatus>,
   filters: IssueFilters,
   selfKey: string,
-  foundIdsCount: number,
-  searching: boolean,
+  issuesCount: number,
+  fetching: boolean,
   setSidebarFiltersOpen: SetSidebarFiltersOpen
 };
 
@@ -59,8 +59,8 @@ const SidebarFilters: StatelessFunctionalComponent<Props> = ({
   issueStatuses,
   filters,
   selfKey,
-  foundIdsCount,
-  searching,
+  issuesCount,
+  fetching,
   setSidebarFiltersOpen,
 }: Props): Node => (
   <FiltersContainer>
@@ -100,7 +100,7 @@ const SidebarFilters: StatelessFunctionalComponent<Props> = ({
     <FilterActionsContainer>
       <IssuesFoundText>
         <span style={{ marginRight: 3 }}>Issues found:</span>
-        {searching ? <Spinner size="small" /> : <span>{foundIdsCount}</span>}
+        {fetching ? <Spinner size="small" /> : <span>{issuesCount}</span>}
       </IssuesFoundText>
       <ButtonGroup>
         <Button
@@ -129,8 +129,8 @@ function mapStateToProps(state) {
     issueStatuses: getIssueStatuses(state),
     filters: getIssueFilters(state),
     selfKey: getUserData(state).key,
-    foundIdsCount: getFoundIssueIds(state).length,
-    searching: getIssuesSearching(state),
+    issuesCount: getIssuesTotalCount(state),
+    fetching: getIssuesFetching(state),
   };
 }
 

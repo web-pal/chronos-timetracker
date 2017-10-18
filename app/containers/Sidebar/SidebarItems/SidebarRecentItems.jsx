@@ -1,13 +1,11 @@
-// @flow
 import React from 'react';
+import moment from 'moment';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import type { StatelessFunctionalComponent, Node } from 'react';
-import moment from 'moment';
 import { Flex, RecentItemsPlaceholder } from 'components';
 import { issuesActions } from 'actions';
 import {
-  getRecentIssues,
   getIssuesFetching,
   getRecentItems,
 } from 'selectors';
@@ -36,10 +34,10 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
   items,
   fetching,
   selectIssue,
-}: Props): Node => fetching ?
+}: Props): Node => (fetching ?
   <RecentItemsPlaceholder /> :
   <div className="RecentItems">
-    {Object.keys(items).map((key) => {
+    {Object.keys(items).sort((a, b) => moment(b).isSameOrAfter(moment(a))).map((key) => {
       const item = items[key];
 
       return (
@@ -55,18 +53,14 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
                 issue={worklog.issue}
                 active={false}
                 selectIssue={selectIssue}
+                worklog={worklog}
               />,
             )}
           </Flex>
         </Flex>
       );
     })}
-    {items.length === 0 && !fetching &&
-      <Flex column centered className="RecentEmptyItem">
-        Nothing has been tracked recently
-      </Flex>
-    }
-  </div>;
+  </div>);
 
 function mapStateToProps(state) {
   return {

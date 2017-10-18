@@ -5,9 +5,11 @@ import { noIssuesImage } from 'data/assets';
 import { Flex } from 'components';
 import { NoIssuesImage, Title, Subtitle } from './styled';
 
-type Props = {};
+type Props = {
+  recent: boolean
+};
 
-const NoItems: StatelessFunctionalComponent<Props> = (): Node =>
+const SidebarNoItems: StatelessFunctionalComponent<Props> = ({ recent }: Props): Node =>
   <Flex
     column
     centered
@@ -15,8 +17,14 @@ const NoItems: StatelessFunctionalComponent<Props> = (): Node =>
     style={{ width: '100%', height: '100%' }}
   >
     <NoIssuesImage src={noIssuesImage} alt="Not found" />
-    <Title>No issues found</Title>
-    <Subtitle>Try to change filters and try again</Subtitle>
+    {recent
+      ? <Title> Nothing tracked recently </Title>
+      : <Title>No issues found</Title>
+    }
+    {recent
+      ? <Subtitle>Track any issue to see it in {'"Recent"'} tab</Subtitle>
+      : <Subtitle>Try to change filters and try again</Subtitle>
+    }
   </Flex>;
 
-export default NoItems;
+export default SidebarNoItems;

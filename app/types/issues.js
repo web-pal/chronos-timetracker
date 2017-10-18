@@ -113,6 +113,8 @@ export type IssuesMeta = {|
   +lastStopIndex: number,
   +selectedIssueId: Id | null,
   +trackingIssueId: Id | null,
+  +selectedIssue: Issue | null,
+  +trackingIssue: Issue | null,
   +searchValue: string,
   +filters: IssueFilters,
 |}
@@ -226,18 +228,18 @@ export type SetIssuesTotalCount = {
 
 //
 export type SelectIssueAction =
-  {| type: typeof types.SELECT_ISSUE, +payload: Id | null |}
+  {| type: typeof types.SELECT_ISSUE, +payload: Issue | null |}
 
 export type SelectIssue = {
-  (payload: Id | null): SelectIssueAction,
+  (payload: Issue | null): SelectIssueAction,
 }
 
 //
 export type SetTrackingIssueAction =
-  {| type: typeof types.SET_TRACKING_ISSUE, +payload: Id |}
+  {| type: typeof types.SET_TRACKING_ISSUE, +payload: Issue |}
 
 export type SetTrackingIssue = {
-  (payload: Id): SetTrackingIssueAction,
+  (payload: Issue): SetTrackingIssueAction,
 }
 
 //

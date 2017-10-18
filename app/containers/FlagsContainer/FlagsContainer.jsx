@@ -5,11 +5,18 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { uiActions } from 'actions';
 import { AutoDismissFlag as Flag, FlagGroup } from '@atlaskit/flag';
+import EditorWarningIcon from '@atlaskit/icon/glyph/editor/warning';
+import NotificationAllIcon from '@atlaskit/icon/glyph/notification-all';
+
 import type { FlagsArray, RemoveFlag } from '../../types';
 
 type Props = {
   flags: FlagsArray,
   removeFlag: RemoveFlag,
+}
+
+function getIcon(iconName) {
+  return iconName === 'errorIcon' ? <EditorWarningIcon label="huy" size="medium" primaryColor="red" /> : <NotificationAllIcon label="pizda" size="medium" primaryColor="blue" />;
 }
 
 const FlagsContainer: StatelessFunctionalComponent<Props> = ({
@@ -18,7 +25,7 @@ const FlagsContainer: StatelessFunctionalComponent<Props> = ({
 }: Props): Node => (
   <FlagGroup onDismissed={removeFlag}>
     {flags.map(flag => (
-      <Flag {...flag} />
+      <Flag {...flag} icon={getIcon(flag.icon)} onDismissed={() => {}} isDismissAllowed />
     ))}
   </FlagGroup>
 );

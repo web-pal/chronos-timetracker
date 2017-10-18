@@ -172,3 +172,9 @@ export const Subtitle = styled.span`
 export const NoIssuesImage = styled.img`
   width: 140px;
 `;
+
+export const TimeLogged = styled.span`
+  color: rgba(0, 0, 0, .7);
+  margin-left: 8px;
+  font-size: 13px;
+`;

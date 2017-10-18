@@ -1972,6 +1972,12 @@ bluebird-lst@^1.0.3, bluebird-lst@^1.0.4:
   dependencies:
     bluebird "^3.5.1"
 
+bluebird-lst@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/bluebird-lst/-/bluebird-lst-1.0.5.tgz#bebc83026b7e92a72871a3dc599e219cbfb002a9"
+  dependencies:
+    bluebird "^3.5.1"
+
 bluebird@^3.4.7:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.0.tgz#791420d7f551eea2897453a8a77653f96606d67c"
@@ -2167,13 +2173,22 @@ bufferutil@^3.0.2:
     nan "~2.6.0"
     prebuild-install "~2.2.0"
 
-builder-util-runtime@2.0.1, builder-util-runtime@^2.0.1, builder-util-runtime@~2.0.1:
+builder-util-runtime@2.0.1, builder-util-runtime@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/builder-util-runtime/-/builder-util-runtime-2.0.1.tgz#af7cd1422572db07b9ea52788f161bcdaaabc6f7"
   dependencies:
     bluebird-lst "^1.0.4"
     debug "^3.1.0"
     fs-extra-p "^4.4.4"
+
+builder-util-runtime@~2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/builder-util-runtime/-/builder-util-runtime-2.3.0.tgz#1d4ba8b38335907bd43e3a14ab7c8b0a701cff25"
+  dependencies:
+    bluebird-lst "^1.0.5"
+    debug "^3.1.0"
+    fs-extra-p "^4.4.4"
+    sax "^1.2.4"
 
 builder-util@3.0.12, builder-util@^3.0.12:
   version "3.0.12"
@@ -3504,12 +3519,12 @@ electron-to-chromium@^1.2.7, electron-to-chromium@^1.3.11, electron-to-chromium@
   version "1.3.22"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.22.tgz#4322d52c151406e3eaef74ad02676883e8416418"
 
-electron-updater@^2.12.0:
-  version "2.12.1"
-  resolved "https://registry.yarnpkg.com/electron-updater/-/electron-updater-2.12.1.tgz#e98153a4b48075c6d314712c445eb95eb92df4e9"
+electron-updater@^2.13.0:
+  version "2.14.1"
+  resolved "https://registry.yarnpkg.com/electron-updater/-/electron-updater-2.14.1.tgz#ffb8f7d979f1f8d499dd70b9ded75cb630b6df28"
   dependencies:
-    bluebird-lst "^1.0.4"
-    builder-util-runtime "~2.0.1"
+    bluebird-lst "^1.0.5"
+    builder-util-runtime "~2.3.0"
     electron-is-dev "^0.3.0"
     fs-extra-p "^4.4.4"
     js-yaml "^3.10.0"
@@ -3517,7 +3532,6 @@ electron-updater@^2.12.0:
     lodash.isequal "^4.5.0"
     semver "^5.4.1"
     source-map-support "^0.5.0"
-    xelement "^1.0.16"
 
 electron@1.7.8:
   version "1.7.8"
@@ -8558,6 +8572,10 @@ sax@>=0.6.0, sax@^1.2.1, sax@~1.2.1:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/sax/-/sax-1.2.2.tgz#fd8631a23bc7826bef5d871bdb87378c95647828"
 
+sax@^1.2.4:
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/sax/-/sax-1.2.4.tgz#2816234e2378bddc4e5354fab5caa895df7100d9"
+
 schema-utils@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/schema-utils/-/schema-utils-0.3.0.tgz#f5877222ce3e931edae039f17eb3716e7137f8cf"
@@ -10089,12 +10107,6 @@ ws@^2.3.1, ws@~2.3.1:
 xdg-basedir@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/xdg-basedir/-/xdg-basedir-3.0.0.tgz#496b2cc109eca8dbacfe2dc72b603c17c5870ad4"
-
-xelement@^1.0.16:
-  version "1.0.16"
-  resolved "https://registry.yarnpkg.com/xelement/-/xelement-1.0.16.tgz#900bb46c20fc2dffadff778a9d2dc36699d0ff7e"
-  dependencies:
-    sax "^1.2.1"
 
 xml-char-classes@^1.0.0:
   version "1.0.0"

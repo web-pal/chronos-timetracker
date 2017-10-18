@@ -15,7 +15,7 @@ import type {
   SetTrackingIssue, SetTrackingIssueAction,
   SetIssuesSearchValue, SetIssuesSearchValueAction,
   SetIssuesFilter, SetIssuesFilterAction,
-  IssuesMap, Id, IssueTypesMap, IssueStatusesMap,
+  IssuesMap, Id, IssueTypesMap, IssueStatusesMap, Issue,
 } from '../types';
 
 export const fetchIssuesRequest: FetchIssuesRequest = (
@@ -97,14 +97,14 @@ export const setIssuesTotalCount: SetIssuesTotalCount = (
 });
 
 export const selectIssue: SelectIssue = (
-  payload: Id | null,
+  payload: Issue | null,
 ): SelectIssueAction => ({
   type: types.SELECT_ISSUE,
   payload,
 });
 
 export const setTrackingIssue: SetTrackingIssue = (
-  payload: Id,
+  payload: Issue,
 ): SetTrackingIssueAction => ({
   type: types.SET_TRACKING_ISSUE,
   payload,

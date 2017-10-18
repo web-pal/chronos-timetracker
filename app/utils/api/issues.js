@@ -20,14 +20,7 @@ const requiredFields = [
 ];
 
 function mapAssignee(assigneeId) {
-  switch (assigneeId) {
-    case 'none':
-      return 'assignee is EMPTY';
-    case 'currentUser':
-      return 'assignee = currentUser()';
-    default:
-      return '';
-  }
+  return assigneeId === 'unassigned' ? 'assignee is EMPTY' : 'assignee = currentUser()';
 }
 
 export function fetchFields() {
@@ -52,14 +45,14 @@ export function fetchIssues({
     (searchValue ? `summary ~ ${searchValue}` : ''),
     (typeFilters.length ? `issueType in (${typeFilters.join(',')})` : ''),
     (statusFilters.length ? `status in (${statusFilters.join(',')})` : ''),
-    (assigneeFilter !== 'unassigned' ? 'assignee = currentUser()' : 'assignee is EMPTY'),
+    (assigneeFilter ? mapAssignee(assigneeFilter) : ''),
   ].filter(f => !!f).join(' AND ');
   const api = projectType === 'project'
     ? opts => jira.client.search.search(opts)
     : opts => jira.client.board.getIssuesForBoard({ ...opts, boardId: projectId });
   return api({
     jql,
-    maxResults: stopIndex - startIndex,
+    maxResults: (stopIndex - startIndex) + 1,
     startAt: startIndex,
     fields: requiredFields,
   });

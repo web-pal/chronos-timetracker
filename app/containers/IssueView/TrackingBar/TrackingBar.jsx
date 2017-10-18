@@ -59,7 +59,7 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
       <Flex row alignCenter>
         <IssueName
           onClick={() => {
-            selectIssue(trackingIssue.id);
+            selectIssue(trackingIssue);
             // jumpToTrackingIssue();
           }}
         >
