@@ -13,6 +13,7 @@ let authWindow;
 let shouldQuit = process.platform !== 'darwin';
 
 const appDir = app.getPath('userData');
+let trayShowTimer = true;
 
 global.appDir = appDir;
 global.appSrcDir = __dirname;
@@ -27,12 +28,20 @@ global.sharedObj = {
   nativeNotifications: false,
   idleTime: 0,
   idleDetails: {},
-  trayShowTimer: storage.get('trayShowTimer', (err, data) => {
-    if (!data) {
-      storage.set('trayShowTimer', true);
-    }
-  }) || true,
+  trayShowTimer: true,
 };
+
+try {
+  storage.get('trayShowTimer', (err, data) => {
+    if (err) throw err;
+    global.sharedObj.trayShowTimer = data;
+  });
+} catch (err) {
+  console.log('failed to get trayShowTimer from local storage', err);
+  storage.set('trayShowTimer', false, (err2) => {
+    if (err2) throw err2;
+  });
+}
 
 try {
   fs.accessSync(`${appDir}/screens/`, fs.constants.R_OK | fs.constants.W_OK); // eslint-disable-line
@@ -192,11 +201,11 @@ function createWindow(callback) {
       break;
   }
   storage.get('lastWindowSize', (err, data) => {
+    let lastWindowSize;
     if (err) {
-      console.log(err);
-      throw err;
+      lastWindowSize = { width: 1040, height: 800 };
     }
-    const lastWindowSize = data || {};
+    lastWindowSize = data || {};
     mainWindow = new BrowserWindow({
       show: false,
       width: 1040,
