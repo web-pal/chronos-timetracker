@@ -112,11 +112,11 @@ const Header: StatelessFunctionalComponent<Props> = ({
           }
           {updateCheckRunning &&
             <DropdownItem>
-              <Flex row spaceBetween>
-                <span>
+              <Flex row spaceBetween alignCenter>
+                <span style={{ marginRight: 5 }}>
                   Checking for updates
                 </span>
-                <Spinner />
+                <Spinner size="small" />
               </Flex>
             </DropdownItem>
           }
