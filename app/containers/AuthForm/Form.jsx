@@ -5,13 +5,6 @@ import { Flex } from 'components';
 
 import calculateSize from 'calculate-size';
 
-const InputMaskValue = styled.div`
-  position: absolute;
-  top: 10px;
-  font-size: 14px;
-  font-weight: 500;
-  z-index: -1;
-`;
 
 const InputMask = styled.span`
   position: absolute;
@@ -100,7 +93,7 @@ class MaskField extends Component {
     const {
       style, underlined, mask, input, label, type,
       placeholder, meta: { touched, error, warning },
-      disabled, autoFocus,
+      disabled, autoFocus, onKeyPress,
     } = this.props;
     const { width } = this.state;
     /* eslint-enable react/prop-types */
@@ -119,6 +112,7 @@ class MaskField extends Component {
               input.onChange(value);
             }}
             autoFocus={autoFocus}
+            onKeyPress={onKeyPress}
           />
           :
           <Input
@@ -128,6 +122,7 @@ class MaskField extends Component {
             disabled={disabled}
             placeholder={placeholder}
             autoFocus={autoFocus}
+            onKeyPress={onKeyPress}
           />
         }
         {/* mask &&
