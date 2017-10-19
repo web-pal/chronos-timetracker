@@ -108,6 +108,7 @@ export type IssueFilters = {
 
 export type IssuesMeta = {|
   +fetching: boolean,
+  +recentFetching: boolean,
   +searching: boolean,
   +totalCount: number,
   +lastStopIndex: number,
@@ -216,6 +217,14 @@ export type SetIssuesFetchingAction =
 
 export type SetIssuesFetching = {
   (payload: boolean): SetIssuesFetchingAction
+}
+
+//
+export type SetRecentIssuesFetchingAction =
+  {| type: typeof types.SET_RECENT_ISSUES_FETCHING, +payload: boolean |}
+
+export type SetRecentIssuesFetching = {
+  (payload: boolean): SetRecentIssuesFetchingAction
 }
 
 //

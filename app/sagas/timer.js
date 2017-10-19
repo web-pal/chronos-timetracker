@@ -15,6 +15,7 @@ import {
   getTrackingIssueId,
   getWorklogComment,
   getLastScreenshotTime,
+  getLocalDesktopSettings,
   getIdles,
 } from 'selectors';
 import Raven from 'raven-js';
@@ -126,8 +127,11 @@ function* screenshotsCheck() {
   }
 }
 
-function setTimeToTray(time) {
-  if (remote.getGlobal('sharedObj').trayShowTimer) {
+function* setTimeToTray() {
+  const time = yield select(getTimerTime);
+  const localDesktopSettings = yield select(getLocalDesktopSettings);
+  const trayShowTimer = localDesktopSettings.trayShowTimer;
+  if (trayShowTimer) {
     const humanFormat = new Date(time * 1000).toISOString().substr(11, 5);
     remote.getGlobal('tray').setTitle(humanFormat);
   }
@@ -140,8 +144,7 @@ function* timerStep(screenshotsAllowed, secondsToMinutesGrid) {
     if (screenshotsAllowed) {
       yield call(screenshotsCheck, nextPeriod);
     }
-    const time = yield select(getTimerTime);
-    yield call(setTimeToTray, time);
+    yield call(setTimeToTray);
   } catch (err) {
     yield call(throwError, err);
     Raven.captureException(err);
@@ -167,7 +170,6 @@ export function* runTimer(channel) {
 
 function* stopTimer(channel, timerInstance) {
   try {
-    yield call(setTimeToTray, 0);
     yield call(ipcRenderer.send, 'stop-timer');
     channel.close();
     yield cancel(timerInstance);
@@ -201,9 +203,8 @@ function* stopTimer(channel, timerInstance) {
 export function* timerFlow(): Generator<*, *, *> {
   try {
     const selectedIssue = yield select(getSelectedIssue);
-    const selectedIssueId = selectedIssue.id;
     yield put(issuesActions.setTrackingIssue(selectedIssue));
-    yield call(ipcRenderer.send, 'start-timer');
+    ipcRenderer.send('start-timer');
     const channel = yield call(timerChannel);
     const timerInstance = yield fork(runTimer, channel);
     while (true) {

@@ -1,5 +1,6 @@
 // @flow
 import React from 'react';
+import { ipcRenderer } from 'electron';
 import type { StatelessFunctionalComponent, Node } from 'react';
 import { Flex } from 'components';
 import { getStatusColor } from 'jiraColors-util';

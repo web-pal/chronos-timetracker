@@ -19,9 +19,8 @@ export function* getSettings() {
 export function* watchLocalDesktopSettingsChange() {
   while (true) {
     const { payload, meta } = yield take(types.SET_LOCAL_DESKTOP_SETTING);
-    if (meta === 'trayShowTimer') {
-      const sharedObj = remote.getGlobal('sharedObj');
-      sharedObj.trayShowTimer = payload;
+    if (meta === 'trayShowTimer' && !payload) {
+      remote.getGlobal('tray').setTitle('');
     }
     const localSettings = yield select(getLocalDesktopSettings);
     yield call(setToStorage, 'localDesktopSettings', localSettings);

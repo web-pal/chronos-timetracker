@@ -63,11 +63,6 @@ const AlertModal: StatelessFunctionalComponent<Props> = ({
         Worklogs under 1 minute can not be saved in JIRA.
         Do you want to stop timer or continue tracking?
       </p>
-      <Flex style={{ marginLeft: -8, marginTop: 5 }}>
-        <DropdownItemCheckbox>
-          Remember my choice
-        </DropdownItemCheckbox>
-      </Flex>
     </ModalContentContainer>
   </ModalDialog>
 );

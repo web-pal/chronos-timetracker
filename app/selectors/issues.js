@@ -2,6 +2,9 @@
 import { createSelector } from 'reselect';
 import moment from 'moment';
 import groupBy from 'lodash.groupby';
+import filter from 'lodash.filter';
+
+import { getUserData } from './profile';
 
 import type {
   IssuesState,
@@ -73,24 +76,36 @@ export const getRecentIssues = createSelector(
 );
 
 export const getRecentItems = createSelector(
-  [getRecentIssues, getIssuesMap],
-  (map, iMap) => {
+  [getRecentIssues, getIssuesMap, getUserData],
+  (map, iMap, self) => {
+    const selfKey = self ? self.key : '';
     const recentWorklogs =
       map
         .reduce((worklogs, value) => worklogs.concat(value.fields.worklog.worklogs), [])
-        .sort((a, b) => moment(b.created).isSameOrAfter(moment(a.created)));
+        .sort((a, b) => moment(b.started).isSameOrAfter(moment(a.started)));
     const _recentWorklogs = recentWorklogs.map(w => {
       const _w = w;
       _w.issue = iMap[_w.issueId];
       return _w;
     });
-    const grouped = groupBy(_recentWorklogs, (value) => moment(value.created).startOf('day'));
+    const recentWorklogsFiltered =
+      filter(
+        _recentWorklogs,
+        (w) =>
+          moment(w.started).isSameOrAfter(moment().subtract(4, 'weeks')) &&
+          w.author.key === selfKey,
+      );
+    const grouped =
+      groupBy(recentWorklogsFiltered, (value) => moment(value.started).startOf('day').format());
     return grouped;
   },
 );
 
 export const getIssuesFetching =
   ({ issues }: { issues: IssuesState }): boolean => issues.meta.fetching;
+
+export const getRecentIssuesFetching =
+  ({ issues }: { issues: IssuesState }): boolean => issues.meta.recentFetching;
 
 export const getIssuesSearching =
   ({ issues }: { issues: IssuesState }): boolean => issues.meta.searching;

@@ -231,6 +231,8 @@ export type {
   ClearIssues,
   SetIssuesFetchingAction,
   SetIssuesFetching,
+  SetRecentIssuesFetchingAction,
+  SetRecentIssuesFetching,
   SetIssuesTotalCountAction,
   SetIssuesTotalCount,
   SelectIssueAction,

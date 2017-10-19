@@ -29,8 +29,8 @@ function itemsById(state: IssuesMap = {}, action): IssuesMap {
       return action.payload.map;
     case types.ADD_ISSUES:
       return merge(
-        state,
         action.payload.map,
+        state,
       );
     case types.CLEAR_ISSUES:
     case types.___CLEAR_ALL_REDUCERS___:
@@ -116,6 +116,7 @@ function issueStatusesById(state: IssueStatusesMap = {}, action) {
 
 const initialMeta: IssuesMeta = {
   fetching: false,
+  recentFetching: false,
   searching: false,
   totalCount: 0,
   lastStopIndex: 0,
@@ -142,6 +143,11 @@ function meta(state: IssuesMeta = initialMeta, action) {
       return {
         ...state,
         fetching: action.payload,
+      };
+    case types.SET_RECENT_ISSUES_FETCHING:
+      return {
+        ...state,
+        recentFetching: action.payload,
       };
     case types.SET_ISSUES_TOTAL_COUNT:
       return {

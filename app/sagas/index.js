@@ -45,5 +45,6 @@ export default function* rootSaga(): Generator<*, *, *> {
     // ui
     fork(uiSagas.watchSidebarTypeChange),
     fork(uiSagas.watchSelectIssue),
+    fork(uiSagas.initializeTrayMenuListeners),
   ]);
 }

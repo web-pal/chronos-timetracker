@@ -10,6 +10,7 @@ import type {
   AddIssues, AddIssuesAction,
   ClearIssues, ClearIssuesAction,
   SetIssuesFetching, SetIssuesFetchingAction,
+  SetRecentIssuesFetching, SetRecentIssuesFetchingAction,
   SetIssuesTotalCount, SetIssuesTotalCountAction,
   SelectIssue, SelectIssueAction,
   SetTrackingIssue, SetTrackingIssueAction,
@@ -86,6 +87,13 @@ export const setIssuesFetching: SetIssuesFetching = (
   payload: boolean,
 ): SetIssuesFetchingAction => ({
   type: types.SET_ISSUES_FETCHING,
+  payload,
+});
+
+export const setRecentIssuesFetching: SetRecentIssuesFetching = (
+  payload: boolean,
+): SetRecentIssuesFetchingAction => ({
+  type: types.SET_RECENT_ISSUES_FETCHING,
   payload,
 });
 

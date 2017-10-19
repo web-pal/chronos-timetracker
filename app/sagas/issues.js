@@ -3,6 +3,7 @@ import { delay } from 'redux-saga';
 import { call, take, select, put, fork, takeEvery, takeLatest } from 'redux-saga/effects';
 import { ipcRenderer } from 'electron';
 import * as Api from 'api';
+import merge from 'lodash.merge';
 import Raven from 'raven-js';
 import {
   getSelectedProject,
@@ -16,7 +17,7 @@ import {
 import { issuesActions, types } from 'actions';
 import normalizePayload from 'normalize-util';
 
-import { throwError } from './ui';
+import { throwError, infoLog } from './ui';
 import { getAdditionalWorklogsForIssues } from './worklogs';
 
 import type { FetchIssuesRequestAction, Project, Id, User, IssueFilters } from '../types';
@@ -25,6 +26,10 @@ export function* fetchIssues({
   payload: { startIndex, stopIndex, search },
 }: FetchIssuesRequestAction): Generator<*, *, *> {
   try {
+    yield call(
+      infoLog,
+      'started fetchIssues',
+    );
     yield put(issuesActions.setIssuesFetching(true));
     if (search) {
       yield put(issuesActions.setIssuesTotalCount(0));
@@ -44,6 +49,11 @@ export function* fetchIssues({
       filters,
     };
     const response = yield call(Api.fetchIssues, opts);
+    yield call(
+      infoLog,
+      'fetchIssues response',
+      response,
+    );
     const normalizedIssues = yield call(normalizePayload, response.issues, 'issues');
     yield put(issuesActions.setIssuesTotalCount(response.total));
     yield put(issuesActions.addIssues(normalizedIssues));
@@ -69,7 +79,11 @@ export function* watchFetchIssuesRequest(): Generator<*, *, *> {
 
 export function* fetchRecentIssues(): Generator<*, *, *> {
   try {
-    yield put(issuesActions.setIssuesFetching(true));
+    yield call(
+      infoLog,
+      'started fetchRecentIssues',
+    );
+    yield put(issuesActions.setRecentIssuesFetching(true));
     const selectedProject: Project = yield select(getSelectedProject);
     const selectedSprintId: Id = yield select(getSelectedSprintId);
     const self: User = yield select(getUserData);
@@ -80,11 +94,33 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
       worklogAuthor: self.key,
     };
     const response = yield call(Api.fetchRecentIssues, opts);
+    yield call(
+      infoLog,
+      'fetchRecentIssues response:',
+      response,
+    );
     let issues = response.issues;
 
     const incompleteIssues = response.issues.filter(issue => issue.fields.worklog.total > 20);
     if (incompleteIssues.length) {
-      issues = yield call(getAdditionalWorklogsForIssues, incompleteIssues);
+      yield call(
+        infoLog,
+        'found issues lacking worklogs, starting getAdditionalWorklogsForIssues: ',
+        incompleteIssues,
+      );
+      const _issues = yield call(getAdditionalWorklogsForIssues, incompleteIssues);
+      yield call(
+        infoLog,
+        'getAdditionalWorklogsForIssues response:',
+        _issues,
+      );
+
+      issues = merge(_issues, issues);
+      yield call(
+        infoLog,
+        'filled issues with lacking worklogs: ',
+        issues,
+      );
     }
     const normalizedIssues = yield call(normalizePayload, issues, 'issues');
     yield put(issuesActions.addIssues(normalizedIssues));
@@ -103,8 +139,9 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
     }
     const allWorklogs = yield select(state => state.worklogs.byId);
     setLoggedTodayOnTray(allWorklogs, worklogAuthor); */
-    yield put(issuesActions.setIssuesFetching(false));
+    yield put(issuesActions.setRecentIssuesFetching(false));
   } catch (err) {
+    yield put(issuesActions.setRecentIssuesFetching(false));
     yield call(throwError, err);
     Raven.captureException(err);
   }
@@ -113,7 +150,6 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
 export function* fetchIssueTypes(): Generator<*, *, *> {
   try {
     const issueTypes = yield call(Api.fetchIssueTypes);
-    console.log('issuesTypes', issueTypes);
     const normalizedData = normalizePayload(issueTypes, 'issueTypes');
     yield put(issuesActions.fillIssueTypes(normalizedData));
   } catch (err) {
@@ -125,7 +161,6 @@ export function* fetchIssueTypes(): Generator<*, *, *> {
 export function* fetchIssueStatuses(): Generator<*, *, *> {
   try {
     const issueStatuses = yield call(Api.fetchIssueStatuses);
-    console.log('issueStatuses', issueStatuses);
     const normalizedData = normalizePayload(issueStatuses, 'issueStatuses');
     yield put(issuesActions.fillIssueStatuses(normalizedData));
   } catch (err) {
@@ -166,6 +201,7 @@ export function* watchFiltersChange(): Generator<*, *, *> {
 export function* watchIssueSelect(): Generator<*, *, *> {
   while (true) {
     const { payload }: { payload: Id } = yield take(types.SELECT_ISSUE);
-    yield call(ipcRenderer.send, 'select-issue', payload);
+    console.log(payload);
+    ipcRenderer.send('select-issue', payload);
   }
 }

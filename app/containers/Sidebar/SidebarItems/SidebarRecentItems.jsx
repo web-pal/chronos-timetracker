@@ -6,7 +6,7 @@ import type { StatelessFunctionalComponent, Node } from 'react';
 import { Flex, RecentItemsPlaceholder } from 'components';
 import { issuesActions } from 'actions';
 import {
-  getIssuesFetching,
+  getRecentIssuesFetching,
   getRecentItems,
 } from 'selectors';
 
@@ -47,9 +47,9 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
             worklogs={item}
           />
           <Flex column className="RecentItems__list">
-            {item.map(worklog =>
+            {item.map((worklog, i) =>
               <SidebarItem
-                key={worklog.id}
+                key={i}
                 issue={worklog.issue}
                 active={false}
                 selectIssue={selectIssue}
@@ -65,7 +65,7 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
 function mapStateToProps(state) {
   return {
     items: getRecentItems(state),
-    fetching: getIssuesFetching(state),
+    fetching: getRecentIssuesFetching(state),
   };
 }
 

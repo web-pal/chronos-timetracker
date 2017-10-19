@@ -2,10 +2,6 @@ declare module 'module' {
   declare module.exports: any;
 }
 
-declare module 'types' {
-  declare module.exports: any;
-}
-
 declare module 'selectors' {
   declare module.exports: any;
 }

@@ -10,6 +10,7 @@ export const CLEAR_FOUND_ISSUE_IDS: 'issues/CLEAR_FOUND_ISSUE_IDS' = 'issues/CLE
 export const ADD_ISSUES: 'issues/ADD' = 'issues/ADD';
 export const CLEAR_ISSUES: 'issues/CLEAR' = 'issues/CLEAR';
 export const SET_ISSUES_FETCHING: 'issues/SET_FETCHING' = 'issues/SET_FETCHING';
+export const SET_RECENT_ISSUES_FETCHING: 'issues/SET_RECENT_FETCHING' = 'issues/SET_RECENT_FETCHING';
 export const SET_ISSUES_TOTAL_COUNT: 'issues/SET_TOTAL_COUNT' = 'issues/SET_TOTAL_COUNT';
 export const SELECT_ISSUE: 'issues/SELECT' = 'issues/SELECT';
 export const SET_TRACKING_ISSUE: 'issues/SET_TRACKING' = 'issues/SET_TRACKING';

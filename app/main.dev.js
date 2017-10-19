@@ -13,7 +13,6 @@ let authWindow;
 let shouldQuit = process.platform !== 'darwin';
 
 const appDir = app.getPath('userData');
-let trayShowTimer = true;
 
 global.appDir = appDir;
 global.appSrcDir = __dirname;
@@ -28,20 +27,7 @@ global.sharedObj = {
   nativeNotifications: false,
   idleTime: 0,
   idleDetails: {},
-  trayShowTimer: true,
 };
-
-try {
-  storage.get('trayShowTimer', (err, data) => {
-    if (err) throw err;
-    global.sharedObj.trayShowTimer = data;
-  });
-} catch (err) {
-  console.log('failed to get trayShowTimer from local storage', err);
-  storage.set('trayShowTimer', false, (err2) => {
-    if (err2) throw err2;
-  });
-}
 
 try {
   fs.accessSync(`${appDir}/screens/`, fs.constants.R_OK | fs.constants.W_OK); // eslint-disable-line
@@ -71,6 +57,11 @@ const menuTemplate = [
   },
   {
     label: 'No selected issue',
+    click: () => {
+      if (mainWindow) {
+        mainWindow.show();
+      }
+    },
     enabled: false,
   },
   {
@@ -293,9 +284,11 @@ ipcMain.on('stop-timer', () => {
   }
 });
 
-ipcMain.on('select-issue', (event, selectedIssue) => {
-  menuTemplate[1].label = `Selected issue: ${selectedIssue}`;
-  menuTemplate[3].enabled = true;
+ipcMain.on('select-issue', (event, issueKey) => {
+  menuTemplate[1].label = `Selected issue: ${issueKey}`;
+  if (!menuTemplate[4].enabled) {
+    menuTemplate[3].enabled = true;
+  }
   menu.clear();
   menuTemplate.forEach(m => {
     menu.append(new MenuItem(m));

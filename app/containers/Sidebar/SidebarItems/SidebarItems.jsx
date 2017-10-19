@@ -7,6 +7,7 @@ import { issuesActions } from 'actions';
 import { Flex } from 'components';
 import {
   getIssuesFetching,
+  getRecentIssuesFetching,
   getIssuesTotalCount,
   getRecentIssuesTotalCount,
   getSidebarType,
@@ -20,6 +21,7 @@ import type { SidebarType } from '../../../types';
 
 type Props = {
   fetching: boolean,
+  recentFetching: boolean,
   totalCount: number,
   recentTotalCount: number,
   sidebarType: SidebarType,
@@ -27,6 +29,7 @@ type Props = {
 
 const SidebarItems: StatelessFunctionalComponent<Props> = ({
   fetching,
+  recentFetching,
   totalCount,
   recentTotalCount,
   sidebarType,
@@ -35,9 +38,8 @@ const SidebarItems: StatelessFunctionalComponent<Props> = ({
     {!fetching && totalCount === 0 && sidebarType === 'all' &&
       <SidebarNoItems recent={false} />
     }
-    {((!fetching && recentTotalCount === 0) || (!fetching && totalCount === 0))
-        && sidebarType === 'recent' &&
-        <SidebarNoItems recent />
+    {!recentFetching && recentTotalCount === 0 && sidebarType === 'recent' &&
+      <SidebarNoItems recent />
     }
     {sidebarType === 'all' && <SidebarAllItems />}
     {sidebarType === 'recent' && <SidebarRecentItems />}
@@ -46,6 +48,7 @@ const SidebarItems: StatelessFunctionalComponent<Props> = ({
 function mapStateToProps(state) {
   return {
     fetching: getIssuesFetching(state),
+    recentFetching: getRecentIssuesFetching(state),
     totalCount: getIssuesTotalCount(state),
     recentTotalCount: getRecentIssuesTotalCount(state),
     sidebarType: getSidebarType(state),
