@@ -23,6 +23,7 @@ export const ProjectAvatar = styled.img`
   width: 48px;
   height: 48px;
   margin-right: 5px;
+  user-select: none;
 `;
 
 export const UserAvatarContainer = styled.div`
@@ -45,7 +46,8 @@ export const UserSampleAvatar = styled(UserAvatarCircleIcon)`
 export const UserAvatar = styled.img`
   width: 20px;
   height: 20px;
-  border-radius: 50%
+  border-radius: 50%;
+  user-select: none;
 `;
 
 export const Link = styled.a`
@@ -81,6 +83,7 @@ export const StartButton = styled.img`
   height: 60px;
   cursor: pointer;
   border-radius: 50%;
+  user-select: none;
   :hover {
     box-shadow: 0 4px 8px 0 rgba(9, 30, 66, 0.32);
   }
@@ -89,6 +92,7 @@ export const StartButton = styled.img`
 export const StartButtonPlaceholder = styled.div`
   width: 60px;
   height: 60px;
+  user-select: none;
 `;
 
 export const Button = styled.button`

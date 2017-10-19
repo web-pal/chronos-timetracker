@@ -42,6 +42,7 @@ export const SettingsIcon = styled.img`
   border-radius: 50%;
   transition: transform .5s ease-in-out;
   -webkit-app-region: drag;
+  user-select: none;
   :hover {
     transform: rotate(180deg);
   }
@@ -56,6 +57,7 @@ export const ProfilePicture = styled.img`
   margin-right: 10px;
   margin-left: 0px;
   -webkit-app-region: drag;
+  user-select: none;
   :hover {
     margin-right: 7px;
     margin-left: -3px;

@@ -2,16 +2,11 @@
 import React, { Component } from 'react';
 import moment from 'moment';
 import { remote, ipcRenderer as ipc } from 'electron';
+import Flag from '@atlaskit/flag';
+import RecentIcon from '@atlaskit/icon/glyph/recent';
 import { stj } from 'time-util';
-import { stopwatch } from 'data/svg';
-import { Flex } from 'components';
-import { Button } from 'styles/buttons';
-import { H500 } from 'styles/typography';
 
-import {
-  PopupContainer,
-  StopwatchImage,
-} from './styled';
+import { PopupContainer } from './styled';
 
 import '../../../assets/stylesheets/main.less';
 
@@ -48,33 +43,31 @@ class IdlePopup extends Component<{}, State> {
     const awayTo: string = date.format('HH:mm');
     const awayFor: string = stj(idleTime / 1000, 'h [hours] m [minutes] s [seconds]');
 
+    const actions = [
+      { content: 'Keep', onClick: this.keepTime },
+      { content: 'Dissmiss', onClick: this.dismissTime },
+    ];
+
     return (
       <PopupContainer>
-        <H500 style={{ marginBottom: 10, marginTop: 10 }}>
-          <StopwatchImage src={stopwatch} alt="" />
-          Idle time alert
-        </H500>
-        <span>
-          You were inactive from {awayFrom} to {awayTo} <b>({awayFor})</b>.
-          <br />
-          Do you want to keep this time?
-        </span>
-        <Flex row style={{ marginTop: 10, marginBottom: 10 }}>
-          <Button
-            background="hsla(40, 100%, 45%, 1)"
-            style={{ marginRight: 5, width: 76 }}
-            onClick={this.dismissTime}
-          >
-            Dismiss
-          </Button>
-          <Button
-            background="#36B37E"
-            style={{ width: 76 }}
-            onClick={this.keepTime}
-          >
-            Keep
-          </Button>
-        </Flex>
+        <Flag
+          icon={(
+            <RecentIcon
+              label="Idle time popup"
+              size="medium"
+            />
+          )}
+          actions={actions}
+          id="Idle-time-popup"
+          title="Idle time alert"
+          description={(
+            <div>
+              {`Your were inactive from ${awayFrom} to ${awayTo} `}(<b>{awayFor}</b>).
+              <br />
+              Do you want to keep this time?
+            </div>
+          )}
+        />
       </PopupContainer>
     );
   }

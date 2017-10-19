@@ -373,7 +373,7 @@ ipcMain.on('open-oauth-url', (event, url) => {
 ipcMain.on('show-idle-popup', () => {
   const options = {
     width: 460,
-    height: 152,
+    height: 130,
     frame: false,
     resizable: false,
     alwaysOnTop: true,
