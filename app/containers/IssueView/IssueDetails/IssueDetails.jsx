@@ -17,6 +17,8 @@ import {
   IssueType,
   IssueLabel,
   Label,
+  DetailsColumn,
+  DescriptionSectionHeader
 } from './styled';
 
 type Props = {
@@ -34,7 +36,7 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
   return (
     <IssueDetailsContainer>
       <Flex row spaceBetween>
-        <Flex column style={{ width: '42%' }}>
+        <DetailsColumn>
 
           <Flex row spaceBetween>
             <DetailsLabel>
@@ -94,8 +96,8 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
             {labels.map(v => <Label key={v}>{v}</Label>)}
           </Flex>
 
-        </Flex>
-        <Flex column style={{ width: '42%' }}>
+        </DetailsColumn>
+        <DetailsColumn>
 
           <Flex row spaceBetween>
             <DetailsLabel>
@@ -130,21 +132,15 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
             </DetailsValue>
           </Flex>
 
-        </Flex>
+        </DetailsColumn>
       </Flex>
 
-      <div
-        style={{
-          borderTop: '2px solid rgba(0, 0, 0, .1)',
-          marginTop: 10,
-          paddingTop: 10,
-        }}
-      >
+      <DescriptionSectionHeader>
         <strong>
           Description
         </strong>
-        <ReactMarkdown source={issue.fields.description || '*no description*'} />
-      </div>
+        <ReactMarkdown source={issue.fields.description || '*No description*'} />
+      </DescriptionSectionHeader>
       {
         /* TODO <IssueAttachments /> */
       }
