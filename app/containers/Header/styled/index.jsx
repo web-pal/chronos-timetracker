@@ -96,7 +96,28 @@ export const DropdownUpdateItem = styled(DropdownItem)`
 `;
 
 export const DropdownProgressBar = styled.div`
-  width: ${props => props.width}px;
+  width: 100%;
   height: 3px;
-  background: #FF8B00;
+  position: relative;
+  overflow: hidden;
+  background-color: #ddd;
+  :before {
+    display: block;
+    position: absolute;
+    content: "";
+    left: -200px;
+    width: 200px;
+    height: 3px;
+    background-color: #FF8B00;
+    animation: loading 1s linear infinite;
+  }
+
+  @keyframes loading {
+    from {left: -200px; width: 30%;}
+    50% {width: 30%;}
+    70% {width: 70%;}
+    80% { left: 50%;}
+    95% {left: 120%;}
+    to {left: 100%;}
+  }
 `;

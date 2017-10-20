@@ -123,16 +123,16 @@ const Header: StatelessFunctionalComponent<Props> = ({
           }
           {updateFetching &&
             <DropdownItem>
-              <Flex row spaceBetween>
-                <span>
-                  Fetching update
+              <Flex row spaceBetween alignCenter>
+                <span style={{ marginRight: 5 }}>
+                  Updating
                 </span>
-                <Spinner size={16} />
+                <Spinner size="small" />
               </Flex>
             </DropdownItem>
           }
           {updateFetching &&
-            <DropdownProgressBar width={60} />
+            <DropdownProgressBar />
           }
           <DropdownSeparator />
           <DropdownLogoutItem onClick={logoutRequest}>
