@@ -1,6 +1,7 @@
 // @flow
 import React, { Component } from 'react';
 import ModalDialog from '@atlaskit/modal-dialog';
+import FieldTextArea from '@atlaskit/field-text-area';
 import ButtonGroup from '@atlaskit/button-group';
 import Button from '@atlaskit/button';
 import CalendarIcon from '@atlaskit/icon/glyph/calendar';
@@ -175,7 +176,7 @@ class WorklogModal extends Component<Props, State> {
               </Flex>
             </div>
           </Flex>
-          <TextField
+          <FieldTextArea
             shouldFitContainer
             label="Worklog comment"
             value={comment}
