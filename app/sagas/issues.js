@@ -46,6 +46,7 @@ export function* fetchIssues({
       projectType: selectedProject.type || 'project',
       sprintId: selectedSprintId,
       searchValue,
+      projectKey: selectedProject.key,
       filters,
     };
     const response = yield call(Api.fetchIssues, opts);

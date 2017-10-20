@@ -41,8 +41,8 @@ const SidebarItems: StatelessFunctionalComponent<Props> = ({
     {!recentFetching && recentTotalCount === 0 && sidebarType === 'recent' &&
       <SidebarNoItems recent />
     }
-    {sidebarType === 'all' && <SidebarAllItems />}
-    {sidebarType === 'recent' && <SidebarRecentItems />}
+    <SidebarAllItems />
+    <SidebarRecentItems />
   </Flex>;
 
 function mapStateToProps(state) {

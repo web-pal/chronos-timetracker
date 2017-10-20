@@ -1,6 +1,8 @@
 
 .RecentItems {
   height: 100%;
+  background: white;
+  z-index: 1;
   overflow-y: overlay;
   overflow-x: hidden;
   &::-webkit-scrollbar {
@@ -35,6 +37,11 @@
       border-radius: 15px;
     }
   }
+}
+
+.RecentItemsPlaceholder {
+  background: white;
+  z-index: 1;
 }
 
 .RecentItem, .SidebarItem {

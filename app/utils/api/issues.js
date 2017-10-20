@@ -23,6 +23,16 @@ function mapAssignee(assigneeId) {
   return assigneeId === 'unassigned' ? 'assignee is EMPTY' : 'assignee = currentUser()';
 }
 
+function mapSearchValue(searchValue, projectKey) {
+  if (searchValue.startsWith(`${projectKey}-`)) {
+    return `key = "${searchValue}"`;
+  }
+  if (/^[0-9]*$/.test(searchValue)) {
+    return `(key = "${projectKey}-${searchValue}" OR summary ~ "${searchValue}")`;
+  }
+  return `summary ~ "${searchValue}"`;
+}
+
 export function fetchFields() {
 
 }
@@ -34,6 +44,7 @@ export function fetchIssues({
   projectType,
   sprintId,
   searchValue,
+  projectKey,
   filters,
 }) {
   const typeFilters = filters.type;
@@ -42,7 +53,7 @@ export function fetchIssues({
   const jql = [
     (projectType === 'project' ? `project = ${projectId}` : ''),
     ((projectType === 'scrum') && sprintId ? `sprint = ${sprintId}` : ''),
-    (searchValue ? `summary ~ ${searchValue}` : ''),
+    (searchValue ? mapSearchValue(searchValue, projectKey) : ''),
     (typeFilters.length ? `issueType in (${typeFilters.join(',')})` : ''),
     (statusFilters.length ? `status in (${statusFilters.join(',')})` : ''),
     (assigneeFilter ? mapAssignee(assigneeFilter) : ''),

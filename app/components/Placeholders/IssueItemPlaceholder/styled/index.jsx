@@ -9,7 +9,8 @@ export const PlaceholderContainer = styled.div`
 
 export const Placeholder = styled.div`
   background: #fff;
-  position: absolute;  ${(props) => {
+  position: absolute; 
+${(props) => {
     switch (props.type) {
       case 'issueRight':
         return `

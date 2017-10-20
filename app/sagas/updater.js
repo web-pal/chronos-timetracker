@@ -18,6 +18,7 @@ let updateAvailableChannel;
 let updateNotAvailableChannel;
 let updateDownloadedChannel;
 
+autoUpdater.autoDownload = false;
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
 

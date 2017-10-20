@@ -7,6 +7,7 @@ import { Flex, RecentItemsPlaceholder } from 'components';
 import { issuesActions } from 'actions';
 import {
   getRecentIssuesFetching,
+  getSidebarType,
   getRecentItems,
 } from 'selectors';
 
@@ -27,16 +28,18 @@ moment.locale('en', {
 type Props = {
   items: IssuesMap,
   fetching: boolean,
+  sidebarType: string,
   selectIssue: SelectIssue,
 }
 
 const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
   items,
   fetching,
+  sidebarType,
   selectIssue,
 }: Props): Node => (fetching ?
   <RecentItemsPlaceholder /> :
-  <div className="RecentItems">
+  <div className="RecentItems" style={{ display: sidebarType === 'recent' ? 'block' : 'none' }}>
     {Object.keys(items).sort((a, b) => moment(b).isSameOrAfter(moment(a))).map((key) => {
       const item = items[key];
 
@@ -66,6 +69,7 @@ function mapStateToProps(state) {
   return {
     items: getRecentItems(state),
     fetching: getRecentIssuesFetching(state),
+    sidebarType: getSidebarType(state),
   };
 }
 

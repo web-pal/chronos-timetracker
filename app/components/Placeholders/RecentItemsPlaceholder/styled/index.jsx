@@ -12,8 +12,8 @@ export const TimestampPlaceholderContainer = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-}
 `;
+
 export const TimestampPlaceholder = styled.div`
   background: #F4F5F7;
   border-radius: 15px;

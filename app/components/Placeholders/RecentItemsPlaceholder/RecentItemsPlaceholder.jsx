@@ -1,9 +1,9 @@
 // @flow
 import React from 'react';
 import type { StatelessFunctionalComponent, Node } from 'react';
-import { Flex } from 'components';
 
 import IssueItemPlaceholder from '../IssueItemPlaceholder/IssueItemPlaceholder';
+import Flex from '../../Flex/Flex';
 
 import {
   TimestampPlaceholderContainer,
