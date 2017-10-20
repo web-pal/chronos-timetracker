@@ -109,7 +109,7 @@ export const DropdownProgressBar = styled.div`
     width: 200px;
     height: 3px;
     background-color: #FF8B00;
-    animation: loading 1s linear infinite;
+    animation: loading 1.5s linear infinite;
   }
 
   @keyframes loading {
