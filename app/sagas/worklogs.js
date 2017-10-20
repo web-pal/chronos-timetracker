@@ -74,6 +74,7 @@ export function* uploadWorklog({
     };
     yield call(Api.chronosBackendUploadWorklog, backendUploadOptions);
     mixpanel.track('Worklog uploaded (Automatic)', { timeSpentSeconds });
+    mixpanel.people.increment('Logged time(seconds)', timeSpentSeconds);
     yield call(notify, '', 'Worklog is uploaded');
   } catch (err) {
     yield call(saveWorklogAsOffline, {
@@ -143,6 +144,7 @@ export function* addManualWorklogFlow(): Generator<*, *, *> {
       yield put(worklogsActions.setAddWorklogFetching(false));
       yield put(uiActions.setWorklogModalOpen(false));
       mixpanel.track('Worklog uploaded (Manual)', { timeSpentSeconds });
+      mixpanel.people.increment('Logged time(seconds)', timeSpentSeconds);
       yield call(delay, 1000);
       yield call(notify, '', 'Manual worklog succesfully added');
     }
