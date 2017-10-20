@@ -115,7 +115,7 @@ const Header: StatelessFunctionalComponent<Props> = ({
           {updateAvailable && !updateFetching &&
             <DropdownUpdateItem
               onClick={() => {
-                mixpanel.track('Clicked "Install Update"');
+                mixpanel.track('Clicked "Install Update"', { upcomingVersion: updateAvailable });
                 installUpdateRequest();
               }}
             >

@@ -1,13 +1,11 @@
 // @flow
 import React from 'react';
 import type { StatelessFunctionalComponent, Node } from 'react';
-import ModalDialog from '@atlaskit/modal-dialog';
-import ButtonGroup from '@atlaskit/button-group';
-import Button from '@atlaskit/button';
+import ModalDialog, { ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
+import Button, { ButtonGroup } from '@atlaskit/button';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { H700 } from 'styles/typography';
 import { ModalContentContainer } from 'styles/modals';
 import { uiActions, settingsActions } from 'actions';
 import { Flex } from 'components';
@@ -44,26 +42,28 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
   setSettingsModalOpen,
   setSettingsModalTab,
   setLocalDesktopSetting,
-}: Props): Node =>
+}: Props): Node => isOpen &&
   <ModalDialog
-    isOpen={isOpen}
     onClose={() => setSettingsModalOpen(false)}
-    onDialogDismissed={() => setSettingsModalOpen(false)}
-    footer={
-      <Flex row style={{ justifyContent: 'flex-end' }}>
-        <ButtonGroup>
+    footer={() => (
+      <ModalFooter>
+        <Flex row style={{ justifyContent: 'flex-end', width: '100%' }}>
           <Button
             appearance="default"
             onClick={() => setSettingsModalOpen(false)}
           >
             Close
           </Button>
-        </ButtonGroup>
-      </Flex>
-    }
+        </Flex>
+      </ModalFooter>
+    )}
+    header={() => (
+      <ModalHeader>
+        <ModalTitle>Settings</ModalTitle>
+      </ModalHeader>
+    )}
   >
     <ModalContentContainer>
-      <H700 style={{ marginBottom: 28, display: 'block' }}>Settings</H700>
       <Flex row style={{ height: 250 }}>
         <Flex column style={{ width: 85 }}>
           <SettingsSectionLabel

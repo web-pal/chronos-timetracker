@@ -5,7 +5,7 @@ import { Flex } from 'components';
 
 import type { StatelessFunctionalComponent, Node } from 'react';
 
-import { AlertModal, SettingsModal, SupportModal, AboutModal, WorklogModal } from '../Modals';
+import { AlertModal, SettingsModal, WorklogModal } from '../Modals';
 import Header from '../Header/Header';
 import Sidebar from '../Sidebar/Sidebar';
 import IssueView from '../IssueView/IssueView';
@@ -24,8 +24,6 @@ const Main: StatelessFunctionalComponent<Props> = (): Node =>
 
       <AlertModal />
       <SettingsModal />
-      <SupportModal />
-      <AboutModal />
       <WorklogModal />
       <Flex column style={{ flex: '0 0 435px' }}>
         <Header />

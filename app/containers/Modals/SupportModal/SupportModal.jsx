@@ -1,9 +1,9 @@
+// CAUTION! not migrated to 3.*.* version
 // @flow
 import React from 'react';
 import type { StatelessFunctionalComponent, Node } from 'react';
 import ModalDialog from '@atlaskit/modal-dialog';
-import ButtonGroup from '@atlaskit/button-group';
-import Button from '@atlaskit/button';
+import Button, { ButtonGroup } from '@atlaskit/button';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { paperClip } from 'data/svg';
@@ -28,13 +28,11 @@ type Props = {
 
 const SupportModal: StatelessFunctionalComponent<Props> = ({
   isOpen,
-  setSupportModalOpen
-}): Node =>
+  setSupportModalOpen,
+}): Node => isOpen &&
   <ModalDialog
-    isOpen={isOpen}
     onClose={() => setSupportModalOpen(false)}
-    onDialogDismissed={() => setSupportModalOpen(false)}
-    footer={
+    footer={(
       <Flex row style={{ justifyContent: 'flex-end' }}>
         <ButtonGroup>
           <Button appearance="primary">
@@ -45,7 +43,7 @@ const SupportModal: StatelessFunctionalComponent<Props> = ({
           </Button>
         </ButtonGroup>
       </Flex>
-    }
+    )}
   >
     <Flex column style={{ margin: '20px 10px 10px 4px' }}>
       <H700 style={{ marginBottom: 28 }}>Have a question?</H700>
