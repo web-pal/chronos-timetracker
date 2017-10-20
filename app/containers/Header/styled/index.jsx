@@ -94,3 +94,9 @@ export const DropdownUpdateItem = styled(DropdownItem)`
     color: #FF8B00 !important;
   }
 `;
+
+export const DropdownProgressBar = styled.div`
+  width: ${props => props.width}px;
+  height: 3px;
+  background: #FF8B00;
+`;

@@ -28,6 +28,7 @@ import {
   UpdateAvailableBadge,
   DropdownLogoutItem,
   DropdownUpdateItem,
+  DropdownProgressBar,
 } from './styled';
 
 import type {
@@ -129,6 +130,9 @@ const Header: StatelessFunctionalComponent<Props> = ({
                 <Spinner size={16} />
               </Flex>
             </DropdownItem>
+          }
+          {updateFetching &&
+            <DropdownProgressBar width={60} />
           }
           <DropdownSeparator />
           <DropdownLogoutItem onClick={logoutRequest}>
