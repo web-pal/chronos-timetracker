@@ -92,7 +92,9 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
         : <StartButton
           src={play}
           alt="Start Tracking"
-          onClick={() => { startTimer(); }}
+          onClick={() => {
+            startTimer();
+          }}
         />
       }
     </Flex>

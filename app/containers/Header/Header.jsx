@@ -1,3 +1,4 @@
+/* global mixpanel */
 // @flow
 import React from 'react';
 import type { StatelessFunctionalComponent, Node } from 'react';
@@ -85,7 +86,12 @@ const Header: StatelessFunctionalComponent<Props> = ({
         position="bottom right"
       >
         <DropdownItemGroup>
-          <DropdownItem onClick={() => setSettingsModalOpen(true)}>
+          <DropdownItem
+            onClick={() => {
+              mixpanel.track('Opened Settings');
+              setSettingsModalOpen(true);
+            }}
+          >
             Settings
           </DropdownItem>
           <DropdownItem
@@ -107,7 +113,12 @@ const Header: StatelessFunctionalComponent<Props> = ({
           */}
           <DropdownSeparator />
           {updateAvailable && !updateFetching &&
-            <DropdownUpdateItem onClick={installUpdateRequest}>
+            <DropdownUpdateItem
+              onClick={() => {
+                mixpanel.track('Clicked "Install Update"');
+                installUpdateRequest();
+              }}
+            >
               {updateAvailable} is out! Update now
             </DropdownUpdateItem>
           }
