@@ -5,7 +5,8 @@
       "useBuiltIns": true
     }],
     "stage-0",
-    "react"
+    "react",
+    "flow"
   ],
   "plugins": ["add-module-exports"],
   "env": {
@@ -15,6 +16,7 @@
     },
     "development": {
       "plugins": [
+        "transform-flow-strip-types",
         "transform-class-properties",
         "transform-decorators-legacy",
         "transform-es2015-classes",

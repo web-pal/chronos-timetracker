@@ -126,7 +126,7 @@ export function makeScreenshot(
               remote.getGlobal('sharedObj').nativeNotifications = nativeNotifications;
 
               if (showPreview) {
-                ipcRenderer.send('showScreenPreviewPopup');
+                ipcRenderer.send('show-screenshot-popup');
               } else {
                 ipcRenderer.send('screenshot-accept');
               }

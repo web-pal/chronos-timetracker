@@ -1,13 +1,14 @@
+// @flow
 import React from 'react';
-import PropTypes from 'prop-types';
-import { Field } from 'redux-form/immutable';
-
+import { Field, FormProps } from 'redux-form';
+import { Flex } from 'components';
 import Spinner from '@atlaskit/spinner';
 import Button from '@atlaskit/button';
-
 import { jiraIcon, lockBlue } from 'data/svg';
+
 import { renderField } from '../Form';
-import Flex from '../../../components/Base/Flex/Flex';
+import type { ProfileAction } from '../../../types';
+
 
 import {
   ContentInner,
@@ -20,9 +21,17 @@ import {
   BackButtonContainer,
 } from '../styled';
 
+type Props = {
+  loginError: string,
+  onContinue: () => ProfileAction,
+  isActiveStep: boolean,
+  onBack: () => ProfileAction,
+  loginRequestInProcess: boolean,
+} & FormProps
+
 const EmailStep = ({
-  error, onContinue, onJiraClick, isActiveStep, onBack, loginRequestInProcess,
-}) => (
+  loginError, onContinue, onJiraClick, isActiveStep, onBack, loginRequestInProcess,
+}: Props) =>
   <ContentInner isActiveStep={isActiveStep} step={2}>
     <ContentIconContainer>
       <Lock src={lockBlue} alt="" width="18" />
@@ -36,22 +45,29 @@ const EmailStep = ({
         Log in with JIRA
       </OauthButton>
       <ContentSeparator>OR</ContentSeparator>
-      <Field
-        name="username"
-        placeholder="Enter email"
-        component={renderField}
-        type="text"
-        autoFocus
-        disabled={loginRequestInProcess}
-      />
+      {isActiveStep &&
+        <Field
+          name="username"
+          placeholder="Enter email"
+          component={renderField}
+          type="text"
+          autoFocus
+          disabled={loginRequestInProcess}
+        />
+      }
       <Field
         name="password"
         placeholder="Enter password"
         component={renderField}
         type="password"
         disabled={loginRequestInProcess}
+        onKeyPress={(e) => {
+          if (e.key === 'Enter') {
+            onContinue();
+          }
+        }}
       />
-      <Error>{error}</Error>
+      <Error>{loginError}</Error>
     </Flex>
     <PrimaryButton onClick={onContinue}>
       {loginRequestInProcess ?
@@ -66,19 +82,6 @@ const EmailStep = ({
         Back
       </Button>
     </BackButtonContainer>
-  </ContentInner>
-);
-
-/* eslint-disable react/require-default-props */
-/* if default props are passed, redux-form doesn't pass props for some reason */
-EmailStep.propTypes = {
-  error: PropTypes.string,
-  onContinue: PropTypes.func,
-  onJiraClick: PropTypes.func.isRequired,
-  isActiveStep: PropTypes.bool.isRequired,
-  onBack: PropTypes.func.isRequired,
-  loginRequestInProcess: PropTypes.bool.isRequired,
-};
-/* eslint-enable react/require-default-props */
+  </ContentInner>;
 
 export default EmailStep;

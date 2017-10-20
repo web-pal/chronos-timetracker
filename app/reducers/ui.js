@@ -1,45 +1,100 @@
-import * as types from '../constants/ui';
+// @flow
+import { types } from 'actions';
+import type { Action, UiState } from '../types';
 
-const InitialState = Immutable.Record({
-  sidebarType: 'All',
+const initialState: UiState = {
+  authFormStep: 1,
+  sidebarType: 'all',
+  issueViewTab: 'Details',
+  updateCheckRunning: false,
   updateAvailable: null,
   updateFetching: false,
-  downloadingUpdate: false,
-  showSettingsModal: false,
-  issueViewTab: 'Details',
-  showTrackingView: false,
-  showSidebarFilters: false,
-  showSupportModal: false,
-  showAboutModal: false,
-  showAlertModal: false,
-});
+  sidebarFiltersOpen: false,
+  settingsModalOpen: false,
+  supportModalOpen: false,
+  aboutModalOpen: false,
+  alertModalOpen: false,
+  worklogModalOpen: false,
+  flags: [],
+};
 
-const initialState = new InitialState();
-
-export default function ui(state = initialState, action) {
+export default function ui(state: UiState = initialState, action: Action) {
   switch (action.type) {
-    case types.SET_UPDATE_DOWNLOAD_STATE:
-      return state.set('downloadingUpdate', action.payload);
-    case types.NOTIFY_UPDATE_AVAILABLE:
-      return state.set('updateAvailable', action.payload);
-    case types.SET_UPDATE_FETCH_STATE:
-      return state.set('updateFetching', action.payload);
+    case types.SET_AUTH_FORM_STEP:
+      return {
+        ...state,
+        authFormStep: action.payload,
+      };
     case types.SET_SIDEBAR_TYPE:
-      return state.set('sidebarType', action.payload);
-    case types.SET_SHOW_SETTINGS_MODAL:
-      return state.set('showSettingsModal', action.payload);
-    case types.SET_SHOW_TRACKING_VIEW:
-      return state.set('showTrackingView', action.payload);
+      return {
+        ...state,
+        sidebarType: action.payload,
+      };
     case types.SET_ISSUE_VIEW_TAB:
-      return state.set('issueViewTab', action.payload);
-    case types.SET_SHOW_SIDEBAR_FILTERS:
-      return state.set('showSidebarFilters', action.payload);
-    case types.SET_SHOW_SUPPORT_MODAL:
-      return state.set('showSupportModal', action.payload);
-    case types.SET_SHOW_ABOUT_MODAL:
-      return state.set('showAboutModal', action.payload);
-    case types.SET_SHOW_ALERT_MODAL:
-      return state.set('showAlertModal', action.payload);
+      return {
+        ...state,
+        issueViewTab: action.payload,
+      };
+    case types.SET_UPDATE_CHECK_RUNNING:
+      return {
+        ...state,
+        updateCheckRunning: action.payload,
+      };
+    case types.SET_UPDATE_AVAILABLE:
+      return {
+        ...state,
+        updateAvailable: action.payload,
+      };
+    case types.SET_UPDATE_FETCHING:
+      return {
+        ...state,
+        updateFetching: action.payload,
+      };
+    case types.SET_SIDEBAR_FILTERS_OPEN:
+      return {
+        ...state,
+        sidebarFiltersOpen: action.payload,
+      };
+    case types.SET_SETTINGS_MODAL_OPEN:
+      return {
+        ...state,
+        settingsModalOpen: action.payload,
+      };
+    case types.SET_SUPPORT_MODAL_OPEN:
+      return {
+        ...state,
+        supportModalOpen: action.payload,
+      };
+    case types.SET_ABOUT_MODAL_OPEN:
+      return {
+        ...state,
+        aboutModalOpen: action.payload,
+      };
+    case types.SET_ALERT_MODAL_OPEN:
+      return {
+        ...state,
+        alertModalOpen: action.payload,
+      };
+    case types.SET_WORKLOG_MODAL_OPEN:
+      return {
+        ...state,
+        worklogModalOpen: action.payload,
+      };
+    case types.REMOVE_FLAG:
+      return {
+        ...state,
+        flags: state.flags.slice(1),
+      };
+    case types.ADD_FLAG:
+      return {
+        ...state,
+        flags: [...state.flags, {
+          ...action.payload,
+          id: state.flags.length,
+        }],
+      };
+    case types.___CLEAR_ALL_REDUCERS___:
+      return initialState;
     default:
       return state;
   }

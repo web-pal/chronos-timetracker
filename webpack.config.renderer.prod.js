@@ -8,13 +8,13 @@ import ExtractTextPlugin from 'extract-text-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import SentryPlugin from 'webpack-sentry-plugin';
 import merge from 'webpack-merge';
-import BabiliPlugin from 'babili-webpack-plugin';
+// import BabiliPlugin from 'babili-webpack-plugin';
 import baseConfig from './webpack.config.base';
 import pjson from './package.json';
 
 const plugins = [
   new webpack.DefinePlugin({
-    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
   }),
   // Define global vars
   new webpack.ProvidePlugin({
@@ -23,13 +23,15 @@ const plugins = [
   /**
     * Babli is an ES6+ aware minifier based on the Babel toolchain (beta)
     */
-  new BabiliPlugin(),
+  // new BabiliPlugin(),
 
-  new ExtractTextPlugin('style.css'),
+  new ExtractTextPlugin({
+    filename: 'name.css',
+  }),
 
   new BundleAnalyzerPlugin({
     analyzerMode: process.env.OPEN_ANALYZER === 'true' ? 'server' : 'disabled',
-    openAnalyzer: process.env.OPEN_ANALYZER === 'true'
+    openAnalyzer: process.env.OPEN_ANALYZER === 'true',
   }),
 ];
 
@@ -41,7 +43,7 @@ if (process.env.UPLOAD_SENTRY !== '0') {
       project: 'chronos-desktop',
       apiKey: '9eacb1fa468a41b29bd005a1a46c039644fe1ca5ea614540b9e6b03db719a5ee',
       release: `${pjson.version}_${process.platform}`,
-    })
+    }),
   );
 }
 
@@ -62,18 +64,34 @@ export default merge.smart(baseConfig, {
     filename: '[name]-bundle.js'
   },
 
+  resolve: {
+    extensions: ['.js', '.jsx', '.json'],
+    modules: [
+      path.join(__dirname, 'app/actions'),
+      path.join(__dirname, 'app/types'),
+      path.join(__dirname, 'app/components'),
+      path.join(__dirname, 'app/utils'),
+      path.join(__dirname, 'app/selectors'),
+      path.join(__dirname, 'app/styles'),
+      'node_modules',
+    ],
+  },
+
   module: {
     rules: [
       {
         test: /\.less$/,
-        use: ExtractTextPlugin.extract({
-          use: [{
-            loader: 'css-loader'
-          }, {
+        use: [
+          {
+            loader: 'style-loader',
+          },
+          {
+            loader: 'css-loader',
+          },
+          {
             loader: 'less-loader',
-          }],
-          fallback: 'style-loader'
-        }),
+          },
+        ],
       },
       // WOFF Font
       {

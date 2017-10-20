@@ -1,87 +1,61 @@
-import { remote } from 'electron';
-import { checkUpdates } from 'config';
+// @flow
+import * as types from './actionTypes';
+import type {
+  Tick, TickAction,
+  StartTimer, StartTimerAction,
+  StopTimer, StopTimerAction,
+  StopTimerRequest, StopTimerRequestAction,
+  SetIdleState, SetIdleStateAction,
+  SetLastScreenshotTime, SetLastScreenshotTimeAction,
+  ResetTimer, ResetTimerAction,
+  AddScreenshot, AddScreenshotAction,
+  SetScreenshotPeriods, SetScreenshotPeriodsAction,
+  AddIdleTime, AddIdleTimeAction,
+  Screenshot, Idle,
+} from '../types';
 
-import * as types from '../constants';
+export const tick: Tick = (): TickAction => ({ type: types.TICK });
+export const startTimer: StartTimer = (): StartTimerAction => ({ type: types.START_TIMER });
+export const stopTimer: StopTimer = (): StopTimerAction => ({ type: types.STOP_TIMER });
+export const stopTimerRequest: StopTimerRequest = (): StopTimerRequestAction => ({
+  type: types.STOP_TIMER_REQUEST,
+});
 
-const { autoUpdater } = remote.require('electron-updater');
+export const setIdleState: SetIdleState = (
+  payload: boolean,
+): SetIdleStateAction => ({
+  type: types.SET_IDLE_STATE,
+  payload,
+});
 
-export function tick() {
-  return {
-    type: types.TICK,
-  };
-}
+export const setLastScreenshotTime: SetLastScreenshotTime = (
+  payload: number,
+): SetLastScreenshotTimeAction => ({
+  type: types.SET_LAST_SCREENSHOT_TIME,
+  payload,
+});
 
-export function dismissIdleTime(time) {
-  return {
-    type: types.DISMISS_IDLE_TIME,
-    payload: time,
-  };
-}
+export const resetTimer: ResetTimer = (): ResetTimerAction => ({ type: types.RESET_TIMER });
 
-export function saveKeepedIdle(payload) {
-  return {
-    type: types.SAVE_KEEP_IDLE,
-    payload,
-  };
-}
+export const addScreenshot: AddScreenshot = (
+  screenshot: Screenshot,
+  screenshotTime: number,
+): AddScreenshotAction => ({
+  type: types.ADD_SCREENSHOT,
+  payload: screenshot,
+  meta: screenshotTime,
+});
 
-export function normalizeScreenshotsPeriods() {
-  return {
-    type: types.NORMALIZE_SCREENSHOTS_PERIODS,
-  };
-}
+export const setScreenshotPeriods: SetScreenshotPeriods = (
+  payload: Array<number>,
+): SetScreenshotPeriodsAction => ({
+  type: types.SET_SCREENSHOT_PERIODS,
+  payload,
+});
 
-export function cutIddlesFromLastScreenshot() {
-  return {
-    type: types.CUT_IDDLES_FROM_LAST_SCREENSHOT,
-  };
-}
-
-export function cutIddles(payload) {
-  return {
-    type: types.CUT_IDDLES,
-    payload,
-  };
-}
-
-export function setForceQuitFlag(callback = true) {
-  return {
-    type: types.SET_FORCE_QUIT_FLAG,
-    payload: callback,
-  };
-}
-
-export function startTimer() {
-  return {
-    type: types.START_TIMER,
-  };
-}
-
-export function stopTimerRequest() {
-  return {
-    type: types.STOP_TIMER_REQUEST,
-  };
-}
-
-export function stopTimer() {
-  if (checkUpdates) {
-    autoUpdater.checkForUpdates();
-  }
-  return {
-    type: types.STOP_TIMER,
-  };
-}
-
-export function savePeriods(periods) {
-  return {
-    type: types.SET_PERIODS,
-    payload: periods,
-  };
-}
-
-export function deleteScreenshotRequest(image) {
-  return {
-    type: types.DELETE_SCREENSHOT_REQUEST,
-    payload: image,
-  };
-}
+export const addIdleTime: AddIdleTime = (
+  payload: Idle,
+): AddIdleTimeAction => ({
+  type: types.ADD_IDLE_TIME,
+  payload,
+});

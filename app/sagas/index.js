@@ -1,87 +1,50 @@
-import { fork } from 'redux-saga/effects';
+// @flow
+import { all, fork } from 'redux-saga/effects';
 
-import {
-  loginFlow,
-  loginOAuthFlow,
-  checkJWT,
-  localDesktopSettings,
-} from './profile';
-import {
-  getProjects,
-  onSelectProject,
-  whatchBoardSelection,
-  onSelectSprint,
-} from './projects';
-import {
-  watchGetIssues, watchGetIssue, watchRecentIssues,
-  watchSearchIssues, watchChangeSidebar,
-  watchGetIssueTypes, watchGetIssueStatuses,
-  watchIssuesCriteriaFilter, watchFilterIssues,
-  watchIssuesCriteriaFilterDelete, onSetFilters,
-  watchSelectIssue,
-  jumpToTrackingIssue,
-} from './issues';
-import {
-  watchSelectWorklogs, watchUploadScreenshot,
-  watchRejectScreenshot, uploadOfflineScreenshots,
-  uploadOfflineWorklogs, updateWorklogTypeRequest,
-} from './worklogs';
-import {
-  manageTimer,
-  cutIddlesFromLastScreenshot,
-  normalizePeriods,
-  deleteScreenshot,
-  watchStopTimerRequest,
-} from './timer';
-import {
-  watchStopTimer as watchStopTimerUI,
-  watchChangeSidebarTab as watchChangeSidebarTabUI,
-} from './ui';
+import * as settingsSagas from './settings';
+import * as profileSagas from './profile';
+import * as projectSagas from './projects';
+import * as issueSagas from './issues';
+import * as timerSagas from './timer';
+import * as worklogsSagas from './worklogs';
+import * as updaterSagas from './updater';
+import * as uiSagas from './ui';
 
+export default function* rootSaga(): Generator<*, *, *> {
+  yield all([
+    // profile
+    fork(profileSagas.loginFlow),
+    fork(profileSagas.loginOAuthFlow),
+    fork(profileSagas.logoutFlow),
+    fork(profileSagas.checkJWT),
 
-export default function* root() {
-  yield [
-    fork(loginFlow),
-    fork(loginOAuthFlow),
-    fork(checkJWT),
-    fork(localDesktopSettings),
+    // projects
+    fork(projectSagas.watchFetchProjectsRequest),
+    fork(projectSagas.watchFetchSprintsRequest),
+    fork(projectSagas.watchProjectSelection),
 
-    fork(getProjects),
-    fork(onSelectProject),
-    fork(onSelectSprint),
+    // issues
+    fork(issueSagas.watchFetchIssuesRequest),
+    fork(issueSagas.watchSidebarTabChange),
+    fork(issueSagas.watchFiltersChange),
 
-    fork(watchGetIssues),
-    fork(whatchBoardSelection),
+    // timer
+    fork(timerSagas.watchStartTimer),
+    fork(timerSagas.createIpcListeners),
 
-    fork(onSetFilters),
-    fork(watchIssuesCriteriaFilter),
-    fork(watchIssuesCriteriaFilterDelete),
-    fork(watchFilterIssues),
-    fork(watchGetIssue),
-    fork(watchSearchIssues),
-    fork(watchRecentIssues),
+    // settings
+    fork(settingsSagas.localDesktopSettingsFlow),
 
-    fork(watchGetIssueTypes),
-    fork(watchGetIssueStatuses),
-    fork(jumpToTrackingIssue),
+    // worklogs
+    fork(worklogsSagas.addManualWorklogFlow),
 
-    fork(watchChangeSidebar),
+    // updater
+    fork(updaterSagas.watchInstallUpdateRequest),
+    fork(updaterSagas.initializeUpdater),
 
-    fork(watchSelectWorklogs),
-    fork(watchSelectIssue),
-    fork(watchUploadScreenshot),
-    fork(watchRejectScreenshot),
-    fork(uploadOfflineScreenshots),
-    fork(uploadOfflineWorklogs),
-    fork(updateWorklogTypeRequest),
-
-    fork(manageTimer),
-    fork(cutIddlesFromLastScreenshot),
-    fork(normalizePeriods),
-    fork(deleteScreenshot),
-    fork(watchStopTimerRequest),
-
-    fork(watchStopTimerUI),
-    fork(watchChangeSidebarTabUI),
-  ];
+    // ui
+    fork(uiSagas.watchSidebarTypeChange),
+    fork(uiSagas.watchSelectIssue),
+    fork(uiSagas.initializeTrayMenuListeners),
+  ]);
 }

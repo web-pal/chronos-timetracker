@@ -1,37 +1,47 @@
-import { Record, Map, fromJS } from 'immutable';
+// @flow
+import { types } from 'actions';
+import type { ProfileState, Action } from '../types';
 
-import * as types from '../constants';
-
-const InitialState = Record({
-  isAuthorized: false,
-  loginRequestInProcess: false,
-
+const initialState: ProfileState = {
+  authorized: false,
   host: null,
+  userData: null,
   loginError: '',
+  loginFetching: false,
+};
 
-  userData: Map(),
-});
-const initialState = new InitialState();
-
-
-export default function profile(state = initialState, action) {
+function profile(state: ProfileState = initialState, action: Action) {
   switch (action.type) {
-    case types.SET_AUTH_STATE:
-      return state.set('isAuthorized', action.payload);
-    case types.SET_LOGIN_REQUEST_STATE:
-      return state.set('loginRequestInProcess', action.payload);
-
-    case types.SET_CURRENT_HOST:
-      return state.set('host', action.payload);
+    case types.SET_AUTHORIZED:
+      return {
+        ...state,
+        authorized: action.payload,
+      };
+    case types.FILL_USER_DATA:
+      return {
+        ...state,
+        userData: action.payload,
+      };
+    case types.SET_HOST:
+      return {
+        ...state,
+        host: action.payload,
+      };
     case types.THROW_LOGIN_ERROR:
-      return state.set('loginError', action.payload.error);
-
-    case types.FILL_PROFILE:
-      return state.set('userData', fromJS(action.payload));
-
-    case types.CLEAR_ALL_REDUCERS:
-      return new InitialState();
+      return {
+        ...state,
+        loginError: action.payload,
+      };
+    case types.SET_LOGIN_FETCHING:
+      return {
+        ...state,
+        loginFetching: action.payload,
+      };
+    case types.___CLEAR_ALL_REDUCERS___:
+      return initialState;
     default:
       return state;
   }
 }
+
+export default profile;

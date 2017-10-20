@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import EditFilledIcon from '@atlaskit/icon/glyph/edit-filled';
 
 // background: #32A675 !important;
 // background: #172B4D !important;
@@ -14,11 +15,16 @@ export const Container = styled.div`
   height: 60px;
 `;
 
-export const NavButton = styled.img`
-  height: 20px;
+export const EditButton = styled(EditFilledIcon)`
   cursor: pointer;
-  transition: transform .2s ease-in-out;
-  transform: ${props => !props.isTrackingView ? 'rotate(0deg)' : 'rotate(180deg)'};
+  background: white;
+  height: 27px;
+  width: 27px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  padding: 2px;
 `;
 
 export const IssueName = styled.span`

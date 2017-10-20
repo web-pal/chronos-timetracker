@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Field } from 'redux-form/immutable';
+import { Field } from 'redux-form';
+import { Flex } from 'components';
 
 import { peopleBlue } from 'data/svg';
 import { renderField } from '../Form';
-import Flex from '../../../components/Base/Flex/Flex';
 
 import {
   ContentInner,
@@ -17,7 +17,17 @@ import {
 } from '../styled';
 
 const TeamStep = ({ onContinue, isActiveStep }) => (
-  <ContentInner isActiveStep={isActiveStep} step={1}>
+  <ContentInner
+    onKeyDown={(ev) => {
+      if (ev.key === 'Enter') {
+        ev.preventDefault();
+        ev.stopPropagation();
+        onContinue();
+      }
+    }}
+    isActiveStep={isActiveStep}
+    step={1}
+  >
     <ContentIconContainer>
       <Lock src={peopleBlue} alt="" width="24" />
     </ContentIconContainer>
@@ -32,8 +42,8 @@ const TeamStep = ({ onContinue, isActiveStep }) => (
           type="text"
           className="host"
           mask=".atlassian.net"
-          autoFocus
           underlined
+          autoFocus
         />
       </Form>
     </Flex>

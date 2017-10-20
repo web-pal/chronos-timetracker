@@ -1,34 +1,48 @@
-import { fromJS } from 'immutable';
+// @flow
+import { types } from 'actions';
+import type {
+  SettingsState,
+  Action,
+} from '../types';
 
-import * as types from '../constants/';
-
-
-const InitialState = Immutable.Record({
+const initialState: SettingsState = {
   dispersion: '0',
   interval: '600',
-
   screenshotsPeriod: 600,
   screenshotsQuantity: 1,
-
   screenshotsEnabled: '',
-  screenshotsEnabledUsers: Immutable.List([]),
-  localDesktopSettings: Immutable.Map({}),
-});
-const initialState = new InitialState();
+  modalTab: 'General',
+  screenshotsEnabledUsers: [],
+  localDesktopSettings: {},
+};
 
-export default function settings(state = initialState, action) {
+export default function settings(state: SettingsState = initialState, action: Action) {
   switch (action.type) {
     case types.FILL_SETTINGS:
-      return state.merge(fromJS(action.payload));
+      return {
+        ...state,
+        ...action.payload,
+      };
     case types.FILL_LOCAL_DESKTOP_SETTINGS:
-      return state.set('localDesktopSettings', fromJS(action.payload));
-    case types.SET_LOCAL_DESKTOP_SETTINGS:
-      return state.update(
-        'localDesktopSettings',
-        s => s.set(action.meta, action.payload),
-      );
-    case types.CLEAR_ALL_REDUCERS:
-      return new InitialState();
+      return {
+        ...state,
+        localDesktopSettings: action.payload,
+      };
+    case types.SET_SETTINGS_MODAL_TAB:
+      return {
+        ...state,
+        modalTab: action.payload,
+      };
+    case types.SET_LOCAL_DESKTOP_SETTING:
+      return {
+        ...state,
+        localDesktopSettings: {
+          ...state.localDesktopSettings,
+          [action.meta]: action.payload,
+        },
+      };
+    case types.___CLEAR_ALL_REDUCERS___:
+      return initialState;
     default:
       return state;
   }

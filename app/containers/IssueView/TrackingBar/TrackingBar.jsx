@@ -1,13 +1,18 @@
-import React, { PropTypes } from 'react';
-import ImmutablePropTypes from 'react-immutable-proptypes';
+// @flow
+import React from 'react';
+import type { StatelessFunctionalComponent, Node } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import moment from 'moment';
+import { getTimerTime, getTrackingIssue } from 'selectors';
+import { issuesActions, timerActions } from 'actions';
+import { Flex } from 'components';
 import { CSSTransitionGroup } from 'react-transition-group';
-import { arrowDownWhite, stopWhite } from 'data/svg';
-import Flex from '../../../components/Base/Flex/Flex';
+import { stopWhite } from 'data/svg';
+import moment from 'moment';
+
+import WorklogEditDialog from './WorklogEditDialog';
+import type { Issue, SelectIssue, StopTimerRequest } from '../../../types';
 import {
-  NavButton,
   IssueName,
   Dot,
   Time,
@@ -15,113 +20,88 @@ import {
   Container,
 } from './styled';
 
-
-import * as timerActions from '../../../actions/timer';
-import * as issuesActions from '../../../actions/issues';
-import * as uiActions from '../../../actions/ui';
-
-import { getTrackingIssue } from '../../../selectors';
-
-function addLeadingZero(s) {
-  return s < 10 ? `0${s}` : s;
+type Props = {
+  time: number,
+  screenshotUploading: boolean,
+  trackingIssue: Issue,
+  selectIssue: SelectIssue,
+  stopTimerRequest: StopTimerRequest,
 }
 
-const TrackingBar = ({
-  setShowTrackingView,
-  showTrackingView,
-  stopTimerRequest,
-  screenshotUploading,
-  time,
-  currentTrackingIssue,
-  selectIssue,
-  jumpToTrackingIssue,
-}) => {
+function addLeadingZero(s: number): string {
+  return s < 10 ? `0${s}` : `${s}`;
+}
+
+function getTimeString(time: number): string {
   const timeMoment = moment.duration(time * 1000);
-  const timeString = [
+  return [
     `${timeMoment.hours() ? `${addLeadingZero(timeMoment.hours())}:` : ''}`,
     `${addLeadingZero(timeMoment.minutes())}:${addLeadingZero(timeMoment.seconds())}`,
   ].join('');
+}
 
-  return (
-    <CSSTransitionGroup
-      transitionName="tracking-bar"
-      transitionAppear
-      transitionAppearTimeout={250}
-      transitionEnter={false}
-      transitionLeave={false}
-    >
-      <Container>
-        <NavButton
-          src={arrowDownWhite}
-          alt=""
-          onClick={() => setShowTrackingView(!showTrackingView)}
-          isTrackingView={showTrackingView}
-        />
-        <Flex row alignCenter>
-          <IssueName
-            onClick={() => {
-              selectIssue(currentTrackingIssue.get('id'));
-              jumpToTrackingIssue();
-            }}
-          >
-            {currentTrackingIssue.get('key')}
-          </IssueName>
-          <Dot />
-          <Time>
-            {timeString}
-          </Time>
-        </Flex>
-        <div
+const TrackingBar: StatelessFunctionalComponent<Props> = ({
+  time,
+  screenshotUploading,
+  trackingIssue,
+  selectIssue,
+  stopTimerRequest,
+}: Props): Node => (
+  <CSSTransitionGroup
+    transitionName="tracking-bar"
+    transitionAppear
+    transitionAppearTimeout={250}
+    transitionEnter={false}
+    transitionLeave={false}
+  >
+    <Container>
+      <WorklogEditDialog />
+      <Flex row alignCenter>
+        <IssueName
           onClick={() => {
-            if (screenshotUploading) {
-              // eslint-disable-next-line no-alert
-              window.alert(
-                'Currently app in process of uploading screenshot, wait few seconds please',
-              );
-            } else {
-              stopTimerRequest();
-            }
+            selectIssue(trackingIssue);
+            // jumpToTrackingIssue();
           }}
         >
-          <StopButton
-            src={stopWhite}
-            alt="stop"
-            onClick={stopTimerRequest}
-          />
-        </div>
-      </Container>
-    </CSSTransitionGroup>
-  );
-};
+          {trackingIssue.key}
+        </IssueName>
+        <Dot />
+        <Time>
+          {getTimeString(time)}
+        </Time>
+      </Flex>
+      <div
+        onClick={() => {
+          if (screenshotUploading) {
+            // eslint-disable-next-line no-alert
+            window.alert(
+              'Currently app in process of uploading screenshot, wait few seconds please',
+            );
+          } else {
+            stopTimerRequest();
+          }
+        }}
+      >
+        <StopButton
+          src={stopWhite}
+          alt="stop"
+          onClick={() => stopTimerRequest()}
+        />
+      </div>
+    </Container>
+  </CSSTransitionGroup>
+);
 
-TrackingBar.propTypes = {
-  stopTimerRequest: PropTypes.func.isRequired,
-  selectIssue: PropTypes.func.isRequired,
-  jumpToTrackingIssue: PropTypes.func.isRequired,
-
-  screenshotUploading: PropTypes.bool.isRequired,
-  time: PropTypes.number.isRequired,
-  currentTrackingIssue: ImmutablePropTypes.map.isRequired,
-
-  setShowTrackingView: PropTypes.func.isRequired,
-  showTrackingView: PropTypes.bool.isRequired,
-};
-
-function mapStateToProps({ timer, worklogs, issues, ui }) {
+function mapStateToProps(state) {
   return {
-    time: timer.time,
-    screenshotUploading: worklogs.meta.screenshotUploading,
-    currentTrackingIssue: getTrackingIssue({ issues, worklogs }),
-    showTrackingView: ui.showTrackingView,
+    time: getTimerTime(state),
+    screenshotUploading: false,
+    trackingIssue: getTrackingIssue(state),
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    ...timerActions,
-    ...issuesActions,
-    ...uiActions,
-  }, dispatch);
+  return bindActionCreators({ ...issuesActions, ...timerActions }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(TrackingBar);

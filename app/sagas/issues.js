@@ -1,145 +1,132 @@
+// @flow
 import { delay } from 'redux-saga';
-import { takeLatest, take, takeEvery, fork, throttle, put, call, select } from 'redux-saga/effects';
-import { normalize, schema } from 'normalizr';
-import storage from 'electron-json-storage';
-import Raven from 'raven-js';
+import { call, take, select, put, fork, takeEvery, takeLatest } from 'redux-saga/effects';
 import { ipcRenderer } from 'electron';
+import * as Api from 'api';
+import merge from 'lodash.merge';
+import Raven from 'raven-js';
 import {
-  fetchIssues, fetchIssue,
-  fetchSearchIssues, fetchRecentIssues,
-  fetchWorklogs,
-  fetchIssueTypes,
-  fetchIssueStatuses,
-  fetchChronosBackendWorklogs,
-} from 'api';
-import { setLoggedTodayOnTray } from '../helpers/time';
-import * as types from '../constants/';
-import { getAllIssues } from '../selectors';
-import { issueSchema, issueStatusCategorySchema } from '../schemas/';
+  getSelectedProject,
+  getSelectedSprintId,
+  getUserData,
+  getRecentIssueIds,
+  getIssuesSearchValue,
+  getFoundIssueIds,
+  getIssueFilters,
+} from 'selectors';
+import { issuesActions, types } from 'actions';
+import normalizePayload from 'normalize-util';
 
+import { throwError, infoLog } from './ui';
+import { getAdditionalWorklogsForIssues } from './worklogs';
 
-function* storeIssues({ issues, fillIssuesType, fillWorklogsType }) {
-  const normalizedData = normalize(issues, [issueSchema]);
-  yield put({
-    type: fillIssuesType,
-    payload: {
-      map: normalizedData.entities.issues,
-      ids: normalizedData.result,
-    },
-  });
-  if (normalizedData.entities.worklogs) {
-    yield put({
-      type: fillWorklogsType,
-      payload: {
-        map: normalizedData.entities.worklogs,
-        ids: Object.keys(normalizedData.entities.worklogs),
-      },
-    });
-  }
-}
+import type { FetchIssuesRequestAction, Project, Id, User, IssueFilters } from '../types';
 
-function* getAdditionalWorklogsForIssues({ incompleteIssues, fillIssuesType, fillWorklogsType }) {
+export function* fetchIssues({
+  payload: { startIndex, stopIndex, search },
+}: FetchIssuesRequestAction): Generator<*, *, *> {
   try {
-    const worklogs = yield call(fetchWorklogs, incompleteIssues);
-    const issues = incompleteIssues.map((issue) => {
-      const additionalWorklogs = worklogs.filter(w => w.issueId === issue.id);
-      if (additionalWorklogs.length) {
-        return {
-          ...issue,
-          fields: {
-            ...issue.fields,
-            worklog: {
-              total: additionalWorklogs.length,
-              worklogs: additionalWorklogs,
-            },
-          },
-        };
+    yield call(
+      infoLog,
+      'started fetchIssues',
+    );
+    yield put(issuesActions.setIssuesFetching(true));
+    if (search) {
+      yield put(issuesActions.setIssuesTotalCount(0));
+      yield put(issuesActions.clearFoundIssueIds());
+    }
+    const selectedProject: Project = yield select(getSelectedProject);
+    const selectedSprintId: Id = yield select(getSelectedSprintId);
+    const searchValue: string = yield select(getIssuesSearchValue);
+    const filters: IssueFilters = yield select(getIssueFilters);
+    const opts = {
+      startIndex,
+      stopIndex,
+      projectId: selectedProject.id,
+      projectType: selectedProject.type || 'project',
+      sprintId: selectedSprintId,
+      searchValue,
+      projectKey: selectedProject.key,
+      filters,
+    };
+    const response = yield call(Api.fetchIssues, opts);
+    yield call(
+      infoLog,
+      'fetchIssues response',
+      response,
+    );
+    const normalizedIssues = yield call(normalizePayload, response.issues, 'issues');
+    yield put(issuesActions.setIssuesTotalCount(response.total));
+    yield put(issuesActions.addIssues(normalizedIssues));
+    if (search) {
+      yield put(issuesActions.fillFoundIssueIds(normalizedIssues.ids));
+    } else {
+      const foundIssueIds = yield select(getFoundIssueIds);
+      if (foundIssueIds.length !== 0) {
+        yield put(issuesActions.addFoundIssueIds(normalizedIssues.ids));
       }
-      return issue;
-    });
-    yield storeIssues({
-      issues,
-      fillIssuesType,
-      fillWorklogsType,
-    });
+    }
+    yield put(issuesActions.setIssuesFetching(false));
   } catch (err) {
+    yield put(issuesActions.setIssuesFetching(false));
+    yield call(throwError, err);
     Raven.captureException(err);
   }
 }
 
-
-function* storeIssuesTypes({ issueTypes }) {
-  const savedFiltersType = yield select(state => state.issues.meta.issueCurrentCriteriaFilterType);
-  const issueTypeSchema = new schema.Entity('issueTypes', {}, {
-    processStrategy: value => ({ ...value, checked: savedFiltersType.has(value.id) }),
-  });
-  const normalizedData = normalize(issueTypes, [issueTypeSchema]);
-  const issuesIds =
-          normalizedData.result.filter(id => !(normalizedData.entities.issueTypes[id].subtask));
-  const subIssuesIds =
-          normalizedData.result.filter(id => (normalizedData.entities.issueTypes[id].subtask));
-  yield put({
-    type: types.FILL_ISSUES_ALL_TYPES,
-    payload: {
-      map: normalizedData.entities.issueTypes,
-      issuesIds,
-      subIssuesIds,
-    },
-  });
+export function* watchFetchIssuesRequest(): Generator<*, *, *> {
+  yield takeEvery(types.FETCH_ISSUES_REQUEST, fetchIssues);
 }
 
-function* storeIssuesStatuses({ issueStatuses }) {
-  const savedFiltersStatus = yield select(state =>
-    state.issues.meta.issueCurrentCriteriaFilterStatus);
-  const issueStatusSchema = new schema.Entity('issueStatus', {
-    statusCategory: issueStatusCategorySchema,
-  }, {
-    processStrategy: value => ({ ...value, checked: savedFiltersStatus.has(value.id) }),
-  });
-  const normalizedData = normalize(issueStatuses, [issueStatusSchema]);
-  yield put({
-    type: types.FILL_ISSUES_ALL_STATUSES,
-    payload: {
-      map: normalizedData.entities.issueStatus,
-      statusCategories: normalizedData.entities.issueStatusCategory,
-      ids: normalizedData.result,
-    },
-  });
-}
-
-
-function* getRecentIssues() {
+export function* fetchRecentIssues(): Generator<*, *, *> {
   try {
-    yield put({ type: types.SET_RECENT_ISSUES_FETCH_STATE, payload: true });
-
-    const currentProjectId = yield select(state => state.projects.meta.selectedProjectId);
-    const currentSprintId = yield select(state => state.projects.meta.selectedSprintId);
-    const currentProjectType = yield select(state => state.projects.meta.selectedProjectType);
-    const worklogAuthor = yield select(state => state.profile.userData.get('key'));
-    const showWorklogTypes = yield select(state => state.worklogs.meta.showWorklogTypes);
-
-    const { issues } = yield call(
-      fetchRecentIssues,
-      { currentProjectId, currentProjectType, currentSprintId, worklogAuthor },
+    yield call(
+      infoLog,
+      'started fetchRecentIssues',
     );
-    const incompleteIssues = issues.filter(issue => issue.fields.worklog.total > 20);
+    yield put(issuesActions.setRecentIssuesFetching(true));
+    const selectedProject: Project = yield select(getSelectedProject);
+    const selectedSprintId: Id = yield select(getSelectedSprintId);
+    const self: User = yield select(getUserData);
+    const opts = {
+      projectId: selectedProject.id,
+      projectType: selectedProject.type || 'project',
+      sprintId: selectedSprintId,
+      worklogAuthor: self.key,
+    };
+    const response = yield call(Api.fetchRecentIssues, opts);
+    yield call(
+      infoLog,
+      'fetchRecentIssues response:',
+      response,
+    );
+    let issues = response.issues;
+
+    const incompleteIssues = response.issues.filter(issue => issue.fields.worklog.total > 20);
     if (incompleteIssues.length) {
-      yield fork(
-        getAdditionalWorklogsForIssues,
-        {
-          incompleteIssues,
-          fillIssuesType: types.MERGE_RECENT_ISSUES,
-          fillWorklogsType: types.MERGE_RECENT_WORKLOGS,
-        },
+      yield call(
+        infoLog,
+        'found issues lacking worklogs, starting getAdditionalWorklogsForIssues: ',
+        incompleteIssues,
+      );
+      const _issues = yield call(getAdditionalWorklogsForIssues, incompleteIssues);
+      yield call(
+        infoLog,
+        'getAdditionalWorklogsForIssues response:',
+        _issues,
+      );
+
+      issues = merge(_issues, issues);
+      yield call(
+        infoLog,
+        'filled issues with lacking worklogs: ',
+        issues,
       );
     }
-
-    yield storeIssues({
-      issues,
-      fillIssuesType: types.FILL_RECENT_ISSUES,
-      fillWorklogsType: types.FILL_RECENT_WORKLOGS,
-    });
-
+    const normalizedIssues = yield call(normalizePayload, issues, 'issues');
+    yield put(issuesActions.addIssues(normalizedIssues));
+    yield put(issuesActions.fillRecentIssueIds(normalizedIssues.ids));
+    /* TODO
     if (showWorklogTypes) {
       const recentWorkLogsIds = yield select(
         state => state.worklogs.meta.recentWorkLogsIds.toArray(),
@@ -152,271 +139,70 @@ function* getRecentIssues() {
       });
     }
     const allWorklogs = yield select(state => state.worklogs.byId);
-    setLoggedTodayOnTray(allWorklogs, worklogAuthor);
-    yield put({ type: types.SET_RECENT_ISSUES_FETCH_STATE, payload: false });
+    setLoggedTodayOnTray(allWorklogs, worklogAuthor); */
+    yield put(issuesActions.setRecentIssuesFetching(false));
   } catch (err) {
+    yield put(issuesActions.setRecentIssuesFetching(false));
+    yield call(throwError, err);
     Raven.captureException(err);
   }
 }
 
-function* getIssueTypes() {
+export function* fetchIssueTypes(): Generator<*, *, *> {
   try {
-    yield put({ type: types.SET_ISSUES_ALL_TYPES_FETCH_STATE, payload: true });
-
-    const issueTypes = yield call(fetchIssueTypes);
-
-    yield storeIssuesTypes({
-      issueTypes,
-    });
-
-    yield put({ type: types.SET_ISSUES_ALL_TYPES_FETCH_STATE, payload: false });
+    const issueTypes = yield call(Api.fetchIssueTypes);
+    const normalizedData = normalizePayload(issueTypes, 'issueTypes');
+    yield put(issuesActions.fillIssueTypes(normalizedData));
   } catch (err) {
+    yield call(throwError, err);
     Raven.captureException(err);
   }
 }
 
-function* getIssueStatuses() {
+export function* fetchIssueStatuses(): Generator<*, *, *> {
   try {
-    yield put({ type: types.SET_ISSUES_ALL_STATUSES_FETCH_STATE, payload: true });
-    const issueStatuses = yield call(fetchIssueStatuses);
-    yield storeIssuesStatuses({
-      issueStatuses,
-    });
-    yield put({ type: types.SET_ISSUES_ALL_STATUSES_FETCH_STATE, payload: false });
+    const issueStatuses = yield call(Api.fetchIssueStatuses);
+    const normalizedData = normalizePayload(issueStatuses, 'issueStatuses');
+    yield put(issuesActions.fillIssueStatuses(normalizedData));
   } catch (err) {
+    yield call(throwError, err);
     Raven.captureException(err);
   }
 }
 
-function* searchIssues() {
-  yield put({ type: types.SET_SEARCH_ISSUES_FETCH_STATE, payload: true });
+function* onSidebarTabChange({ payload }: { payload: string }): Generator<*, *, *> {
+  try {
+    const tab: string = payload;
+    const recentIssueIds: Array<Id> = yield select(getRecentIssueIds);
+    if (tab === 'recent' && recentIssueIds.length === 0) {
+      yield fork(fetchRecentIssues);
+    }
+  } catch (err) {
+    yield call(throwError, err);
+    Raven.captureException(err);
+  }
+}
+
+export function* watchSidebarTabChange(): Generator<*, *, *> {
+  yield takeEvery(types.SET_SIDEBAR_TYPE, onSidebarTabChange);
+}
+
+function* handleIssueFiltersChange(): Generator<*, *, *> {
   yield call(delay, 500);
-
-  const currentProjectId = yield select(state => state.projects.meta.selectedProjectId);
-  const currentSprintId = yield select(state => state.projects.meta.selectedSprintId);
-  const currentProjectType = yield select(state => state.projects.meta.selectedProjectType);
-  let projectKey;
-  if (currentProjectType === 'project') {
-    projectKey = yield select(state => state.projects.byId.get(currentProjectId).get('key'));
-  }
-
-  let searchValue = yield select(state => state.issues.meta.searchValue);
-  if (/^\d+$/.test(searchValue)) {
-    const issues = yield select(state => state.issues.byId);
-    if (issues.size) {
-      const projectKeyForSearch = issues.first().get('key').split('-')[0];
-      searchValue = `${projectKeyForSearch}-${searchValue}`;
-    }
-  }
-
-  const issues = yield call(fetchSearchIssues, {
-    currentProjectId,
-    currentProjectType,
-    currentSprintId,
-    projectKey,
-    searchValue,
-  });
-  const incompleteIssues = issues.filter(issue => issue.fields.worklog.total > 20);
-  if (incompleteIssues.length) {
-    yield fork(
-      getAdditionalWorklogsForIssues,
-      {
-        incompleteIssues,
-        fillIssuesType: types.FILL_SEARCH_ISSUES,
-        fillWorklogsType: types.FILL_WORKLOGS,
-      },
-    );
-  }
-
-  yield storeIssues({
-    issues,
-    fillIssuesType: types.FILL_SEARCH_ISSUES,
-    fillWorklogsType: types.FILL_WORKLOGS,
-  });
-
-  yield put({ type: types.SET_SEARCH_ISSUES_FETCH_STATE, payload: false });
+  yield put(issuesActions.fetchIssuesRequest({ startIndex: 0, stopIndex: 10, search: true }));
 }
 
-function* getIssues({ pagination: { stopIndex, resolve } }) {
-  yield put({ type: types.SET_ISSUES_FETCH_STATE, payload: true });
-
-  const currentProjectId = yield select(state => state.projects.meta.selectedProjectId);
-  const currentSprintId = yield select(state => state.projects.meta.selectedSprintId);
-  const currentProjectType = yield select(state => state.projects.meta.selectedProjectType);
-  const fetched = yield select(state => state.issues.meta.fetched);
-  const startIndex = yield select(state => state.issues.meta.lastStopIndex);
-  const typeFiltresId = yield select(state =>
-    Array.from(state.issues.meta.issueCurrentCriteriaFilterType),
+export function* watchFiltersChange(): Generator<*, *, *> {
+  yield takeLatest(
+    [types.SET_ISSUES_SEARCH_VALUE, types.SET_ISSUES_FILTER],
+    handleIssueFiltersChange,
   );
-  const statusFiltresId = yield select(state =>
-    Array.from(state.issues.meta.issueCurrentCriteriaFilterStatus));
-  const assigneeFiltresId = yield select(state =>
-    Array.from(state.issues.meta.issueCurrentCriteriaFilterAssignee));
-
-  const newStopIndex = stopIndex + 30;
-  yield put({ type: types.SET_LAST_STOP_INDEX, payload: newStopIndex });
-  let response = {};
-  try {
-    response = yield call(fetchIssues, {
-      startIndex,
-      stopIndex: newStopIndex,
-      currentProjectId,
-      currentProjectType,
-      currentSprintId,
-      typeFiltresId,
-      statusFiltresId,
-      assigneeFiltresId,
-    });
-  } catch (err) {
-    Raven.captureException(err);
-  }
-  const { issues } = response;
-  const { total } = response;
-  const incompleteIssues = issues.filter(issue => issue.fields.worklog.total > 20);
-  if (incompleteIssues.length) {
-    yield fork(
-      getAdditionalWorklogsForIssues,
-      {
-        incompleteIssues,
-        fillIssuesType: types.FILL_ISSUES,
-        fillWorklogsType: types.FILL_WORKLOGS,
-      },
-    );
-  }
-
-  yield storeIssues({
-    issues,
-    fillIssuesType: types.FILL_ISSUES,
-    fillWorklogsType: types.FILL_WORKLOGS,
-  });
-
-  if (!fetched) {
-    yield put({ type: types.SET_ISSUES_FETCHED_STATE, payload: true });
-  }
-  if (resolve) {
-    resolve();
-  }
-  yield put({ type: types.SET_ISSUES_COUNT, payload: total });
-  yield put({ type: types.SET_ISSUES_FETCH_STATE, payload: false });
 }
 
-
-function* getIssue(issueId) {
-  try {
-    const response = yield call(fetchIssue, issueId);
-    yield storeIssues({
-      issues: [response],
-      fillIssuesType: types.FILL_ISSUES,
-      fillWorklogsType: types.FILL_WORKLOGS,
-    });
-  } catch (err) {
-    Raven.captureException(err);
-  }
-}
-
-
-function* findSelectedIndex({ payload }) {
-  if (payload === 'All') {
-    const selectedIssueId = yield select(state => state.issues.meta.selectedIssueId);
-    const selectedIssueIndex = yield select(state => state.issues.meta.selectedIssueIndex);
-    const allIssues = yield select(getAllIssues);
-    let index = allIssues.findIndex(i => i.get('id') === selectedIssueId);
-    if (index === selectedIssueIndex) {
-      index = index === 0 ? 1 : index - 1;
-    }
-    yield put({ type: types.SET_SELECTED_INDEX, payload: index });
-  }
-}
-
-function* getIssuesAfterFiltersSelection() {
-  yield put({
-    type: types.FETCH_FILTER_ISSUES_REQUEST,
-    pagination: { startIndex: 0, stopIndex: 50 },
-    resolve: false,
-  });
-}
-
-export function* watchGetIssues() {
-  yield throttle(2000, types.FETCH_ISSUES_REQUEST, getIssues);
-}
-
-export function* watchFilterIssues() {
-  yield takeLatest(types.FETCH_FILTER_ISSUES_REQUEST, getIssues);
-}
-
-export function* watchGetIssue() {
+export function* watchIssueSelect(): Generator<*, *, *> {
   while (true) {
-    const { payload } = yield take(types.FETCH_ISSUE_REQUEST);
-    yield fork(getIssue, payload);
+    const { payload }: { payload: Id } = yield take(types.SELECT_ISSUE);
+    console.log(payload);
+    ipcRenderer.send('select-issue', payload);
   }
 }
-
-export function* watchIssuesCriteriaFilter() {
-  yield takeLatest(types.SET_ISSUES_CRITERIA_FILTER, getIssuesAfterFiltersSelection);
-}
-
-export function* watchIssuesCriteriaFilterDelete() {
-  yield takeLatest(types.DELETE_ISSUES_CRITERIA_FILTER, getIssuesAfterFiltersSelection);
-}
-
-export function* watchSearchIssues() {
-  yield takeLatest(types.FETCH_SEARCH_ISSUES_REQUEST, searchIssues);
-}
-
-export function* watchRecentIssues() {
-  yield throttle(2000, types.FETCH_RECENT_ISSUES_REQUEST, getRecentIssues);
-}
-
-export function* watchChangeSidebar() {
-  yield takeLatest(types.SET_SIDEBAR_TYPE, findSelectedIndex);
-}
-
-export function* jumpToTrackingIssue() {
-  while (true) {
-    yield take(types.JUMP_TO_TRACKING_ISSUE);
-    try {
-      yield call(findSelectedIndex, { payload: 'All' });
-    } catch (err) {
-      Raven.captureException(err);
-    }
-  }
-}
-
-export function* watchGetIssueTypes() {
-  yield takeLatest(types.FETCH_ISSUES_ALL_TYPES_REQUEST, getIssueTypes);
-}
-
-export function* watchGetIssueStatuses() {
-  yield takeLatest(types.FETCH_ISSUES_ALL_STATUSES_REQUEST, getIssueStatuses);
-}
-
-function* storeSelectedFilters(key) {
-  const selected = yield select(state =>
-    state.issues.meta[`issueCurrentCriteriaFilter${key}`]);
-  storage.set(`issueCurrentCriteriaFilter${key}`, Array.from(selected));
-}
-
-export function* onSetFilters() {
-  while (true) {
-    const { meta } = yield take([
-      types.SET_ISSUES_CRITERIA_FILTER,
-      types.DELETE_ISSUES_CRITERIA_FILTER,
-    ]);
-    yield take(types.FILL_ISSUES);
-    yield* storeSelectedFilters(meta.criteriaName);
-  }
-}
-
-function* onSelectIssue({ payload }) {
-  const issue = yield select(state => state.issues.byId.get(payload));
-  ipcRenderer.send('selectTask', issue.get('key'));
-  yield put({
-    type: types.SET_ISSUE_VIEW_TAB,
-    payload: 'Details',
-  });
-}
-
-export function* watchSelectIssue() {
-  yield takeEvery(types.SELECT_ISSUE, onSelectIssue);
-}
-

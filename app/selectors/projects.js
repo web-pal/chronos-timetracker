@@ -1,86 +1,114 @@
+// @flow
 import { createSelector } from 'reselect';
+import type { ProjectsState, ProjectsMap, SprintsMap, BoardsMap, Id } from '../types';
 
-export const getProjectsMap = ({ projects }) => projects.byId;
-export const getProjectsIds = ({ projects }) => projects.allIds;
-export const getBoardsMap = ({ projects }) => projects.boardsById;
-export const getScrumBoardsIds = ({ projects }) => projects.allScrumBoards;
-export const getKanbanBoardsIds = ({ projects }) => projects.allKanbanBoards;
-export const getSprintsMap = ({ projects }) => projects.meta.sprintsById;
-export const getSprintsIds = ({ projects }) => projects.meta.sprintsId;
-export const getSelectedProjectId = ({ projects }) => projects.meta.get('selectedProjectId');
-export const getSelectedProjectType = ({ projects }) => projects.meta.get('selectedProjectType');
-export const getSelectedSprintId = ({ projects }) => projects.meta.get('selectedSprintId');
+export const getProjectsIds =
+  ({ projects } : { projects: ProjectsState }): Array<Id> => projects.allIds;
+
+export const getProjectsMap =
+  ({ projects } : { projects: ProjectsState }): ProjectsMap => projects.byId;
+
+export const getSprintsIds =
+  ({ projects } : { projects: ProjectsState }): Array<Id> => projects.allSprints;
+
+export const getSprintsMap =
+  ({ projects } : { projects: ProjectsState }): SprintsMap => projects.sprintsById;
+
+export const getBoardsIds =
+  ({ projects } : { projects: ProjectsState }): Array<Id> => projects.allBoards;
+
+export const getBoardsMap =
+  ({ projects } : { projects: ProjectsState }): BoardsMap => projects.boardsById;
 
 export const getProjects = createSelector(
   [getProjectsIds, getProjectsMap],
-  (ids, map) => ids.map(id => map.get(id)),
-);
-
-export const getProjectsOptions = createSelector(
-  [getProjectsIds, getProjectsMap],
-  (ids, map) => [
-    { divider: true, disabled: true, dividerName: 'Projects' },
-    ...(ids.toArray().map(id => ({
-      value: id,
-      divider: false,
-      label: map.getIn([id, 'name']),
-      type: 'project',
-    }))),
-  ],
-);
-export const getScrumBoardsOptions = createSelector(
-  [getScrumBoardsIds, getBoardsMap],
-  (ids, map) => [
-    { divider: true, disabled: true, dividerName: 'Scrum Boards' },
-    ...(ids.toArray().map(id => ({
-      value: id,
-      divider: false,
-      label: map.getIn([`${id}`, 'name']), // converting id to a string
-      type: 'scrum',
-    }))),
-  ],
-);
-export const getKanbanBoardsOptions = createSelector(
-  [getKanbanBoardsIds, getBoardsMap],
-  (ids, map) => [
-    { divider: true, disabled: true, dividerName: 'Kanban Boards' },
-    ...(ids.toArray().map(id => ({
-      value: id,
-      divider: false,
-      label: map.getIn([`${id}`, 'name']), // converting id to a string
-      type: 'kanban',
-    }))),
-  ],
-);
-
-export const getSelectedProject = createSelector(
-  [getSelectedProjectId, getProjectsMap],
-  (id, map) => map.get(id) || Immutable.Map(),
-);
-
-export const getSelectedProjectOption = createSelector(
-  [getSelectedProjectId, getSelectedProjectType, getProjectsMap, getBoardsMap],
-  (id, type, projectsMap, boardsMap) => {
-    const r = (id ? ({
-      value: id,
-      label: (type !== 'project' ? boardsMap : projectsMap).getIn([`${id}`, 'name']),
-    }) : null);
-    return r;
+  (ids, map) => {
+    const projects = [];
+    ids.forEach(id => projects.push(map[id]));
+    return projects;
   },
-);
-
-export const getSelectedSprintOption = createSelector(
-  [getSelectedSprintId, getSprintsMap],
-  (id, map1) => (id ? ({
-    value: id,
-    label: map1.getIn([`${id}`, 'name']),
-  }) : null),
 );
 
 export const getSprints = createSelector(
   [getSprintsIds, getSprintsMap],
-  (ids, map) => ids.map(id => ({
-    value: id,
-    label: map.getIn([`${id}`, 'name']),
-  })).toArray(),
+  (ids, map) => {
+    const sprints = [];
+    ids.forEach(id => sprints.push(map[id]));
+    return sprints;
+  },
+);
+
+export const getBoards = createSelector(
+  [getBoardsIds, getBoardsMap],
+  (ids, map) => {
+    const boards = [];
+    ids.forEach(id => boards.push(map[id]));
+    return boards;
+  },
+);
+
+export const getProjectsFetching =
+  ({ projects } : { projects: ProjectsState }): boolean => projects.meta.fetching;
+
+export const getSprintsFetching =
+  ({ projects } : { projects: ProjectsState }): boolean => projects.meta.sprintsFetching;
+
+export const getSelectedProjectId =
+  ({ projects } : { projects: ProjectsState }): Id | null => projects.meta.selectedProjectId;
+
+export const getSelectedProjectType =
+  ({ projects } : { projects: ProjectsState }): Id | null => projects.meta.selectedProjectType;
+
+export const getSelectedSprintId =
+  ({ projects } : { projects: ProjectsState }): Id | null => projects.meta.selectedSprintId;
+
+export const getSelectedProject = createSelector(
+  [getSelectedProjectId, getProjectsMap],
+  (id, map) => (id ? map[id] : null),
+);
+
+export const getSelectedProjectOption = createSelector(
+  [getSelectedProject],
+  (project) => (project
+    ? ({ value: project.id, content: project.name, meta: { project } })
+    : null
+  ),
+);
+
+export const getSelectedSprint = createSelector(
+  [getSelectedSprintId, getSprintsMap],
+  (id, map) => (id ? map[id] : null),
+);
+
+export const getSelectedSprintOption = createSelector(
+  [getSelectedSprint],
+  (sprint) => (sprint
+    ? ({ value: sprint.id, content: sprint.name, meta: { sprint } })
+    : null
+  ),
+);
+
+export const getProjectsOptions = createSelector(
+  [getProjects, getBoards],
+  (projects, boards) => [
+    {
+      heading: 'Projects',
+      items: projects.map((project) =>
+        ({ value: project.id, content: project.name, meta: { project } })),
+    },
+    {
+      heading: 'Boards',
+      items: boards.map((board) =>
+        ({ value: board.id, content: board.name, meta: { board } })),
+    },
+  ],
+);
+
+export const getSprintsOptions = createSelector(
+  [getSprints],
+  (sprints) => [{
+    heading: 'Sprints',
+    items: sprints.map((sprint) =>
+      ({ value: sprint.id, content: sprint.name, meta: { sprint } })),
+  }],
 );

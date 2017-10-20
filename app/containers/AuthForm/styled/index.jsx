@@ -54,6 +54,7 @@ export const ContentInner = styled.div`
     if (props.isActiveStep) return 0;
     if (props.step === 1) return -380;
     if (props.step === 2) return 380;
+    return 0;
   }}px;
   transition: left 0.3s ease-in-out;
   background-color: white;

@@ -1,51 +1,87 @@
-import * as types from '../constants/';
+// @flow
+import type {
+  LoginRequest, LoginRequestAction,
+  LoginOAuthRequest, LoginOAuthRequestAction,
+  DenyOAuth, DenyOAuthAction,
+  AcceptOAuth, AcceptOAuthAction,
+  CheckJWTRequest, CheckJWTRequestAction,
+  LogoutRequest, LogoutRequestAction,
+  SetAuthorized, SetAuthorizedAction,
+  ThrowLoginError, ThrowLoginErrorAction,
+  FillUserData, FillUserDataAction,
+  SetHost, SetHostAction,
+  SetLoginFetching, SetLoginFetchingAction,
+  LoginError, AuthFormData, User,
+} from '../types';
 
+import * as types from './actionTypes/';
 
-export function login(data, backendLogin = true) {
-  return {
-    type: types.LOGIN_REQUEST,
-    backendLogin,
-    payload: data,
-  };
-}
+export const loginRequest: LoginRequest = (
+  payload: AuthFormData,
+): LoginRequestAction => ({
+  type: types.LOGIN_REQUEST,
+  payload,
+});
 
-export function loginOAuth(data, backendLogin = true) {
-  return {
-    type: types.LOGIN_OAUTH_REQUEST,
-    backendLogin,
-    payload: data,
-  };
-}
+export const loginOAuthRequest: LoginOAuthRequest = (
+  host: string,
+  meta?: { accessToken?: string, tokenSecret?: string },
+): LoginOAuthRequestAction => ({
+  type: types.LOGIN_OAUTH_REQUEST,
+  payload: host,
+  meta,
+});
 
-export function deniedOAuth() {
-  return {
-    type: types.LOGIN_OAUTH_DENIED,
-  };
-}
+export const denyOAuth: DenyOAuth = (): DenyOAuthAction => ({
+  type: types.DENY_OAUTH,
+});
 
-export function throwLoginError(error) {
-  return {
-    type: types.THROW_LOGIN_ERROR,
-    payload: { error },
-  };
-}
+export const acceptOAuth: AcceptOAuth = (
+  payload: string,
+): AcceptOAuthAction => ({
+  type: types.ACCEPT_OAUTH,
+  payload,
+});
 
-export function continueOAuthWithCode(code) {
-  return {
-    type: types.LOGIN_OAUTH_HAVE_CODE,
-    code,
-  };
-}
+export const checkJWTRequest: CheckJWTRequest = (): CheckJWTRequestAction => ({
+  type: types.CHECK_JWT_REQUEST,
+});
 
-export function checkJWT() {
-  return {
-    type: types.CHECK_JWT,
-  };
-}
+export const logoutRequest: LogoutRequest = (): LogoutRequestAction => ({
+  type: types.LOGOUT_REQUEST,
+});
 
-export function logout() {
-  return {
-    type: types.LOGOUT_REQUEST,
-  };
-}
+export const setAuthorized: SetAuthorized = (
+  payload: boolean,
+): SetAuthorizedAction => ({
+  type: types.SET_AUTHORIZED,
+  payload,
+});
 
+export const throwLoginError: ThrowLoginError = (
+  payload: LoginError,
+): ThrowLoginErrorAction => ({
+  type: types.THROW_LOGIN_ERROR,
+  payload,
+});
+
+export const setHost: SetHost = (
+  payload: string,
+): SetHostAction => ({
+  type: types.SET_HOST,
+  payload,
+});
+
+export const fillUserData: FillUserData = (
+  payload: User,
+): FillUserDataAction => ({
+  type: types.FILL_USER_DATA,
+  payload,
+});
+
+export const setLoginFetching: SetLoginFetching = (
+  payload: boolean,
+): SetLoginFetchingAction => ({
+  type: types.SET_LOGIN_FETCHING,
+  payload,
+});

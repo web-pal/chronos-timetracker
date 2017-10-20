@@ -1,99 +1,122 @@
-import storage from 'electron-json-storage';
-import * as types from '../constants/';
+// @flow
+import type {
+  SetAuthFormStep, SetAuthFormStepAction,
+  SetSidebarType, SetSidebarTypeAction,
+  SetIssueViewTab, SetIssueViewTabAction,
+  SetUpdateCheckRunning, SetUpdateCheckRunningAction,
+  SetUpdateAvailable, SetUpdateAvailableAction,
+  SetUpdateFetching, SetUpdateFetchingAction,
+  InstallUpdateRequest, InstallUpdateRequestAction,
+  SetSidebarFiltersOpen, SetSidebarFiltersOpenAction,
+  SetSettingsModalOpen, SetSettingsModalOpenAction,
+  SetSupportModalOpen, SetSupportModalOpenAction,
+  SetAboutModalOpen, SetAboutModalOpenAction,
+  SetAlertModalOpen, SetAlertModalOpenAction,
+  SetWorklogModalOpen, SetWorklogModalOpenAction,
+  RemoveFlag, RemoveFlagAction,
+  AddFlag, AddFlagAction, FlagType,
+  AuthFormStep, SidebarType, TabLabel, UpdateInfo,
+} from '../types';
 
-export function setUpdateDownloadState(payload) {
-  return {
-    type: types.SET_UPDATE_DOWNLOAD_STATE,
-    payload,
-  };
-}
+import * as types from './actionTypes';
 
-export function setUpdateFetchState(payload) {
-  return {
-    type: types.SET_UPDATE_FETCH_STATE,
-    payload,
-  };
-}
+export const setAuthFormStep: SetAuthFormStep = (
+  payload: AuthFormStep,
+): SetAuthFormStepAction => ({
+  type: types.SET_AUTH_FORM_STEP,
+  payload,
+});
 
-export function notifyUpdateAvailable(payload) {
-  return {
-    type: types.NOTIFY_UPDATE_AVAILABLE,
-    payload,
-  };
-}
+export const setSidebarType: SetSidebarType = (
+  payload: SidebarType,
+): SetSidebarTypeAction => ({
+  type: types.SET_SIDEBAR_TYPE,
+  payload,
+});
 
-export function setSidebarType(payload) {
-  return {
-    type: types.SET_SIDEBAR_TYPE,
-    payload,
-  };
-}
+export const setIssueViewTab: SetIssueViewTab = (
+  payload: TabLabel,
+): SetIssueViewTabAction => ({
+  type: types.SET_ISSUE_VIEW_TAB,
+  payload,
+});
 
-export function setShowSidebarFilters(payload) {
-  return {
-    type: types.SET_SHOW_SIDEBAR_FILTERS,
-    payload,
-  };
-}
+export const setUpdateCheckRunning: SetUpdateCheckRunning = (
+  payload: boolean,
+): SetUpdateCheckRunningAction => ({
+  type: types.SET_UPDATE_CHECK_RUNNING,
+  payload,
+});
 
-export function setShowSettingsModal(payload) {
-  return {
-    type: types.SET_SHOW_SETTINGS_MODAL,
-    payload,
-  };
-}
+export const setUpdateAvailable: SetUpdateAvailable = (
+  payload: UpdateInfo,
+): SetUpdateAvailableAction => ({
+  type: types.SET_UPDATE_AVAILABLE,
+  payload,
+});
 
-export function getLocalDesktopSettings() {
-  return {
-    type: types.LOCAL_DESKTOP_SETTINGS_REQUEST,
-  };
-}
+export const setUpdateFetching: SetUpdateFetching = (
+  payload: boolean,
+): SetUpdateFetchingAction => ({
+  type: types.SET_UPDATE_FETCHING,
+  payload,
+});
 
-export function setLocalDesktopSettings(settingName, value) {
-  storage.get('localDesktopSettings', (err, settings) => {
-    const updateSettings = { ...settings, [settingName]: value };
-    storage.set('localDesktopSettings', updateSettings);
+export const installUpdateRequest: InstallUpdateRequest =
+  (): InstallUpdateRequestAction => ({
+    type: types.INSTALL_UPDATE_REQUEST,
   });
-  return {
-    type: types.SET_LOCAL_DESKTOP_SETTINGS,
-    meta: settingName,
-    payload: value,
-  };
-}
 
-export function setShowTrackingView(payload) {
-  return {
-    type: types.SET_SHOW_TRACKING_VIEW,
-    payload,
-  };
-}
+export const setSidebarFiltersOpen: SetSidebarFiltersOpen = (
+  payload: boolean,
+): SetSidebarFiltersOpenAction => ({
+  type: types.SET_SIDEBAR_FILTERS_OPEN,
+  payload,
+});
 
-export function setIssueViewTab(payload) {
-  return {
-    type: types.SET_ISSUE_VIEW_TAB,
-    payload,
-  };
-}
+export const setSettingsModalOpen: SetSettingsModalOpen = (
+  payload: boolean,
+): SetSettingsModalOpenAction => ({
+  type: types.SET_SETTINGS_MODAL_OPEN,
+  payload,
+});
 
-export function setShowSupportModal(payload) {
-  return {
-    type: types.SET_SHOW_SUPPORT_MODAL,
-    payload,
-  };
-}
+export const setSupportModalOpen: SetSupportModalOpen = (
+  payload: boolean,
+): SetSupportModalOpenAction => ({
+  type: types.SET_SUPPORT_MODAL_OPEN,
+  payload,
+});
 
-export function setShowAboutModal(payload) {
-  return {
-    type: types.SET_SHOW_ABOUT_MODAL,
-    payload,
-  };
-}
+export const setAboutModalOpen: SetAboutModalOpen = (
+  payload: boolean,
+): SetAboutModalOpenAction => ({
+  type: types.SET_ABOUT_MODAL_OPEN,
+  payload,
+});
 
+export const setAlertModalOpen: SetAlertModalOpen = (
+  payload: boolean,
+): SetAlertModalOpenAction => ({
+  type: types.SET_ALERT_MODAL_OPEN,
+  payload,
+});
 
-export function setShowAlertModal(payload) {
-  return {
-    type: types.SET_SHOW_ALERT_MODAL,
-    payload,
-  };
-}
+export const setWorklogModalOpen: SetWorklogModalOpen = (
+  payload: boolean,
+): SetWorklogModalOpenAction => ({
+  type: types.SET_WORKLOG_MODAL_OPEN,
+  payload,
+});
 
+export const addFlag: AddFlag = (
+  payload: FlagType,
+): AddFlagAction => ({
+  type: types.ADD_FLAG,
+  payload,
+});
+
+export const removeFlag: RemoveFlag = (
+): RemoveFlagAction => ({
+  type: types.REMOVE_FLAG,
+});

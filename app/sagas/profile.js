@@ -1,249 +1,218 @@
-import { race, take, put, call, cps, fork } from 'redux-saga/effects';
-import storage from 'electron-json-storage';
+// @flow
+import { race, take, put, call, fork, cancel } from 'redux-saga/effects';
 import Raven from 'raven-js';
-import { ipcRenderer } from 'electron';
-import {
-  jiraAuth, chronosBackendAuth, chronosBackendOAuth,
-  chronosBackendGetJiraCredentials, fetchSettings,
-  getDataForOAuth, jiraProfile, fetchWorklogTypes,
-} from 'api';
-import { getFromStorage } from './helper';
-import * as types from '../constants/';
-import { rememberToken, clearToken } from '../utils/api/helper';
-import { login, loginOAuth, throwLoginError } from '../actions/profile';
-import Socket from '../socket';
+import { ipcRenderer, remote } from 'electron';
+import { types, profileActions, clearAllReducers, settingsActions } from 'actions';
+import * as Api from 'api';
+import type {
+  ErrorObj,
+  AuthFormData,
+  User,
+  ChronosBackendUserData,
+  LoginRequestAction,
+  LoginOAuthRequestAction,
+  AcceptOAuthAction,
+} from '../types';
+
+import { getSettings } from './settings';
+import { getWorklogTypes } from './worklogTypes';
+import { fetchIssueTypes, fetchIssueStatuses } from './issues';
+import { setToStorage, removeFromStorage } from './storage';
+
+// import Socket from '../socket';
 import jira from '../utils/jiraClient';
 
-
-function* loginError(error) {
-  yield put(throwLoginError(error));
-  yield put({ type: types.SET_AUTH_STATE, payload: false });
+function* loginError(error: ErrorObj): Generator<*, void, *> {
+  const errorMessage: string = error.message || 'Unknown error';
+  yield put(profileActions.throwLoginError(errorMessage));
 }
 
-function* jiraLogin(values) {
-  let success = true;
+function* jiraLogin(values: AuthFormData): Generator<*, boolean, *> {
   try {
-    const userData = yield call(jiraAuth, values);
+    const userData: User = yield call(Api.jiraAuth, values);
     Raven.setUserContext({
+      host: values.host,
       locale: userData.locale,
       timeZone: userData.timeZone,
       name: userData.displayName,
       email: userData.emailAddress,
     });
-    yield put({ type: types.FILL_PROFILE, payload: userData });
+    yield put(profileActions.fillUserData(userData));
+    return true;
   } catch (err) {
-    yield loginError('Cannot authorize to JIRA. Check your credentials and try again');
-    success = false;
-  }
-  return success;
-}
-
-function* chronosBackendLogin(values) {
-  let success = true;
-  try {
-    const { token } = yield call(chronosBackendAuth, values);
-    yield storage.set('desktop_tracker_jwt', token);
-    rememberToken(token);
-  } catch (err) {
-    yield loginError(err);
-    success = false;
-  }
-  return success;
-}
-
-function* getSettings() {
-  try {
-    const { payload } = yield call(fetchSettings);
-    yield put({ type: types.FILL_SETTINGS, payload });
-  } catch (err) {
-    Raven.captureException(err);
+    yield call(loginError, err);
+    return false;
   }
 }
 
-function* getWorklogTypes() {
+function* chronosBackendLogin(values: AuthFormData): Generator<*, boolean, *> {
   try {
-    const { payload } = yield call(fetchWorklogTypes);
-    yield put({ type: types.FILL_WORKLOG_TYPES, payload });
+    const { token }: { token: string } = yield call(Api.chronosBackendAuth, values);
+    yield call(setToStorage, 'desktop_tracker_jwt', token);
+    return true;
   } catch (err) {
-    Raven.captureException(err);
+    yield call(loginError, err);
+    return false;
   }
 }
 
-export function* checkJWT() {
-  yield take(types.CHECK_JWT);
-  yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: true });
+
+export function* checkJWT(): Generator<*, void, *> {
+  yield take(types.CHECK_JWT_REQUEST);
+  yield put(profileActions.setLoginFetching(true));
   try {
-    const userData = yield call(chronosBackendGetJiraCredentials);
+    const userData: ChronosBackendUserData = yield call(Api.chronosBackendGetJiraCredentials);
     if (userData.authType === 'basic_auth' || userData.authType === undefined) {
-      yield put(login({ values: { ...userData, host: userData.baseUrl.split('.')[0] } }, false));
+      yield put(profileActions.loginRequest({
+        host: userData.baseUrl.split('.')[0],
+        username: userData.username,
+        password: userData.password,
+      }));
     }
     if (userData.authType === 'OAuth') {
-      yield put(loginOAuth(
-        {
-          host: userData.baseUrl,
-          aToken: userData.token,
-          tSecret: userData.token_secret,
-        },
-        false,
-      ));
+      yield put(profileActions.loginOAuthRequest(userData.baseUrl, {
+        accessToken: userData.token,
+        tokenSecret: userData.token_secret,
+      }));
     }
   } catch (err) {
-    yield loginError('Automatic login failed, please enter your credentials again');
-    yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: false });
+    yield put(profileActions.setLoginFetching(false));
+    yield loginError(err);
   }
 }
 
-export function* loginFlow() {
+export function* loginFlow(): Generator<*, void, *> {
   while (true) {
-    const { backendLogin, payload: { values, resolve } } = yield take(types.LOGIN_REQUEST);
-    let chronosBackendLoginSuccess = !backendLogin;
-    let jiraLoginSuccess = false;
-
-    yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: true });
-    jiraLoginSuccess = yield jiraLogin(values);
-    if (jiraLoginSuccess && backendLogin) {
-      storage.set('jira_credentials', { ...values, password: '' });
-      chronosBackendLoginSuccess = yield chronosBackendLogin(values);
-    }
-    if (jiraLoginSuccess && chronosBackendLoginSuccess) {
-      Raven.setExtraContext({ host: values.host });
-      yield fork(getWorklogTypes);
-      yield getSettings();
-      yield put({ type: types.SET_CURRENT_HOST, payload: values.host });
-      yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: false });
-      yield put({ type: types.SET_AUTH_STATE, payload: true });
-      yield put({ type: types.CHECK_OFFLINE_SCREENSHOTS });
-      yield put({ type: types.CHECK_OFFLINE_WORKLOGS });
-      Socket.login();
-      yield take(types.LOGOUT_REQUEST);
-      yield cps(storage.remove, 'desktop_tracker_jwt');
-      clearToken();
-      yield put({ type: types.CLEAR_ALL_REDUCERS });
-    }
-    yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: false });
-    if (resolve) {
-      resolve();
-    }
-  }
-}
-
-export function* loginOAuthFlow() {
-  while (true) {
-    const { backendLogin, payload: { host, aToken, tSecret } } =
-      yield take(types.LOGIN_OAUTH_REQUEST);
-    const chronosBackendLoginSuccess = !backendLogin;
-    let accessToken = aToken;
-    let tokenSecret = tSecret;
-
-    yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: true });
-
-    let oauth = {};
     try {
-      oauth = yield call(getDataForOAuth, host);
+      const { payload }: LoginRequestAction = yield take(types.LOGIN_REQUEST);
+      yield put(profileActions.setLoginFetching(true));
+      yield put(profileActions.setHost(payload.host));
+      const chronosBackendLoginSuccess: boolean = yield call(chronosBackendLogin, payload);
+      if (!chronosBackendLoginSuccess) yield cancel();
+      const jiraLoginSuccess: boolean = yield call(jiraLogin, payload);
+      if (!jiraLoginSuccess) yield cancel();
+
+      if (jiraLoginSuccess && chronosBackendLoginSuccess) {
+        yield call(setToStorage, 'jira_credentials', { ...payload, password: '' });
+        yield fork(getWorklogTypes);
+        yield fork(getSettings);
+        yield put(settingsActions.requestLocalDesktopSettings());
+        yield put(profileActions.setLoginFetching(false));
+        yield put(profileActions.setAuthorized(true));
+        yield fork(fetchIssueTypes);
+        yield fork(fetchIssueStatuses);
+        // yield put({ type: types.CHECK_OFFLINE_SCREENSHOTS });
+        // yield put({ type: types.CHECK_OFFLINE_WORKLOGS });
+        // Socket.login();
+      }
+      yield put(profileActions.setLoginFetching(true));
     } catch (err) {
+      yield put(profileActions.setLoginFetching(false));
+      yield call(loginError, err);
       Raven.captureException(err);
     }
-    if (!chronosBackendLoginSuccess) {
-      let oauthUrlData = {};
-      try {
-        oauthUrlData = yield cps(jira.getOAuthUrl, { oauth, host });
-      } catch (err) {
-        yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: false });
-        yield loginError('To use oauth ask your jira admin configure application link');
-        continue; // eslint-disable-line
-      }
-      const { token, url } = oauthUrlData;
-      tokenSecret = oauthUrlData.token_secret;
-      ipcRenderer.send('open-oauth-url', url);
+  }
+}
 
-      const { haveCode, denied } = yield race({
-        haveCode: take(types.LOGIN_OAUTH_HAVE_CODE),
-        denied: take(types.LOGIN_OAUTH_DENIED),
-      });
-      if (denied) {
-        yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: false });
-        yield loginError('OAuth denied');
-        continue; // eslint-disable-line
-      }
-      try {
-        accessToken =
-          yield cps(
-            jira.getOAuthToken,
-            { host,
-              oauth: {
-                token,
-                token_secret: tokenSecret,
-                oauth_verifier: haveCode.code,
-                consumer_key: oauth.consumerKey,
-                private_key: oauth.privateKey,
-              },
+export function* loginOAuthFlow(): Generator<*, void, *> {
+  while (true) {
+    try {
+      const { payload, meta }: LoginOAuthRequestAction = yield take(types.LOGIN_OAUTH_REQUEST);
+
+      // collecting basic oAuth data
+      const host: string = payload;
+      yield put(profileActions.setHost(host));
+      const oAuthData = yield call(Api.getDataForOAuth, host);
+      let accessToken: string;
+      let tokenSecret: string;
+      if (meta) {
+        accessToken = meta.accessToken;
+        tokenSecret = meta.tokenSecret;
+      } else {
+        const { token, url, ...rest }: { token: string, url: string, tokenSecret: string } =
+          yield call(Api.getOAuthUrl, { oauth: oAuthData, host });
+
+        tokenSecret = rest.tokenSecret;
+
+        // opening oAuth modal
+        ipcRenderer.send('open-oauth-url', url);
+
+        const { code, denied }: { code: AcceptOAuthAction, denied: boolean | void } = yield race({
+          code: take(types.ACCEPT_OAUTH),
+          denied: take(types.DENY_OAUTH),
+        });
+        yield put(profileActions.setLoginFetching(true));
+
+        if (denied) {
+          throw new Error('OAuth denied');
+        }
+
+        // if not denied get oAuth Token
+        accessToken = yield call(Api.getOAuthToken,
+          { host,
+            oauth: {
+              token,
+              token_secret: tokenSecret,
+              oauth_verifier: code.payload,
+              consumer_key: oAuthData.consumerKey,
+              private_key: oAuthData.privateKey,
             },
-          );
+          },
+        );
+
         const data = yield call(
-          chronosBackendOAuth,
+          Api.chronosBackendOAuth,
           { baseUrl: host, token: accessToken, token_secret: tokenSecret },
         );
-        rememberToken(data.token);
-        yield storage.set('desktop_tracker_jwt', data.token);
-      } catch (err) {
-        Raven.captureException(err);
+
+        yield call(setToStorage, 'desktop_tracker_jwt', data.token);
       }
-    }
-    try {
+
       yield call(jira.oauth,
         { host,
           oauth: {
             token: accessToken,
             token_secret: tokenSecret,
-            consumer_key: oauth.consumerKey,
-            private_key: oauth.privateKey,
+            consumer_key: oAuthData.consumerKey,
+            private_key: oAuthData.privateKey,
           },
         },
       );
+
+      const userData: User = yield call(Api.jiraProfile);
+
+      yield put(profileActions.fillUserData(userData));
+      yield put(profileActions.setLoginFetching(false));
+      yield put(profileActions.setAuthorized(true));
+      yield call(getSettings);
+      yield fork(fetchIssueTypes);
+      yield fork(fetchIssueStatuses);
+      // yield put({ type: types.CHECK_OFFLINE_SCREENSHOTS });
+      // yield put({ type: types.CHECK_OFFLINE_WORKLOGS });
+      // Socket.login();
     } catch (err) {
+      yield put(profileActions.setLoginFetching(false));
+      yield call(loginError, err);
       Raven.captureException(err);
-    }
-    let userData = {};
-    let jiraProfileError = false;
-    try {
-      userData = yield call(jiraProfile);
-    } catch (err) {
-      jiraProfileError = true;
-      Raven.captureException(err);
-    }
-    if (jiraProfileError) {
-      yield loginError('Cannot authorize to JIRA. Check your credentials and try again');
-      yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: false });
-    } else {
-      yield put({ type: types.FILL_PROFILE, payload: userData });
-      Raven.setExtraContext({ host });
-      yield getSettings();
-      yield put({ type: types.SET_CURRENT_HOST, payload: host });
-      yield put({ type: types.SET_LOGIN_REQUEST_STATE, payload: false });
-      yield put({ type: types.SET_AUTH_STATE, payload: true });
-      yield put({ type: types.CHECK_OFFLINE_SCREENSHOTS });
-      yield put({ type: types.CHECK_OFFLINE_WORKLOGS });
-      Socket.login();
-      yield take(types.LOGOUT_REQUEST);
-      yield cps(storage.remove, 'desktop_tracker_jwt');
-      clearToken();
-      yield put({ type: types.CLEAR_ALL_REDUCERS });
     }
   }
 }
 
-export function* localDesktopSettings() {
+export function* logoutFlow(): Generator<*, *, *> {
   while (true) {
-    yield take(types.LOCAL_DESKTOP_SETTINGS_REQUEST);
-    let settings = yield getFromStorage('localDesktopSettings');
-    if (!Object.keys(settings).length) {
-      settings = {
-        showScreenshotPreview: true,
-        screenshotPreviewTime: 15,
-        nativeNotifications: true,
-      };
-      yield storage.set('localDesktopSettings', settings);
+    yield take(types.LOGOUT_REQUEST);
+    const { getGlobal } = remote;
+    const { running, uploading } = getGlobal('sharedObj');
+
+    if (running) {
+      // eslint-disable-next-line no-alert
+      window.alert('Tracking in progress, save worklog before logout!');
     }
-    yield put({ type: types.FILL_LOCAL_DESKTOP_SETTINGS, payload: settings });
+    if (uploading) {
+      // eslint-disable-next-line no-alert
+      window.alert('Currently app in process of saving worklog, wait few seconds please');
+    }
+    yield call(removeFromStorage, 'desktop_tracker_jwt');
+    yield put(clearAllReducers());
   }
 }

@@ -16,10 +16,20 @@ export default {
       use: {
         loader: 'babel-loader',
         options: {
-          cacheDirectory: true
-        }
-      }
-    }]
+          cacheDirectory: true,
+        },
+      },
+    },
+    {
+      test: /\.flow$/,
+      exclude: /node_modules/,
+      use: {
+        loader: 'babel-loader',
+        options: {
+          cacheDirectory: true,
+        },
+      },
+    }],
   },
 
   output: {
