@@ -1,5 +1,4 @@
 // @flow
-
 import React from 'react';
 import { Field, FormProps } from 'redux-form';
 import { Flex } from 'components';
@@ -62,6 +61,11 @@ const EmailStep = ({
         component={renderField}
         type="password"
         disabled={loginRequestInProcess}
+        onKeyPress={(e) => {
+          if (e.key === 'Enter') {
+            onContinue();
+          }
+        }}
       />
       <Error>{loginError}</Error>
     </Flex>
