@@ -1,3 +1,4 @@
+// CAUTION! not migrated to 3.*.* version
 // @flow
 import React from 'react';
 import type { StatelessFunctionalComponent, Node } from 'react';

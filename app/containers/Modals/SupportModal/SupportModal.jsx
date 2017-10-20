@@ -1,9 +1,9 @@
+// CAUTION! not migrated to 3.*.* version
 // @flow
 import React from 'react';
 import type { StatelessFunctionalComponent, Node } from 'react';
 import ModalDialog from '@atlaskit/modal-dialog';
-import ButtonGroup from '@atlaskit/button-group';
-import Button from '@atlaskit/button';
+import Button, { ButtonGroup } from '@atlaskit/button';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { paperClip } from 'data/svg';

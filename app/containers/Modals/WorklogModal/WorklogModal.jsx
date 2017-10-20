@@ -1,16 +1,14 @@
 // @flow
 import React, { Component } from 'react';
-import ModalDialog from '@atlaskit/modal-dialog';
+import ModalDialog, { ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import FieldTextArea from '@atlaskit/field-text-area';
-import ButtonGroup from '@atlaskit/button-group';
-import Button from '@atlaskit/button';
+import Button, { ButtonGroup } from '@atlaskit/button';
 import CalendarIcon from '@atlaskit/icon/glyph/calendar';
 import EditorCloseIcon from '@atlaskit/icon/glyph/editor/close';
 import Tooltip from '@atlaskit/tooltip';
 import Spinner from '@atlaskit/spinner';
 import TimePicker from 'rc-time-picker';
 import moment from 'moment';
-import { H700 } from 'styles/typography';
 import { ModalContentContainer } from 'styles/modals';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -80,30 +78,36 @@ class WorklogModal extends Component<Props, State> {
     return isOpen && (
       <ModalDialog
         onClose={() => setWorklogModalOpen(false)}
-        footer={(
-          <Flex row style={{ justifyContent: 'flex-end' }}>
-            <ButtonGroup>
-              <Button
-                appearance="primary"
-                disabled={fetching}
-                onClick={() => {
-                  this.props.addManualWorklogRequest({ startTime, endTime, comment, date });
-                }}
-              >
-                Log work&nbsp;
-                {fetching && <Spinner invertColor size={16} />}
-              </Button>
-              <Button appearance="subtle" onClick={() => setWorklogModalOpen(false)}>
-                Cancel
-              </Button>
-            </ButtonGroup>
-          </Flex>
+        footer={() => (
+          <ModalFooter>
+            <Flex row style={{ justifyContent: 'flex-end', width: '100%' }}>
+              <ButtonGroup>
+                <Button
+                  appearance="primary"
+                  disabled={fetching}
+                  onClick={() => {
+                    this.props.addManualWorklogRequest({ startTime, endTime, comment, date });
+                  }}
+                >
+                  Log work&nbsp;
+                  {fetching && <Spinner invertColor size={16} />}
+                </Button>
+                <Button appearance="subtle" onClick={() => setWorklogModalOpen(false)}>
+                  Cancel
+                </Button>
+              </ButtonGroup>
+            </Flex>
+          </ModalFooter>
+        )}
+        header={() => (
+          <ModalHeader>
+            <ModalTitle>Add worklog</ModalTitle>
+          </ModalHeader>
         )}
       >
         <ModalContentContainer style={{ minHeight: 360 }}>
-          <H700 style={{ display: 'block' }}>Add worklog</H700>
           <Flex column>
-            <InputLabel>Date</InputLabel>
+            <InputLabel style={{ paddingTop: 0 }}>Date</InputLabel>
             <Tooltip
               position="right"
               description={calendarOpened ? 'Close calendar' : 'Open calendar'}
