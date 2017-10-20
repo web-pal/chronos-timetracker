@@ -32,12 +32,8 @@ const AboutModal: StatelessFunctionalComponent<Props> = ({
   setAlertModalOpen,
   setWorklogModalOpen,
   addFlag,
-}: Props): Node => (
-  <ModalDialog
-    isOpen={isOpen}
-    onClose={() => setAboutModalOpen(false)}
-    onDialogDismissed={() => setAboutModalOpen(false)}
-  >
+}: Props): Node => isOpen && (
+  <ModalDialog onClose={() => setAboutModalOpen(false)}>
     <Flex column alignCenter style={{ margin: '20px 0px' }}>
       <Button
         style={{ marginBottom: 18, width: 400 }}

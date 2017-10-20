@@ -77,12 +77,10 @@ class WorklogModal extends Component<Props, State> {
     const { isOpen, setWorklogModalOpen, fetching }: Props = this.props;
     const { calendarOpened, date, startTime, endTime, comment }: State = this.state;
 
-    return (
+    return isOpen && (
       <ModalDialog
-        isOpen={isOpen}
         onClose={() => setWorklogModalOpen(false)}
-        onDialogDismissed={() => setWorklogModalOpen(false)}
-        footer={
+        footer={(
           <Flex row style={{ justifyContent: 'flex-end' }}>
             <ButtonGroup>
               <Button
@@ -100,7 +98,7 @@ class WorklogModal extends Component<Props, State> {
               </Button>
             </ButtonGroup>
           </Flex>
-        }
+        )}
       >
         <ModalContentContainer style={{ minHeight: 360 }}>
           <H700 style={{ display: 'block' }}>Add worklog</H700>

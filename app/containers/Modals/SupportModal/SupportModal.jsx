@@ -28,13 +28,11 @@ type Props = {
 
 const SupportModal: StatelessFunctionalComponent<Props> = ({
   isOpen,
-  setSupportModalOpen
-}): Node =>
+  setSupportModalOpen,
+}): Node => isOpen &&
   <ModalDialog
-    isOpen={isOpen}
     onClose={() => setSupportModalOpen(false)}
-    onDialogDismissed={() => setSupportModalOpen(false)}
-    footer={
+    footer={(
       <Flex row style={{ justifyContent: 'flex-end' }}>
         <ButtonGroup>
           <Button appearance="primary">
@@ -45,7 +43,7 @@ const SupportModal: StatelessFunctionalComponent<Props> = ({
           </Button>
         </ButtonGroup>
       </Flex>
-    }
+    )}
   >
     <Flex column style={{ margin: '20px 10px 10px 4px' }}>
       <H700 style={{ marginBottom: 28 }}>Have a question?</H700>

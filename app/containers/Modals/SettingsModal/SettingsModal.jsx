@@ -44,12 +44,10 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
   setSettingsModalOpen,
   setSettingsModalTab,
   setLocalDesktopSetting,
-}: Props): Node =>
+}: Props): Node => isOpen &&
   <ModalDialog
-    isOpen={isOpen}
     onClose={() => setSettingsModalOpen(false)}
-    onDialogDismissed={() => setSettingsModalOpen(false)}
-    footer={
+    footer={(
       <Flex row style={{ justifyContent: 'flex-end' }}>
         <ButtonGroup>
           <Button
@@ -60,7 +58,7 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
           </Button>
         </ButtonGroup>
       </Flex>
-    }
+    )}
   >
     <ModalContentContainer>
       <H700 style={{ marginBottom: 28, display: 'block' }}>Settings</H700>

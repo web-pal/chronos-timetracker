@@ -27,11 +27,9 @@ const AlertModal: StatelessFunctionalComponent<Props> = ({
   isOpen,
   setAlertModalOpen,
   stopTimer,
-}: Props): Node => (
+}: Props): Node => isOpen && (
   <ModalDialog
-    isOpen={isOpen}
     onClose={() => setAlertModalOpen(false)}
-    onDialogDismissed={() => setAlertModalOpen(false)}
     footer={(
       <Flex row style={{ justifyContent: 'flex-end' }}>
         <ButtonGroup>
