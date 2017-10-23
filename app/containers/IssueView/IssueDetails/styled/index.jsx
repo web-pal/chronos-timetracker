@@ -77,6 +77,7 @@ export const AttachmentsContainer = styled.div`
 export const AttachmentsList = styled.div`
   display: flex;
   flex-flow: row wrap;
+  margin-top: 10px;
 `;
 
 export const AttachmentItem = styled.div`
@@ -94,6 +95,13 @@ export const AttachmentItem = styled.div`
 `;
 
 export const FileName = styled.a`
+`;
+
+export const MetaContainer = styled.div`
+  display: flex;
+  align-items: center;
+  width: 180px;
+  margin: 5px 10px;
 `;
 
 export const FileContainer = styled.div`
@@ -117,3 +125,22 @@ export const FileSize = styled.span`
 
 `;
 
+export const DescriptionSectionHeader = styled.div`
+  border-top: 2px solid rgba(0, 0, 0, .1);
+  margin-top: 10px;
+  padding-top: 10px;
+`;
+
+export const SectionHeader = styled.div`
+  border-top: 2px solid rgba(0, 0, 0, .1);
+  margin-top: 10px;
+  padding-top: 10px;
+  margin-bottom: 10px;
+`;
+
+
+export const DetailsColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 42%;
+`;
