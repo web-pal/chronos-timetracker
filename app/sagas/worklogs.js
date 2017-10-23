@@ -6,7 +6,7 @@ import * as Api from 'api';
 import { types, worklogsActions, uiActions, issuesActions } from 'actions';
 import { getSelectedIssueId, getUserData } from 'selectors';
 import moment from 'moment';
-import { stj } from 'time-util';
+import { stj, jts } from 'time-util';
 import mixpanel from 'mixpanel-browser';
 
 import { getFromStorage, setToStorage } from './storage';
@@ -149,9 +149,9 @@ export function* addManualWorklogFlow(): Generator<*, *, *> {
       const { payload } = yield take(types.ADD_MANUAL_WORKLOG_REQUEST);
       yield put(worklogsActions.setAddWorklogFetching(true));
       const issueId = yield select(getSelectedIssueId);
-      const { comment, startTime, endTime } = payload;
+      const { comment, startTime, totalSpent } = payload;
       const started = moment(startTime).utc().format().replace('Z', '.000+0000');
-      const timeSpentSeconds = endTime.diff(startTime, 's');
+      const timeSpentSeconds = jts(totalSpent);
       const self = yield select(getUserData);
       const jiraUploadOptions: {
         issueId: Id,

@@ -150,8 +150,7 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
         payload: worklogsFromChronosBackend.filter(w => w.worklogType),
       });
     }
-    const allWorklogs = yield select(state => state.worklogs.byId);
-    setLoggedTodayOnTray(allWorklogs, worklogAuthor); */
+    */
     yield put(issuesActions.setRecentIssuesFetching(false));
   } catch (err) {
     yield put(issuesActions.setRecentIssuesFetching(false));

@@ -25,8 +25,9 @@ class WorklogEditDialog extends PureComponent {
 
   renderDialog = () => {
     const { setWorklogComment, worklogComment } = this.props;
+
     return (
-      <div style={{ width: 300 }}>
+      <div className="worklog-edit-popup" style={{ width: 300 }}>
         <h5>Edit worklog</h5>
         <Flex column>
           {/*
@@ -42,6 +43,7 @@ class WorklogEditDialog extends PureComponent {
               readView={<SingleLineTextInput isEditing={false} value={'Automatic'} />}
           onConfirm={() => {}}
           onCancel={() => console.log('cancel')}
+          shouldConfirmOnEnter
         />
         */}
           <InlineEditor
@@ -52,9 +54,14 @@ class WorklogEditDialog extends PureComponent {
               value={this.state.tempComment}
               onChange={e => this.setTempComment(e.target.value)}
             />}
-            readView={<SingleLineTextInput isEditing={false} value={this.props.worklogComment || 'None'} />}
+            readView={(
+              <div id="inline-edit-value">
+                <SingleLineTextInput isEditing={false} value={this.props.worklogComment || 'None'} />
+              </div>
+            )}
             onConfirm={() => setWorklogComment(this.state.tempComment)}
             onCancel={() => this.setTempComment('')}
+            shouldConfirmOnEnter
           />
         </Flex>
       </div>
@@ -67,6 +74,15 @@ class WorklogEditDialog extends PureComponent {
         <InlineDialog
           content={this.renderDialog()}
           isOpen={this.state.dialogOpen}
+          onClose={(e) => {
+            // Atlaskit HACK.
+            // without it inline dialog gets closed on clicking inline-edit action buttons
+            const path = e.event.path;
+            const shouldClose = !path.some(el => el.className === 'worklog-edit-popup');
+            if (shouldClose) {
+              this.setState({ dialogOpen: false });
+            }
+          }}
           position="bottom left"
         >
           <EditButton

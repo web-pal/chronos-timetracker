@@ -36,6 +36,7 @@ export type UiState = {|
   +alertModalOpen: boolean,
   +worklogModalOpen: boolean,
   +flags: FlagsArray,
+  +screenshotsAllowed: boolean,
 |};
 
 //
@@ -164,6 +165,14 @@ export type AddFlagAction =
 
 export type AddFlag = {
   (payload: FlagType): AddFlagAction
+};
+
+//
+export type SetScreenshotsAlowedAction =
+  {| type: types.SET_SCREENSHOTS_ALLOWED, payload: boolean |};
+
+export type SetScreenshotsAlowed = {
+  (payload: boolean): SetScreenshotsAlowedAction
 };
 
 export type UiAction =

@@ -16,6 +16,7 @@ const initialState: UiState = {
   alertModalOpen: false,
   worklogModalOpen: false,
   flags: [],
+  screenshotsAllowed: false,
 };
 
 export default function ui(state: UiState = initialState, action: Action) {
@@ -95,6 +96,11 @@ export default function ui(state: UiState = initialState, action: Action) {
       };
     case types.___CLEAR_ALL_REDUCERS___:
       return initialState;
+    case types.SET_SCREENSHOTS_ALLOWED:
+      return {
+        ...state,
+        screenshotsAllowed: action.payload,
+      };
     default:
       return state;
   }

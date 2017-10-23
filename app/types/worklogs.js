@@ -7,8 +7,8 @@ import type { User } from './profile';
 export type ManualWorklogData = {
   date: mixed,
   startTime: mixed,
-  endTime: mixed,
   comment: string | null,
+  totalSpent: string,
 };
 
 // TODO type for worklog

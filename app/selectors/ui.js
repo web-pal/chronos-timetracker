@@ -36,3 +36,6 @@ export const getWorklogModalOpen =
 
 export const getSidebarFiltersOpen =
   ({ ui }: { ui: UiState }): boolean => ui.sidebarFiltersOpen;
+
+export const getScreenshotsAllowed =
+  ({ ui }: { ui: UiState }): boolean => ui.screenshotsAllowed;
