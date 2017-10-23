@@ -73,22 +73,26 @@ const NotificationsSettings: StatelessFunctionalComponent<Props> = ({
           }
         />
 
-        {settings.showScreenshotPreview &&
-          <H100 style={{ margin: '10px 0 0 6px' }}>
-            Configure whether to show native OSX notification or custom popup.
-            Native popups are visible in fullscreen apps.
-          </H100>
-        }
-        {settings.showScreenshotPreview &&
-          <div style={{ marginLeft: -8 }}>
-            <RadioButtonGroup
-              items={notificationsTypes}
-              onRadioChange={() => setLocalDesktopSetting(
-                !settings.nativeNotifications,
-                'nativeNotifications',
-              )}
-            />
-          </div>
+        {process.platform === 'darwin' &&
+          <Flex column>
+            {settings.showScreenshotPreview &&
+              <H100 style={{ margin: '10px 0 0 6px' }}>
+                Configure whether to show native OSX notification or custom popup.
+                Native popups are visible in fullscreen apps.
+              </H100>
+            }
+            {settings.showScreenshotPreview &&
+              <div style={{ marginLeft: -8, marginTop: -20 }}>
+                <RadioButtonGroup
+                  items={notificationsTypes}
+                  onRadioChange={() => setLocalDesktopSetting(
+                    !settings.nativeNotifications,
+                    'nativeNotifications',
+                  )}
+                />
+              </div>
+            }
+          </Flex>
         }
 
         {settings.showScreenshotPreview &&
@@ -97,7 +101,7 @@ const NotificationsSettings: StatelessFunctionalComponent<Props> = ({
           </H100>
         }
         {settings.showScreenshotPreview &&
-          <div style={{ marginLeft: -8 }}>
+          <div style={{ marginLeft: -8, marginTop: -20 }}>
             <RadioButtonGroup
               items={screenshotPreviewDuration}
               onRadioChange={(ev) =>
