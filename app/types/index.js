@@ -243,6 +243,8 @@ export type {
   SetIssuesSearchValue,
   SetIssuesFilterAction,
   SetIssuesFilter,
+  AddWorklogToIssueAction,
+  AddWorklogToIssue,
   IssuesAction,
 } from './issues';
 

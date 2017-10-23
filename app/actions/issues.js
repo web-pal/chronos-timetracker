@@ -16,7 +16,8 @@ import type {
   SetTrackingIssue, SetTrackingIssueAction,
   SetIssuesSearchValue, SetIssuesSearchValueAction,
   SetIssuesFilter, SetIssuesFilterAction,
-  IssuesMap, Id, IssueTypesMap, IssueStatusesMap, Issue,
+  AddWorklogToIssue, AddWorklogToIssueAction,
+  IssuesMap, Id, IssueTypesMap, IssueStatusesMap, Issue, Worklog,
 } from '../types';
 
 export const fetchIssuesRequest: FetchIssuesRequest = (
@@ -134,4 +135,13 @@ export const setIssuesFilter: SetIssuesFilter = (
   meta: {
     filterName,
   },
+});
+
+export const addWorklogToIssue: AddWorklogToIssue = (
+  payload: Worklog,
+  issueId: Id,
+): AddWorklogToIssueAction => ({
+  type: types.ADD_WORKLOG_TO_ISSUE,
+  payload,
+  meta: issueId,
 });

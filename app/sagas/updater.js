@@ -1,6 +1,6 @@
 // @flow
 /* eslint-disable no-alert */
-import { call, fork, take, put } from 'redux-saga/effects';
+import { call, fork, take, put, cancel } from 'redux-saga/effects';
 import { delay } from 'redux-saga';
 import { remote, ipcRenderer } from 'electron';
 import { uiActions, timerActions, types } from 'actions';

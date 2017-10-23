@@ -40,7 +40,11 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
 }: Props): Node => (fetching ?
   <RecentItemsPlaceholder /> :
   <div className="RecentItems" style={{ display: sidebarType === 'recent' ? 'block' : 'none' }}>
-    {Object.keys(items).sort((a, b) => moment(b).isSameOrAfter(moment(a))).map((key) => {
+    {console.log(items, Object.keys(items).sort((a, b) => {
+      console.log(a, b, moment(a).isBefore(moment(b)))
+      return moment(a).isBefore(moment(b));
+    }))}
+    {Object.keys(items).sort((a, b) => moment(b).isAfter(moment(a))).map((key) => {
       const item = items[key];
 
       return (
