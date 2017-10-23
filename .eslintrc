@@ -25,6 +25,7 @@
     "$Keys": true,
     "SyntheticMouseEvent": true,
     "EventEmitter": true,
+    "mixpanel": true,
   },
   "plugins": [
     "flowtype",

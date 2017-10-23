@@ -27,6 +27,7 @@ import {
   StartButton,
   StartButtonPlaceholder,
   IssueSummary,
+  IssueViewHeaderContainer,
 } from './styled';
 
 
@@ -45,7 +46,7 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
   startTimer,
   setWorklogModalOpen,
 }: Props):Node => (
-  <Flex column style={{ margin: '16px 20px', minHeight: 102 }}>
+  <IssueViewHeaderContainer>
     <Flex row alignCenter spaceBetween style={{ marginBottom: 15 }}>
       <Flex row alignCenter>
         <ProjectAvatar
@@ -92,7 +93,9 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
         : <StartButton
           src={play}
           alt="Start Tracking"
-          onClick={() => { startTimer(); }}
+          onClick={() => {
+            startTimer();
+          }}
         />
       }
     </Flex>
@@ -125,7 +128,7 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
         </Button>
       </ButtonGroup>
     </Flex>
-  </Flex>
+  </IssueViewHeaderContainer>
 );
 
 function mapStateToProps(state) {

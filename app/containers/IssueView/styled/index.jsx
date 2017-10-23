@@ -132,4 +132,9 @@ export const IssueViewTabContainer = styled.div`
   overflow-y: auto;
 `;
 
-
+export const IssueViewHeaderContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin: 16px 20px;
+  min-height: 102px;
+`;

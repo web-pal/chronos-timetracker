@@ -30,6 +30,15 @@ function* loginError(error: ErrorObj): Generator<*, void, *> {
 function* jiraLogin(values: AuthFormData): Generator<*, boolean, *> {
   try {
     const userData: User = yield call(Api.jiraAuth, values);
+    mixpanel.identify((`${values.host} - ${userData.emailAddress}`));
+    mixpanel.people.set({
+      host: values.host,
+      locale: userData.locale,
+      $timezone: userData.timeZone,
+      $name: userData.displayName,
+      $email: userData.emailAddress,
+      $distinct_id: `${values.host} - ${userData.emailAddress}`,
+    });
     Raven.setUserContext({
       host: values.host,
       locale: userData.locale,

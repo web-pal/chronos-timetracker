@@ -1,3 +1,4 @@
+/* global mixpanel */
 // @flow
 import React from 'react';
 import type { StatelessFunctionalComponent, Node } from 'react';
@@ -28,6 +29,7 @@ import {
   UpdateAvailableBadge,
   DropdownLogoutItem,
   DropdownUpdateItem,
+  DropdownProgressBar,
 } from './styled';
 
 import type {
@@ -84,7 +86,12 @@ const Header: StatelessFunctionalComponent<Props> = ({
         position="bottom right"
       >
         <DropdownItemGroup>
-          <DropdownItem onClick={() => setSettingsModalOpen(true)}>
+          <DropdownItem
+            onClick={() => {
+              mixpanel.track('Opened Settings');
+              setSettingsModalOpen(true);
+            }}
+          >
             Settings
           </DropdownItem>
           <DropdownItem
@@ -106,7 +113,12 @@ const Header: StatelessFunctionalComponent<Props> = ({
           */}
           <DropdownSeparator />
           {updateAvailable && !updateFetching &&
-            <DropdownUpdateItem onClick={installUpdateRequest}>
+            <DropdownUpdateItem
+              onClick={() => {
+                mixpanel.track('Clicked "Install Update"', { upcomingVersion: updateAvailable });
+                installUpdateRequest();
+              }}
+            >
               {updateAvailable} is out! Update now
             </DropdownUpdateItem>
           }
@@ -122,13 +134,16 @@ const Header: StatelessFunctionalComponent<Props> = ({
           }
           {updateFetching &&
             <DropdownItem>
-              <Flex row spaceBetween>
-                <span>
-                  Fetching update
+              <Flex row spaceBetween alignCenter>
+                <span style={{ marginRight: 5 }}>
+                  Updating
                 </span>
-                <Spinner size={16} />
+                <Spinner size="small" />
               </Flex>
             </DropdownItem>
+          }
+          {updateFetching &&
+            <DropdownProgressBar />
           }
           <DropdownSeparator />
           <DropdownLogoutItem onClick={logoutRequest}>
