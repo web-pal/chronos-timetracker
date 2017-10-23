@@ -23,12 +23,12 @@ const SidebarHeader: StatelessFunctionalComponent<Props> = ({
   <TabContainer>
     <SidebarHeaderTab
       active={sidebarType === 'recent'}
-      label="Recent"
+      label="Recent worklogs"
       onClick={setSidebarType}
     />
     <SidebarHeaderTab
       active={sidebarType === 'all'}
-      label="All"
+      label="Issues"
       onClick={setSidebarType}
     />
   </TabContainer>;

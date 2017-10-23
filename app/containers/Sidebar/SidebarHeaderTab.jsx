@@ -7,7 +7,7 @@ import type { SetSidebarType } from '../../types';
 
 type Props = {
   active: boolean,
-  label: 'All' | 'Recent',
+  label: 'Recent worklogs' | 'Issues',
   onClick: SetSidebarType,
 };
 
@@ -18,7 +18,7 @@ const SidebarHeaderTab: StatelessFunctionalComponent<Props> = ({
 }: Props): Node =>
   <Tab
     active={active}
-    onClick={() => onClick(label === 'All' ? 'all' : 'recent')}
+    onClick={() => onClick(label === 'Issues' ? 'all' : 'recent')}
   >
     {label}
   </Tab>;
