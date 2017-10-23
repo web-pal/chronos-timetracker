@@ -125,7 +125,6 @@ export default class AkSingleSelect extends PureComponent {
   }
 
   render() {
-    console.log(this.state.selectedItem);
     return (
       <StatelessSelect
         appearance={this.props.appearance}
