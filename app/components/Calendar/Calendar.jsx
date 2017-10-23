@@ -22,6 +22,7 @@ export default class Calendar extends PureComponent {
 
   constructor(props) {
     super(props);
+    console.log(document.getElementById('gui'))
     const today = moment().date();
     const thisMonth = moment().month();
     const thisYear = moment().year();

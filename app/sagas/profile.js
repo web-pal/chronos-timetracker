@@ -1,4 +1,3 @@
-/* global mixpanel */
 // @flow
 import { race, take, put, call, fork, cancel } from 'redux-saga/effects';
 import Raven from 'raven-js';
