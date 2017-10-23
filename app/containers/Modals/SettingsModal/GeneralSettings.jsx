@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import type{ StatelessFunctionalComponent, Node } from 'react';
+import type { StatelessFunctionalComponent, Node } from 'react';
 import { CheckboxStateless as Checkbox, CheckboxGroup } from '@atlaskit/checkbox';
 import { H100 } from 'styles/typography';
 import { Flex } from 'components';
@@ -21,7 +21,6 @@ const GeneralSettings: StatelessFunctionalComponent<Props> = ({
 }: Props): Node => {
   const isIconHidden = !!settings.trayShowTimer;
   // const isTimerHidden = false;
-
   return (
     <SettingsSectionContent>
       <ContentLabel>

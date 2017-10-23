@@ -2,7 +2,7 @@ import { call, take, put, select, fork } from 'redux-saga/effects';
 import * as Api from 'api';
 import { remote } from 'electron';
 import Raven from 'raven-js';
-import { types, settingsActions } from 'actions';
+import { types, settingsActions, uiActions } from 'actions';
 import { getLocalDesktopSettings } from 'selectors';
 import { infoLog } from './ui';
 
@@ -40,6 +40,13 @@ export function* watchLocalDesktopSettingsChange() {
     if (meta === 'trayShowTimer' && !payload) {
       remote.getGlobal('tray').setTitle('');
     }
+    if (meta === 'updateChannel') {
+      yield call(
+        infoLog,
+        `switched updateChannel to ${payload}, checking for updates...`,
+      );
+      yield put(uiActions.checkForUpdatesRequest());
+    }
     const newLocalSettings = yield select(getLocalDesktopSettings);
     newLocalSettings[meta] = payload;
     yield call(
@@ -68,6 +75,8 @@ export function* localDesktopSettingsFlow() {
       showScreenshotPreview: true,
       screenshotPreviewTime: 15,
       nativeNotifications: true,
+      updateChannel: 'stable',
+      autoCheckForUpdates: true,
     };
     yield call(
       infoLog,
@@ -76,6 +85,12 @@ export function* localDesktopSettingsFlow() {
     );
     yield call(setToStorage, 'localDesktopSettings', settings);
   }
+
+  // backwards compatibility
+  if (!settings.updateChannel) settings.updateChannel = 'stable';
+  if (!settings.autoCheckForUpdates) settings.autoCheckForUpdates = true;
+  // 
+
   yield put(settingsActions.fillLocalDesktopSettings(settings));
   yield fork(watchLocalDesktopSettingsChange);
 }

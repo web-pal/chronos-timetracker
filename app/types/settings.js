@@ -8,13 +8,15 @@ export type Settings = any;
 // TODO type for local desktop settings
 export type LocalDesktopSettings = any;
 
+export type SettingsTab = 'General' | 'Notifications' | 'Updates';
+
 export type SettingsState = {|
   +dispersion: string,
   +interval: string,
   +screenshotsPeriod: number,
   +screenshotsQuantity: number,
   +screenshotsEnabled: string,
-  +modalTab: string,
+  +modalTab: SettingsTab,
   +screenshotsEnabledUsers: Array<string | null>,
   +localDesktopSettings: LocalDesktopSettings,
 |};
