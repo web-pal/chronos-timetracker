@@ -104,8 +104,13 @@ const UpdateSettings: StatelessFunctionalComponent<Props> = ({
         <Checkbox
           isChecked={channel === 'beta'}
           value={channel}
-          onChange={(value) => {
-            console.log(value)
+          onChange={(ev) => {
+            const value = ev.target.value;
+            if (value === 'stable') {
+              setChannel('beta');
+            } else {
+              setChannel('stable');
+            }
           }}
           label="Allow prereleases"
           name="allowPrerelease"
