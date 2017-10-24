@@ -1,7 +1,9 @@
-import { take, put, call, fork } from 'redux-saga/effects';
+import { take, put, call, fork, select } from 'redux-saga/effects';
 import { ipcRenderer } from 'electron';
 import moment from 'moment';
-import { uiActions, timerActions, types } from 'actions';
+import { uiActions, timerActions, issuesActions, types } from 'actions';
+import { getSelectedIssue } from 'selectors';
+
 import createIpcChannel from './ipc';
 
 const LOG_LEVELS = {
@@ -75,6 +77,8 @@ let traySettingsListener;
 function* watchTrayStart(): Generator<*, *, *> {
   while (true) {
     yield take(trayStartListener);
+    const selectedIssue = yield select(getSelectedIssue);
+    yield put(issuesActions.setTrackingIssue(selectedIssue));
     yield put(timerActions.startTimer());
   }
 }

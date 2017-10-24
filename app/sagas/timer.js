@@ -203,6 +203,7 @@ function* stopTimer(channel, timerInstance) {
 export function* timerFlow(): Generator<*, *, *> {
   try {
     const selectedIssue = yield select(getSelectedIssue);
+    console.log('timerFlow selectedIssue', selectedIssue);
     yield put(issuesActions.setTrackingIssue(selectedIssue));
     ipcRenderer.send('start-timer');
     const channel = yield call(timerChannel);
