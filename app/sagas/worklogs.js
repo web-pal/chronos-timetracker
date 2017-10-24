@@ -130,7 +130,7 @@ export function* addManualWorklogFlow(): Generator<*, *, *> {
       yield put(worklogsActions.setAddWorklogFetching(true));
       const issueId = yield select(getSelectedIssueId);
       const { comment, startTime, endTime, date } = payload;
-      const started = moment(date).utc().format().replace('Z', '.000+0000');
+      const started = moment(startTime).utc().format().replace('Z', '.000+0000');
       const timeSpentSeconds = endTime.diff(startTime, 's');
       const self = yield select(getUserData);
       const jiraUploadOptions: {

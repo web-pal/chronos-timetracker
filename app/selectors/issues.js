@@ -81,8 +81,7 @@ export const getRecentItems = createSelector(
     const selfKey = self ? self.key : '';
     const recentWorklogs =
       map
-        .reduce((worklogs, value) => worklogs.concat(value.fields.worklog.worklogs), [])
-        .sort((a, b) => moment(b.started).isSameOrAfter(moment(a.started)));
+        .reduce((worklogs, value) => worklogs.concat(value.fields.worklog.worklogs), []);
     const _recentWorklogs = recentWorklogs.map(w => {
       const _w = w;
       _w.issue = iMap[_w.issueId];
