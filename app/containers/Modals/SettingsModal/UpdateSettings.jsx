@@ -1,7 +1,8 @@
 // @flow
 import React from 'react';
 import type { StatelessFunctionalComponent, Node } from 'react';
-import { Flex, SingleSelect } from 'components';
+import { Flex } from 'components';
+import { CheckboxStateless as Checkbox } from '@atlaskit/checkbox';
 import { H100 } from 'styles/typography';
 import Button, { ButtonGroup } from '@atlaskit/button';
 import { remote } from 'electron';
@@ -49,67 +50,69 @@ const UpdateSettings: StatelessFunctionalComponent<Props> = ({
     <ContentLabel>
       Updates
     </ContentLabel>
-    <Flex column>
-      <Flex row spaceBetween>
-        <Flex column>
-          <H100 style={{ padding: '6px 0 10px 0' }}>
-            {updateAvailable
-              ? `New version (${updateAvailable}) is available.`
-              : `You have latest version (${version}).`
-            }
-          </H100>
-          <ButtonGroup>
-            {updateAvailable
-              ? <Flex column>
-                <div>
-                  <Button
-                    appearance="primary"
-                    onClick={installUpdateRequest}
-                    iconAfter={updateFetching ? <Spinner invertColor /> : false}
-                  >
-                    {updateFetching
-                      ? 'Updating'
-                      : 'Update now'
-                    }
-                  </Button>
-                </div>
-                <div style={{ fontSize: 11, paddingTop: 2 }}>
-                  <span> or </span>
-                  <Button
-                    appearance="link"
-                    spacing="none"
-                    onClick={openURLInBrowser('https://github.com/web-pal/Chronos/releases')}
-                  >
-                    download latest release manually
-                  </Button>
-                </div>
+    <Flex column style={{ marginLeft: 6 }}>
+      <Flex column style={{ marginBottom: 10 }}>
+        <H100 style={{ padding: '6px 0 10px 0' }}>
+          {updateAvailable
+            ? `New version (${updateAvailable}) is available.`
+            : `You have latest version (${version}).`
+          }
+        </H100>
+        <ButtonGroup>
+          {updateAvailable
+            ? <Flex row>
+              <div>
+                <Button
+                  appearance="primary"
+                  onClick={installUpdateRequest}
+                  iconAfter={updateFetching ? <Spinner invertColor /> : false}
+                >
+                  {updateFetching
+                    ? 'Updating'
+                    : 'Update now'
+                  }
+                </Button>
+              </div>
+              <Flex row alignCenter style={{ marginLeft: 12 }}>
+                <span> or </span>
+                <Button
+                  appearance="link"
+                  spacing="compact"
+                  onClick={openURLInBrowser('https://github.com/web-pal/Chronos/releases')}
+                >
+                  download latest release manually
+                </Button>
               </Flex>
-              : <Button
-                isDisabled={updateCheckRunning}
-                onClick={() => autoUpdater.checkForUpdates()}
-                iconAfter={updateCheckRunning ? <Spinner /> : false}
-              >
-                {updateCheckRunning
-                  ? 'Checking for updates'
-                  : 'Check for updates'
-                }
-              </Button>
-            }
-          </ButtonGroup>
-        </Flex>
-        <Flex column style={{ width: 150 }}>
-          <H100 style={{ padding: '6px 0 6px 0' }}>
-            Update channel
-          </H100>
-          <SingleSelect
-            items={updateChannels}
-            onSelected={({ item }) => {
-              setChannel(item.value);
-            }}
-            defaultSelected={updateItemsMap[channel]}
-            shouldFitContiner
-          />
-        </Flex>
+            </Flex>
+            : <Button
+              isDisabled={updateCheckRunning}
+              onClick={() => autoUpdater.checkForUpdates()}
+              iconAfter={updateCheckRunning ? <Spinner /> : false}
+            >
+              {updateCheckRunning
+                ? 'Checking for updates'
+                : 'Check for updates'
+              }
+            </Button>
+          }
+        </ButtonGroup>
+      </Flex>
+      <Flex column>
+        <H100 style={{ padding: '6px 0 6px 0' }}>
+          Configure whether to allow updating to latest prerelease version
+        </H100>
+        <Checkbox
+          isChecked={channel === 'beta'}
+          value={channel}
+          onChange={(value) => {
+            console.log(value)
+          }}
+          label="Allow prereleases"
+          name="allowPrerelease"
+        />
+        <H100 style={{ color: '#ffab02', fontWeight: 300, fontSize: 10 }}>
+          Warning! Prerelease is not ready for production, is unstable and may contain bugs!
+        </H100>
       </Flex>
     </Flex>
   </SettingsSectionContent>
