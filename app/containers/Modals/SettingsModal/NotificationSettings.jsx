@@ -82,7 +82,7 @@ const NotificationsSettings: StatelessFunctionalComponent<Props> = ({
               </H100>
             }
             {settings.showScreenshotPreview &&
-              <div style={{ marginLeft: -8, marginTop: -20 }}>
+              <div style={{ marginLeft: -8 }}>
                 <RadioButtonGroup
                   items={notificationsTypes}
                   onRadioChange={() => setLocalDesktopSetting(
@@ -101,7 +101,7 @@ const NotificationsSettings: StatelessFunctionalComponent<Props> = ({
           </H100>
         }
         {settings.showScreenshotPreview &&
-          <div style={{ marginLeft: -8, marginTop: -20 }}>
+          <div style={{ marginLeft: -8 }}>
             <RadioButtonGroup
               items={screenshotPreviewDuration}
               onRadioChange={(ev) =>
