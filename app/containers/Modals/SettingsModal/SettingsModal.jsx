@@ -122,7 +122,7 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
             channel={settings.updateChannel}
             setChannel={(value) => setLocalDesktopSetting(value, 'updateChannel')}
             updateCheckRunning={updateCheckRunning}
-            updateAvailable={"2.0.5"}
+            updateAvailable={updateAvailable}
             updateFetching={updateFetching}
             installUpdateRequest={installUpdateRequest}
           />
