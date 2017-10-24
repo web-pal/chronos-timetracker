@@ -6,13 +6,13 @@ import notifier from 'node-notifier';
 import fs from 'fs';
 import MenuBuilder from './menu';
 
+const appDir = app.getPath('userData');
+
 let mainWindow;
 let tray;
 let menu;
 let authWindow;
 let shouldQuit = process.platform !== 'darwin';
-
-const appDir = app.getPath('userData');
 
 global.appDir = appDir;
 global.appSrcDir = __dirname;
@@ -492,7 +492,9 @@ app.on('activate', () => {
 });
 
 app.on('ready', async () => {
+  if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === true) {
     await installExtensions();
+  }
 
   tray = new Tray(path.join(__dirname, '/assets/images/icon.png'));
   global.tray = tray;

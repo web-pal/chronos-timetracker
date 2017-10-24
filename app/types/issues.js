@@ -267,6 +267,14 @@ export type SetIssuesFilter = {
   (value: Array<string>, filterName: string): SetIssuesFilterAction
 }
 
+//
+export type AddWorklogToIssueAction =
+  {| type: types.ADD_WORKLOG_TO_ISSUE, payload: Worklog, meta: Id |};
+
+export type AddWorklogToIssue = {
+  (payload: Worklog, issueId: Id): AddWorklogToIssueAction
+};
+
 export type IssuesAction =
   FetchIssuesRequestAction
   | FillIssuesAction

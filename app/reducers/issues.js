@@ -32,6 +32,23 @@ function itemsById(state: IssuesMap = {}, action): IssuesMap {
         action.payload.map,
         state,
       );
+    case types.ADD_WORKLOG_TO_ISSUE:
+      return {
+        ...state,
+        [action.meta]: {
+          ...state[action.meta],
+          fields: {
+            ...state[action.meta].fields,
+            worklog: {
+              ...state[action.meta].fields.worklog,
+              worklogs: [
+                action.payload,
+                ...state[action.meta].fields.worklog.worklogs,
+              ],
+            },
+          },
+        },
+      };
     case types.CLEAR_ISSUES:
     case types.___CLEAR_ALL_REDUCERS___:
       return {};

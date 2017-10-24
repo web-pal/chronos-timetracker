@@ -4,9 +4,10 @@ import { call, take, select, put } from 'redux-saga/effects';
 import { delay } from 'redux-saga';
 import Raven from 'raven-js';
 import * as Api from 'api';
-import { types, worklogsActions, uiActions } from 'actions';
-import { getSelectedIssueId } from 'selectors';
+import { types, worklogsActions, uiActions, issuesActions } from 'actions';
+import { getSelectedIssueId, getUserData } from 'selectors';
 import moment from 'moment';
+import { stj } from 'time-util';
 
 import { getFromStorage, setToStorage } from './storage';
 import { throwError, notify } from './ui';
@@ -43,6 +44,7 @@ export function* uploadWorklog({
   keepedIdles,
 }: UploadWorklogOptions): Generator<*, *, *> {
   try {
+    const started = moment().utc().format().replace('Z', '.000+0000');
     const jiraUploadOptions: {
       issueId: Id,
       adjustEstimate: 'auto',
@@ -54,6 +56,7 @@ export function* uploadWorklog({
       issueId,
       adjustEstimate: 'auto',
       worklog: {
+        started,
         timeSpentSeconds,
         comment,
       },
@@ -76,14 +79,18 @@ export function* uploadWorklog({
     mixpanel.track('Worklog uploaded (Automatic)', { timeSpentSeconds });
     mixpanel.people.increment('Logged time(seconds)', timeSpentSeconds);
     yield call(notify, '', 'Worklog is uploaded');
+    yield put(issuesActions.addWorklogToIssue(worklog, issueId));
   } catch (err) {
+    const started = moment().utc().format().replace('Z', '.000+0000');
     yield call(saveWorklogAsOffline, {
       issueId,
       worklog: {
+        started,
         timeSpentSeconds,
         comment,
       },
     });
+    yield call(notify, '', 'Failed to upload worklog');
     yield call(throwError, err);
     Raven.captureException(err);
   }
@@ -123,19 +130,21 @@ export function* addManualWorklogFlow(): Generator<*, *, *> {
       yield put(worklogsActions.setAddWorklogFetching(true));
       const issueId = yield select(getSelectedIssueId);
       const { comment, startTime, endTime, date } = payload;
+      const started = moment(startTime).utc().format().replace('Z', '.000+0000');
       const timeSpentSeconds = endTime.diff(startTime, 's');
+      const self = yield select(getUserData);
       const jiraUploadOptions: {
         issueId: Id,
           adjustEstimate: 'auto',
           worklog: {
             timeSpentSeconds: number,
-              comment: string,
+            comment: string,
           },
       } = {
         issueId,
         adjustEstimate: 'auto',
         worklog: {
-          started: moment(date).utc().format().replace('Z', '.000+0000'),
+          started,
           timeSpentSeconds,
           comment,
         },
@@ -147,6 +156,20 @@ export function* addManualWorklogFlow(): Generator<*, *, *> {
       mixpanel.people.increment('Logged time(seconds)', timeSpentSeconds);
       yield call(delay, 1000);
       yield call(notify, '', 'Manual worklog succesfully added');
+      const newWorklog = {
+        self: '',
+        author: self,
+        updateAuthor: self,
+        comment,
+        created: started,
+        updated: started,
+        started,
+        timeSpent: stj(timeSpentSeconds, 'h[h]m[m]'),
+        timeSpentSeconds,
+        id: String(Date.now()),
+        issueId,
+      };
+      yield put(issuesActions.addWorklogToIssue(newWorklog, issueId));
     }
   } catch (err) {
     yield put(worklogsActions.setAddWorklogFetching(false));
