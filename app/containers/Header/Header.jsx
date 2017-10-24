@@ -1,4 +1,3 @@
-/* global mixpanel */
 // @flow
 import React from 'react';
 import type { StatelessFunctionalComponent, Node } from 'react';
@@ -9,6 +8,7 @@ import { cogIcon } from 'data/svg';
 import { Flex } from 'components';
 import { profileActions, uiActions, settingsActions } from 'actions';
 import { shell } from 'electron';
+import mixpanel from 'mixpanel-browser';
 import {
   getUserData,
   getHost,
