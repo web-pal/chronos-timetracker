@@ -1,4 +1,3 @@
-/* global mixpanel */
 // @flow
 import { call, take, select, put } from 'redux-saga/effects';
 import { delay } from 'redux-saga';
@@ -8,6 +7,7 @@ import { types, worklogsActions, uiActions, issuesActions } from 'actions';
 import { getSelectedIssueId, getUserData } from 'selectors';
 import moment from 'moment';
 import { stj } from 'time-util';
+import mixpanel from 'mixpanel-browser';
 
 import { getFromStorage, setToStorage } from './storage';
 import { throwError, notify } from './ui';

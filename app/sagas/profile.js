@@ -4,6 +4,7 @@ import Raven from 'raven-js';
 import { ipcRenderer, remote } from 'electron';
 import { types, profileActions, clearAllReducers, settingsActions } from 'actions';
 import * as Api from 'api';
+import mixpanel from 'mixpanel-browser';
 import type {
   ErrorObj,
   AuthFormData,
@@ -21,6 +22,10 @@ import { setToStorage, removeFromStorage } from './storage';
 
 // import Socket from '../socket';
 import jira from '../utils/jiraClient';
+
+export function* initializeMixpanel(): Generator<*, void, *> {
+  yield call(mixpanel.init, '215bb01399c3711761bff4ea32d86337');
+}
 
 function* loginError(error: ErrorObj): Generator<*, void, *> {
   const errorMessage: string = error.message || 'Unknown error';
