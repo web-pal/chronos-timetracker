@@ -8,11 +8,6 @@
     "rebuild-electron": "npm rebuild --runtime=electron --target=1.7.5 --disturl=https://atom.io/download/atom-shell -—abi=57",
     "postinstall": "npm run rebuild-electron && ./replaceNotifier.sh"
   },
-  "updater": {
-    "url": "https://raw.githubusercontent.com/web-pal/Chronos/master/updates.json",
-    "autoDownload": false,
-    "disabled": false
-  },
   "author": {
     "name": "Webpal",
     "email": "gloosx@gmail.com",
