@@ -83,7 +83,7 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
     )}
   >
     <ModalContentContainer>
-      <Flex row style={{ height: 284 }}>
+      <Flex row style={{ height: 324 }}>
         <Flex column style={{ width: 85 }}>
           <SettingsSectionLabel
             active={tab === 'General'}
