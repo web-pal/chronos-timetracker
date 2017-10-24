@@ -87,6 +87,14 @@ export type SetUpdateFetching = {
 };
 
 //
+export type CheckForUpdatesRequestAction =
+   {| type: typeof types.CHECK_FOR_UPDATES_REQUEST |};
+
+export type CheckForUpdatesRequest = {
+  (): CheckForUpdatesRequestAction
+};
+
+//
 export type InstallUpdateRequestAction =
   {| type: typeof types.INSTALL_UPDATE_REQUEST |};
 

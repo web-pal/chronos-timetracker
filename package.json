@@ -86,7 +86,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Architektor/Chronos-test-updates"
+    "url": "https://github.com/web-pal/Chronos.git"
   },
   "devDependencies": {
     "asar": "^0.13.0",
@@ -177,7 +177,7 @@
     "@atlaskit/flag": "6.1.2",
     "@atlaskit/icon": "^10.0.0",
     "@atlaskit/inline-dialog": "^5.0.1",
-    "@atlaskit/inline-edit": "^4.5.0",
+    "@atlaskit/inline-edit": "^4.5.2",
     "@atlaskit/input": "^1.5.3",
     "@atlaskit/modal-dialog": "^3.1.1",
     "@atlaskit/single-select": "^2.0.1",

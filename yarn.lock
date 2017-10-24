@@ -63,6 +63,16 @@
     prop-types "^15.5.10"
     styled-components "^1.3.0"
 
+"@atlaskit/button@^5.4.2":
+  version "5.4.5"
+  resolved "https://registry.yarnpkg.com/@atlaskit/button/-/button-5.4.5.tgz#7e024364b4e175ccbae4a8c1a05fb352cadc9280"
+  dependencies:
+    "@atlaskit/theme" "^2.0.0"
+    babel-runtime "^6.11.6"
+    classnames "^2.2.5"
+    prop-types "^15.5.10"
+    styled-components "^1.4.6"
+
 "@atlaskit/calendar@3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@atlaskit/calendar/-/calendar-3.0.0.tgz#532aec8dffd9427c7a4bd9dc452ca0cb547a1317"
@@ -116,7 +126,7 @@
     prop-types "^15.5.10"
     styled-components "^1.4.6"
 
-"@atlaskit/field-base@8.0.2", "@atlaskit/field-base@^8.0.0", "@atlaskit/field-base@^8.0.1":
+"@atlaskit/field-base@8.0.2", "@atlaskit/field-base@^8.0.0":
   version "8.0.2"
   resolved "https://registry.yarnpkg.com/@atlaskit/field-base/-/field-base-8.0.2.tgz#704e32de9985b4fb681f5f4cf813ec61dba11171"
   dependencies:
@@ -244,18 +254,18 @@
     prop-types "^15.5.10"
     styled-components "^1.3.0"
 
-"@atlaskit/inline-edit@^4.5.0":
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/@atlaskit/inline-edit/-/inline-edit-4.5.0.tgz#4f286e9669a174cb2ba430e589168aa653d6735a"
+"@atlaskit/inline-edit@^4.5.2":
+  version "4.5.3"
+  resolved "https://registry.yarnpkg.com/@atlaskit/inline-edit/-/inline-edit-4.5.3.tgz#3a73292e2716a475e58b57b153d3acf6480edc3c"
   dependencies:
-    "@atlaskit/button" "^1.0.0"
-    "@atlaskit/field-base" "^8.0.1"
-    "@atlaskit/icon" "^6.5.2"
+    "@atlaskit/button" "^5.4.2"
+    "@atlaskit/field-base" "^8.1.1"
+    "@atlaskit/icon" "^10.1.0"
     "@atlaskit/theme" "^2.0.0"
     babel-runtime "^6.11.6"
     classnames "^2.2.5"
     prop-types "^15.5.10"
-    styled-components "^1.3.0"
+    styled-components "^1.4.5"
 
 "@atlaskit/input@^1.5.3":
   version "1.5.3"

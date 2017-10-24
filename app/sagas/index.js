@@ -40,6 +40,7 @@ export default function* rootSaga(): Generator<*, *, *> {
 
     // updater
     fork(updaterSagas.watchInstallUpdateRequest),
+    fork(updaterSagas.checkForUpdatesFlow),
     fork(updaterSagas.initializeUpdater),
 
     // ui

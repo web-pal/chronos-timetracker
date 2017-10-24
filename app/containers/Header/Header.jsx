@@ -5,10 +5,9 @@ import type { StatelessFunctionalComponent, Node } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import DropdownMenu, { DropdownItemGroup, DropdownItem } from '@atlaskit/dropdown-menu';
-import Spinner from '@atlaskit/spinner';
 import { cogIcon } from 'data/svg';
 import { Flex } from 'components';
-import { profileActions, uiActions } from 'actions';
+import { profileActions, uiActions, settingsActions } from 'actions';
 import { shell } from 'electron';
 import {
   getUserData,
@@ -29,7 +28,6 @@ import {
   UpdateAvailableBadge,
   DropdownLogoutItem,
   DropdownUpdateItem,
-  DropdownProgressBar,
 } from './styled';
 
 import type {
@@ -40,6 +38,7 @@ import type {
   SetSettingsModalOpen,
   SetAboutModalOpen,
   SetSupportModalOpen,
+  SetSettingsModalTab,
 } from '../../types';
 
 type Props = {
@@ -53,6 +52,7 @@ type Props = {
   installUpdateRequest: InstallUpdateRequest,
   setSettingsModalOpen: SetSettingsModalOpen,
   setSupportModalOpen: SetSupportModalOpen,
+  setSettingsModalTab: SetSettingsModalTab,
   setAboutModalOpen: SetAboutModalOpen,
 };
 
@@ -65,6 +65,7 @@ const Header: StatelessFunctionalComponent<Props> = ({
   logoutRequest,
   installUpdateRequest,
   setSettingsModalOpen,
+  setSettingsModalTab,
   // setSupportModalOpen,
   setAboutModalOpen,
 }: Props): Node =>
@@ -112,40 +113,18 @@ const Header: StatelessFunctionalComponent<Props> = ({
             </DropdownItem>
           */}
           <DropdownSeparator />
-          {updateAvailable && !updateFetching &&
+          {updateAvailable && !updateFetching && [
             <DropdownUpdateItem
               onClick={() => {
                 mixpanel.track('Clicked "Install Update"', { upcomingVersion: updateAvailable });
-                installUpdateRequest();
+                setSettingsModalOpen(true);
+                setSettingsModalTab('Updates');
               }}
             >
-              {updateAvailable} is out! Update now
-            </DropdownUpdateItem>
-          }
-          {updateCheckRunning &&
-            <DropdownItem>
-              <Flex row spaceBetween alignCenter>
-                <span style={{ marginRight: 5 }}>
-                  Checking for updates
-                </span>
-                <Spinner size="small" />
-              </Flex>
-            </DropdownItem>
-          }
-          {updateFetching &&
-            <DropdownItem>
-              <Flex row spaceBetween alignCenter>
-                <span style={{ marginRight: 5 }}>
-                  Updating
-                </span>
-                <Spinner size="small" />
-              </Flex>
-            </DropdownItem>
-          }
-          {updateFetching &&
-            <DropdownProgressBar />
-          }
-          <DropdownSeparator />
+              {updateAvailable} is out! Update now.
+            </DropdownUpdateItem>,
+            <DropdownSeparator />,
+          ]}
           <DropdownLogoutItem onClick={logoutRequest}>
             Logout
           </DropdownLogoutItem>
@@ -165,7 +144,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ ...profileActions, ...uiActions }, dispatch);
+  return bindActionCreators({ ...profileActions, ...uiActions, ...settingsActions }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Header);

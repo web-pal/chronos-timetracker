@@ -6,6 +6,7 @@ import type {
   SetUpdateCheckRunning, SetUpdateCheckRunningAction,
   SetUpdateAvailable, SetUpdateAvailableAction,
   SetUpdateFetching, SetUpdateFetchingAction,
+  CheckForUpdatesRequest, CheckForUpdatesRequestAction,
   InstallUpdateRequest, InstallUpdateRequestAction,
   SetSidebarFiltersOpen, SetSidebarFiltersOpenAction,
   SetSettingsModalOpen, SetSettingsModalOpenAction,
@@ -61,6 +62,9 @@ export const setUpdateFetching: SetUpdateFetching = (
   type: types.SET_UPDATE_FETCHING,
   payload,
 });
+
+export const checkForUpdatesRequest: CheckForUpdatesRequest =
+  (): CheckForUpdatesRequestAction => ({ type: types.CHECK_FOR_UPDATES_REQUEST });
 
 export const installUpdateRequest: InstallUpdateRequest =
   (): InstallUpdateRequestAction => ({
