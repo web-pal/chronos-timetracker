@@ -2,6 +2,7 @@
 import { types } from 'actions';
 
 import type { Id } from './index';
+import type { User } from './profile';
 
 export type ManualWorklogData = {
   date: mixed,
@@ -11,7 +12,19 @@ export type ManualWorklogData = {
 };
 
 // TODO type for worklog
-export type Worklog = any;
+export type Worklog = {
+  self: string,
+  author: User,
+  updateAuthor: User,
+  comment: string,
+  created: string,
+  updated: string,
+  started: string,
+  timeSpent: string,
+  timeSpentSeconds: number,
+  id: string,
+  issueId: string,
+};
 
 export type WorklogsMap = { [Id]: Worklog };
 

@@ -4,6 +4,7 @@ import Raven from 'raven-js';
 import { ipcRenderer, remote } from 'electron';
 import { types, profileActions, clearAllReducers, settingsActions } from 'actions';
 import * as Api from 'api';
+import mixpanel from 'mixpanel-browser';
 import type {
   ErrorObj,
   AuthFormData,
@@ -22,6 +23,10 @@ import { setToStorage, removeFromStorage } from './storage';
 // import Socket from '../socket';
 import jira from '../utils/jiraClient';
 
+export function* initializeMixpanel(): Generator<*, void, *> {
+  yield call(mixpanel.init, '215bb01399c3711761bff4ea32d86337');
+}
+
 function* loginError(error: ErrorObj): Generator<*, void, *> {
   const errorMessage: string = error.message || 'Unknown error';
   yield put(profileActions.throwLoginError(errorMessage));
@@ -30,6 +35,15 @@ function* loginError(error: ErrorObj): Generator<*, void, *> {
 function* jiraLogin(values: AuthFormData): Generator<*, boolean, *> {
   try {
     const userData: User = yield call(Api.jiraAuth, values);
+    mixpanel.identify((`${values.host} - ${userData.emailAddress}`));
+    mixpanel.people.set({
+      host: values.host,
+      locale: userData.locale,
+      $timezone: userData.timeZone,
+      $name: userData.displayName,
+      $email: userData.emailAddress,
+      $distinct_id: `${values.host} - ${userData.emailAddress}`,
+    });
     Raven.setUserContext({
       host: values.host,
       locale: userData.locale,

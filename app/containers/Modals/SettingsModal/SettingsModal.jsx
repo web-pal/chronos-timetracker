@@ -1,26 +1,35 @@
 // @flow
 import React from 'react';
 import type { StatelessFunctionalComponent, Node } from 'react';
-import ModalDialog from '@atlaskit/modal-dialog';
-import ButtonGroup from '@atlaskit/button-group';
+import ModalDialog, { ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { H700 } from 'styles/typography';
 import { ModalContentContainer } from 'styles/modals';
 import { uiActions, settingsActions } from 'actions';
 import { Flex } from 'components';
-import { getSettingsModalTab, getSettingsModalOpen, getLocalDesktopSettings } from 'selectors';
+import {
+  getSettingsModalTab,
+  getSettingsModalOpen,
+  getLocalDesktopSettings,
+  getUpdateCheckRunning,
+  getUpdateAvailable,
+  getUpdateFetching,
+} from 'selectors';
 
 
 import GeneralSettings from './GeneralSettings';
 import NotificationSettings from './NotificationSettings';
+import UpdateSettings from './UpdateSettings';
 
 import type { Settings,
   SetSettingsModalOpen,
   SetSettingsModalTab,
   SetLocalDesktopSetting,
+  SettingsTab,
+  UpdateInfo,
+  InstallUpdateRequest,
 } from '../../../types';
 
 import {
@@ -30,41 +39,51 @@ import {
 
 type Props = {
   isOpen: boolean,
-  tab: string,
+  tab: SettingsTab,
   settings: Settings,
+  updateCheckRunning: boolean,
+  updateAvailable: UpdateInfo,
+  updateFetching: boolean,
   setSettingsModalOpen: SetSettingsModalOpen,
   setSettingsModalTab: SetSettingsModalTab,
   setLocalDesktopSetting: SetLocalDesktopSetting,
+  installUpdateRequest: InstallUpdateRequest,
 }
 
 const SettingsModal: StatelessFunctionalComponent<Props> = ({
   isOpen,
   tab,
   settings,
+  updateAvailable,
+  updateFetching,
+  updateCheckRunning,
   setSettingsModalOpen,
   setSettingsModalTab,
   setLocalDesktopSetting,
-}: Props): Node =>
+  installUpdateRequest,
+}: Props): Node => isOpen &&
   <ModalDialog
-    isOpen={isOpen}
     onClose={() => setSettingsModalOpen(false)}
-    onDialogDismissed={() => setSettingsModalOpen(false)}
-    footer={
-      <Flex row style={{ justifyContent: 'flex-end' }}>
-        <ButtonGroup>
+    footer={() => (
+      <ModalFooter>
+        <Flex row style={{ justifyContent: 'flex-end', width: '100%' }}>
           <Button
             appearance="default"
             onClick={() => setSettingsModalOpen(false)}
           >
             Close
           </Button>
-        </ButtonGroup>
-      </Flex>
-    }
+        </Flex>
+      </ModalFooter>
+    )}
+    header={() => (
+      <ModalHeader>
+        <ModalTitle>Settings</ModalTitle>
+      </ModalHeader>
+    )}
   >
     <ModalContentContainer>
-      <H700 style={{ marginBottom: 28, display: 'block' }}>Settings</H700>
-      <Flex row style={{ height: 250 }}>
+      <Flex row style={{ height: 284 }}>
         <Flex column style={{ width: 85 }}>
           <SettingsSectionLabel
             active={tab === 'General'}
@@ -77,6 +96,12 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
             onClick={() => setSettingsModalTab('Notifications')}
           >
             Notifications
+          </SettingsSectionLabel>
+          <SettingsSectionLabel
+            active={tab === 'Updates'}
+            onClick={() => setSettingsModalTab('Updates')}
+          >
+            Updates
           </SettingsSectionLabel>
         </Flex>
         <Separator />
@@ -92,6 +117,16 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
             setLocalDesktopSetting={setLocalDesktopSetting}
           />
         }
+        {tab === 'Updates' &&
+          <UpdateSettings
+            channel={settings.updateChannel}
+            setChannel={(value) => setLocalDesktopSetting(value, 'updateChannel')}
+            updateCheckRunning={updateCheckRunning}
+            updateAvailable={updateAvailable}
+            updateFetching={updateFetching}
+            installUpdateRequest={installUpdateRequest}
+          />
+        }
       </Flex>
     </ModalContentContainer>
   </ModalDialog>;
@@ -101,6 +136,9 @@ function mapStateToProps(state) {
     isOpen: getSettingsModalOpen(state),
     settings: getLocalDesktopSettings(state),
     tab: getSettingsModalTab(state),
+    updateCheckRunning: getUpdateCheckRunning(state),
+    updateAvailable: getUpdateAvailable(state),
+    updateFetching: getUpdateFetching(state),
   };
 }
 

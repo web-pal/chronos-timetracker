@@ -16,3 +16,4 @@ export const SELECT_ISSUE: 'issues/SELECT' = 'issues/SELECT';
 export const SET_TRACKING_ISSUE: 'issues/SET_TRACKING' = 'issues/SET_TRACKING';
 export const SET_ISSUES_SEARCH_VALUE: 'issues/SET_SEARCH_VALUE' = 'issues/SET_SEARCH_VALUE';
 export const SET_ISSUES_FILTER: 'issues/SET_FILTER' = 'issues/SET_FILTER';
+export const ADD_WORKLOG_TO_ISSUE: 'issues/ADD_WORKLOG_TO_ISSUE' = 'issues/ADD_WORKLOG_TO_ISSUE';

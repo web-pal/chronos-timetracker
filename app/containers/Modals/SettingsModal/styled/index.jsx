@@ -13,6 +13,7 @@ export const SettingsSectionContent = styled.div`
 export const Separator = styled.div`
   height: 100%;
   width: 1px;
+  min-width: 1px;
   background: #d2d7dc;
   margin: 0px 25px 0px 30px;
 `;

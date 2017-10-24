@@ -1,17 +1,12 @@
 {
   "name": "Chronos",
   "productName": "Chronos",
-  "version": "2.0.1",
+  "version": "2.0.4",
   "description": "Native app for time-tracking fully integrated with JIRA",
   "main": "./main.prod.js",
   "scripts": {
     "rebuild-electron": "npm rebuild --runtime=electron --target=1.7.5 --disturl=https://atom.io/download/atom-shell -—abi=57",
     "postinstall": "npm run rebuild-electron && ./replaceNotifier.sh"
-  },
-  "updater": {
-    "url": "https://raw.githubusercontent.com/web-pal/Chronos/master/updates.json",
-    "autoDownload": false,
-    "disabled": false
   },
   "author": {
     "name": "Webpal",

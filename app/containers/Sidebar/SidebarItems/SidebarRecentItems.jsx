@@ -32,6 +32,18 @@ type Props = {
   selectIssue: SelectIssue,
 }
 
+const daySorter = (a, b) => {
+  if (moment(a).isAfter(moment(b))) return -1;
+  if (moment(a).isBefore(moment(b))) return 1;
+  return 0;
+};
+
+const worklogSorter = (a, b) => {
+  if (moment(a.created).isAfter(moment(b.created))) return -1;
+  if (moment(a.created).isBefore(moment(b.created))) return 1;
+  return 0;
+};
+
 const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
   items,
   fetching,
@@ -40,8 +52,8 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
 }: Props): Node => (fetching ?
   <RecentItemsPlaceholder /> :
   <div className="RecentItems" style={{ display: sidebarType === 'recent' ? 'block' : 'none' }}>
-    {Object.keys(items).sort((a, b) => moment(b).isSameOrAfter(moment(a))).map((key) => {
-      const item = items[key];
+    {Object.keys(items).sort(daySorter).map((key) => {
+      const item = items[key].sort(worklogSorter);
 
       return (
         <Flex key={key} column className="RecentItems__block">
@@ -52,7 +64,7 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
           <Flex column className="RecentItems__list">
             {item.map((worklog, i) =>
               <SidebarItem
-                key={i}
+                key={`${key}_${worklog.id}_${i}`}
                 issue={worklog.issue}
                 active={false}
                 selectIssue={selectIssue}

@@ -80,6 +80,7 @@ export interface ErrorObj {
 export type {
   Settings,
   LocalDesktopSettings,
+  SettingsTab,
   SettingsState,
   FillSettingsAction,
   FillSettings,
@@ -112,6 +113,8 @@ export type {
   SetUpdateCheckRunning,
   SetUpdateAvailableAction,
   SetUpdateAvailable,
+  CheckForUpdatesRequestAction,
+  CheckForUpdatesRequest,
   InstallUpdateRequestAction,
   InstallUpdateRequest,
   SetSidebarFiltersOpenAction,
@@ -243,6 +246,8 @@ export type {
   SetIssuesSearchValue,
   SetIssuesFilterAction,
   SetIssuesFilter,
+  AddWorklogToIssueAction,
+  AddWorklogToIssue,
   IssuesAction,
 } from './issues';
 
