@@ -21,12 +21,6 @@ import { projectsActions } from 'actions';
 
 import type { SelectOption, SelectSprint, SelectProject } from '../../types';
 
-function renderOption(option) {
-  return option.divider
-    ? <h5>{option.dividerName}</h5>
-    : option.label;
-}
-
 const enhance = lifecycle({
   componentDidMount() {
     this.props.fetchProjectsRequest();

@@ -3,7 +3,7 @@ import React from 'react';
 import type { StatelessFunctionalComponent, Node } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getSelectedIssue, getTrackingIssueId, getTimerRunning } from 'selectors';
+import { getSelectedIssue, getTimerRunning } from 'selectors';
 import { Flex } from 'components';
 import { openProjectInBrowser, openIssueInBrowser } from 'external-open-util';
 import Tooltip from '@atlaskit/tooltip';
@@ -16,7 +16,7 @@ import { play } from 'data/svg';
 
 import { timerActions, uiActions } from 'actions';
 
-import type { Issue, Id, StartTimer, SetWorklogModalOpen } from '../../types';
+import type { Issue, StartTimer, SetWorklogModalOpen } from '../../types';
 import {
   ProjectAvatar,
   Link,
@@ -33,7 +33,6 @@ import {
 
 type Props = {
   selectedIssue: Issue,
-  trackingIssueId: Id | null,
   timerRunning: boolean,
   startTimer: StartTimer,
   setWorklogModalOpen: SetWorklogModalOpen
@@ -41,7 +40,6 @@ type Props = {
 
 const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
   selectedIssue,
-  trackingIssueId,
   timerRunning,
   startTimer,
   setWorklogModalOpen,
@@ -134,7 +132,6 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
 function mapStateToProps(state) {
   return {
     selectedIssue: getSelectedIssue(state),
-    trackingIssueId: getTrackingIssueId(state),
     timerRunning: getTimerRunning(state),
   };
 }

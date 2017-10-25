@@ -13,7 +13,6 @@ import {
   getUserData,
   getHost,
   getUpdateAvailable,
-  getUpdateCheckRunning,
   getUpdateFetching,
 } from 'selectors';
 
@@ -34,40 +33,29 @@ import type {
   LogoutRequest,
   User,
   UpdateInfo,
-  InstallUpdateRequest,
   SetSettingsModalOpen,
-  SetAboutModalOpen,
-  SetSupportModalOpen,
   SetSettingsModalTab,
 } from '../../types';
 
 type Props = {
   userData: User,
   host: string,
-  updateCheckRunning: boolean,
   updateAvailable: UpdateInfo,
   updateFetching: boolean,
 
   logoutRequest: LogoutRequest,
-  installUpdateRequest: InstallUpdateRequest,
   setSettingsModalOpen: SetSettingsModalOpen,
-  setSupportModalOpen: SetSupportModalOpen,
   setSettingsModalTab: SetSettingsModalTab,
-  setAboutModalOpen: SetAboutModalOpen,
 };
 
 const Header: StatelessFunctionalComponent<Props> = ({
   userData,
   host,
-  updateCheckRunning,
   updateAvailable,
   updateFetching,
   logoutRequest,
-  installUpdateRequest,
   setSettingsModalOpen,
   setSettingsModalTab,
-  // setSupportModalOpen,
-  setAboutModalOpen,
 }: Props): Node =>
   <HeaderContainer className="webkit-drag">
     <Flex row alignCenter>
@@ -137,7 +125,6 @@ function mapStateToProps(state) {
   return {
     userData: getUserData(state),
     host: getHost(state),
-    updateCheckRunning: getUpdateCheckRunning(state),
     updateAvailable: getUpdateAvailable(state),
     updateFetching: getUpdateFetching(state),
   };

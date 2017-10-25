@@ -1,4 +1,4 @@
-/* eslint global-require: 1 */
+/* eslint-disable no-console, global-require */
 import path from 'path';
 import storage from 'electron-json-storage';
 import { app, Tray, Menu, MenuItem, ipcMain, BrowserWindow, screen } from 'electron';

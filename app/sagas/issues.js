@@ -202,7 +202,6 @@ export function* watchFiltersChange(): Generator<*, *, *> {
 export function* watchIssueSelect(): Generator<*, *, *> {
   while (true) {
     const { payload }: { payload: Id } = yield take(types.SELECT_ISSUE);
-    console.log(payload);
     ipcRenderer.send('select-issue', payload);
   }
 }

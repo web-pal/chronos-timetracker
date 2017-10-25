@@ -1,3 +1,4 @@
+/* eslint-disable */
 /*
  * THIS COMPONENT IS TEMPORARY FORKED FROM
  * https://bitbucket.org/atlassian/atlaskit/src/4e15b22cd39d/packages/single-select/?at=master
