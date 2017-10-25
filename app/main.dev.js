@@ -29,26 +29,6 @@ global.sharedObj = {
   idleDetails: {},
 };
 
-try {
-  fs.accessSync(`${appDir}/screens/`, fs.constants.R_OK | fs.constants.W_OK); // eslint-disable-line
-} catch (err) {
-  fs.mkdirSync(`${appDir}/screens/`);
-}
-try {
-  fs.accessSync(`${appDir}/offline_screens/`, fs.constants.R_OK | fs.constants.W_OK); // eslint-disable-line
-} catch (err) {
-  fs.mkdirSync(`${appDir}/offline_screens/`);
-}
-try {
-  fs.accessSync(`${appDir}/current_screenshots/`, fs.constants.R_OK | fs.constants.W_OK); // eslint-disable-line
-} catch (err) {
-  fs.mkdirSync(`${appDir}/current_screenshots/`);
-}
-try {
-  fs.accessSync(`${appDir}/worklogs/`, fs.constants.R_OK | fs.constants.W_OK) // eslint-disable-line
-} catch (err) {
-  fs.mkdirSync(`${appDir}/worklogs/`);
-}
 
 const menuTemplate = [
   {
@@ -506,6 +486,27 @@ app.on('activate', () => {
 app.on('ready', async () => {
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === true) {
     await installExtensions();
+  }
+
+  try {
+    fs.accessSync(`${appDir}/screens/`, fs.constants.R_OK | fs.constants.W_OK); // eslint-disable-line
+  } catch (err) {
+    fs.mkdirSync(`${appDir}/screens/`);
+  }
+  try {
+    fs.accessSync(`${appDir}/offline_screens/`, fs.constants.R_OK | fs.constants.W_OK); // eslint-disable-line
+  } catch (err) {
+    fs.mkdirSync(`${appDir}/offline_screens/`);
+  }
+  try {
+    fs.accessSync(`${appDir}/current_screenshots/`, fs.constants.R_OK | fs.constants.W_OK); // eslint-disable-line
+  } catch (err) {
+    fs.mkdirSync(`${appDir}/current_screenshots/`);
+  }
+  try {
+    fs.accessSync(`${appDir}/worklogs/`, fs.constants.R_OK | fs.constants.W_OK) // eslint-disable-line
+  } catch (err) {
+    fs.mkdirSync(`${appDir}/worklogs/`);
   }
 
   tray = new Tray(path.join(__dirname, '/assets/images/icon.png'));
