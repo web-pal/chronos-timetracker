@@ -118,6 +118,7 @@
     "cross-spawn": "^5.1.0",
     "css-loader": "^0.28.7",
     "cz-conventional-changelog": "^2.0.0",
+    "cz-customizable": "^5.2.0",
     "devtron": "^1.4.0",
     "electron": "1.7.8",
     "electron-builder": "19.37.2",
@@ -238,7 +239,7 @@
   },
   "config": {
     "commitizen": {
-      "path": "cz-conventional-changelog"
+      "path": "node_modules/cz-customizable"
     }
   }
 }
