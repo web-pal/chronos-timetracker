@@ -1,5 +1,5 @@
 // @flow
-import { call, take, select, put } from 'redux-saga/effects';
+import { call, take, select, put, cancel } from 'redux-saga/effects';
 import { delay } from 'redux-saga';
 import Raven from 'raven-js';
 import * as Api from 'api';
@@ -45,6 +45,10 @@ export function* uploadWorklog({
 }: UploadWorklogOptions): Generator<*, *, *> {
   try {
     const started = moment().utc().format().replace('Z', '.000+0000');
+    // if timeSpentSeconds is less than a minute JIRA wont upload it so cancel
+    if (timeSpentSeconds < 60) {
+      yield cancel();
+    }
     const jiraUploadOptions: {
       issueId: Id,
       adjustEstimate: 'auto',
