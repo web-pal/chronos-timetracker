@@ -118,8 +118,8 @@ export function fetchSearchIssues({
       ? (opts, callback) => jira.client.search.search(opts, callback)
       : (opts, callback) => jira.client.board.getIssuesForBoard(
         { ...opts, boardId: projectId },
-      callback,
-    );
+        callback,
+      );
 
     const project = projectType === 'project' ? `project = ${projectId}` : '';
     const sprint = (projectType === 'scrum') && sprintId ? `sprint = ${sprintId}` : '';

@@ -18,7 +18,7 @@ import {
   IssueLabel,
   Label,
   DetailsColumn,
-  DescriptionSectionHeader
+  DescriptionSectionHeader,
 } from './styled';
 
 type Props = {

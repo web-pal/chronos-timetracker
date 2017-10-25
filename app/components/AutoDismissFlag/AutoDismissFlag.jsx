@@ -4,7 +4,6 @@ import Flag from '@atlaskit/flag';
 export const AUTO_DISMISS_SECONDS = 3;
 
 export default class AutoDismissFlag extends Component {
-
   autoDismissTimer: ?number
 
   componentDidMount() {
@@ -31,7 +30,7 @@ export default class AutoDismissFlag extends Component {
     this.stopAutoDismissTimer();
     this.autoDismissTimer = setTimeout(
       this.handleAutoDismissTimerEnd,
-      AUTO_DISMISS_SECONDS * 1000
+      AUTO_DISMISS_SECONDS * 1000,
     );
   }
 
