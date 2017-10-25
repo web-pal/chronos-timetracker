@@ -100,6 +100,13 @@ export type IssuesMap = { [Id]: Issue }
 export type IssueTypesMap = { [Id]: IssueType }
 export type IssueStatusesMap = { [Id]: IssueType }
 
+export type IssueTransition = {
+  hasScreen: boolean,
+  id: string,
+  name: string,
+  to: IssueStatus,
+};
+
 export type IssueFilters = {
   type: Array<Id>,
   status: Array<Id>,
@@ -118,6 +125,8 @@ export type IssuesMeta = {|
   +trackingIssue: Issue | null,
   +searchValue: string,
   +filters: IssueFilters,
+  +availableTransitions: Array<IssueTransition>,
+  +availableTransitionsFetching: boolean,
 |}
 
 export type IssuesState = {|
@@ -273,6 +282,38 @@ export type AddWorklogToIssueAction =
 
 export type AddWorklogToIssue = {
   (payload: Worklog, issueId: Id): AddWorklogToIssueAction
+};
+
+//
+export type FillAvailableTransitionsAction =
+  {| type: types.FILL_AVAILABLE_TRANSITIONS, payload: Array<IssueTransition> |};
+
+export type FillAvailableTransitions = {
+  (payload: Array<IssueTransition>): FillAvailableTransitionsAction
+};
+
+//
+export type SetAvailableTransitionsFetching =
+  {| type: types.SET_AVAILABLE_TRANSITIONS_FETCHING, payload: boolean |};
+
+export type SetAvailableTransitions = {
+  (payload: boolean): SetAvailableTransitionsFetching
+};
+
+//
+export type TransitionIssueRequestAction =
+  {| type: types.TRANSITION_ISSUE_REQUEST, payload: IssueTransition, meta: Issue |};
+
+export type TransitionIssueRequest = {
+  (transition: IssueTransition, issue: Issue): TransitionIssueRequestAction
+};
+
+//
+export type SetIssueStatusAction =
+  {| type: types.SET_ISSUE_STATUS, payload: IssueStatus, meta: Issue |};
+
+export type SetIssueStatus = {
+  (status: IssueStatus, issue: Issue): SetIssueStatusAction
 };
 
 export type IssuesAction =

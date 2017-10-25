@@ -37,6 +37,17 @@ export function fetchFields() {
 
 }
 
+export function getIssueTransitions(issueId) {
+  return jira.client.issue.getTransitions({ issueId });
+}
+
+export function transitionIssue(issueId, transitionId) {
+  return jira.client.issue.transitionIssue({
+    issueId,
+    transition: transitionId,
+  });
+}
+
 export function fetchIssues({
   startIndex,
   stopIndex,

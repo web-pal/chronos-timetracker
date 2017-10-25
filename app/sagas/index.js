@@ -28,6 +28,8 @@ export default function* rootSaga(): Generator<*, *, *> {
     fork(issueSagas.watchFetchIssuesRequest),
     fork(issueSagas.watchSidebarTabChange),
     fork(issueSagas.watchFiltersChange),
+    fork(issueSagas.watchIssueSelect),
+    fork(issueSagas.transitionIssueFlow),
 
     // timer
     fork(timerSagas.watchStartTimer),
@@ -46,7 +48,6 @@ export default function* rootSaga(): Generator<*, *, *> {
 
     // ui
     fork(uiSagas.watchSidebarTypeChange),
-    fork(uiSagas.watchSelectIssue),
     fork(uiSagas.initializeTrayMenuListeners),
   ]);
 }

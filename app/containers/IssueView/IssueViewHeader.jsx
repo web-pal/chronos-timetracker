@@ -3,20 +3,23 @@ import React from 'react';
 import type { StatelessFunctionalComponent, Node } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getSelectedIssue, getTimerRunning } from 'selectors';
 import { Flex } from 'components';
 import { openProjectInBrowser, openIssueInBrowser } from 'external-open-util';
+import DropdownMenu, { DropdownItemGroup, DropdownItem } from '@atlaskit/dropdown-menu';
 import Tooltip from '@atlaskit/tooltip';
-// import DropdownMenu, {
-//   DropdownItemGroup,
-//   DropdownItem,
-// } from '@atlaskit/dropdown-menu';
 import Button, { ButtonGroup } from '@atlaskit/button';
+import Spinner from '@atlaskit/spinner';
 import { play } from 'data/svg';
+import {
+  getSelectedIssue,
+  getTimerRunning,
+  getAvailableTransitionsFetching,
+  getAvailableTransitions,
+} from 'selectors';
 
-import { timerActions, uiActions } from 'actions';
+import { timerActions, uiActions, issuesActions } from 'actions';
 
-import type { Issue, StartTimer, SetWorklogModalOpen } from '../../types';
+import type { Issue, StartTimer, SetWorklogModalOpen, IssueTransition, TransitionIssueRequest } from '../../types';
 import {
   ProjectAvatar,
   Link,
@@ -30,19 +33,24 @@ import {
   IssueViewHeaderContainer,
 } from './styled';
 
-
 type Props = {
   selectedIssue: Issue,
   timerRunning: boolean,
+  availableTransitions: Array<IssueTransition>,
+  availableTransitionsFetching: boolean,
   startTimer: StartTimer,
-  setWorklogModalOpen: SetWorklogModalOpen
+  setWorklogModalOpen: SetWorklogModalOpen,
+  transitionIssueRequest: TransitionIssueRequest,
 };
 
 const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
   selectedIssue,
   timerRunning,
+  availableTransitions,
+  availableTransitionsFetching,
   startTimer,
   setWorklogModalOpen,
+  transitionIssueRequest,
 }: Props):Node => (
   <IssueViewHeaderContainer>
     <Flex row alignCenter spaceBetween style={{ marginBottom: 15 }}>
@@ -67,7 +75,6 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
         </UserAvatarContainer>
         <Flex column>
           <Flex row>
-            {/* TODO: MAKE project name a link */}
             <Link onClick={openProjectInBrowser(selectedIssue.fields.project)}>
               {selectedIssue.fields.project.name}
             </Link>
@@ -106,17 +113,6 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
         <Button>
           Assign to me
         </Button>
-        <DropdownMenu
-          trigger="Workflow"
-          triggerType="button"
-          shouldFlip={false}
-          position="bottom left"
-        >
-          <DropdownItemGroup>
-            <DropdownItem>Selected for development</DropdownItem>
-            <DropdownItem>Done</DropdownItem>
-          </DropdownItemGroup>
-        </DropdownMenu>
           <Button>
             Add to favorites
           </Button>
@@ -124,6 +120,28 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
         <Button onClick={() => setWorklogModalOpen(true)}>
           Log work
         </Button>
+        {availableTransitionsFetching
+          ? <Button isDisabled iconAfter={<Spinner />} >
+            Workflow
+          </Button>
+          : <DropdownMenu
+            trigger="Workflow"
+            triggerType="button"
+            shouldFlip={false}
+            position="bottom left"
+            shouldFitContainer
+          >
+            <DropdownItemGroup>
+              {availableTransitions.map(t =>
+                <DropdownItem
+                  onClick={() => transitionIssueRequest(t, selectedIssue)}
+                >
+                  {t.name}
+                </DropdownItem>)
+              }
+            </DropdownItemGroup>
+          </DropdownMenu>
+        }
       </ButtonGroup>
     </Flex>
   </IssueViewHeaderContainer>
@@ -133,6 +151,8 @@ function mapStateToProps(state) {
   return {
     selectedIssue: getSelectedIssue(state),
     timerRunning: getTimerRunning(state),
+    availableTransitions: getAvailableTransitions(state),
+    availableTransitionsFetching: getAvailableTransitionsFetching(state),
   };
 }
 
@@ -140,6 +160,7 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     ...timerActions,
     ...uiActions,
+    ...issuesActions,
   }, dispatch);
 }
 

@@ -89,7 +89,7 @@ export function* localDesktopSettingsFlow() {
   // backwards compatibility
   if (!settings.updateChannel) settings.updateChannel = 'stable';
   if (!settings.autoCheckForUpdates) settings.autoCheckForUpdates = true;
-  // 
+  //
 
   yield put(settingsActions.fillLocalDesktopSettings(settings));
   yield fork(watchLocalDesktopSettingsChange);

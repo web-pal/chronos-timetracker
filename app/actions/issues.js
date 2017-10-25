@@ -17,7 +17,11 @@ import type {
   SetIssuesSearchValue, SetIssuesSearchValueAction,
   SetIssuesFilter, SetIssuesFilterAction,
   AddWorklogToIssue, AddWorklogToIssueAction,
-  IssuesMap, Id, IssueTypesMap, IssueStatusesMap, Issue, Worklog,
+  FillAvailableTransitions, FillAvailableTransitionsAction,
+  SetAvailableTransitionsFetching, SetAvailableTransitionsFethchingAction,
+  TransitionIssueRequest, TransitionIssueRequestAction,
+  SetIssueStatus, SetIssueStatusAction,
+  IssuesMap, Id, IssueTypesMap, IssueStatus, IssueStatusesMap, Issue, Worklog, IssueTransition,
 } from '../types';
 
 export const fetchIssuesRequest: FetchIssuesRequest = (
@@ -144,4 +148,36 @@ export const addWorklogToIssue: AddWorklogToIssue = (
   type: types.ADD_WORKLOG_TO_ISSUE,
   payload,
   meta: issueId,
+});
+
+export const fillAvailableTransitions: FillAvailableTransitions = (
+  payload: Array<IssueTransition>,
+): FillAvailableTransitionsAction => ({
+  type: types.FILL_AVAILABLE_TRANSITIONS,
+  payload,
+});
+
+export const setAvailableTransitionsFetching: SetAvailableTransitionsFetching = (
+  payload: boolean,
+): SetAvailableTransitionsFethchingAction => ({
+  type: types.SET_AVAILABLE_TRANSITIONS_FETCHING,
+  payload,
+});
+
+export const transitionIssueRequest: TransitionIssueRequest = (
+  transition: IssueTransition,
+  issueToTransition: Issue,
+): TransitionIssueRequestAction => ({
+  type: types.TRANSITION_ISSUE_REQUEST,
+  payload: transition,
+  meta: issueToTransition,
+});
+
+export const setIssueStatus: SetIssueStatus = (
+  status: IssueStatus,
+  issue: Issue,
+): SetIssueStatusAction => ({
+  type: types.SET_ISSUE_STATUS,
+  payload: status,
+  meta: issue,
 });

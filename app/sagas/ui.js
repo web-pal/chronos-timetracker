@@ -59,17 +59,6 @@ export function* watchSidebarTypeChange(): Generator<*, *, *> {
   }
 }
 
-export function* watchSelectIssue(): Generator<*, *, *> {
-  while (true) {
-    const { payload } = yield take(types.SELECT_ISSUE);
-    yield put(uiActions.setIssueViewTab('Details'));
-    if (payload) {
-      const issueKey = payload.key;
-      ipcRenderer.send('select-issue', issueKey);
-    }
-  }
-}
-
 let trayStartListener;
 let trayStopListener;
 let traySettingsListener;
