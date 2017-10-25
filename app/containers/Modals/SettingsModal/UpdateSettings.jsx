@@ -112,10 +112,10 @@ const UpdateSettings: StatelessFunctionalComponent<Props> = ({
               setChannel('stable');
             }
           }}
-          label="Allow prereleases"
+          label="Subscribe for pre-releases"
           name="allowPrerelease"
         />
-        <H100 style={{ color: '#ffab02', fontWeight: 300, fontSize: 10 }}>
+        <H100 style={{ color: '#FFAB00', fontWeight: 300, fontSize: 10, marginTop: 5 }}>
           Warning! Prerelease is not ready for production, is unstable and may contain bugs!
         </H100>
       </Flex>

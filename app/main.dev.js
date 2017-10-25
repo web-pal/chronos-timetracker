@@ -262,31 +262,43 @@ function showScreenPreview() {
 }
 
 ipcMain.on('start-timer', () => {
-  menu.items[3].enabled = false;
-  menu.items[4].enabled = true;
+  menuTemplate[3].enabled = false;
+  menuTemplate[4].enabled = true;
 
   if (process.platform !== 'darwin') {
     tray.setPressedImage(path.join(__dirname, './assets/images/icon-active.png'));
   } else {
     tray.setImage(path.join(__dirname, './assets/images/icon-active.png'));
   }
+
+  menu.clear();
+  menuTemplate.forEach(m => {
+    menu.append(new MenuItem(m));
+  });
+  tray.setContextMenu(menu);
 });
 
 ipcMain.on('stop-timer', () => {
   tray.setTitle('');
-  menu.items[3].enabled = true;
-  menu.items[4].enabled = false;
+  menuTemplate[3].enabled = true;
+  menuTemplate[4].enabled = false;
 
   if (process.platform !== 'darwin') {
     tray.setPressedImage(path.join(__dirname, './assets/images/icon.png'));
   } else {
     tray.setImage(path.join(__dirname, './assets/images/icon.png'));
   }
+
+  menu.clear();
+  menuTemplate.forEach(m => {
+    menu.append(new MenuItem(m));
+  });
+  tray.setContextMenu(menu);
 });
 
 ipcMain.on('select-issue', (event, issueKey) => {
   menuTemplate[1].label = `Selected issue: ${issueKey}`;
-  if (!menuTemplate[4].enabled) {
+  if (menuTemplate[4].enabled !== true) {
     menuTemplate[3].enabled = true;
   }
   menu.clear();
