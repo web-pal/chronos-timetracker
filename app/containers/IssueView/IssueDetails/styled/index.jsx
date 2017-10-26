@@ -30,7 +30,7 @@ export const IssuePriority = styled.img`
 export const IssueLabel = styled.span`
   margin-left: 5px;
   height: 16px;
-  background: #4778C1;
+  background: ${props => props.backgroundColor};
   border-radius: 3px;
   font-size: 12px;
   color: #FFFFFF;

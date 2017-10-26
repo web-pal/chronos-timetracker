@@ -58,6 +58,7 @@ const SidebarItem: StatelessFunctionalComponent<Props> = ({
         />
       </Tooltip>
     </Flex>
+    {console.log(issue)}
     <IssueDescription>
       {issue.fields.summary}
     </IssueDescription>
@@ -84,9 +85,8 @@ const SidebarItem: StatelessFunctionalComponent<Props> = ({
       </Tooltip>
       <IssueLabel
         backgroundColor={getStatusColor(issue.fields.status.statusCategory.colorName)}
-        label={issue.fields.status.statusCategory.name}
       >
-        {issue.fields.status.statusCategory.name.toUpperCase()}
+        {issue.fields.status.name.toUpperCase()}
       </IssueLabel>
       {worklog &&
         <Tooltip
