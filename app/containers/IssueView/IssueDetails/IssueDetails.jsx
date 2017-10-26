@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { getSelectedIssue } from 'selectors';
 import { Flex } from 'components';
+import { getStatusColor } from 'jiraColors-util';
 import ReactMarkdown from 'react-markdown';
 
 // import IssueAttachments from './IssueAttachments';
@@ -104,7 +105,9 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
               Status:
             </DetailsLabel>
             <DetailsValue>
-              <IssueLabel>
+              <IssueLabel
+                backgroundColor={getStatusColor(issue.fields.status.statusCategory.colorName)}
+              >
                 {issue.fields.status.name.toUpperCase()}
               </IssueLabel>
             </DetailsValue>
