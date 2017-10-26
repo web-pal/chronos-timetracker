@@ -36,6 +36,9 @@ export const IssueLabel = styled.span`
   color: #FFFFFF;
   padding: 0px 4px;
   font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 `;
 
 export const IssueEpic = styled.span`
