@@ -31,7 +31,7 @@ const plugins = [
     openAnalyzer: process.env.OPEN_ANALYZER === 'true',
   }),
 
-  new MinifyPlugin(),
+  new MinifyPlugin({ mangle: false }),
   new webpack.optimize.OccurrenceOrderPlugin(),
 
 ];
