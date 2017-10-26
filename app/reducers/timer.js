@@ -1,6 +1,6 @@
 // @flow
 import { types } from 'actions';
-import type { TimerState, Action } from '../types';
+import type { TimerState } from '../types';
 
 const initialState: TimerState = {
   time: 0,
@@ -13,7 +13,7 @@ const initialState: TimerState = {
   screenshots: [],
 };
 
-export default function timer(state: TimerState = initialState, action: Action) {
+export default function timer(state: TimerState = initialState, action: any) {
   switch (action.type) {
     case types.TICK:
       return {
@@ -56,6 +56,11 @@ export default function timer(state: TimerState = initialState, action: Action) 
           ...state.idles,
           action.payload,
         ],
+      };
+    case types.DISMISS_IDLE_TIME:
+      return {
+        ...state,
+        time: state.time - action.payload,
       };
     case types.RESET_TIMER:
     case types.___CLEAR_ALL_REDUCERS___:

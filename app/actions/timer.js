@@ -11,6 +11,7 @@ import type {
   AddScreenshot, AddScreenshotAction,
   SetScreenshotPeriods, SetScreenshotPeriodsAction,
   AddIdleTime, AddIdleTimeAction,
+  DismissIdleTime, DismissIdleTimeAction,
   Screenshot, Idle,
 } from '../types';
 
@@ -57,5 +58,12 @@ export const addIdleTime: AddIdleTime = (
   payload: Idle,
 ): AddIdleTimeAction => ({
   type: types.ADD_IDLE_TIME,
+  payload,
+});
+
+export const dismissIdleTime: DismissIdleTime = (
+  payload: number,
+): DismissIdleTimeAction => ({
+  type: types.DISMISS_IDLE_TIME,
   payload,
 });

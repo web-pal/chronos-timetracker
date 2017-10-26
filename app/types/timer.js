@@ -100,6 +100,14 @@ export type AddIdleTime = {
   (payload: Idle): AddIdleTimeAction
 };
 
+//
+export type DismissIdleTimeAction =
+  {| type: types.DISMISS_IDLE_TIME, payload: number |};
+
+export type DismissIdleTime = {
+  (payload: number): DismissIdleTime
+};
+
 export type TimerAction =
   TickAction
   | StartTimerAction

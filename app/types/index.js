@@ -283,6 +283,8 @@ export type {
   SetScreenshotPeriods,
   AddIdleTimeAction,
   AddIdleTime,
+  DismissIdleTimeAction,
+  DismissIdleTime,
   TimerAction,
 } from './timer';
 
