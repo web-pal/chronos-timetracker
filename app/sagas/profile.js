@@ -19,6 +19,7 @@ import { getSettings } from './settings';
 import { getWorklogTypes } from './worklogTypes';
 import { fetchIssueTypes, fetchIssueStatuses } from './issues';
 import { setToStorage, removeFromStorage } from './storage';
+import { throwError } from './ui';
 
 // import Socket from '../socket';
 import jira from '../utils/jiraClient';
@@ -122,7 +123,9 @@ export function* loginFlow(): Generator<*, void, *> {
       yield put(profileActions.setLoginFetching(true));
     } catch (err) {
       yield put(profileActions.setLoginFetching(false));
-      yield call(loginError, err);
+      yield call(throwError, err);
+      const humanReadableError = new Error('Basic auth failed for unknown reason.');
+      yield call(loginError, humanReadableError);
       Raven.captureException(err);
     }
   }
@@ -207,7 +210,9 @@ export function* loginOAuthFlow(): Generator<*, void, *> {
       // Socket.login();
     } catch (err) {
       yield put(profileActions.setLoginFetching(false));
-      yield call(loginError, err);
+      yield call(throwError, err);
+      const humanReadableError = new Error('OAuth failed for unknown reason.');
+      yield call(loginError, humanReadableError);
       Raven.captureException(err);
     }
   }
