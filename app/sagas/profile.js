@@ -199,6 +199,7 @@ export function* loginOAuthFlow(): Generator<*, void, *> {
       yield put(profileActions.setLoginFetching(false));
       yield put(profileActions.setAuthorized(true));
       yield call(getSettings);
+      yield put(settingsActions.requestLocalDesktopSettings());
       yield fork(fetchIssueTypes);
       yield fork(fetchIssueStatuses);
       // yield put({ type: types.CHECK_OFFLINE_SCREENSHOTS });
