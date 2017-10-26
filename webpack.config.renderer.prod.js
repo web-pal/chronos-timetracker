@@ -8,7 +8,6 @@ import ExtractTextPlugin from 'extract-text-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import SentryPlugin from 'webpack-sentry-plugin';
 import merge from 'webpack-merge';
-import MinifyPlugin from 'babel-minify-webpack-plugin';
 // import BabiliPlugin from 'babili-webpack-plugin';
 import baseConfig from './webpack.config.base';
 import pjson from './package.json';
@@ -16,6 +15,7 @@ import pjson from './package.json';
 const plugins = [
   new webpack.DefinePlugin({
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
+    'process.env.BABEL_ENV': JSON.stringify(process.env.BABEL_ENV || 'production'),
   }),
   /**
     * Babli is an ES6+ aware minifier based on the Babel toolchain (beta)
@@ -31,7 +31,6 @@ const plugins = [
     openAnalyzer: process.env.OPEN_ANALYZER === 'true',
   }),
 
-  new MinifyPlugin({ mangle: false }),
   new webpack.optimize.OccurrenceOrderPlugin(),
 
 ];
