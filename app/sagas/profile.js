@@ -92,7 +92,9 @@ export function* checkJWT(): Generator<*, void, *> {
     }
   } catch (err) {
     yield put(profileActions.setLoginFetching(false));
-    yield loginError(err);
+    yield call(throwError, err);
+    const humanReadableError = new Error('Failed to check JWT for some reason, please try again');
+    yield loginError(humanReadableError);
   }
 }
 
