@@ -120,6 +120,7 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
         <Button onClick={() => setWorklogModalOpen(true)}>
           Log work
         </Button>
+        <div style={{ width: 10 }} />
         {availableTransitionsFetching
           ? <Button isDisabled iconAfter={<Spinner />} >
             Workflow
