@@ -21,7 +21,7 @@ import {
 import Raven from 'raven-js';
 import { uiActions, timerActions, issuesActions, types } from 'actions';
 import { idleTimeThreshold } from 'config';
-import { randomPeriods } from 'timer-helper';
+import { randomPeriods, calculateActivity } from 'timer-helper';
 
 import createIpcChannel from './ipc';
 import { throwError, infoLog } from './ui';
@@ -127,6 +127,23 @@ function* screenshotsCheck() {
   }
 }
 
+function* activityCheck(secondsToMinutesGrid) {
+  try {
+    const time = yield select(getTimerTime);
+    if (time % 60 === secondsToMinutesGrid) {
+      yield call(
+        infoLog,
+        `add idle time -- ${totalIdleTimeDuringOneMinute} seconds`,
+      );
+      yield put(timerActions.addIdleTime(totalIdleTimeDuringOneMinute));
+      totalIdleTimeDuringOneMinute = 0;
+    }
+  } catch (err) {
+    yield call(throwError, err);
+    Raven.captureException(err);
+  }
+}
+
 function* setTimeToTray() {
   const time = yield select(getTimerTime);
   const localDesktopSettings = yield select(getLocalDesktopSettings);
@@ -144,6 +161,7 @@ function* timerStep(screenshotsAllowed, secondsToMinutesGrid) {
     if (screenshotsAllowed) {
       yield call(screenshotsCheck, nextPeriod);
     }
+    yield call(activityCheck, secondsToMinutesGrid);
     yield call(setTimeToTray);
   } catch (err) {
     yield call(throwError, err);
@@ -181,7 +199,13 @@ function* stopTimer(channel, timerInstance) {
     const { screenshotsPeriod } = yield select(getScreenshotsSettings);
     // TODO
     const worklogType = null;
-    const activity = [];
+    const activity = calculateActivity({
+      currentIdleList: keepedIdles.map(idle => idle.to - idle.from),
+      timeSpentSeconds: time,
+      screenshotsPeriod,
+      firstPeriodInMinute: 1,
+      secondsToMinutesGrid: 1,
+    });
     //
     yield put(timerActions.resetTimer());
     yield call(uploadWorklog, {

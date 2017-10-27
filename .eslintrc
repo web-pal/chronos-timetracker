@@ -18,6 +18,7 @@
     "no-underscore-dangle": "off",
     "arrow-parens": ["off"],
     "react/jsx-wrap-multilines": "off",
+    "react/no-array-index-key": "off",
     "no-confusing-arrow": ["error", {"allowParens": true}],
   },
   "globals": {
