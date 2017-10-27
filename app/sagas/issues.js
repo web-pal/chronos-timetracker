@@ -13,6 +13,7 @@ import {
   getIssuesSearchValue,
   getFoundIssueIds,
   getIssueFilters,
+  getSelectedIssueId,
 } from 'selectors';
 import { issuesActions, uiActions, types } from 'actions';
 import normalizePayload from 'normalize-util';
@@ -63,6 +64,10 @@ export function* fetchIssues({
       response,
     );
     const normalizedIssues = yield call(normalizePayload, response.issues, 'issues');
+    const selectedIssueId = yield select(getSelectedIssueId);
+    if (normalizedIssues.ids.includes(selectedIssueId)) {
+      yield put(issuesActions.selectIssue(normalizedIssues.map[selectedIssueId]));
+    }
     yield put(issuesActions.setIssuesTotalCount(response.total));
     yield put(issuesActions.addIssues(normalizedIssues));
     if (search) {
