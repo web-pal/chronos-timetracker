@@ -1,38 +1,38 @@
 <a name="2.1.0-beta.1"></a>
-# [2.1.0-beta.1](https://github.com/web-pal/Chronos/compare/2.1.0-alpha.2...2.1.0-beta.1) (2017-10-27)
+# [2.1.0-beta.1](https://github.com/web-pal/chronos-app-jira/compare/2.1.0-alpha.2...2.1.0-beta.1) (2017-10-27)
 
 
 ### Bug Fixes
 
-* **Browsing Issues:** fix recent items not refreshing on project change ([eb37a78](https://github.com/web-pal/Chronos/commit/eb37a78))
-* **Browsing Issues:** fixed wrong labels in sidebar ([317a0a8](https://github.com/web-pal/Chronos/commit/317a0a8))
-* **Flow:** add missing board type ([45912ad](https://github.com/web-pal/Chronos/commit/45912ad))
-* **Issue Detail View:** added padding between buttons in issue view heade ([377fd1c](https://github.com/web-pal/Chronos/commit/377fd1c))
-* **Issue Detail View:** fix selected issue not updating if issues refreshed ([8d3e9c2](https://github.com/web-pal/Chronos/commit/8d3e9c2))
-* **Issue Detail View:** fixed bug where issue status could not be seen ([f2bd048](https://github.com/web-pal/Chronos/commit/f2bd048))
-* **Issue Detail View:** fixed hardcoded color for issue status ([981c515](https://github.com/web-pal/Chronos/commit/981c515))
-* **package-json:** fix linter script ([b69ca4f](https://github.com/web-pal/Chronos/commit/b69ca4f))
-* **Settings:** fix local settings not requested in OAuth login flow ([d49bb3f](https://github.com/web-pal/Chronos/commit/d49bb3f))
-* **Tracking:** fix activity not caclulating ([d16ddeb](https://github.com/web-pal/Chronos/commit/d16ddeb))
-* **Tracking:** fix DismissIdleTime typings ([769b6c9](https://github.com/web-pal/Chronos/commit/769b6c9))
-* **Tracking:** fix idle time dismissing ([2e7bc7d](https://github.com/web-pal/Chronos/commit/2e7bc7d))
-* **Utility:** fix app crash if userData folder is not present in fs ([289b90d](https://github.com/web-pal/Chronos/commit/289b90d))
+* **Browsing Issues:** fix recent items not refreshing on project change ([eb37a78](https://github.com/web-pal/chronos-app-jira/commit/eb37a78))
+* **Browsing Issues:** fixed wrong labels in sidebar ([317a0a8](https://github.com/web-pal/chronos-app-jira/commit/317a0a8))
+* **Flow:** add missing board type ([45912ad](https://github.com/web-pal/chronos-app-jira/commit/45912ad))
+* **Issue Detail View:** added padding between buttons in issue view heade ([377fd1c](https://github.com/web-pal/chronos-app-jira/commit/377fd1c))
+* **Issue Detail View:** fix selected issue not updating if issues refreshed ([8d3e9c2](https://github.com/web-pal/chronos-app-jira/commit/8d3e9c2))
+* **Issue Detail View:** fixed bug where issue status could not be seen ([f2bd048](https://github.com/web-pal/chronos-app-jira/commit/f2bd048))
+* **Issue Detail View:** fixed hardcoded color for issue status ([981c515](https://github.com/web-pal/chronos-app-jira/commit/981c515))
+* **package-json:** fix linter script ([b69ca4f](https://github.com/web-pal/chronos-app-jira/commit/b69ca4f))
+* **Settings:** fix local settings not requested in OAuth login flow ([d49bb3f](https://github.com/web-pal/chronos-app-jira/commit/d49bb3f))
+* **Tracking:** fix activity not caclulating ([d16ddeb](https://github.com/web-pal/chronos-app-jira/commit/d16ddeb))
+* **Tracking:** fix DismissIdleTime typings ([769b6c9](https://github.com/web-pal/chronos-app-jira/commit/769b6c9))
+* **Tracking:** fix idle time dismissing ([2e7bc7d](https://github.com/web-pal/chronos-app-jira/commit/2e7bc7d))
+* **Utility:** fix app crash if userData folder is not present in fs ([289b90d](https://github.com/web-pal/chronos-app-jira/commit/289b90d))
 
 
 ### Features
 
-* **Authorization:** add human readable error on JWT check saga ([1de05e4](https://github.com/web-pal/Chronos/commit/1de05e4))
-* **Authorization:** add human-readable errors for OAuth flow and Basic Auth flow ([f750a02](https://github.com/web-pal/Chronos/commit/f750a02))
-* **Issue Detail View:** add error notify when issue transition fails ([2b5b98f](https://github.com/web-pal/Chronos/commit/2b5b98f))
-* **Issue Detail View:** implement workflow changing feature ([30377cd](https://github.com/web-pal/Chronos/commit/30377cd))
-* **Tracking:** don't upload less-than-a-minute worklogs ([45e22b4](https://github.com/web-pal/Chronos/commit/45e22b4))
-* **Updating:** add Linux auto-update placeholder ([5ed100a](https://github.com/web-pal/Chronos/commit/5ed100a))
-* **Utility:** add logging to uploadWorklog ([35506ac](https://github.com/web-pal/Chronos/commit/35506ac))
+* **Authorization:** add human readable error on JWT check saga ([1de05e4](https://github.com/web-pal/chronos-app-jira/commit/1de05e4))
+* **Authorization:** add human-readable errors for OAuth flow and Basic Auth flow ([f750a02](https://github.com/web-pal/chronos-app-jira/commit/f750a02))
+* **Issue Detail View:** add error notify when issue transition fails ([2b5b98f](https://github.com/web-pal/chronos-app-jira/commit/2b5b98f))
+* **Issue Detail View:** implement workflow changing feature ([30377cd](https://github.com/web-pal/chronos-app-jira/commit/30377cd))
+* **Tracking:** don't upload less-than-a-minute worklogs ([45e22b4](https://github.com/web-pal/chronos-app-jira/commit/45e22b4))
+* **Updating:** add Linux auto-update placeholder ([5ed100a](https://github.com/web-pal/chronos-app-jira/commit/5ed100a))
+* **Utility:** add logging to uploadWorklog ([35506ac](https://github.com/web-pal/chronos-app-jira/commit/35506ac))
 
 
 ### Performance Improvements
 
-* **Utility:** fix high memory usage ([41d21ff](https://github.com/web-pal/Chronos/commit/41d21ff))
+* **Utility:** fix high memory usage ([41d21ff](https://github.com/web-pal/chronos-app-jira/commit/41d21ff))
 
 
 
