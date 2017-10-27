@@ -260,10 +260,14 @@ export function* transitionIssueFlow(): Generator<*, void, *> {
       yield put(issuesActions.selectIssue(newIssue));
       yield call(notify,
         '',
-        `Transitioned issue ${issue.key} to ${transition.to.name}`,
+        `Moved issue ${issue.key} to ${transition.to.name}`,
       );
     }
   } catch (err) {
+    yield call(notify,
+      '',
+      'Issue transition failed. Probably no permission',
+    );
     yield call(throwError, err);
     Raven.captureException(err);
   }
