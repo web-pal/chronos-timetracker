@@ -133,8 +133,7 @@ export function* initializeUpdater(): Generator<*, *, *> {
     updateDownloadedChannel = yield call(createIpcChannel, 'update-downloaded', autoUpdater);
     yield fork(watchUpdateDownloaded);
 
-    const { autoCheckForUpdates } = yield select(getLocalDesktopSettings);
-    if (checkUpdates && autoCheckForUpdates) {
+    if (checkUpdates) {
       const checkEvery = 10 * 60 * 1000;
       yield call(
         infoLog,
