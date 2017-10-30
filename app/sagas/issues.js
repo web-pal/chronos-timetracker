@@ -63,7 +63,28 @@ export function* fetchIssues({
       'fetchIssues response',
       response,
     );
+    const incompleteIssues = response.issues.filter(issue => issue.fields.worklog.total > 20);
     const normalizedIssues = yield call(normalizePayload, response.issues, 'issues');
+    if (incompleteIssues.length) {
+      yield call(
+        infoLog,
+        'found issues lacking worklogs',
+        incompleteIssues,
+      );
+      const _issues = yield call(getAdditionalWorklogsForIssues, incompleteIssues);
+      yield call(
+        infoLog,
+        'getAdditionalWorklogsForIssues response:',
+        _issues,
+      );
+
+      merge(normalizedIssues.map, _issues);
+      yield call(
+        infoLog,
+        'filled issues with lacking worklogs: ',
+        normalizedIssues.map,
+      );
+    }
     const selectedIssueId = yield select(getSelectedIssueId);
     if (normalizedIssues.ids.includes(selectedIssueId)) {
       yield put(issuesActions.selectIssue(normalizedIssues.map[selectedIssueId]));
@@ -112,13 +133,14 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
       'fetchRecentIssues response:',
       response,
     );
-    let issues = response.issues;
+    const issues = response.issues;
 
     const incompleteIssues = response.issues.filter(issue => issue.fields.worklog.total > 20);
+    const normalizedIssues = yield call(normalizePayload, issues, 'issues');
     if (incompleteIssues.length) {
       yield call(
         infoLog,
-        'found issues lacking worklogs, starting getAdditionalWorklogsForIssues: ',
+        'found issues lacking worklogs',
         incompleteIssues,
       );
       const _issues = yield call(getAdditionalWorklogsForIssues, incompleteIssues);
@@ -128,14 +150,13 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
         _issues,
       );
 
-      issues = merge(_issues, issues);
+      merge(normalizedIssues.map, _issues);
       yield call(
         infoLog,
         'filled issues with lacking worklogs: ',
-        issues,
+        normalizedIssues.map,
       );
     }
-    const normalizedIssues = yield call(normalizePayload, issues, 'issues');
     yield put(issuesActions.addIssues(normalizedIssues));
     yield put(issuesActions.fillRecentIssueIds(normalizedIssues.ids));
     /* TODO

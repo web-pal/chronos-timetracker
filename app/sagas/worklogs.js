@@ -1,18 +1,18 @@
 // @flow
-import { call, take, select, put, cancel, takeEvery } from 'redux-saga/effects';
+import { call, take, select, put, cancel, takeEvery, race } from 'redux-saga/effects';
 import { delay } from 'redux-saga';
 import Raven from 'raven-js';
 import * as Api from 'api';
 import filter from 'lodash.filter';
 import { types, worklogsActions, uiActions, issuesActions } from 'actions';
-import { getSelectedIssueId, getUserData, getSelectedIssue } from 'selectors';
+import { getUserData, getSelectedIssue, getRecentIssueIds } from 'selectors';
 import moment from 'moment';
-import { stj, jts } from 'time-util';
+import { jts } from 'time-util';
 import mixpanel from 'mixpanel-browser';
 
 import { getFromStorage, setToStorage } from './storage';
 import { throwError, notify, infoLog } from './ui';
-import type { Id, Worklog, DeleteWorklogRequestAction } from '../types';
+import type { Id, Worklog, DeleteWorklogRequestAction, Issue } from '../types';
 
 export function* saveWorklogAsOffline(worklog: any): Generator<*, *, *> {
   let offlineWorklogs = yield call(getFromStorage, 'offlineWorklogs');
@@ -100,6 +100,7 @@ export function* uploadWorklog(options: UploadWorklogOptions): Generator<*, *, *
       worklog,
     );
     yield put(issuesActions.addWorklogToIssue(worklog, issueId));
+    // need to reselect issue to update issue saved in selectedIssue
     const selectedIssue = yield select(getSelectedIssue);
     if (selectedIssue.id === issueId) {
       const newIssue = {
@@ -134,11 +135,14 @@ export function* uploadWorklog(options: UploadWorklogOptions): Generator<*, *, *
   }
 }
 
-export function* getAdditionalWorklogsForIssues(incompleteIssues: any): Generator<*, *, *> {
+export function* getAdditionalWorklogsForIssues(
+  incompleteIssues: Array<Issue>,
+): Generator<*, *, *> {
   try {
+    yield call(infoLog, 'getting additional worklogs for issues', incompleteIssues);
     const worklogs = yield call(Api.fetchWorklogs, incompleteIssues);
     const issues = incompleteIssues.map((issue) => {
-      const additionalWorklogs = worklogs.filter(w => w.issueId === issue.id);
+      const additionalWorklogs = filter(worklogs, w => w.issueId === issue.id);
       if (additionalWorklogs.length) {
         return {
           ...issue,
@@ -153,9 +157,13 @@ export function* getAdditionalWorklogsForIssues(incompleteIssues: any): Generato
       }
       return issue;
     });
-    return issues;
+    return issues.reduce((map, issue) => {
+      const _map = { ...map };
+      _map[issue.id] = issue;
+      return _map;
+    }, {});
   } catch (err) {
-    yield call(throwError(err));
+    yield call(throwError, err);
     Raven.captureException(err);
     return incompleteIssues;
   }
@@ -165,13 +173,12 @@ export function* addManualWorklogFlow(): Generator<*, *, *> {
   try {
     while (true) {
       const { payload } = yield take(types.ADD_MANUAL_WORKLOG_REQUEST);
-      yield put(worklogsActions.setAddWorklogFetching(true));
       const selectedIssue = yield select(getSelectedIssue);
+      yield put(worklogsActions.setAddWorklogFetching(true));
       const issueId = selectedIssue.id;
       const { comment, startTime, totalSpent } = payload;
       const started = moment(startTime).utc().format().replace('Z', '.000+0000');
       const timeSpentSeconds = jts(totalSpent);
-      const self = yield select(getUserData);
       const jiraUploadOptions: {
         issueId: Id,
           adjustEstimate: 'auto',
@@ -196,6 +203,14 @@ export function* addManualWorklogFlow(): Generator<*, *, *> {
       yield call(delay, 1000);
       yield call(notify, '', 'Manual worklog succesfully added');
       yield put(issuesActions.addWorklogToIssue(newWorklog, issueId));
+      // neew to add issue in recent issues list if it's not there
+      const recentIssueIds = yield select(getRecentIssueIds);
+      if (!recentIssueIds.includes(selectedIssue.id)) {
+        const newRecentIssueIds = [...recentIssueIds];
+        newRecentIssueIds.push(selectedIssue.id);
+        yield put(issuesActions.fillRecentIssueIds(newRecentIssueIds));
+      }
+      // need to reselect issue to update issue saved in selectedIssue
       const newIssue = {
         ...selectedIssue,
         fields: {
@@ -220,15 +235,22 @@ export function* addManualWorklogFlow(): Generator<*, *, *> {
 
 export function* deleteWorklogFlow({ payload }: DeleteWorklogRequestAction): Generator<*, void, *> {
   try {
-    const worklog = payload;
     const selectedIssue = yield select(getSelectedIssue);
+    const worklog = payload;
     yield call(
       infoLog,
       'requested to delete worklog',
       worklog,
     );
     yield put(uiActions.setConfirmDeleteWorklogModalOpen(true));
-    yield take(types.CONFIRM_DELETE_WORKLOG);
+    const { close } = yield race({
+      confirm: take(types.CONFIRM_DELETE_WORKLOG),
+      close: take(types.SET_CONFIRM_DELETE_WORKLOG_MODAL_OPEN),
+    });
+    if (close) {
+      yield call(infoLog, 'worklog deletion cancelled');
+      yield cancel();
+    }
     yield call(infoLog, 'worklog deletion confirmed');
     const opts = {
       issueId: worklog.issueId,
@@ -238,6 +260,7 @@ export function* deleteWorklogFlow({ payload }: DeleteWorklogRequestAction): Gen
     yield call(Api.deleteWorklog, opts);
     yield call(infoLog, 'worklog deleted', worklog);
     yield put(issuesActions.deleteWorklogFromIssue(worklog, worklog.issueId));
+    // need to reselect issue to update issue saved in selectedIssue
     const newIssue = {
       ...selectedIssue,
       fields: {
@@ -252,6 +275,20 @@ export function* deleteWorklogFlow({ payload }: DeleteWorklogRequestAction): Gen
       },
     };
     yield put(issuesActions.selectIssue(newIssue));
+    // neew to delete issue from recent issues list if you deleted your last worklog 
+    const { key } = yield select(getUserData);
+    const selfWorklogs = filter(
+      newIssue.fields.worklog.worklogs,
+      (value) => value.author.key === key,
+    );
+    if (selfWorklogs.length === 0) {
+      const recentIssueIds = yield select(getRecentIssueIds);
+      if (recentIssueIds.includes(selectedIssue.id)) {
+        const newRecentIssueIds = [...recentIssueIds];
+        newRecentIssueIds.push(selectedIssue.id);
+        yield put(issuesActions.fillRecentIssueIds(newRecentIssueIds));
+      }
+    }
     yield call(notify, '', 'Successfully deleted worklog');
   } catch (err) {
     yield call(notify, '', 'Failed to delete worklog');
