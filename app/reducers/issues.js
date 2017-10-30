@@ -60,6 +60,17 @@ function itemsById(state: IssuesMap = {}, action): IssuesMap {
           },
         },
       };
+    case types.SET_ISSUE_ASSIGNEE:
+      return {
+        ...state,
+        [action.meta.id]: {
+          ...state[action.meta.id],
+          fields: {
+            ...state[action.meta.id].fields,
+            assignee: action.payload,
+          },
+        },
+      };
     case types.CLEAR_ISSUES:
     case types.___CLEAR_ALL_REDUCERS___:
       return {};

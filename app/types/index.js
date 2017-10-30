@@ -259,6 +259,10 @@ export type {
   TransitionIssueRequest,
   SetIssueStatusAction,
   SetIssueStatus,
+  AssignIssueRequestAction,
+  AssignIssueRequest,
+  SetIssueAssigneeAction,
+  SetIssueAssignee,
   IssuesAction,
 } from './issues';
 

@@ -276,3 +276,43 @@ export function* transitionIssueFlow(): Generator<*, void, *> {
     Raven.captureException(err);
   }
 }
+
+export function* assignIssueFlow(): Generator<*, void, *> {
+  try {
+    while (true) {
+      const { payload } = yield take(types.ASSIGN_ISSUE_REQEST);
+      const issue = payload;
+      const userData = yield select(getUserData);
+      yield call(
+        infoLog,
+        `assigning issue ${issue.key} to self (${userData.key})`,
+      );
+      yield call(Api.assignIssue, { issueKey: issue.key, assignee: userData.key });
+      yield call(
+        infoLog,
+        `succesfully assigned issue ${issue.key} to self (${userData.key})`,
+      );
+      yield put(issuesActions.setIssueAssignee(userData, issue));
+      const newIssue = {
+        ...issue,
+        fields: {
+          ...issue.fields,
+          assignee: userData,
+        },
+      };
+      yield put(issuesActions.selectIssue(newIssue));
+      yield call(
+        notify,
+        '',
+        `${issue.key} is assigned to you`,
+      );
+    }
+  } catch (err) {
+    yield call(notify,
+      '',
+      'Cannot assign issue. Probably no permission',
+    );
+    yield call(throwError, err);
+    Raven.captureException(err);
+  }
+}

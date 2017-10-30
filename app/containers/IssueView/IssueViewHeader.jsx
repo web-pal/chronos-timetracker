@@ -15,11 +15,19 @@ import {
   getTimerRunning,
   getAvailableTransitionsFetching,
   getAvailableTransitions,
+  getUserData,
 } from 'selectors';
 
 import { timerActions, uiActions, issuesActions } from 'actions';
 
-import type { Issue, StartTimer, SetWorklogModalOpen, IssueTransition, TransitionIssueRequest } from '../../types';
+import type {
+  Issue,
+  StartTimer,
+  SetWorklogModalOpen,
+  IssueTransition,
+  TransitionIssueRequest,
+  AssignIssueRequest,
+} from '../../types';
 import {
   ProjectAvatar,
   Link,
@@ -38,9 +46,11 @@ type Props = {
   timerRunning: boolean,
   availableTransitions: Array<IssueTransition>,
   availableTransitionsFetching: boolean,
+  selfKey: string,
   startTimer: StartTimer,
   setWorklogModalOpen: SetWorklogModalOpen,
   transitionIssueRequest: TransitionIssueRequest,
+  assignIssueRequest: AssignIssueRequest,
 };
 
 const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
@@ -48,9 +58,11 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
   timerRunning,
   availableTransitions,
   availableTransitionsFetching,
+  selfKey,
   startTimer,
   setWorklogModalOpen,
   transitionIssueRequest,
+  assignIssueRequest,
 }: Props):Node => (
   <IssueViewHeaderContainer>
     <Flex row alignCenter spaceBetween style={{ marginBottom: 15 }}>
@@ -110,9 +122,6 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
         <Button>
           Comment
         </Button>
-        <Button>
-          Assign to me
-        </Button>
           <Button>
             Add to favorites
           </Button>
@@ -144,6 +153,12 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
             </DropdownItemGroup>
           </DropdownMenu>
         }
+        <div style={{ width: 10 }} />
+        {selectedIssue.fields.assignee.key !== selfKey &&
+          <Button onClick={() => assignIssueRequest(selectedIssue)}>
+            Assign to me
+          </Button>
+        }
       </ButtonGroup>
     </Flex>
   </IssueViewHeaderContainer>
@@ -155,6 +170,7 @@ function mapStateToProps(state) {
     timerRunning: getTimerRunning(state),
     availableTransitions: getAvailableTransitions(state),
     availableTransitionsFetching: getAvailableTransitionsFetching(state),
+    selfKey: getUserData(state).key,
   };
 }
 

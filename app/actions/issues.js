@@ -21,7 +21,10 @@ import type {
   SetAvailableTransitionsFetching, SetAvailableTransitionsFethchingAction,
   TransitionIssueRequest, TransitionIssueRequestAction,
   SetIssueStatus, SetIssueStatusAction,
+  AssignIssueRequest, AssignIssueRequestAction,
+  SetIssueAssignee, SetIssueAssigneeAction,
   IssuesMap, Id, IssueTypesMap, IssueStatus, IssueStatusesMap, Issue, Worklog, IssueTransition,
+  User,
 } from '../types';
 
 export const fetchIssuesRequest: FetchIssuesRequest = (
@@ -179,5 +182,21 @@ export const setIssueStatus: SetIssueStatus = (
 ): SetIssueStatusAction => ({
   type: types.SET_ISSUE_STATUS,
   payload: status,
+  meta: issue,
+});
+
+export const assignIssueRequest: AssignIssueRequest = (
+  payload: Issue,
+): AssignIssueRequestAction => ({
+  type: types.ASSIGN_ISSUE_REQEST,
+  payload,
+});
+
+export const setIssueAssignee: SetIssueAssignee = (
+  assignee: User,
+  issue: Issue,
+): SetIssueAssigneeAction => ({
+  type: types.SET_ISSUE_ASSIGNEE,
+  payload: assignee,
   meta: issue,
 });

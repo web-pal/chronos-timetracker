@@ -316,6 +316,22 @@ export type SetIssueStatus = {
   (status: IssueStatus, issue: Issue): SetIssueStatusAction
 };
 
+//
+export type AssignIssueRequestAction =
+  {| type: types.ASSIGN_ISSUE_REQEST, payload: Issue |};
+
+export type AssignIssueRequest = {
+  (payload: Issue): AssignIssueRequestAction
+};
+
+//
+export type SetIssueAssigneeAction =
+  {| type: types.SET_ISSUE_ASSIGNEE, payload: User, meta: Issue |};
+
+export type SetIssueAssignee = {
+  (assignee: User, issue: Issue): SetIssueAssigneeAction
+};
+
 export type IssuesAction =
   FetchIssuesRequestAction
   | FillIssuesAction

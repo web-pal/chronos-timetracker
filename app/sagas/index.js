@@ -30,6 +30,7 @@ export default function* rootSaga(): Generator<*, *, *> {
     fork(issueSagas.watchFiltersChange),
     fork(issueSagas.watchIssueSelect),
     fork(issueSagas.transitionIssueFlow),
+    fork(issueSagas.assignIssueFlow),
 
     // timer
     fork(timerSagas.watchStartTimer),
