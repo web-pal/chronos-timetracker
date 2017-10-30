@@ -1,20 +1,24 @@
 // @flow
 import React from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import type { StatelessFunctionalComponent, Node } from 'react';
 import { Flex } from 'components';
 import { getSelectedIssue } from 'selectors';
+import { worklogsActions } from 'actions';
 
 import WorklogItem from './WorklogItem';
 
-import type { Issue } from '../../../types';
+import type { Issue, DeleteWorklogRequest } from '../../../types';
 
 type Props = {
   selectedIssue: Issue,
+  deleteWorklogRequest: DeleteWorklogRequest,
 };
 
 const IssueWorklogs: StatelessFunctionalComponent<Props> = ({
   selectedIssue,
+  deleteWorklogRequest,
 }: Props): Node => (
   <Flex column>
     <Flex row alignCenter spaceBetween style={{ marginBottom: 25 }}>
@@ -25,7 +29,11 @@ const IssueWorklogs: StatelessFunctionalComponent<Props> = ({
     </Flex>
     <Flex column style={{ overflowX: 'scroll' }}>
       {selectedIssue.fields.worklog.worklogs.map(worklog =>
-        <WorklogItem worklog={worklog} issueKey={selectedIssue.key} />,
+        <WorklogItem
+          worklog={worklog}
+          issueKey={selectedIssue.key}
+          deleteWorklogRequest={deleteWorklogRequest}
+        />,
       )}
     </Flex>
   </Flex>
@@ -37,4 +45,8 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps, () => ({}))(IssueWorklogs);
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(worklogsActions, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(IssueWorklogs);

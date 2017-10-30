@@ -14,6 +14,7 @@ const initialState: UiState = {
   supportModalOpen: false,
   aboutModalOpen: false,
   alertModalOpen: false,
+  confirmDeleteWorklogModalOpen: false,
   worklogModalOpen: false,
   flags: [],
   screenshotsAllowed: false,
@@ -75,6 +76,11 @@ export default function ui(state: UiState = initialState, action: Action) {
       return {
         ...state,
         alertModalOpen: action.payload,
+      };
+    case types.SET_CONFIRM_DELETE_WORKLOG_MODAL_OPEN:
+      return {
+        ...state,
+        confirmDeleteWorklogModalOpen: action.payload,
       };
     case types.SET_WORKLOG_MODAL_OPEN:
       return {

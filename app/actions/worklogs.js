@@ -12,7 +12,8 @@ import type {
   SelectWorklog, SelectWorklogAction,
   SetTemporaryWorklogId, SetTemporaryWorklogIdAction,
   AddManualWorklogRequest, AddManualWorklogRequestAction,
-  Id, WorklogsMap, ManualWorklogData,
+  DeleteWorklogRequest, DeleteWorklogRequestAction,
+  Id, WorklogsMap, ManualWorklogData, Worklog,
 } from '../types';
 
 export const fillWorklogs: FillWorklogs = (
@@ -85,5 +86,12 @@ export const addManualWorklogRequest: AddManualWorklogRequest = (
   payload: ManualWorklogData,
 ): AddManualWorklogRequestAction => ({
   type: types.ADD_MANUAL_WORKLOG_REQUEST,
+  payload,
+});
+
+export const deleteWorklogRequest: DeleteWorklogRequest = (
+  payload: Worklog,
+): DeleteWorklogRequestAction => ({
+  type: types.DELETE_WORKLOG_REQUEST,
   payload,
 });

@@ -285,6 +285,14 @@ export type AddWorklogToIssue = {
 };
 
 //
+export type DeleteWorklogFromIssueAction =
+  {| type: types.DELETE_WORKLOG_FROM_ISSUE, payload: Worklog, meta: Id |};
+
+export type DeleteWorklogFromIssue = {
+  (payload: Worklog, issueId: Id): DeleteWorklogFromIssueAction
+};
+
+//
 export type FillAvailableTransitionsAction =
   {| type: types.FILL_AVAILABLE_TRANSITIONS, payload: Array<IssueTransition> |};
 

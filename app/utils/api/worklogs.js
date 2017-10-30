@@ -104,6 +104,9 @@ export async function fetchWorklogTypes() {
 }
 
 export function addWorklog(opts) {
-  console.log('add manual worklog', opts);
   return jira.client.issue.addWorkLog(opts);
+}
+
+export function deleteWorklog(opts) {
+  return jira.client.issue.deleteWorkLog(opts);
 }

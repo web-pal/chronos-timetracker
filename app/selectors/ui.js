@@ -31,6 +31,9 @@ export const getAboutModalOpen =
 export const getAlertModalOpen =
   ({ ui }: { ui: UiState }): boolean => ui.alertModalOpen;
 
+export const getConfirmDeleteWorklogModalOpen =
+  ({ ui }: { ui: UiState }): boolean => ui.confirmDeleteWorklogModalOpen;
+
 export const getWorklogModalOpen =
   ({ ui }: { ui: UiState }): boolean => ui.worklogModalOpen;
 

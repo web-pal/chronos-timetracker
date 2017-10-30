@@ -235,7 +235,8 @@ export function* watchFiltersChange(): Generator<*, *, *> {
 export function* watchIssueSelect(): Generator<*, *, *> {
   while (true) {
     const { payload }: SelectIssueAction = yield take(types.SELECT_ISSUE);
-    yield put(uiActions.setIssueViewTab('Details'));
+    // TBD turning off this temporary
+    // yield put(uiActions.setIssueViewTab('Details'));
     if (payload) {
       yield fork(getIssueTransitions, payload.id);
       if (payload) {

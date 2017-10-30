@@ -1,17 +1,18 @@
 // @flow
-import { call, take, select, put, cancel } from 'redux-saga/effects';
+import { call, take, select, put, cancel, takeEvery } from 'redux-saga/effects';
 import { delay } from 'redux-saga';
 import Raven from 'raven-js';
 import * as Api from 'api';
+import filter from 'lodash.filter';
 import { types, worklogsActions, uiActions, issuesActions } from 'actions';
-import { getSelectedIssueId, getUserData } from 'selectors';
+import { getSelectedIssueId, getUserData, getSelectedIssue } from 'selectors';
 import moment from 'moment';
 import { stj, jts } from 'time-util';
 import mixpanel from 'mixpanel-browser';
 
 import { getFromStorage, setToStorage } from './storage';
 import { throwError, notify, infoLog } from './ui';
-import type { Id, Worklog } from '../types';
+import type { Id, Worklog, DeleteWorklogRequestAction } from '../types';
 
 export function* saveWorklogAsOffline(worklog: any): Generator<*, *, *> {
   let offlineWorklogs = yield call(getFromStorage, 'offlineWorklogs');
@@ -99,6 +100,23 @@ export function* uploadWorklog(options: UploadWorklogOptions): Generator<*, *, *
       worklog,
     );
     yield put(issuesActions.addWorklogToIssue(worklog, issueId));
+    const selectedIssue = yield select(getSelectedIssue);
+    if (selectedIssue.id === issueId) {
+      const newIssue = {
+        ...selectedIssue,
+        fields: {
+          ...selectedIssue.fields,
+          worklog: {
+            ...selectedIssue.fields.worklog,
+            worklogs: {
+              worklog,
+              ...selectedIssue.fields.worklog.worklogs,
+            },
+          },
+        },
+      };
+      yield put(issuesActions.selectIssue(newIssue));
+    }
   } catch (err) {
     const { issueId, timeSpentSeconds, comment } = options;
     const started = moment().utc().format().replace('Z', '.000+0000');
@@ -148,7 +166,8 @@ export function* addManualWorklogFlow(): Generator<*, *, *> {
     while (true) {
       const { payload } = yield take(types.ADD_MANUAL_WORKLOG_REQUEST);
       yield put(worklogsActions.setAddWorklogFetching(true));
-      const issueId = yield select(getSelectedIssueId);
+      const selectedIssue = yield select(getSelectedIssue);
+      const issueId = selectedIssue.id;
       const { comment, startTime, totalSpent } = payload;
       const started = moment(startTime).utc().format().replace('Z', '.000+0000');
       const timeSpentSeconds = jts(totalSpent);
@@ -169,31 +188,78 @@ export function* addManualWorklogFlow(): Generator<*, *, *> {
           comment,
         },
       };
-      yield call(Api.addWorklog, jiraUploadOptions);
+      const newWorklog = yield call(Api.addWorklog, jiraUploadOptions);
       yield put(worklogsActions.setAddWorklogFetching(false));
       yield put(uiActions.setWorklogModalOpen(false));
       mixpanel.track('Worklog uploaded (Manual)', { timeSpentSeconds });
       mixpanel.people.increment('Logged time(seconds)', timeSpentSeconds);
       yield call(delay, 1000);
       yield call(notify, '', 'Manual worklog succesfully added');
-      const newWorklog = {
-        self: '',
-        author: self,
-        updateAuthor: self,
-        comment,
-        created: started,
-        updated: started,
-        started,
-        timeSpent: stj(timeSpentSeconds, 'h[h]m[m]'),
-        timeSpentSeconds,
-        id: String(Date.now()),
-        issueId,
-      };
       yield put(issuesActions.addWorklogToIssue(newWorklog, issueId));
+      const newIssue = {
+        ...selectedIssue,
+        fields: {
+          ...selectedIssue.fields,
+          worklog: {
+            ...selectedIssue.fields.worklog,
+            worklogs: [
+              newWorklog,
+              ...selectedIssue.fields.worklog.worklogs,
+            ],
+          },
+        },
+      };
+      yield put(issuesActions.selectIssue(newIssue));
     }
   } catch (err) {
     yield put(worklogsActions.setAddWorklogFetching(false));
     yield call(throwError, err);
     Raven.captureException(err);
   }
+}
+
+export function* deleteWorklogFlow({ payload }: DeleteWorklogRequestAction): Generator<*, void, *> {
+  try {
+    const worklog = payload;
+    const selectedIssue = yield select(getSelectedIssue);
+    yield call(
+      infoLog,
+      'requested to delete worklog',
+      worklog,
+    );
+    yield put(uiActions.setConfirmDeleteWorklogModalOpen(true));
+    yield take(types.CONFIRM_DELETE_WORKLOG);
+    yield call(infoLog, 'worklog deletion confirmed');
+    const opts = {
+      issueId: worklog.issueId,
+      worklogId: worklog.id,
+      adjustEstimate: 'auto',
+    };
+    yield call(Api.deleteWorklog, opts);
+    yield call(infoLog, 'worklog deleted', worklog);
+    yield put(issuesActions.deleteWorklogFromIssue(worklog, worklog.issueId));
+    const newIssue = {
+      ...selectedIssue,
+      fields: {
+        ...selectedIssue.fields,
+        worklog: {
+          ...selectedIssue.fields.worklog,
+          worklogs: filter(
+            selectedIssue.fields.worklog.worklogs,
+            (value) => value.id !== worklog.id,
+          ),
+        },
+      },
+    };
+    yield put(issuesActions.selectIssue(newIssue));
+    yield call(notify, '', 'Successfully deleted worklog');
+  } catch (err) {
+    yield call(notify, '', 'Failed to delete worklog');
+    yield call(throwError, err);
+    Raven.captureException(err);
+  }
+}
+
+export function* watchDeleteWorklogRequest(): Generator<*, void, *> {
+  yield takeEvery(types.DELETE_WORKLOG_REQUEST, deleteWorklogFlow);
 }

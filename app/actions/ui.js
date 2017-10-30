@@ -13,9 +13,11 @@ import type {
   SetSupportModalOpen, SetSupportModalOpenAction,
   SetAboutModalOpen, SetAboutModalOpenAction,
   SetAlertModalOpen, SetAlertModalOpenAction,
+  SetConfirmDeleteWorklogModalOpen, SetConfirmDeleteWorklogModalOpenAction,
   SetWorklogModalOpen, SetWorklogModalOpenAction,
   RemoveFlag, RemoveFlagAction,
   SetScreenshotsAlowed, SetScreenshotsAlowedAction,
+  ConfirmDeleteWorklog, ConfirmDeleteWorklogAction,
   AddFlag, AddFlagAction, FlagType,
   AuthFormStep, SidebarType, TabLabel, UpdateInfo,
 } from '../types';
@@ -107,6 +109,13 @@ export const setAlertModalOpen: SetAlertModalOpen = (
   payload,
 });
 
+export const setConfirmDeleteWorklogModalOpen: SetConfirmDeleteWorklogModalOpen = (
+  payload: boolean,
+): SetConfirmDeleteWorklogModalOpenAction => ({
+  type: types.SET_CONFIRM_DELETE_WORKLOG_MODAL_OPEN,
+  payload,
+});
+
 export const setWorklogModalOpen: SetWorklogModalOpen = (
   payload: boolean,
 ): SetWorklogModalOpenAction => ({
@@ -127,8 +136,12 @@ export const removeFlag: RemoveFlag = (
 });
 
 export const setScreenshotsAllowed: SetScreenshotsAlowed = (
-  payload: boolean
+  payload: boolean,
 ): SetScreenshotsAlowedAction => ({
   type: types.SET_SCREENSHOTS_ALLOWED,
   payload,
+});
+
+export const confirmDeleteWorklog: ConfirmDeleteWorklog = (): ConfirmDeleteWorklogAction => ({
+  type: types.CONFIRM_DELETE_WORKLOG,
 });

@@ -131,6 +131,14 @@ export type AddManualWorklogRequest = {
   (payload: ManualWorklogData): AddManualWorklogRequestAction
 };
 
+//
+export type DeleteWorklogRequestAction =
+  {| type: typeof types.DELETE_WORKLOG_REQUEST, payload: Worklog |};
+
+export type DeleteWorklogRequest = {
+  (payload: Worklog): DeleteWorklogRequestAction
+};
+
 export type WorklogAction =
   FillWorklogsAction
   | AddWorklogsAction

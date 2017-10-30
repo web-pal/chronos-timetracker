@@ -17,6 +17,7 @@ import type {
   SetIssuesSearchValue, SetIssuesSearchValueAction,
   SetIssuesFilter, SetIssuesFilterAction,
   AddWorklogToIssue, AddWorklogToIssueAction,
+  DeleteWorklogFromIssue, DeleteWorklogFromIssueAction,
   FillAvailableTransitions, FillAvailableTransitionsAction,
   SetAvailableTransitionsFetching, SetAvailableTransitionsFethchingAction,
   TransitionIssueRequest, TransitionIssueRequestAction,
@@ -149,6 +150,15 @@ export const addWorklogToIssue: AddWorklogToIssue = (
   issueId: Id,
 ): AddWorklogToIssueAction => ({
   type: types.ADD_WORKLOG_TO_ISSUE,
+  payload,
+  meta: issueId,
+});
+
+export const deleteWorklogFromIssue: DeleteWorklogFromIssue = (
+  payload: Worklog,
+  issueId: Id,
+): DeleteWorklogFromIssueAction => ({
+  type: types.DELETE_WORKLOG_FROM_ISSUE,
   payload,
   meta: issueId,
 });

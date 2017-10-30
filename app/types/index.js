@@ -127,6 +127,8 @@ export type {
   SetAboutModalOpen,
   SetAlertModalOpenAction,
   SetAlertModalOpen,
+  SetConfirmDeleteWorklogModalOpenAction,
+  SetConfirmDeleteWorklogModalOpen,
   SetWorklogModalOpenAction,
   SetWorklogModalOpen,
   SetUpdateFetchingAction,
@@ -137,6 +139,8 @@ export type {
   AddFlag,
   SetScreenshotsAlowedAction,
   SetScreenshotsAlowed,
+  ConfirmDeleteWorklogAction,
+  ConfirmDeleteWorklog,
   UiAction,
 } from './ui';
 
@@ -251,6 +255,8 @@ export type {
   SetIssuesFilter,
   AddWorklogToIssueAction,
   AddWorklogToIssue,
+  DeleteWorklogFromIssueAction,
+  DeleteWorklogFromIssue,
   FillAvailableTransitionsAction,
   FillAvailableTransitions,
   SetAvailableTransitionsFethchingAction,
@@ -322,5 +328,7 @@ export type {
   SetTemporaryWorklogId,
   AddManualWorklogRequestAction,
   AddManualWorklogRequest,
+  DeleteWorklogRequestAction,
+  DeleteWorklogRequest,
   WorklogAction,
 } from './worklogs';

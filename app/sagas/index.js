@@ -41,6 +41,7 @@ export default function* rootSaga(): Generator<*, *, *> {
 
     // worklogs
     fork(worklogsSagas.addManualWorklogFlow),
+    fork(worklogsSagas.watchDeleteWorklogRequest),
 
     // updater
     fork(updaterSagas.watchInstallUpdateRequest),

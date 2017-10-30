@@ -9,7 +9,7 @@ import EditFilledIcon from '@atlaskit/icon/glyph/edit-filled';
 import LinkIcon from '@atlaskit/icon/glyph/link';
 import TrashIcon from '@atlaskit/icon/glyph/trash';
 
-import type { Worklog } from '../../../types';
+import type { Worklog, DeleteWorklogRequest } from '../../../types';
 
 import {
   WorklogContainer,
@@ -20,11 +20,13 @@ import {
 type Props = {
   worklog: Worklog,
   issueKey: string,
+  deleteWorklogRequest: DeleteWorklogRequest,
 };
 
 const WorklogItem: StatelessFunctionalComponent<Props> = ({
   worklog,
   issueKey,
+  deleteWorklogRequest,
 }: Props): Node => (
   <WorklogContainer>
     <Flex row alignCenter>
@@ -39,7 +41,7 @@ const WorklogItem: StatelessFunctionalComponent<Props> = ({
           <EditFilledIcon />
         </Tooltip>
         <Tooltip description="Delete worklog" position="left">
-          <TrashIcon />
+          <TrashIcon onClick={() => deleteWorklogRequest(worklog)} />
         </Tooltip>
       </WorklogActions>
     </Flex>

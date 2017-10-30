@@ -2,6 +2,7 @@
 import { combineReducers } from 'redux';
 import union from 'lodash.union';
 import merge from 'lodash.merge';
+import filter from 'lodash.filter';
 import { types } from 'actions';
 
 import type { Id, IssuesMap, IssuesMeta, IssueTypesMap, IssueStatusesMap } from '../types';
@@ -45,6 +46,23 @@ function itemsById(state: IssuesMap = {}, action): IssuesMap {
                 action.payload,
                 ...state[action.meta].fields.worklog.worklogs,
               ],
+            },
+          },
+        },
+      };
+    case types.DELETE_WORKLOG_FROM_ISSUE:
+      return {
+        ...state,
+        [action.meta]: {
+          ...state[action.meta],
+          fields: {
+            ...state[action.meta].fields,
+            worklog: {
+              ...state[action.meta].fields.worklog,
+              worklogs: filter(
+                state[action.meta].fields.worklog.worklogs,
+                (value) => value.id !== action.payload.id,
+              ),
             },
           },
         },
