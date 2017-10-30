@@ -154,7 +154,8 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
           </DropdownMenu>
         }
         <div style={{ width: 10 }} />
-        {selectedIssue.fields.assignee.key !== selfKey &&
+        {(selectedIssue.fields.assignee === null ||
+          selectedIssue.fields.assignee.key !== selfKey) &&
           <Button onClick={() => assignIssueRequest(selectedIssue)}>
             Assign to me
           </Button>
