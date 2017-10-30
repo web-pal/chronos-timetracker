@@ -103,3 +103,34 @@ export const Button = styled.div`
     color: white;
   }
 `;
+
+export const WorklogContainer = styled.div`
+  display: flex;
+  flex-flow: column nowrap;
+  &:hover {
+    background-color: #f4f5f7;
+  };
+  padding: 10px;
+  flex: 1 0 0%;
+`;
+
+export const UserAvatar = styled.img`
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  user-select: none;
+  margin-right: 8px;
+`;
+
+export const WorklogActions = styled.div`
+  display: flex;
+  align-self: flex-end;
+  flex-flow: row nowrap;
+  margin-left: auto;
+  > div {
+    cursor: pointer;
+    &:hover {
+      color: black;
+    }
+  }
+`;

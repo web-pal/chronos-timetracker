@@ -1,56 +1,55 @@
 // @flow
 import React from 'react';
+import moment from 'moment';
 import type { StatelessFunctionalComponent, Node } from 'react';
-import ScreenIcon from '@atlaskit/icon/glyph/screen';
 import { Flex } from 'components';
+import { openWorklogInBrowser } from 'external-open-util';
+import Tooltip from '@atlaskit/tooltip';
+import EditFilledIcon from '@atlaskit/icon/glyph/edit-filled';
+import LinkIcon from '@atlaskit/icon/glyph/link';
+import TrashIcon from '@atlaskit/icon/glyph/trash';
+
+import type { Worklog } from '../../../types';
 
 import {
-  TimelineItem,
-  TimelineCircle,
-  TimelineLine,
-  TimelineLineContainer,
-  Time,
-  ScreenshotContainer,
-  // Screenshot,
-  ActivityContainer,
-  ActivityRecord,
-  ActivityLineOuter,
-  ActivityLineInner,
-  Worklog,
-  WorklogTime,
+  WorklogContainer,
+  UserAvatar,
+  WorklogActions,
 } from './styled';
 
-const WorklogItem: StatelessFunctionalComponent<{}> = (): Node => (
-  <TimelineItem>
-    <TimelineLineContainer>
-      <TimelineCircle />
-      <TimelineLine />
-    </TimelineLineContainer>
-    <Flex column>
-      <Time>13:00</Time>
-      <Flex row style={{ overflowX: 'auto' }}>
-        {[1, 2, 3, 4, 5, 6].map((i) => (
-          <Worklog key={i}>
-            <ScreenshotContainer>
-              {
-                /* {screenshotUrl ?
-                <Screenshot src={screenshotUrl} alt="Screenshot" /> :
-                */
-              }
-              <ScreenIcon size="large" primaryColor="" label="Screenshot" />
-            </ScreenshotContainer>
-            <WorklogTime>14:00 - 14:10</WorklogTime>
-            <ActivityContainer>
-              <ActivityLineOuter>
-                <ActivityLineInner percent="86" />
-              </ActivityLineOuter>
-              <ActivityRecord> 86% of 10 minutes</ActivityRecord>
-            </ActivityContainer>
-          </Worklog>
-        ))}
-      </Flex>
+type Props = {
+  worklog: Worklog,
+  issueKey: string,
+};
+
+const WorklogItem: StatelessFunctionalComponent<Props> = ({
+  worklog,
+  issueKey,
+}: Props): Node => (
+  <WorklogContainer>
+    <Flex row alignCenter>
+      <UserAvatar src={worklog.author.avatarUrls['32x32']} />
+      {worklog.author.displayName} logged
+      work – {moment(worklog.started).format('DD/MMM/YY h:mm A')}
+      <WorklogActions>
+        <Tooltip description="Open worklog in JIRA">
+          <LinkIcon onClick={openWorklogInBrowser(worklog, issueKey)} />
+        </Tooltip>
+        <Tooltip description="Edit worklog">
+          <EditFilledIcon />
+        </Tooltip>
+        <Tooltip description="Delete worklog" position="left">
+          <TrashIcon />
+        </Tooltip>
+      </WorklogActions>
     </Flex>
-  </TimelineItem>
+    <Flex row alignCenter style={{ marginLeft: 32 }}>
+      <span style={{ color: '#5e6c84' }}>Time spent:</span>&nbsp;{worklog.timeSpent}
+    </Flex>
+    <Flex row alignCenter style={{ marginLeft: 32 }}>
+      <span style={{ color: '#5e6c84' }}>Comment:</span>&nbsp;{worklog.comment || '<no comment>'}
+    </Flex>
+  </WorklogContainer>
 );
 
 export default WorklogItem;
