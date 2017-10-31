@@ -253,22 +253,33 @@ export function* watchFiltersChange(): Generator<*, *, *> {
   );
 }
 
-export function* watchIssueSelect(): Generator<*, *, *> {
-  while (true) {
-    const { payload, meta }: SelectIssueAction = yield take(types.SELECT_ISSUE);
-    // TBD turning off this temporary
-    // yield put(uiActions.setIssueViewTab('Details'));
+export function* issueSelectFlow({ payload, meta }: SelectIssueAction): Generator<*, *, *> {
+  // TBD turning off this temporary
+  // yield put(uiActions.setIssueViewTab('Details'));
+  if (payload) {
+    yield fork(getIssueTransitions, payload.id);
     if (payload) {
-      yield fork(getIssueTransitions, payload.id);
-      if (payload) {
-        const issueKey = payload.key;
-        ipcRenderer.send('select-issue', issueKey);
-      }
-    }
-    if (meta) {
-      console.log(meta);
+      const issueKey = payload.key;
+      ipcRenderer.send('select-issue', issueKey);
     }
   }
+  if (meta) {
+    yield put(uiActions.setIssueViewTab('Worklogs'));
+    yield call(delay, 500);
+    const worklogEl = document.querySelector(`#worklog-${meta.id}`);
+    if (worklogEl) {
+      worklogEl.scrollIntoView({ behavior: 'smooth' });
+      worklogEl.className += ' blink';
+      yield call(delay, 2000);
+      if (worklogEl) {
+        worklogEl.className = worklogEl.className.slice(0, -6);
+      }
+    }
+  }
+}
+
+export function* watchIssueSelect(): Generator<*, void, *> {
+  yield takeEvery(types.SELECT_ISSUE, issueSelectFlow);
 }
 
 export function* transitionIssueFlow(): Generator<*, void, *> {
