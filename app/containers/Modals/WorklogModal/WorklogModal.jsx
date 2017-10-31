@@ -39,6 +39,7 @@ type State = {
   startTime: any,
   comment: string,
   totalSpent: string,
+  jiraTimeError: string | null,
 };
 
 class WorklogModal extends Component<Props, State> {
@@ -48,6 +49,7 @@ class WorklogModal extends Component<Props, State> {
     startTime: moment(),
     comment: '',
     totalSpent: '20m',
+    jiraTimeError: null,
   }
 
   handleTimeChange = (label) => value => {
@@ -58,13 +60,14 @@ class WorklogModal extends Component<Props, State> {
     const jiraTime = e.target.value || '';
     const isValid = this.checkIfJiraTime(jiraTime);
     if (isValid) {
-      this.setState({ totalSpent: jiraTime });
+      this.setState({ totalSpent: jiraTime, jiraTimeError: null });
+    } else {
+      this.setState({ totalSpent: jiraTime, jiraTimeError: 'invalid format' });
     }
   }
 
   checkIfJiraTime = (jiraTime) => {
-    // TODO: make regexp and only allow user to fill in date in jira time
-    if ('4h 20m'.indexOf(jiraTime) >= -1) {
+    if (/^(\d{1,2}d{1}(\s{1}|$))?(\d{1,2}h{1}(\s{1}|$))?(\d{1,2}m{1}(\s{1}|$))?(\d{1,2}s{1}(\s{1}|$))?$/g.test(jiraTime)) {
       return true;
     }
     return false;
@@ -72,7 +75,14 @@ class WorklogModal extends Component<Props, State> {
 
   render() {
     const { isOpen, setWorklogModalOpen, fetching }: Props = this.props;
-    const { calendarOpened, date, startTime, comment, totalSpent }: State = this.state;
+    const {
+      calendarOpened,
+      date,
+      startTime,
+      comment,
+      totalSpent,
+      jiraTimeError,
+    }: State = this.state;
 
     return isOpen && (
       <ModalDialog
@@ -113,6 +123,7 @@ class WorklogModal extends Component<Props, State> {
               value={totalSpent}
               onChange={this.handleTotalSpentChange}
               isLabelHidden
+              isInvalid={!!jiraTimeError}
             />
             <InputExample>(eg. 1d 12h 30m)</InputExample>
           </Flex>
