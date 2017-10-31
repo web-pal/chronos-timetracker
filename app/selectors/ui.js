@@ -37,6 +37,9 @@ export const getConfirmDeleteWorklogModalOpen =
 export const getWorklogModalOpen =
   ({ ui }: { ui: UiState }): boolean => ui.worklogModalOpen;
 
+export const getEditWorklogModalOpen =
+  ({ ui }: { ui: UiState }): boolean => ui.editWorklogModalOpen;
+
 export const getSidebarFiltersOpen =
   ({ ui }: { ui: UiState }): boolean => ui.sidebarFiltersOpen;
 

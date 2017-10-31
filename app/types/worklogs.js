@@ -30,10 +30,11 @@ export type WorklogsMap = { [Id]: Worklog };
 
 export type WorklogsMeta = {|
   +fetching: boolean,
-  +addWorklogFetching: boolean,
+  +editWorklogFetching: boolean,
   +worklogComment: string,
   +selectedWorklogId: Id | null,
   +temporaryWorklogId: Id | null,
+  +editingWorklog: Worklog | null,
 |};
 
 export type WorklogsState = {|
@@ -92,11 +93,11 @@ export type SetWorklogsFetching = {
 };
 
 //
-export type SetAddWorklogFetchingAction =
+export type SetEditWorklogFetchingAction =
   {| type: typeof types.SET_ADD_WORKLOG_FETCHING, payload: boolean |};
 
-export type SetAddWorklogFetching = {
-  (payload: boolean): SetAddWorklogFetchingAction
+export type SetEditWorklogFetching = {
+  (payload: boolean): SetEditWorklogFetchingAction
 };
 
 //
@@ -137,6 +138,30 @@ export type DeleteWorklogRequestAction =
 
 export type DeleteWorklogRequest = {
   (payload: Worklog): DeleteWorklogRequestAction
+};
+
+//
+export type EditWorklogRequestAction =
+  {| type: typeof types.EDIT_WORKLOG_REQUEST, payload: Worklog |};
+
+export type EditWorklogRequest = {
+  (payload: Worklog): EditWorklogRequestAction
+};
+
+//
+export type SetEditingWorklogAction =
+  {| type: typeof types.SET_EDITING_WORKLOG, payload: Worklog | null |};
+
+export type SetEditingWorklog = {
+  (payload: Worklog | null): SetEditingWorklogAction
+};
+
+//
+export type ConfirmEditWorklogAction =
+  {| type: typeof types.CONFIRM_EDIT_WORKLOG, payload: Worklog |};
+
+export type ConfirmEditWorklog = {
+  (payload: Worklog): ConfirmEditWorklogAction
 };
 
 export type WorklogAction =

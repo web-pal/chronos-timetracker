@@ -30,8 +30,8 @@ function itemsById(state: IssuesMap = {}, action): IssuesMap {
       return action.payload.map;
     case types.ADD_ISSUES:
       return merge(
-        action.payload.map,
-        state,
+        { ...action.payload.map },
+        { ...state },
       );
     case types.ADD_WORKLOG_TO_ISSUE:
       return {

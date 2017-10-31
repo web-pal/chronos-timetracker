@@ -4,6 +4,7 @@ import { delay } from 'redux-saga';
 import Raven from 'raven-js';
 import * as Api from 'api';
 import filter from 'lodash.filter';
+import pull from 'lodash.pull';
 import { types, worklogsActions, uiActions, issuesActions } from 'actions';
 import { getUserData, getSelectedIssue, getRecentIssueIds } from 'selectors';
 import moment from 'moment';
@@ -12,7 +13,7 @@ import mixpanel from 'mixpanel-browser';
 
 import { getFromStorage, setToStorage } from './storage';
 import { throwError, notify, infoLog } from './ui';
-import type { Id, Worklog, DeleteWorklogRequestAction, Issue } from '../types';
+import type { Id, Worklog, DeleteWorklogRequestAction, EditWorklogRequestAction, Issue } from '../types';
 
 export function* saveWorklogAsOffline(worklog: any): Generator<*, *, *> {
   let offlineWorklogs = yield call(getFromStorage, 'offlineWorklogs');
@@ -174,7 +175,7 @@ export function* addManualWorklogFlow(): Generator<*, *, *> {
     while (true) {
       const { payload } = yield take(types.ADD_MANUAL_WORKLOG_REQUEST);
       const selectedIssue = yield select(getSelectedIssue);
-      yield put(worklogsActions.setAddWorklogFetching(true));
+      yield put(worklogsActions.setEditWorklogFetching(true));
       const issueId = selectedIssue.id;
       const { comment, startTime, totalSpent } = payload;
       const started = moment(startTime).utc().format().replace('Z', '.000+0000');
@@ -196,7 +197,7 @@ export function* addManualWorklogFlow(): Generator<*, *, *> {
         },
       };
       const newWorklog = yield call(Api.addWorklog, jiraUploadOptions);
-      yield put(worklogsActions.setAddWorklogFetching(false));
+      yield put(worklogsActions.setEditWorklogFetching(false));
       yield put(uiActions.setWorklogModalOpen(false));
       mixpanel.track('Worklog uploaded (Manual)', { timeSpentSeconds });
       mixpanel.people.increment('Logged time(seconds)', timeSpentSeconds);
@@ -227,7 +228,7 @@ export function* addManualWorklogFlow(): Generator<*, *, *> {
       yield put(issuesActions.selectIssue(newIssue));
     }
   } catch (err) {
-    yield put(worklogsActions.setAddWorklogFetching(false));
+    yield put(worklogsActions.setEditWorklogFetching(false));
     yield call(throwError, err);
     Raven.captureException(err);
   }
@@ -275,7 +276,7 @@ export function* deleteWorklogFlow({ payload }: DeleteWorklogRequestAction): Gen
       },
     };
     yield put(issuesActions.selectIssue(newIssue));
-    // neew to delete issue from recent issues list if you deleted your last worklog 
+    // neew to delete issue from recent issues list if you deleted your last worklog
     const { key } = yield select(getUserData);
     const selfWorklogs = filter(
       newIssue.fields.worklog.worklogs,
@@ -285,7 +286,7 @@ export function* deleteWorklogFlow({ payload }: DeleteWorklogRequestAction): Gen
       const recentIssueIds = yield select(getRecentIssueIds);
       if (recentIssueIds.includes(selectedIssue.id)) {
         const newRecentIssueIds = [...recentIssueIds];
-        newRecentIssueIds.push(selectedIssue.id);
+        pull(newRecentIssueIds, selectedIssue.id);
         yield put(issuesActions.fillRecentIssueIds(newRecentIssueIds));
       }
     }
@@ -299,4 +300,82 @@ export function* deleteWorklogFlow({ payload }: DeleteWorklogRequestAction): Gen
 
 export function* watchDeleteWorklogRequest(): Generator<*, void, *> {
   yield takeEvery(types.DELETE_WORKLOG_REQUEST, deleteWorklogFlow);
+}
+
+export function* editWorklogFlow({ payload }: EditWorklogRequestAction): Generator<*, *, *> {
+  try {
+    const worklog = payload;
+    const selectedIssue = yield select(getSelectedIssue);
+    yield put(worklogsActions.setEditingWorklog(worklog));
+    yield put(uiActions.setEditWorklogModalOpen(true));
+    yield call(
+      infoLog,
+      'requested to edit worklog',
+      worklog,
+    );
+    const { confirm, close } = yield race({
+      confirm: take(types.CONFIRM_EDIT_WORKLOG),
+      close: take(types.SET_EDIT_WORKLOG_MODAL_OPEN),
+    });
+    if (close) {
+      yield call(
+        infoLog,
+        'worklog editing cancelled',
+        worklog,
+      );
+      yield put(worklogsActions.setEditingWorklog(null));
+      yield cancel();
+    }
+    yield put(worklogsActions.setEditWorklogFetching(true));
+    const newWorklog: Worklog = confirm.payload;
+    const { started, timeSpentSeconds, issueId, comment, id } = newWorklog;
+    const jiraUploadOptions: {
+      issueId: Id,
+      worklogId: Id,
+      adjustEstimate: 'auto',
+      worklog: {
+        timeSpentSeconds: number,
+        comment: string,
+      },
+    } = {
+      issueId,
+      worklogId: id,
+      adjustEstimate: 'auto',
+      worklog: {
+        started,
+        timeSpentSeconds,
+        comment,
+      },
+    };
+    yield call(Api.updateWorklog, jiraUploadOptions);
+    yield call(infoLog, 'success updating worklog', newWorklog);
+    const newIssue = { ...selectedIssue };
+    const newWorklogs = selectedIssue.fields.worklog.worklogs.map(w => {
+      if (w.id === newWorklog.id) {
+        return newWorklog;
+      }
+      return w;
+    });
+    newIssue.fields.worklog.worklogs = newWorklogs;
+    yield put(issuesActions.addIssues({
+      ids: [newIssue.id],
+      map: { [newIssue.id]: newIssue },
+    }));
+    yield put(issuesActions.selectIssue(newIssue));
+    yield put(worklogsActions.setEditingWorklog(null));
+    yield put(worklogsActions.setEditWorklogFetching(false));
+    yield put(uiActions.setEditWorklogModalOpen(false));
+    yield call(notify, '', 'Successfully edited worklog');
+  } catch (err) {
+    yield put(worklogsActions.setEditingWorklog(null));
+    yield put(worklogsActions.setEditWorklogFetching(false));
+    yield put(uiActions.setEditWorklogModalOpen(false));
+    yield call(notify, '', 'Failed to edit worklog');
+    yield call(throwError, err);
+    Raven.captureException(err);
+  }
+}
+
+export function* watchEditWorklogRequest(): Generator<*, void, *> {
+  yield takeEvery(types.EDIT_WORKLOG_REQUEST, editWorklogFlow);
 }

@@ -255,7 +255,7 @@ export function* watchFiltersChange(): Generator<*, *, *> {
 
 export function* watchIssueSelect(): Generator<*, *, *> {
   while (true) {
-    const { payload }: SelectIssueAction = yield take(types.SELECT_ISSUE);
+    const { payload, meta }: SelectIssueAction = yield take(types.SELECT_ISSUE);
     // TBD turning off this temporary
     // yield put(uiActions.setIssueViewTab('Details'));
     if (payload) {
@@ -264,6 +264,9 @@ export function* watchIssueSelect(): Generator<*, *, *> {
         const issueKey = payload.key;
         ipcRenderer.send('select-issue', issueKey);
       }
+    }
+    if (meta) {
+      console.log(meta);
     }
   }
 }

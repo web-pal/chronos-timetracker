@@ -15,6 +15,7 @@ import type {
   SetAlertModalOpen, SetAlertModalOpenAction,
   SetConfirmDeleteWorklogModalOpen, SetConfirmDeleteWorklogModalOpenAction,
   SetWorklogModalOpen, SetWorklogModalOpenAction,
+  SetEditWorklogModalOpen, SetEditWorklogModalOpenAction,
   RemoveFlag, RemoveFlagAction,
   SetScreenshotsAlowed, SetScreenshotsAlowedAction,
   ConfirmDeleteWorklog, ConfirmDeleteWorklogAction,
@@ -120,6 +121,13 @@ export const setWorklogModalOpen: SetWorklogModalOpen = (
   payload: boolean,
 ): SetWorklogModalOpenAction => ({
   type: types.SET_WORKLOG_MODAL_OPEN,
+  payload,
+});
+
+export const setEditWorklogModalOpen: SetEditWorklogModalOpen = (
+  payload: boolean,
+): SetEditWorklogModalOpenAction => ({
+  type: types.SET_EDIT_WORKLOG_MODAL_OPEN,
   payload,
 });
 

@@ -36,6 +36,7 @@ export type UiState = {|
   +confirmDeleteWorklogModalOpen: boolean,
   +alertModalOpen: boolean,
   +worklogModalOpen: boolean,
+  +editWorklogModalOpen: boolean,
   +flags: FlagsArray,
   +screenshotsAllowed: boolean,
 |};
@@ -158,6 +159,14 @@ export type SetWorklogModalOpenAction =
 
 export type SetWorklogModalOpen = {
   (payload: boolean): SetWorklogModalOpenAction
+};
+
+//
+export type SetEditWorklogModalOpenAction =
+  {| type: typeof types.SET_EDIT_WORKLOG_MODAL_OPEN, +payload: boolean |};
+
+export type SetEditWorklogModalOpen = {
+  (payload: boolean): SetEditWorklogModalOpenAction
 };
 
 //

@@ -59,10 +59,11 @@ function recentWorklogIds(state: Array<Id> = [], action) {
 
 const initialMeta: WorklogsMeta = {
   fetching: false,
-  addWorklogFetching: false,
+  editWorklogFetching: false,
   worklogComment: '',
   selectedWorklogId: null,
   temporaryWorklogId: null,
+  editingWorklog: null,
 };
 
 function meta(state: WorklogsMeta = initialMeta, action) {
@@ -75,7 +76,7 @@ function meta(state: WorklogsMeta = initialMeta, action) {
     case types.SET_ADD_WORKLOG_FETCHING:
       return {
         ...state,
-        addWorklogFetching: action.payload,
+        editWorklogFetching: action.payload,
       };
     case types.SET_WORKLOG_COMMENT:
       return {
@@ -91,6 +92,11 @@ function meta(state: WorklogsMeta = initialMeta, action) {
       return {
         ...state,
         temporaryWorklogId: action.payload,
+      };
+    case types.SET_EDITING_WORKLOG:
+      return {
+        ...state,
+        editingWorklog: action.payload,
       };
     case types.CLEAR_WORKLOGS:
     case types.___CLEAR_ALL_REDUCERS___:

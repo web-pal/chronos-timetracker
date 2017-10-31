@@ -110,3 +110,7 @@ export function addWorklog(opts) {
 export function deleteWorklog(opts) {
   return jira.client.issue.deleteWorkLog(opts);
 }
+
+export function updateWorklog(opts) {
+  return jira.client.issue.updateWorkLog(opts);
+}

@@ -168,4 +168,4 @@ export function fetchSearchIssues({
 
 export function assignIssue(opts) {
   return jira.client.issue.assignIssue(opts);
-};
+}
