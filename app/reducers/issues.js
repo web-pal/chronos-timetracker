@@ -171,6 +171,28 @@ function issueStatusesById(state: IssueStatusesMap = {}, action) {
   }
 }
 
+function epicsIds(state: Array<Id> = [], action): Array<Id> {
+  switch (action.type) {
+    case types.FILL_EPICS:
+      return action.payload.ids;
+    case types.___CLEAR_ALL_REDUCERS___:
+      return [];
+    default:
+      return state;
+  }
+}
+
+function epicsById(state: IssuesMap = {}, action) {
+  switch (action.type) {
+    case types.FILL_EPICS:
+      return action.payload.map;
+    case types.___CLEAR_ALL_REDUCERS___:
+      return [];
+    default:
+      return state;
+  }
+}
+
 const initialMeta: IssuesMeta = {
   fetching: false,
   recentFetching: false,
@@ -187,6 +209,7 @@ const initialMeta: IssuesMeta = {
     status: [],
     assignee: [],
   },
+  fields: [],
   availableTransitions: [],
   availableTransitionsFetching: false,
 };
@@ -245,6 +268,11 @@ function meta(state: IssuesMeta = initialMeta, action) {
         ...state,
         availableTransitions: action.payload,
       };
+    case types.FILL_ISSUE_FIELDS:
+      return {
+        ...state,
+        fields: action.payload,
+      };
     case types.SET_AVAILABLE_TRANSITIONS_FETCHING:
       return {
         ...state,
@@ -264,5 +292,7 @@ export default combineReducers({
   issueStatusesById,
   recentIds,
   foundIds,
+  epicsIds,
+  epicsById,
   meta,
 });

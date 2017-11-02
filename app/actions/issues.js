@@ -24,8 +24,10 @@ import type {
   SetIssueStatus, SetIssueStatusAction,
   AssignIssueRequest, AssignIssueRequestAction,
   SetIssueAssignee, SetIssueAssigneeAction,
+  FillIssueFields, FillIssueFieldsAction,
+  FillEpics, FillEpicsAction,
   IssuesMap, Id, IssueTypesMap, IssueStatus, IssueStatusesMap, Issue, Worklog, IssueTransition,
-  User,
+  User, IssueField,
 } from '../types';
 
 export const fetchIssuesRequest: FetchIssuesRequest = (
@@ -211,4 +213,18 @@ export const setIssueAssignee: SetIssueAssignee = (
   type: types.SET_ISSUE_ASSIGNEE,
   payload: assignee,
   meta: issue,
+});
+
+export const fillIssueFields: FillIssueFields = (
+  payload: Array<IssueField>,
+): FillIssueFieldsAction => ({
+  type: types.FILL_ISSUE_FIELDS,
+  payload,
+});
+
+export const fillEpics: FillEpics = (
+  payload: { ids: Array<Id>, map: IssuesMap },
+): FillEpicsAction => ({
+  type: types.FILL_EPICS,
+  payload,
 });

@@ -17,7 +17,7 @@ import type {
 
 import { getSettings } from './settings';
 import { getWorklogTypes } from './worklogTypes';
-import { fetchIssueTypes, fetchIssueStatuses } from './issues';
+import { fetchIssueTypes, fetchIssueStatuses, fetchIssueFields } from './issues';
 import { setToStorage, removeFromStorage } from './storage';
 import { throwError } from './ui';
 
@@ -118,6 +118,7 @@ export function* loginFlow(): Generator<*, void, *> {
         yield put(profileActions.setAuthorized(true));
         yield fork(fetchIssueTypes);
         yield fork(fetchIssueStatuses);
+        yield fork(fetchIssueFields);
         // yield put({ type: types.CHECK_OFFLINE_SCREENSHOTS });
         // yield put({ type: types.CHECK_OFFLINE_WORKLOGS });
         // Socket.login();
@@ -207,6 +208,7 @@ export function* loginOAuthFlow(): Generator<*, void, *> {
       yield put(settingsActions.requestLocalDesktopSettings());
       yield fork(fetchIssueTypes);
       yield fork(fetchIssueStatuses);
+      yield fork(fetchIssueFields);
       // yield put({ type: types.CHECK_OFFLINE_SCREENSHOTS });
       // yield put({ type: types.CHECK_OFFLINE_WORKLOGS });
       // Socket.login();

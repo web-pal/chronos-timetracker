@@ -8,6 +8,7 @@ import Raven from 'raven-js';
 import {
   getSelectedProject,
   getSelectedSprintId,
+  getFieldIdByName,
   getUserData,
   getRecentIssueIds,
   getIssuesSearchValue,
@@ -43,6 +44,7 @@ export function* fetchIssues({
       yield put(issuesActions.setIssuesTotalCount(0));
       yield put(issuesActions.clearFoundIssueIds());
     }
+    const epicLinkFieldId: string | null = yield select(getFieldIdByName, 'Epic Link');
     const selectedProject: Project = yield select(getSelectedProject);
     const selectedSprintId: Id = yield select(getSelectedSprintId);
     const searchValue: string = yield select(getIssuesSearchValue);
@@ -56,6 +58,7 @@ export function* fetchIssues({
       searchValue,
       projectKey: selectedProject.key,
       filters,
+      epicLinkFieldId,
     };
     const response = yield call(Api.fetchIssues, opts);
     yield call(
@@ -348,6 +351,32 @@ export function* assignIssueFlow(): Generator<*, void, *> {
       '',
       'Cannot assign issue. Probably no permission',
     );
+    yield call(throwError, err);
+    Raven.captureException(err);
+  }
+}
+
+export function* fetchIssueFields(): Generator<*, void, *> {
+  try {
+    yield call(infoLog, 'fetching issue fields');
+    const issueFields = yield call(Api.fetchIssueFields);
+    yield call(infoLog, 'got issue fields', issueFields);
+    yield put(issuesActions.fillIssueFields(issueFields));
+  } catch (err) {
+    yield call(throwError, err);
+    Raven.captureException(err);
+  }
+}
+
+export function* fetchEpics(): Generator<*, void, *> {
+  try {
+    yield call(infoLog, 'fetching epics');
+    const selectedProject = yield select(getSelectedProject);
+    const { issues } = yield call(Api.fetchEpics, { projectId: selectedProject.id });
+    yield call(infoLog, 'got epics', issues);
+    const normalizedEpics = yield call(normalizePayload, issues, 'epics');
+    yield put(issuesActions.fillEpics(normalizedEpics));
+  } catch (err) {
     yield call(throwError, err);
     Raven.captureException(err);
   }
