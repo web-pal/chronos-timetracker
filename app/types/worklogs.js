@@ -16,7 +16,7 @@ export type Worklog = {
   self: string,
   author: User,
   updateAuthor: User,
-  comment: string | null,
+  comment?: string | null,
   created: string,
   updated: string,
   started: string,

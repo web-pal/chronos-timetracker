@@ -9,7 +9,7 @@ import * as Api from 'api';
 
 import { setToStorage, getFromStorage } from './storage';
 
-import { throwError } from './ui';
+import { throwError, notify } from './ui';
 
 import type { SelectProjectAction, Id, ProjectType } from '../types';
 
@@ -38,6 +38,7 @@ export function* fetchProjects(): Generator<*, *, *> {
     }
     yield put(projectsActions.setProjectsFetching(false));
   } catch (err) {
+    yield call(notify, '', 'Failed to load projects, check your permissions');
     yield put(projectsActions.setProjectsFetching(false));
     yield call(throwError, err);
     Raven.captureException(err);
