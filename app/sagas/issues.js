@@ -15,8 +15,9 @@ import {
   getFoundIssueIds,
   getIssueFilters,
   getSelectedIssueId,
+  getIssueViewTab,
 } from 'selectors';
-import { issuesActions, uiActions, types } from 'actions';
+import { issuesActions, types } from 'actions';
 import normalizePayload from 'normalize-util';
 
 import { throwError, infoLog, notify } from './ui';
@@ -257,8 +258,7 @@ export function* watchFiltersChange(): Generator<*, *, *> {
 }
 
 export function* issueSelectFlow({ payload, meta }: SelectIssueAction): Generator<*, *, *> {
-  // TBD turning off this temporary
-  // yield put(uiActions.setIssueViewTab('Details'));
+  const issueViewTab = yield select(getIssueViewTab);
   if (payload) {
     yield fork(getIssueTransitions, payload.id);
     if (payload) {
@@ -266,8 +266,7 @@ export function* issueSelectFlow({ payload, meta }: SelectIssueAction): Generato
       ipcRenderer.send('select-issue', issueKey);
     }
   }
-  if (meta) {
-    yield put(uiActions.setIssueViewTab('Worklogs'));
+  if (meta && issueViewTab === 'Worklogs') {
     yield call(delay, 500);
     const worklogEl = document.querySelector(`#worklog-${meta.id}`);
     if (worklogEl) {
