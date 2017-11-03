@@ -1,5 +1,5 @@
 // @flow
-import { put, call, select, takeLatest, take, fork } from 'redux-saga/effects';
+import { put, call, select, takeLatest, take } from 'redux-saga/effects';
 import Raven from 'raven-js';
 import normalizePayload from 'normalize-util';
 
@@ -9,7 +9,6 @@ import * as Api from 'api';
 
 import { setToStorage, getFromStorage } from './storage';
 
-import { fetchEpics } from './issues';
 import { throwError } from './ui';
 
 import type { SelectProjectAction, Id } from '../types';
@@ -70,7 +69,6 @@ export function* watchProjectSelection(): Generator<*, *, *> {
   while (true) {
     const { payload }: SelectProjectAction = yield take(types.SELECT_PROJECT);
     yield call(setToStorage, 'lastProjectSelected', payload);
-    yield fork(fetchEpics, payload);
     yield put(issuesActions.selectIssue(null));
     yield put(issuesActions.clearIssues());
     yield put(issuesActions.fetchIssuesRequest());

@@ -17,7 +17,7 @@ import type {
 
 import { getSettings } from './settings';
 import { getWorklogTypes } from './worklogTypes';
-import { fetchIssueTypes, fetchIssueStatuses, fetchIssueFields } from './issues';
+import { fetchIssueTypes, fetchIssueStatuses, fetchIssueFields, fetchEpics } from './issues';
 import { setToStorage, removeFromStorage } from './storage';
 import { throwError } from './ui';
 
@@ -33,25 +33,29 @@ function* loginError(error: ErrorObj): Generator<*, void, *> {
   yield put(profileActions.throwLoginError(errorMessage));
 }
 
+function identifyInSentryAndMixpanel(host: string, userData: User): void {
+  mixpanel.identify((`${host} - ${userData.emailAddress}`));
+  mixpanel.people.set({
+    host,
+    locale: userData.locale,
+    $timezone: userData.timeZone,
+    $name: userData.displayName,
+    $email: userData.emailAddress,
+    $distinct_id: `${host} - ${userData.emailAddress}`,
+  });
+  Raven.setUserContext({
+    host,
+    locale: userData.locale,
+    timeZone: userData.timeZone,
+    name: userData.displayName,
+    email: userData.emailAddress,
+  });
+}
+
 function* jiraLogin(values: AuthFormData): Generator<*, boolean, *> {
   try {
     const userData: User = yield call(Api.jiraAuth, values);
-    mixpanel.identify((`${values.host} - ${userData.emailAddress}`));
-    mixpanel.people.set({
-      host: values.host,
-      locale: userData.locale,
-      $timezone: userData.timeZone,
-      $name: userData.displayName,
-      $email: userData.emailAddress,
-      $distinct_id: `${values.host} - ${userData.emailAddress}`,
-    });
-    Raven.setUserContext({
-      host: values.host,
-      locale: userData.locale,
-      timeZone: userData.timeZone,
-      name: userData.displayName,
-      email: userData.emailAddress,
-    });
+    yield call(identifyInSentryAndMixpanel, values.host, userData);
     yield put(profileActions.fillUserData(userData));
     return true;
   } catch (err) {
@@ -98,6 +102,21 @@ export function* checkJWT(): Generator<*, void, *> {
   }
 }
 
+function* afterLogin(): Generator<*, void, *> {
+  yield fork(getWorklogTypes);
+  yield fork(getSettings);
+  yield put(settingsActions.requestLocalDesktopSettings());
+  yield put(profileActions.setLoginFetching(false));
+  yield put(profileActions.setAuthorized(true));
+  yield fork(fetchIssueTypes);
+  yield fork(fetchIssueStatuses);
+  yield fork(fetchIssueFields);
+  yield fork(fetchEpics);
+  // yield put({ type: types.CHECK_OFFLINE_SCREENSHOTS });
+  // yield put({ type: types.CHECK_OFFLINE_WORKLOGS });
+  // Socket.login();
+}
+
 export function* loginFlow(): Generator<*, void, *> {
   while (true) {
     try {
@@ -111,17 +130,7 @@ export function* loginFlow(): Generator<*, void, *> {
 
       if (jiraLoginSuccess && chronosBackendLoginSuccess) {
         yield call(setToStorage, 'jira_credentials', { ...payload, password: '' });
-        yield fork(getWorklogTypes);
-        yield fork(getSettings);
-        yield put(settingsActions.requestLocalDesktopSettings());
-        yield put(profileActions.setLoginFetching(false));
-        yield put(profileActions.setAuthorized(true));
-        yield fork(fetchIssueTypes);
-        yield fork(fetchIssueStatuses);
-        yield fork(fetchIssueFields);
-        // yield put({ type: types.CHECK_OFFLINE_SCREENSHOTS });
-        // yield put({ type: types.CHECK_OFFLINE_WORKLOGS });
-        // Socket.login();
+        yield call(afterLogin);
       }
       yield put(profileActions.setLoginFetching(true));
     } catch (err) {
@@ -201,17 +210,11 @@ export function* loginOAuthFlow(): Generator<*, void, *> {
 
       const userData: User = yield call(Api.jiraProfile);
 
+      yield call(identifyInSentryAndMixpanel, host, userData);
+
       yield put(profileActions.fillUserData(userData));
-      yield put(profileActions.setLoginFetching(false));
-      yield put(profileActions.setAuthorized(true));
-      yield call(getSettings);
-      yield put(settingsActions.requestLocalDesktopSettings());
-      yield fork(fetchIssueTypes);
-      yield fork(fetchIssueStatuses);
-      yield fork(fetchIssueFields);
-      // yield put({ type: types.CHECK_OFFLINE_SCREENSHOTS });
-      // yield put({ type: types.CHECK_OFFLINE_WORKLOGS });
-      // Socket.login();
+
+      yield call(afterLogin);
     } catch (err) {
       yield put(profileActions.setLoginFetching(false));
       yield call(throwError, err);
