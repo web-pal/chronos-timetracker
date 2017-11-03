@@ -59,7 +59,10 @@ function* jiraLogin(values: AuthFormData): Generator<*, boolean, *> {
     yield put(profileActions.fillUserData(userData));
     return true;
   } catch (err) {
-    yield call(loginError, err);
+    yield put(profileActions.setLoginFetching(false));
+    yield call(throwError, err);
+    const humanReadableError = new Error('Cannot authorize to JIRA, check credentials and try again');
+    yield call(loginError, humanReadableError);
     return false;
   }
 }
@@ -70,7 +73,10 @@ function* chronosBackendLogin(values: AuthFormData): Generator<*, boolean, *> {
     yield call(setToStorage, 'desktop_tracker_jwt', token);
     return true;
   } catch (err) {
-    yield call(loginError, err);
+    yield put(profileActions.setLoginFetching(false));
+    yield call(throwError, err);
+    const humanReadableError = new Error('Cannot connect to server, check credentials and try again');
+    yield call(loginError, humanReadableError);
     return false;
   }
 }
@@ -98,7 +104,7 @@ export function* checkJWT(): Generator<*, void, *> {
     yield put(profileActions.setLoginFetching(false));
     yield call(throwError, err);
     const humanReadableError = new Error('Failed to check JWT for some reason, please try again');
-    yield loginError(humanReadableError);
+    yield call(loginError, humanReadableError);
   }
 }
 
