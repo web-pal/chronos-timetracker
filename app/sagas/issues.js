@@ -7,6 +7,7 @@ import merge from 'lodash.merge';
 import Raven from 'raven-js';
 import {
   getSelectedProject,
+  getSelectedProjectId,
   getSelectedSprintId,
   getFieldIdByName,
   getUserData,
@@ -16,6 +17,7 @@ import {
   getIssueFilters,
   getSelectedIssueId,
   getIssueViewTab,
+  getSelectedProjectType,
 } from 'selectors';
 import { issuesActions, types } from 'actions';
 import normalizePayload from 'normalize-util';
@@ -46,18 +48,20 @@ export function* fetchIssues({
       yield put(issuesActions.clearFoundIssueIds());
     }
     const epicLinkFieldId: string | null = yield select(getFieldIdByName, 'Epic Link');
-    const selectedProject: Project = yield select(getSelectedProject);
+    const selectedProject: Project | null = yield select(getSelectedProject);
+    const selectedProjectId: string | null = yield select(getSelectedProjectId);
+    const selectedProjectType: string | null = yield select(getSelectedProjectType);
     const selectedSprintId: Id = yield select(getSelectedSprintId);
     const searchValue: string = yield select(getIssuesSearchValue);
     const filters: IssueFilters = yield select(getIssueFilters);
     const opts = {
       startIndex,
       stopIndex,
-      projectId: selectedProject.id,
-      projectType: selectedProject.type || 'project',
+      projectId: selectedProjectId,
+      projectType: selectedProjectType || 'project',
       sprintId: selectedSprintId,
       searchValue,
-      projectKey: selectedProject.key,
+      projectKey: selectedProject && selectedProject.key,
       filters,
       epicLinkFieldId,
     };
@@ -122,12 +126,13 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
       'started fetchRecentIssues',
     );
     yield put(issuesActions.setRecentIssuesFetching(true));
-    const selectedProject: Project = yield select(getSelectedProject);
+    const selectedProjectId: string | null = yield select(getSelectedProjectId);
+    const selectedProjectType: string | null = yield select(getSelectedProjectType);
     const selectedSprintId: Id = yield select(getSelectedSprintId);
     const self: User = yield select(getUserData);
     const opts = {
-      projectId: selectedProject.id,
-      projectType: selectedProject.type || 'project',
+      projectId: selectedProjectId,
+      projectType: selectedProjectType || 'project',
       sprintId: selectedSprintId,
       worklogAuthor: self.key,
     };
@@ -370,8 +375,7 @@ export function* fetchIssueFields(): Generator<*, void, *> {
 export function* fetchEpics(): Generator<*, void, *> {
   try {
     yield call(infoLog, 'fetching epics');
-    const selectedProject = yield select(getSelectedProject);
-    const { issues } = yield call(Api.fetchEpics, { projectId: selectedProject.id });
+    const { issues } = yield call(Api.fetchEpics);
     yield call(infoLog, 'got epics', issues);
     const normalizedEpics = yield call(normalizePayload, issues, 'epics');
     yield put(issuesActions.fillEpics(normalizedEpics));

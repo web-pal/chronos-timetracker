@@ -5,10 +5,11 @@ import { getHost } from 'selectors';
 
 type StorageKeys =
   'lastProjectSelected'
+  | 'lastProjectSelectedType'
   | 'localDesktopSettings'
   | 'desktop_tracker_jwt';
 
-const prefixedKeys: Array<StorageKeys> = ['lastProjectSelected'];
+const prefixedKeys: Array<StorageKeys> = ['lastProjectSelected', 'lastProjectSelectedType'];
 
 export const storageGetPromise = (key: string): Promise<mixed> => new Promise((resolve) => {
   storage.get(key, (err, data) => {

@@ -53,6 +53,10 @@ export const getProjectsFetching =
 export const getSprintsFetching =
   ({ projects } : { projects: ProjectsState }): boolean => projects.meta.sprintsFetching;
 
+export const getSelectedBoardId =
+  ({ projects } : { projects: ProjectsState }): Id | null =>
+    (projects.meta.selectedProjectType !== 'project' ? projects.meta.selectedProjectId : null);
+
 export const getSelectedProjectId =
   ({ projects } : { projects: ProjectsState }): Id | null => projects.meta.selectedProjectId;
 
@@ -64,15 +68,25 @@ export const getSelectedSprintId =
 
 export const getSelectedProject = createSelector(
   [getSelectedProjectId, getProjectsMap],
-  (id, map) => (id ? map[id] : null),
+  (id, map) => (id ? map[id] : null) || null,
+);
+
+export const getSelectedBoard = createSelector(
+  [getSelectedBoardId, getBoardsMap],
+  (id, map) => (id ? map[id] : null) || null,
 );
 
 export const getSelectedProjectOption = createSelector(
-  [getSelectedProject],
-  (project) => (project
-    ? ({ value: project.id, content: project.name, meta: { project } })
-    : null
-  ),
+  [getSelectedProject, getSelectedBoard],
+  (project, board) => {
+    if (project) {
+      return ({ value: project.id, content: project.name, meta: { project } });
+    }
+    if (board) {
+      return ({ value: board.id, content: board.name, meta: { board } });
+    }
+    return null;
+  },
 );
 
 export const getSelectedSprint = createSelector(

@@ -11,7 +11,7 @@ import { setToStorage, getFromStorage } from './storage';
 
 import { throwError } from './ui';
 
-import type { SelectProjectAction, Id } from '../types';
+import type { SelectProjectAction, Id, ProjectType } from '../types';
 
 export function* fetchProjects(): Generator<*, *, *> {
   try {
@@ -31,8 +31,9 @@ export function* fetchProjects(): Generator<*, *, *> {
     yield put(projectsActions.fillProjects(normalizedProjects));
     yield put(projectsActions.fillBoards(normalizedBoards, scrumBoards, kanbanBoards));
     const lastProjectSelected: Id | null = yield call(getFromStorage, 'lastProjectSelected');
+    const lastProjectSelectedType: ProjectType | null = yield call(getFromStorage, 'lastProjectSelectedType');
     if (lastProjectSelected) {
-      yield put(projectsActions.selectProject(lastProjectSelected, 'project'));
+      yield put(projectsActions.selectProject(lastProjectSelected, lastProjectSelectedType || 'project'));
       yield put(issuesActions.fetchIssuesRequest());
     }
     yield put(projectsActions.setProjectsFetching(false));
@@ -67,8 +68,9 @@ export function* watchFetchSprintsRequest(): Generator<*, *, *> {
 
 export function* watchProjectSelection(): Generator<*, *, *> {
   while (true) {
-    const { payload }: SelectProjectAction = yield take(types.SELECT_PROJECT);
+    const { payload, meta }: SelectProjectAction = yield take(types.SELECT_PROJECT);
     yield call(setToStorage, 'lastProjectSelected', payload);
+    yield call(setToStorage, 'lastProjectSelectedType', meta);
     yield put(issuesActions.selectIssue(null));
     yield put(issuesActions.clearIssues());
     yield put(issuesActions.fetchIssuesRequest());
