@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="6px" height="10px" viewBox="0 0 6 10" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 46.1 (44463) - http://www.bohemiancoding.com/sketch -->
+    <title>chevron</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M4.27690139,5.71110897 C4.69299941,6.09629701 5.30700059,6.09629701 5.72309861,5.71110897 L9.61197183,2.11112202 C10.0778876,1.67981701 10.1318446,0.922259775 9.73248827,0.419070588 C9.33313193,-0.0841185984 8.63169033,-0.142392232 8.16577461,0.288912786 L5,3.22033691 L1.83422539,0.288912786 C1.36830967,-0.142392232 0.666868067,-0.0841185984 0.267511731,0.419070588 C-0.131844606,0.922259775 -0.0778875598,1.67981701 0.388028166,2.11112202 L4.27690139,5.71110897 Z" id="path-1"></path>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard" transform="translate(-97.000000, -308.000000)">
+            <g id="Icon-/-Nest-back-chevron-/-Active" transform="translate(97.000000, 308.000000)">
+                <g id="icon/chevron/-default" transform="translate(3.000000, 5.000000) rotate(90.000000) translate(-3.000000, -5.000000) translate(-2.000000, 2.000000)">
+                    <g id="icon/chevron/default">
+                        <g id="Icon-/-Chevron-/-Default" transform="translate(-0.000000, 0.000000)">
+                            <mask id="mask-2" fill="white">
+                                <use xlink:href="#path-1"></use>
+                            </mask>
+                            <use id="chevron" fill="#172B4D" fill-rule="nonzero" xlink:href="#path-1"></use>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

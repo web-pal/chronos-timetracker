@@ -1,0 +1,183 @@
+
+.RecentItems {
+  height: 100%;
+  background: white;
+  z-index: 1;
+  overflow-y: overlay;
+  overflow-x: hidden;
+  &::-webkit-scrollbar {
+    width: 2px;
+  }
+  &__block {
+    &:last-child {
+      padding-bottom: 0;
+    }
+    padding: 15px 0;
+  }
+  &__timestamp {
+    height: 24px;
+    padding: 0px 20px;
+    background: #fff;
+    text-align: right;
+    color: rgba(0, 0, 0, .7);
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(151,151,151,.35);
+    span {
+      border-radius: 17px;
+      padding: 0px 13px;
+      line-height: 24px;
+      background: #e8e8e8;
+      color:  #808080;
+      font-size: 13px;/* Приближение из-за подстановки шрифтов */
+      font-weight: 300;
+
+      color: #42526E;
+      font-weight: 500;
+      background: #F4F5F7;
+      border-radius: 15px;
+    }
+  }
+}
+
+.RecentItemsPlaceholder {
+  background: white;
+  z-index: 1;
+}
+
+.RecentItem, .SidebarItem {
+  box-sizing: border-box;
+  height: 46px;
+  border-bottom: 1px solid rgba(0, 0, 0, .1);
+  cursor: pointer;
+  overflow: hidden;
+  align-items: center;
+  &:hover {
+    background: #f2f2f2;
+    &__key {
+      background: #fff;
+    }
+    .RecentItem__time {
+      background: #fff;
+      border-top-left-radius: 6px;
+      border-bottom-left-radius: 6px;
+      border: 1px solid #a7a7a7;
+    }
+    .RecentItem__timest {
+      border: 1px solid #a7a7a7;
+      border-left-color: transparent;
+      border-right-color: transparent;
+      background: #fff;
+      width: 65px;
+    }
+  }
+  &.active {
+    background-color: rgba(111, 193, 251, 0.2);
+    &__key {
+      min-width: 60px;
+      width: 60px;
+      background: #fff;
+    }
+  }
+  &.activeGroup {
+    background-color: #fafaff;
+    &__key {
+      min-width: 60px;
+      width: 60px;
+      background: #fff;
+    }
+  }
+  &__key {
+    width: auto;
+    min-width: 59px;
+    max-width: 80px;
+    min-height: 20px;
+    white-space: nowrap;
+    font-size: .8em;
+    line-height: 2em;
+    margin: 5px;
+    margin-left: 16px;
+    border-radius: 3px;
+    background: #fff !important;
+    border: 1px solid #3572b0;
+    color: #3572b0;
+    text-align: center;
+    font-weight: bold;
+    padding: 0 3px;
+  }
+  &__summary {
+    margin-left: 3px;
+    color: black;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  &__time {
+    color: #878787;
+    font-weight: 300;
+    padding: 3px;
+    white-space: nowrap;
+    font-size: 14px;
+    border-right: none;
+    text-align: center;
+  }
+  &__timest {
+    width: 0px;
+    transition: width .2s;
+    color: transparent;
+    padding: 3px;
+    white-space: nowrap;
+    font-size: 14px;
+    color: #878787;
+    font-weight: 300;
+    border-right: none;
+    border-left: none;
+    text-align: center;
+  }
+}
+
+.RecentEmptyItem {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  color: rgba(0, 0, 0, .7);
+  font-weight: bold;
+  background: repeating-linear-gradient(
+    45deg,
+    #fff,
+    #fff 10px,
+    #f2f2f2 10px,
+    #f2f2f2 20px
+  );
+}
+
+.SidebarWrapper {
+  height: 100%;
+  max-width: 435px;
+  background: #fff;
+}
+
+.sidebar {
+  word-break: normal;
+  word-wrap: break-word;
+  position: relative;
+  list-style: none;
+  margin: 0;
+  height: 100%;
+}
+
+.sidebar-nothing-selected {
+  text-align: center;
+  color: rgba(0, 0, 0, 0.67);
+  margin-top: 25px;
+}
+
+
+
+.sidebar__item--active {
+  background-color: rgba(111, 193, 251, 0.2);
+  .SidebarItem__key {
+    width: 60px;
+    min-width: 60px;
+    background: #fff;
+  }
+  position: relative;
+}

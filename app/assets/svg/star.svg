@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 46.2 (44496) - http://www.bohemiancoding.com/sketch -->
+    <title>Icon / Starr / Default</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M10.8517132,15.6909281 C12.437675,16.5590178 13.8324413,15.5068942 13.5291217,13.6656535 L12.9845057,10.3596713 L15.2915361,8.01836169 C16.574606,6.71622707 16.0445208,5.010032 14.268857,4.7413986 L11.0806195,4.25906229 L9.66184704,1.26605439 C8.86711987,-0.410482769 7.1415616,-0.428514806 6.34533747,1.2511803 L4.91951428,4.25906229 L1.73127672,4.7413986 C-0.0418824004,5.00965308 -0.576284654,6.71438778 0.708597703,8.01836169 L3.01562808,10.3596713 L2.47101208,13.6656535 C2.16812034,15.5042971 3.56021858,16.560244 5.14842051,15.6909281 L8.00006688,14.130055 L10.8517132,15.6909281 Z" id="path-1"></path>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard" transform="translate(-39.000000, -27.000000)">
+            <g id="Icon-/-Starr-/-Default" transform="translate(39.000000, 27.000000)">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <g id="Star" fill-rule="nonzero"></g>
+                <g id="Color" mask="url(#mask-2)" fill="#42526E">
+                    <rect id="color-swatch" x="0" y="0" width="16" height="16"></rect>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

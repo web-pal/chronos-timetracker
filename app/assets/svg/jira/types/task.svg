@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14px" height="14px" viewBox="0 0 14 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 46.2 (44496) - http://www.bohemiancoding.com/sketch -->
+    <title>JIRA Task Type</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Issues-Picker-View-(Filters-Opened)" transform="translate(-40.000000, -437.000000)">
+            <g id="Filters-Container" transform="translate(0.000000, 115.000000)">
+                <g id="Filter-Types" transform="translate(15.000000, 231.000000)">
+                    <g id="Subitems" transform="translate(6.000000, 22.000000)">
+                        <g id="Left">
+                            <g id="Item-Task" transform="translate(0.000000, 66.000000)">
+                                <g id="JIRA-Task-Type" transform="translate(19.000000, 3.000000)">
+                                    <rect id="Rectangle-36" fill="#4BADE8" fill-rule="nonzero" x="0" y="0" width="14" height="14" rx="2"></rect>
+                                    <g id="Page-1" stroke-linecap="round" transform="translate(4.000000, 4.500000)" stroke="#FFFFFF" stroke-width="2">
+                                        <path d="M2,5 L6,0" id="Stroke-1"></path>
+                                        <path d="M2,5 L0,3" id="Stroke-3"></path>
+                                    </g>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

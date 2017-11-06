@@ -1,0 +1,104 @@
+body {
+  font-family: Open Sans;
+  margin: 0px;
+  padding: 0px;
+  background-color: white;
+}
+
+.WindowsControlButtons {
+  -webkit-app-region: no-drag;
+  position: absolute;
+  z-index: 999;
+  top: 0;
+  right: 0;
+  .fa {
+    color: @primary;
+    cursor: pointer;
+    &:hover {
+      color: darken(@primary, 10%);
+    }
+  }
+}
+
+.ReactVirtualized__Grid {
+  outline: none !important;
+  &::-webkit-scrollbar {
+    width: 2px;
+  }
+}
+
+html, body, #root, .wrapper {
+  height: 100%;
+  overflow: hidden;
+}
+
+.occupy-height {
+  height: 100%
+}
+
+.draggable {
+  -webkit-app-region: drag;
+}
+
+.issues-spinner {
+  position: absolute;
+  left: 50%;
+  top: 15%;
+  z-index: 9999;
+  width: 32px;
+  transform: translateX(-50%);
+}
+
+.checkingForUpdates {
+  -webkit-app-region: no-drag;
+  position: absolute;
+  bottom: 0;
+  padding: 5px;
+  color: rgba(0, 0, 0, .7);
+}
+
+.connect-fetching {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, .5);
+  img {
+    position: absolute;
+    z-index: 999;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+::-webkit-scrollbar {
+    width: 2px;
+}
+ 
+::-webkit-scrollbar-track {
+    background-color: transparent;
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-track-piece {
+    background: transparent url('../images/transparent.png') repeat-y !important;
+}
+
+::-webkit-scrollbar-track-piece:start {
+    background: transparent url('../images/transparent.png') repeat-y !important;
+}
+
+::-webkit-scrollbar-track-piece:end {
+    background: transparent url('../images/transparent.png') repeat-y !important;
+}
+ 
+::-webkit-scrollbar-thumb {
+    background-color: #6386e2;
+    border: 3px solid transparent;
+    border-radius: 9px;
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:vertical {
+  height: 81px;
+}

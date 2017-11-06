@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="17px" viewBox="0 0 18 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 46.2 (44496) - http://www.bohemiancoding.com/sketch -->
+    <title>ic-search-48px</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Issues-Picker-View-(Without-Project-Select)" transform="translate(-13.000000, -113.000000)">
+            <g id="Search-Bar" transform="translate(0.000000, 105.000000)">
+                <g id="Search-Bar-Content">
+                    <g id="ic-search-48px" transform="translate(10.000000, 5.000000)">
+                        <path d="M15.8084868,13.6918239 L15.0021627,13.6918239 L14.7232456,13.4245283 C15.7172049,12.3213265 16.3156089,10.8876501 16.3156089,9.31789594 C16.3156089,5.82847341 13.3641584,3 9.72302185,3 C6.0818853,3 3.13043478,5.82847341 3.13043478,9.31789594 C3.13043478,12.8073185 6.0818853,15.6357919 9.72302185,15.6357919 C11.3610262,15.6357919 12.8570363,15.0623213 14.0082034,14.1146369 L14.2871206,14.3819325 L14.2871206,15.1497999 L19.3583414,20 L20.8695652,18.5517439 L15.8084868,13.6918239 Z M9.72302185,13.6918239 C7.2026251,13.6918239 5.15892311,11.7332762 5.15892311,9.31789594 C5.15892311,6.90251572 7.2026251,4.94396798 9.72302185,4.94396798 C12.2434186,4.94396798 14.2871206,6.90251572 14.2871206,9.31789594 C14.2871206,11.7332762 12.2434186,13.6918239 9.72302185,13.6918239 Z" id="Shape" fill-opacity="0.628226902" fill="#000000" fill-rule="nonzero"></path>
+                        <polygon id="Shape" points="0 0 24 0 24 24 0 24"></polygon>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
