@@ -187,6 +187,7 @@ export type {
 
 export type {
   Project,
+  ProjectType,
   Board,
   Sprint,
   ProjectsMap,

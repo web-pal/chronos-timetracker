@@ -74,6 +74,7 @@ export function fetchIssues({
   const api = projectType === 'project'
     ? opts => jira.client.search.search(opts)
     : opts => jira.client.board.getIssuesForBoard({ ...opts, boardId: projectId });
+  console.log(jql, projectType);
   let _requiredFields = requiredFields;
   if (epicLinkFieldId) {
     _requiredFields = [...requiredFields, epicLinkFieldId];

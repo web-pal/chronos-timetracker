@@ -110,7 +110,6 @@ export const WorklogContainer = styled.div`
   &:hover {
     background-color: #f4f5f7 !important;
   };
-  padding: 10px;
   flex: 1 0 0%;
 `;
 

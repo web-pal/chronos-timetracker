@@ -1,4 +1,5 @@
 export Flex from './Flex/Flex';
+export AutoSizeableList from './Virtualized/AutosizableList';
 export InfiniteLoadingList from './Virtualized/InfiniteLoadingList';
 export IssueItemPlaceholder from './Placeholders/IssueItemPlaceholder/IssueItemPlaceholder';
 export IssueViewPlaceholder from './Placeholders/IssueViewPlaceholder/IssueViewPlaceholder';

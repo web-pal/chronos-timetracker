@@ -18,6 +18,7 @@ import {
 } from './styled';
 
 type Props = {
+  style: any,
   worklog: Worklog,
   issueKey: string,
   deleteWorklogRequest: DeleteWorklogRequest,
@@ -25,18 +26,19 @@ type Props = {
 };
 
 const WorklogItem: StatelessFunctionalComponent<Props> = ({
+  style,
   worklog,
   issueKey,
   deleteWorklogRequest,
   editWorklogRequest,
 }: Props): Node => (
-  <WorklogContainer id={`worklog-${worklog.id}`}>
-    <Flex row alignCenter>
+  <WorklogContainer id={`worklog-${worklog.id}`} style={style}>
+    <Flex row alignCenter style={{ padding: 10 }}>
       <UserAvatar src={worklog.author.avatarUrls['32x32']} />
       {worklog.author.displayName} logged
       work – {moment(worklog.started).format('DD/MMM/YY h:mm A')}
       <WorklogActions>
-        <Tooltip description="Open worklog in JIRA">
+        <Tooltip description="Open worklog in JIRA" position="left">
           <LinkIcon
             onClick={openWorklogInBrowser(worklog, issueKey)}
             label="Open in browser"
@@ -44,7 +46,7 @@ const WorklogItem: StatelessFunctionalComponent<Props> = ({
             primaryColor="#707070"
           />
         </Tooltip>
-        <Tooltip description="Edit worklog">
+        <Tooltip description="Edit worklog" position="left">
           <EditFilledIcon
             onClick={() => editWorklogRequest(worklog)}
             label="Edit"

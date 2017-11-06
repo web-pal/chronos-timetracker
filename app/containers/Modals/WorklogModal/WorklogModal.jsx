@@ -15,7 +15,6 @@ import { bindActionCreators } from 'redux';
 import { Flex, Calendar, TextField } from 'components';
 import { uiActions, worklogsActions } from 'actions';
 import { getWorklogModalOpen, getEditWorklogFetching } from 'selectors';
-import { jts, stj } from 'time-util';
 
 import {
   InputLabel,
