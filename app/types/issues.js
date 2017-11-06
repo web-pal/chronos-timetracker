@@ -21,6 +21,9 @@ export type Version = {
   released: boolean,
 }
 
+// TODO type for issueField
+export type IssueField = any;
+
 export type IssueLabel = string
 
 export type IssueType = {
@@ -125,6 +128,7 @@ export type IssuesMeta = {|
   +trackingIssue: Issue | null,
   +searchValue: string,
   +filters: IssueFilters,
+  +fields: Array<IssueField>,
   +availableTransitions: Array<IssueTransition>,
   +availableTransitionsFetching: boolean,
 |}
@@ -138,6 +142,8 @@ export type IssuesState = {|
   +issueStatusesById: IssueStatusesMap,
   +recentIds: Array<Id>,
   +foundIds: Array<Id>,
+  +epicsIds: Array<Id>,
+  +epicsById: IssuesMap,
   +meta: IssuesMeta,
 |}
 
@@ -338,6 +344,22 @@ export type SetIssueAssigneeAction =
 
 export type SetIssueAssignee = {
   (assignee: User, issue: Issue): SetIssueAssigneeAction
+};
+
+//
+export type FillIssueFieldsAction =
+  {| type: types.FILL_ISSUE_FIELDS, +payload: Array<IssueField> |};
+
+export type FillIssueFields = {
+  (payload: Array<IssueField>): FillIssueFieldsAction
+};
+
+//
+export type FillEpicsAction =
+  {| type: types.FILL_EPICS, +payload: { ids: Array<Id>, map: IssuesMap } |};
+
+export type FillEpics = {
+  (payload: { ids: Array<Id>, map: IssuesMap }): FillEpicsAction
 };
 
 export type IssuesAction =

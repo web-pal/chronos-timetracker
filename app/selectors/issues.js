@@ -23,6 +23,12 @@ export const getIssuesIds =
 export const getIssuesMap =
   ({ issues }: { issues: IssuesState }): IssuesMap => issues.byId;
 
+export const getEpicsIds =
+  ({ issues }: { issues: IssuesState }): Array<Id> => issues.epicsIds;
+
+export const getEpicsMap =
+  ({ issues }: { issues: IssuesState }): IssuesMap => issues.epicsById;
+
 export const getAllIssues = createSelector(
   [getIssuesIds, getIssuesMap],
   (ids, map) => ids.map(id => map[id]),
@@ -143,3 +149,39 @@ export const getAvailableTransitions =
 
 export const getAvailableTransitionsFetching =
   ({ issues }: { issues: IssuesState }): boolean => issues.meta.availableTransitionsFetching;
+
+
+export const getFieldIdByName =
+  ({ issues }: { issues: IssuesState }, fieldName: string): string | null => {
+    const fields = issues.meta.fields;
+    if (fields) {
+      const found = fields.find(f => f.name === fieldName);
+      if (found) {
+        return found.id;
+      }
+      return null;
+    }
+    return null;
+  };
+
+export const getIssueEpic = createSelector(
+  [
+    getSelectedIssue,
+    getEpicsMap,
+    (state) => getFieldIdByName(state, 'Epic Link'),
+    (state) => getFieldIdByName(state, 'Epic Name'),
+    (state) => getFieldIdByName(state, 'Epic Color'),
+  ],
+  (issue, map, epicLinkFieldId, epicNameFieldId, epicColorFieldId) => {
+    if (Object.keys(map).length && issue) {
+      const epic = map[issue.fields[epicLinkFieldId]];
+      if (epic) {
+        epic.fields.epicColor = epic.fields[epicColorFieldId];
+        epic.fields.epicName = epic.fields[epicNameFieldId];
+        return epic;
+      }
+      return null;
+    }
+    return null;
+  },
+);

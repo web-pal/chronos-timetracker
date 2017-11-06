@@ -5,6 +5,7 @@ const Schemas = {
   sprints: new schema.Array(new schema.Entity('sprints', {})),
   boards: new schema.Array(new schema.Entity('boards', {})),
   issues: new schema.Array(new schema.Entity('issues', {})),
+  epics: new schema.Array(new schema.Entity('epics', {}, { idAttribute: 'key' })),
   issueTypes: new schema.Array(new schema.Entity('issueTypes', {})),
   issueStatuses: new schema.Array(new schema.Entity('issueStatuses', {})),
 };

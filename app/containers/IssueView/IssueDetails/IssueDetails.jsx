@@ -3,9 +3,9 @@ import React from 'react';
 import type { StatelessFunctionalComponent, Node } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getSelectedIssue } from 'selectors';
+import { getSelectedIssue, getIssueEpic } from 'selectors';
 import { Flex } from 'components';
-import { getStatusColor } from 'jiraColors-util';
+import { getStatusColor, getEpicColor } from 'jiraColors-util';
 import ReactMarkdown from 'react-markdown';
 
 // import IssueAttachments from './IssueAttachments';
@@ -24,10 +24,12 @@ import {
 
 type Props = {
   issue: Issue,
+  epic: Issue,
 }
 
 const IssueDetails: StatelessFunctionalComponent<Props> = ({
   issue,
+  epic,
 }: Props): Node => {
   const versions = issue.fields.versions;
   const fixVersions = issue.fields.fixVersions;
@@ -135,6 +137,23 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
             </DetailsValue>
           </Flex>
 
+          <Flex row spaceBetween>
+            <DetailsLabel>
+              Epic link:
+            </DetailsLabel>
+            <DetailsValue>
+              {console.log(epic)}
+              {epic
+                ? <IssueLabel
+                  backgroundColor={getEpicColor(epic.fields.epicColor)}
+                >
+                  {epic.fields.epicName}
+                </IssueLabel>
+                : 'none'
+              }
+            </DetailsValue>
+          </Flex>
+
         </DetailsColumn>
       </Flex>
 
@@ -154,6 +173,7 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
 function mapStateToProps(state) {
   return {
     issue: getSelectedIssue(state),
+    epic: getIssueEpic(state),
   };
 }
 

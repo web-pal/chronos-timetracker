@@ -33,10 +33,6 @@ function mapSearchValue(searchValue, projectKey) {
   return `summary ~ "${searchValue}"`;
 }
 
-export function fetchFields() {
-
-}
-
 export function getIssueTransitions(issueId) {
   return jira.client.issue.getTransitions({ issueId });
 }
@@ -48,6 +44,11 @@ export function transitionIssue(issueId, transitionId) {
   });
 }
 
+export function fetchEpics() {
+  const jql = "issuetype = 'Epic'";
+  return jira.client.search.search({ jql, maxResults: 1000, startAt: 0 });
+}
+
 export function fetchIssues({
   startIndex,
   stopIndex,
@@ -57,6 +58,7 @@ export function fetchIssues({
   searchValue,
   projectKey,
   filters,
+  epicLinkFieldId,
 }) {
   const typeFilters = filters.type;
   const statusFilters = filters.status;
@@ -72,11 +74,16 @@ export function fetchIssues({
   const api = projectType === 'project'
     ? opts => jira.client.search.search(opts)
     : opts => jira.client.board.getIssuesForBoard({ ...opts, boardId: projectId });
+  console.log(jql, projectType);
+  let _requiredFields = requiredFields;
+  if (epicLinkFieldId) {
+    _requiredFields = [...requiredFields, epicLinkFieldId];
+  }
   return api({
     jql,
     maxResults: (stopIndex - startIndex) + 1,
     startAt: startIndex,
-    fields: requiredFields,
+    fields: _requiredFields,
   });
 }
 
@@ -168,4 +175,8 @@ export function fetchSearchIssues({
 
 export function assignIssue(opts) {
   return jira.client.issue.assignIssue(opts);
+}
+
+export function fetchIssueFields() {
+  return jira.client.field.getAllFields();
 }

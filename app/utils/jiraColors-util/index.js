@@ -1,1 +1,1 @@
-export getStatusColor from './lib/jiraColors';
+export * from './lib/jiraColors';

@@ -68,7 +68,7 @@ export type AuthFormData = {|
 
 //
 export type LoginRequestAction =
-  {| type: typeof types.LOGIN_REQUEST, payload: AuthFormData |} & Action;
+  {| type: typeof types.LOGIN_REQUEST, payload: AuthFormData |};
 
 export type LoginRequest = {
   (payload: AuthFormData): LoginRequestAction

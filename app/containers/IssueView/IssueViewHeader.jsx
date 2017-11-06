@@ -130,29 +130,31 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
           Log work
         </Button>
         <div style={{ width: 10 }} />
-        {availableTransitionsFetching
-          ? <Button isDisabled iconAfter={<Spinner />} >
-            Workflow
-          </Button>
-          : <DropdownMenu
-            trigger="Workflow"
-            triggerType="button"
-            shouldFlip={false}
-            position="bottom left"
-            shouldFitContainer
-          >
-            <DropdownItemGroup>
-              {availableTransitions.map(t =>
-                <DropdownItem
-                  key={t.id}
-                  onClick={() => transitionIssueRequest(t, selectedIssue)}
-                >
-                  {t.name}
-                </DropdownItem>)
-              }
-            </DropdownItemGroup>
-          </DropdownMenu>
-        }
+        <DropdownMenu
+          trigger="Workflow"
+          triggerType="button"
+          shouldFlip={false}
+          position="bottom left"
+          shouldFitContainer
+        >
+          <DropdownItemGroup>
+            {availableTransitionsFetching &&
+              <DropdownItem>
+                <Flex row centered>
+                  <Spinner />
+                </Flex>
+              </DropdownItem>
+            }
+            {!availableTransitionsFetching && availableTransitions.map(t =>
+              <DropdownItem
+                key={t.id}
+                onClick={() => transitionIssueRequest(t, selectedIssue)}
+              >
+                {t.name}
+              </DropdownItem>)
+            }
+          </DropdownItemGroup>
+        </DropdownMenu>
         <div style={{ width: 10 }} />
         {(selectedIssue.fields.assignee === null ||
           selectedIssue.fields.assignee.key !== selfKey) &&

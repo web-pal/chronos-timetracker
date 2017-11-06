@@ -117,6 +117,7 @@ function* screenshotsCheck() {
     const time = yield select(getTimerTime);
     const idleState = yield select(getTimerIdleState);
     let periods = yield select(getScreenshotPeriods);
+    console.log('SCREENSHOTS CHECK', periods);
     if (time === periods[0]) {
       if (!idleState) {
         yield fork(takeScreenshot);
@@ -179,7 +180,7 @@ function* timerStep(screenshotsAllowed, secondsToMinutesGrid) {
 
 
 export function* runTimer(channel) {
-  const { screenshotsPeriod } = yield select(getScreenshotsSettings);
+  const { screenshotsPeriod, screenshotsQuantity } = yield select(getScreenshotsSettings);
   const screenshotsAllowed = yield call(isScreenshotsAllowed);
   const currentSeconds = moment().format('ss');
   const secondsToMinutesGrid = 60 - currentSeconds;
@@ -191,7 +192,9 @@ export function* runTimer(channel) {
   const periodNumber = Math.floor(minutes / minutePeriod) + 1;
   const periodRange = (periodNumber * minutePeriod) - minutes;
   nextPeriod = (periodRange * 60) - currentSeconds;
-  yield takeEvery(channel, timerStep, screenshotsAllowed, nextPeriod, secondsToMinutesGrid);
+  const initialPeriods = randomPeriods(screenshotsQuantity, 1, nextPeriod);
+  yield put(timerActions.setScreenshotPeriods(initialPeriods));
+  yield takeEvery(channel, timerStep, screenshotsAllowed, secondsToMinutesGrid);
 }
 
 function* stopTimer(channel, timerInstance) {
@@ -235,7 +238,6 @@ function* stopTimer(channel, timerInstance) {
 export function* timerFlow(): Generator<*, *, *> {
   try {
     const selectedIssue = yield select(getSelectedIssue);
-    console.log('timerFlow selectedIssue', selectedIssue);
     yield put(issuesActions.setTrackingIssue(selectedIssue));
     ipcRenderer.send('start-timer');
     const channel = yield call(timerChannel);
@@ -311,7 +313,12 @@ let dismissIdleTimeChannel;
 
 export function* watchAcceptScreenshot() {
   while (true) {
-    yield take(acceptScreenshotChannel);
+    const ev = yield take(acceptScreenshotChannel);
+    yield call(
+      infoLog,
+      'screenshot accepted',
+      ev,
+    );
     const running = yield select(getTimerRunning);
     if (running) {
       const { getGlobal } = remote;
@@ -333,7 +340,12 @@ export function* watchAcceptScreenshot() {
 
 export function* watchRejectScreenshot() {
   while (true) {
-    yield take(rejectScreenshotChannel);
+    const ev = yield take(rejectScreenshotChannel);
+    yield call(
+      infoLog,
+      'screenshot rejected',
+      ev,
+    );
     const running = yield select(getTimerRunning);
     if (running) {
       const { getGlobal } = remote;

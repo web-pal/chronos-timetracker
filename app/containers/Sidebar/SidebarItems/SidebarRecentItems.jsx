@@ -4,17 +4,18 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import type { StatelessFunctionalComponent, Node } from 'react';
 import { Flex, RecentItemsPlaceholder } from 'components';
-import { issuesActions } from 'actions';
+import { issuesActions, worklogsActions } from 'actions';
 import {
   getRecentIssuesFetching,
   getSidebarType,
   getRecentItems,
+  getSelectedWorklogId,
 } from 'selectors';
 
 import TimestampItem from './SidebarTimestampItem';
 import SidebarItem from './SidebarItem';
 
-import type { IssuesMap, SelectIssue } from '../../../types';
+import type { IssuesMap, SelectIssue, SelectWorklog, Id } from '../../../types';
 
 moment.locale('en', {
   calendar: {
@@ -27,9 +28,11 @@ moment.locale('en', {
 
 type Props = {
   items: IssuesMap,
+  selectedWorklogId: Id | null,
   fetching: boolean,
   sidebarType: string,
   selectIssue: SelectIssue,
+  selectWorklog: SelectWorklog,
 }
 
 const daySorter = (a, b) => {
@@ -46,9 +49,11 @@ const worklogSorter = (a, b) => {
 
 const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
   items,
+  selectedWorklogId,
   fetching,
   sidebarType,
   selectIssue,
+  selectWorklog,
 }: Props): Node => (fetching ?
   <RecentItemsPlaceholder /> :
   <div className="RecentItems" style={{ display: sidebarType === 'recent' ? 'block' : 'none' }}>
@@ -66,8 +71,11 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
               <SidebarItem
                 key={`${key}_${worklog.id}_${i}`}
                 issue={worklog.issue}
-                active={false}
-                selectIssue={(issue) => selectIssue(issue, worklog)}
+                active={selectedWorklogId === worklog.id}
+                selectIssue={(issue) => {
+                  selectIssue(issue, worklog);
+                  selectWorklog(worklog.id);
+                }}
                 worklog={worklog}
               />,
             )}
@@ -80,13 +88,14 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
 function mapStateToProps(state) {
   return {
     items: getRecentItems(state),
+    selectedWorklogId: getSelectedWorklogId(state),
     fetching: getRecentIssuesFetching(state),
     sidebarType: getSidebarType(state),
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(issuesActions, dispatch);
+  return bindActionCreators({ ...issuesActions, ...worklogsActions }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SidebarRecentItems);

@@ -187,6 +187,7 @@ export type {
 
 export type {
   Project,
+  ProjectType,
   Board,
   Sprint,
   ProjectsMap,
@@ -215,6 +216,7 @@ export type {
   Screenshot,
   Issue,
   IssueType,
+  IssueField,
   IssueStatus,
   IssuesMap,
   IssueTypesMap,
@@ -271,6 +273,10 @@ export type {
   AssignIssueRequest,
   SetIssueAssigneeAction,
   SetIssueAssignee,
+  FillIssueFieldsAction,
+  FillIssueFields,
+  FillEpicsAction,
+  FillEpics,
   IssuesAction,
 } from './issues';
 

@@ -130,6 +130,7 @@ export const IssueViewTabContainer = styled.div`
   flex-direction: column;
   padding: 20px 20px 0px 20px;
   overflow-y: auto;
+  flex-grow: 1;
 `;
 
 export const IssueViewHeaderContainer = styled.div`

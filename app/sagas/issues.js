@@ -7,15 +7,19 @@ import merge from 'lodash.merge';
 import Raven from 'raven-js';
 import {
   getSelectedProject,
+  getSelectedProjectId,
   getSelectedSprintId,
+  getFieldIdByName,
   getUserData,
   getRecentIssueIds,
   getIssuesSearchValue,
   getFoundIssueIds,
   getIssueFilters,
   getSelectedIssueId,
+  getIssueViewTab,
+  getSelectedProjectType,
 } from 'selectors';
-import { issuesActions, uiActions, types } from 'actions';
+import { issuesActions, types } from 'actions';
 import normalizePayload from 'normalize-util';
 
 import { throwError, infoLog, notify } from './ui';
@@ -43,19 +47,23 @@ export function* fetchIssues({
       yield put(issuesActions.setIssuesTotalCount(0));
       yield put(issuesActions.clearFoundIssueIds());
     }
-    const selectedProject: Project = yield select(getSelectedProject);
+    const epicLinkFieldId: string | null = yield select(getFieldIdByName, 'Epic Link');
+    const selectedProject: Project | null = yield select(getSelectedProject);
+    const selectedProjectId: string | null = yield select(getSelectedProjectId);
+    const selectedProjectType: string | null = yield select(getSelectedProjectType);
     const selectedSprintId: Id = yield select(getSelectedSprintId);
     const searchValue: string = yield select(getIssuesSearchValue);
     const filters: IssueFilters = yield select(getIssueFilters);
     const opts = {
       startIndex,
       stopIndex,
-      projectId: selectedProject.id,
-      projectType: selectedProject.type || 'project',
+      projectId: selectedProjectId,
+      projectType: selectedProjectType || 'project',
       sprintId: selectedSprintId,
       searchValue,
-      projectKey: selectedProject.key,
+      projectKey: selectedProject && selectedProject.key,
       filters,
+      epicLinkFieldId,
     };
     const response = yield call(Api.fetchIssues, opts);
     yield call(
@@ -118,12 +126,13 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
       'started fetchRecentIssues',
     );
     yield put(issuesActions.setRecentIssuesFetching(true));
-    const selectedProject: Project = yield select(getSelectedProject);
+    const selectedProjectId: string | null = yield select(getSelectedProjectId);
+    const selectedProjectType: string | null = yield select(getSelectedProjectType);
     const selectedSprintId: Id = yield select(getSelectedSprintId);
     const self: User = yield select(getUserData);
     const opts = {
-      projectId: selectedProject.id,
-      projectType: selectedProject.type || 'project',
+      projectId: selectedProjectId,
+      projectType: selectedProjectType || 'project',
       sprintId: selectedSprintId,
       worklogAuthor: self.key,
     };
@@ -254,8 +263,7 @@ export function* watchFiltersChange(): Generator<*, *, *> {
 }
 
 export function* issueSelectFlow({ payload, meta }: SelectIssueAction): Generator<*, *, *> {
-  // TBD turning off this temporary
-  // yield put(uiActions.setIssueViewTab('Details'));
+  const issueViewTab = yield select(getIssueViewTab);
   if (payload) {
     yield fork(getIssueTransitions, payload.id);
     if (payload) {
@@ -263,8 +271,7 @@ export function* issueSelectFlow({ payload, meta }: SelectIssueAction): Generato
       ipcRenderer.send('select-issue', issueKey);
     }
   }
-  if (meta) {
-    yield put(uiActions.setIssueViewTab('Worklogs'));
+  if (meta && issueViewTab === 'Worklogs') {
     yield call(delay, 500);
     const worklogEl = document.querySelector(`#worklog-${meta.id}`);
     if (worklogEl) {
@@ -348,6 +355,31 @@ export function* assignIssueFlow(): Generator<*, void, *> {
       '',
       'Cannot assign issue. Probably no permission',
     );
+    yield call(throwError, err);
+    Raven.captureException(err);
+  }
+}
+
+export function* fetchIssueFields(): Generator<*, void, *> {
+  try {
+    yield call(infoLog, 'fetching issue fields');
+    const issueFields = yield call(Api.fetchIssueFields);
+    yield call(infoLog, 'got issue fields', issueFields);
+    yield put(issuesActions.fillIssueFields(issueFields));
+  } catch (err) {
+    yield call(throwError, err);
+    Raven.captureException(err);
+  }
+}
+
+export function* fetchEpics(): Generator<*, void, *> {
+  try {
+    yield call(infoLog, 'fetching epics');
+    const { issues } = yield call(Api.fetchEpics);
+    yield call(infoLog, 'got epics', issues);
+    const normalizedEpics = yield call(normalizePayload, issues, 'epics');
+    yield put(issuesActions.fillEpics(normalizedEpics));
+  } catch (err) {
     yield call(throwError, err);
     Raven.captureException(err);
   }
