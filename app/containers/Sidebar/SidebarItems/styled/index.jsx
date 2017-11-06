@@ -177,4 +177,6 @@ export const TimeLogged = styled.span`
   color: rgba(0, 0, 0, .7);
   margin-left: 8px;
   font-size: 13px;
+  display: block;
+  transform: translateY(-2px);
 `;

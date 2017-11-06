@@ -34,15 +34,15 @@
     babel-runtime "^6.11.6"
     styled-components "^1.4.6"
 
-"@atlaskit/button@5.4.3":
-  version "5.4.3"
-  resolved "https://registry.yarnpkg.com/@atlaskit/button/-/button-5.4.3.tgz#2fa2457ef4679ea318dd7312e582a91d09497271"
+"@atlaskit/button@5.4.5", "@atlaskit/button@^5.4.2":
+  version "5.4.5"
+  resolved "https://registry.yarnpkg.com/@atlaskit/button/-/button-5.4.5.tgz#7e024364b4e175ccbae4a8c1a05fb352cadc9280"
   dependencies:
     "@atlaskit/theme" "^2.0.0"
     babel-runtime "^6.11.6"
     classnames "^2.2.5"
     prop-types "^15.5.10"
-    styled-components "^1.3.0"
+    styled-components "^1.4.6"
 
 "@atlaskit/button@^1.0.0":
   version "1.1.4"
@@ -63,19 +63,9 @@
     prop-types "^15.5.10"
     styled-components "^1.3.0"
 
-"@atlaskit/button@^5.4.2":
-  version "5.4.5"
-  resolved "https://registry.yarnpkg.com/@atlaskit/button/-/button-5.4.5.tgz#7e024364b4e175ccbae4a8c1a05fb352cadc9280"
-  dependencies:
-    "@atlaskit/theme" "^2.0.0"
-    babel-runtime "^6.11.6"
-    classnames "^2.2.5"
-    prop-types "^15.5.10"
-    styled-components "^1.4.6"
-
-"@atlaskit/calendar@3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@atlaskit/calendar/-/calendar-3.0.0.tgz#532aec8dffd9427c7a4bd9dc452ca0cb547a1317"
+"@atlaskit/calendar@3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@atlaskit/calendar/-/calendar-3.0.1.tgz#58c284ce6a0764a701c50b76f8fe288cd40dd8ff"
   dependencies:
     "@atlaskit/button" "^5.1.1"
     "@atlaskit/icon" "^8.1.0"
@@ -83,7 +73,7 @@
     calendar-base "^0.3.0"
     keycode "^2.1.7"
     prop-types "^15.5.10"
-    styled-components "^1.3.0"
+    styled-components "^1.4.6"
 
 "@atlaskit/checkbox@^1.0.0":
   version "1.0.0"
@@ -95,9 +85,9 @@
     prop-types "^15.5.10"
     styled-components "^1.3.0"
 
-"@atlaskit/dropdown-menu@3.10.3":
-  version "3.10.3"
-  resolved "https://registry.yarnpkg.com/@atlaskit/dropdown-menu/-/dropdown-menu-3.10.3.tgz#37200fe60b355fe63687098d2e451a551d854bb9"
+"@atlaskit/dropdown-menu@3.10.4":
+  version "3.10.4"
+  resolved "https://registry.yarnpkg.com/@atlaskit/dropdown-menu/-/dropdown-menu-3.10.4.tgz#30e2efcfd2619737726ca400513d272fc05b9c80"
   dependencies:
     uid "0.0.2"
     "@atlaskit/button" "^5.1.2"
@@ -161,29 +151,29 @@
     prop-types "^15.5.10"
     styled-components "^1.3.0"
 
-"@atlaskit/field-text-area@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@atlaskit/field-text-area/-/field-text-area-1.0.0.tgz#e7fe6c7b5f5f2aaf475861d58dd2eafdb0b51bff"
+"@atlaskit/field-text-area@1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@atlaskit/field-text-area/-/field-text-area-1.0.1.tgz#12ab756cc25fa14795cec92ef232924c52406228"
   dependencies:
     "@atlaskit/field-base" "^8.0.0"
     "@atlaskit/theme" "^2.0.1"
     babel-runtime "^6.11.6"
     prop-types "^15.5.10"
-    styled-components "^1.3.0"
+    styled-components "^1.4.6"
 
-"@atlaskit/field-text@4.1.0":
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/@atlaskit/field-text/-/field-text-4.1.0.tgz#f3ad7d77f79fc442b7ad7e358278556b0920cea0"
+"@atlaskit/field-text@4.1.1":
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/@atlaskit/field-text/-/field-text-4.1.1.tgz#d2eb3ed9dcfdaeaf28b55e1ef8a6787933b7ed2f"
   dependencies:
     "@atlaskit/field-base" "^8.1.1"
     "@atlaskit/theme" "^2.2.0"
     babel-runtime "^6.11.6"
     prop-types "^15.5.10"
-    styled-components "^1.3.0"
+    styled-components "^1.4.6"
 
-"@atlaskit/flag@6.1.2":
-  version "6.1.2"
-  resolved "https://registry.yarnpkg.com/@atlaskit/flag/-/flag-6.1.2.tgz#acc0545ba333922e0eb4f473d8b54fa7c604b906"
+"@atlaskit/flag@6.1.3":
+  version "6.1.3"
+  resolved "https://registry.yarnpkg.com/@atlaskit/flag/-/flag-6.1.3.tgz#5e69c8a71db5ff151a4dfdf6c766b5525d603da2"
   dependencies:
     "@atlaskit/button" "^5.0.0"
     "@atlaskit/icon" "^10.1.0"
@@ -192,7 +182,7 @@
     babel-runtime "^6.11.6"
     prop-types "^15.5.10"
     react-transition-group "^1.2.0"
-    styled-components "^1.4.5"
+    styled-components "^1.4.6"
 
 "@atlaskit/icon@^10.0.0":
   version "10.0.0"
@@ -378,16 +368,16 @@
     prop-types "^15.5.10"
     styled-components "^1.4.6"
 
-"@atlaskit/tooltip@6.2.0":
-  version "6.2.0"
-  resolved "https://registry.yarnpkg.com/@atlaskit/tooltip/-/tooltip-6.2.0.tgz#afd32b99fed88012e887559fb371f0ef860e625b"
+"@atlaskit/tooltip@6.2.1":
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/@atlaskit/tooltip/-/tooltip-6.2.1.tgz#d8894f75a4f3f3dbdbeaae2a18ca17e299de0d1d"
   dependencies:
     "@atlaskit/layer" "^2.5.3"
     "@atlaskit/theme" "^2.0.0"
     "@atlaskit/util-shared-styles" "^2.10.3"
     babel-runtime "^6.11.6"
     prop-types "^15.5.10"
-    styled-components "^1.3.0"
+    styled-components "^1.4.6"
 
 "@atlaskit/tooltip@^6.0.0":
   version "6.0.0"
@@ -8489,6 +8479,10 @@ react-autosize-textarea@^0.4.8:
     autosize "^3.0.15"
     line-height "^0.3.1"
     prop-types "^15.5.6"
+
+"react-click-outside@github:tj/react-click-outside":
+  version "1.1.1"
+  resolved "https://codeload.github.com/tj/react-click-outside/tar.gz/32c16f09318dff8701cacc4ea73655e1f393f2c7"
 
 react-deep-force-update@^1.0.0:
   version "1.0.1"

@@ -41,13 +41,21 @@ function* isScreenshotsAllowed() {
       screenshotsEnabled,
       screenshotsEnabledUsers,
     } = yield select(getScreenshotsSettings);
+    yield call(
+      infoLog,
+      'checking if screenshots is allowed',
+      { screenshotsEnabled, screenshotsEnabledUsers },
+    );
+
     const { key } = yield select(getUserData);
     const cond1 = screenshotsEnabled === 'everyone';
     const cond2 = screenshotsEnabled === 'forUsers' &&
       screenshotsEnabledUsers.includes(key);
     const cond3 = screenshotsEnabled === 'excludingUsers' &&
       !screenshotsEnabledUsers.includes(key);
-    return cond1 || cond2 || cond3;
+    const screenshotsAllowed = cond1 || cond2 || cond3;
+    yield put(uiActions.setScreenshotsAllowed(screenshotsAllowed));
+    return screenshotsAllowed;
   } catch (err) {
     yield call(throwError, err);
     Raven.captureException(err);

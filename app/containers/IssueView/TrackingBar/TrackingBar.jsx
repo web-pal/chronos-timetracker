@@ -3,12 +3,14 @@ import React from 'react';
 import type { StatelessFunctionalComponent, Node } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getTimerTime, getTrackingIssue } from 'selectors';
+import { getTimerTime, getTrackingIssue, getScreenshotsAllowed } from 'selectors';
 import { issuesActions, timerActions } from 'actions';
 import { Flex } from 'components';
 import { CSSTransitionGroup } from 'react-transition-group';
 import { stopWhite } from 'data/svg';
 import moment from 'moment';
+import CameraIcon from '@atlaskit/icon/glyph/camera';
+import Tooltip from '@atlaskit/tooltip';
 
 import WorklogEditDialog from './WorklogEditDialog';
 import type { Issue, SelectIssue, StopTimerRequest } from '../../../types';
@@ -23,6 +25,7 @@ import {
 type Props = {
   time: number,
   screenshotUploading: boolean,
+  screenshotsAllowed: boolean,
   trackingIssue: Issue,
   selectIssue: SelectIssue,
   stopTimerRequest: StopTimerRequest,
@@ -43,6 +46,7 @@ function getTimeString(time: number): string {
 const TrackingBar: StatelessFunctionalComponent<Props> = ({
   time,
   screenshotUploading,
+  screenshotsAllowed,
   trackingIssue,
   selectIssue,
   stopTimerRequest,
@@ -55,7 +59,19 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
     transitionLeave={false}
   >
     <Container>
-      <WorklogEditDialog />
+      <Flex row alignCenter>
+        <WorklogEditDialog />
+        {screenshotsAllowed &&
+          <div style={{ marginLeft: 10 }}>
+            <Tooltip
+              description="Screenshots are enabled"
+              position="bottom"
+            >
+              <CameraIcon size="large" primaryColor="white" label="Screenshots on" />
+            </Tooltip>
+          </div>
+        }
+      </Flex>
       <Flex row alignCenter>
         <IssueName
           onClick={() => {
@@ -96,6 +112,7 @@ function mapStateToProps(state) {
   return {
     time: getTimerTime(state),
     screenshotUploading: false,
+    screenshotsAllowed: getScreenshotsAllowed(state),
     trackingIssue: getTrackingIssue(state),
   };
 }
