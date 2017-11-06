@@ -49,6 +49,17 @@ function itemsById(state: IssuesMap = {}, action): IssuesMap {
           },
         },
       };
+    case types.SET_ISSUE_STATUS:
+      return {
+        ...state,
+        [action.meta.id]: {
+          ...state[action.meta.id],
+          fields: {
+            ...state[action.meta.id].fields,
+            status: action.payload,
+          },
+        },
+      };
     case types.CLEAR_ISSUES:
     case types.___CLEAR_ALL_REDUCERS___:
       return {};
@@ -147,6 +158,8 @@ const initialMeta: IssuesMeta = {
     status: [],
     assignee: [],
   },
+  availableTransitions: [],
+  availableTransitionsFetching: false,
 };
 
 function meta(state: IssuesMeta = initialMeta, action) {
@@ -198,6 +211,16 @@ function meta(state: IssuesMeta = initialMeta, action) {
       };
     case types.___CLEAR_ALL_REDUCERS___:
       return initialMeta;
+    case types.FILL_AVAILABLE_TRANSITIONS:
+      return {
+        ...state,
+        availableTransitions: action.payload,
+      };
+    case types.SET_AVAILABLE_TRANSITIONS_FETCHING:
+      return {
+        ...state,
+        availableTransitionsFetching: action.payload,
+      };
     default:
       return state;
   }

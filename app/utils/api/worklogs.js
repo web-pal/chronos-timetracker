@@ -19,7 +19,6 @@ export function fetchWorklogs(issues) {
     Promise.all(promises).then((results) => {
       const items = [].concat(...results.map(i => i));
       resolve(items);
-      return;
     });
   });
 }

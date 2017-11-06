@@ -43,7 +43,6 @@ function getScreen(callback) {
 
   desktopCapturer.getSources({ types: ['screen'] }, (error, sources) => {
     if (error) throw error;
-    // console.log(sources);
     for (let i = 0; i < sources.length; i += 1) {
       if (/(Entire\sscreen|Screen\s1)/.test(sources[i].name)) {
         navigator.webkitGetUserMedia({

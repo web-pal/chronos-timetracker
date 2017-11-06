@@ -14,13 +14,20 @@ import {
   getFoundIssueIds,
   getIssueFilters,
 } from 'selectors';
-import { issuesActions, types } from 'actions';
+import { issuesActions, uiActions, types } from 'actions';
 import normalizePayload from 'normalize-util';
 
-import { throwError, infoLog } from './ui';
+import { throwError, infoLog, notify } from './ui';
 import { getAdditionalWorklogsForIssues } from './worklogs';
 
-import type { FetchIssuesRequestAction, Project, Id, User, IssueFilters } from '../types';
+import type {
+  FetchIssuesRequestAction,
+  Project,
+  Id,
+  User,
+  IssueFilters,
+  SelectIssueAction,
+} from '../types';
 
 export function* fetchIssues({
   payload: { startIndex, stopIndex, search },
@@ -148,6 +155,28 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
   }
 }
 
+function* getIssueTransitions(issueId: string): Generator<*, void, *> {
+  try {
+    yield put(issuesActions.setAvailableTransitionsFetching(true));
+    yield call(
+      infoLog,
+      `getting available issue transitions for ${issueId}`,
+    );
+    const { transitions } = yield call(Api.getIssueTransitions, issueId);
+    yield call(
+      infoLog,
+      `got issue ${issueId} available transitions`,
+      transitions,
+    );
+    yield put(issuesActions.fillAvailableTransitions(transitions));
+    yield put(issuesActions.setAvailableTransitionsFetching(false));
+  } catch (err) {
+    yield put(issuesActions.setAvailableTransitionsFetching(false));
+    yield call(throwError, err);
+    Raven.captureException(err);
+  }
+}
+
 export function* fetchIssueTypes(): Generator<*, *, *> {
   try {
     const issueTypes = yield call(Api.fetchIssueTypes);
@@ -201,8 +230,41 @@ export function* watchFiltersChange(): Generator<*, *, *> {
 
 export function* watchIssueSelect(): Generator<*, *, *> {
   while (true) {
-    const { payload }: { payload: Id } = yield take(types.SELECT_ISSUE);
-    console.log(payload);
-    ipcRenderer.send('select-issue', payload);
+    const { payload }: SelectIssueAction = yield take(types.SELECT_ISSUE);
+    yield put(uiActions.setIssueViewTab('Details'));
+    if (payload) {
+      yield fork(getIssueTransitions, payload.id);
+      if (payload) {
+        const issueKey = payload.key;
+        ipcRenderer.send('select-issue', issueKey);
+      }
+    }
+  }
+}
+
+export function* transitionIssueFlow(): Generator<*, void, *> {
+  try {
+    while (true) {
+      const { payload, meta } = yield take(types.TRANSITION_ISSUE_REQUEST);
+      const issue = meta;
+      const transition = payload;
+      yield call(Api.transitionIssue, issue.id, transition.id);
+      yield put(issuesActions.setIssueStatus(transition.to, issue));
+      const newIssue = {
+        ...issue,
+        fields: {
+          ...issue.fields,
+          status: transition.to,
+        },
+      };
+      yield put(issuesActions.selectIssue(newIssue));
+      yield call(notify,
+        '',
+        `Transitioned issue ${issue.key} to ${transition.to.name}`,
+      );
+    }
+  } catch (err) {
+    yield call(throwError, err);
+    Raven.captureException(err);
   }
 }

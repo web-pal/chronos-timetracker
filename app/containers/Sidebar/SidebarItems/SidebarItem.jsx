@@ -1,6 +1,5 @@
 // @flow
 import React from 'react';
-import { ipcRenderer } from 'electron';
 import type { StatelessFunctionalComponent, Node } from 'react';
 import { Flex } from 'components';
 import { getStatusColor } from 'jiraColors-util';
@@ -18,8 +17,6 @@ import {
 } from './styled';
 
 import type { Issue, SelectIssue, Worklog } from '../../../types';
-
-// import SidebarItemLoader from '../../Spinners/SidebarItemLoader';
 
 type Props = {
   issue: Issue,
@@ -87,9 +84,8 @@ const SidebarItem: StatelessFunctionalComponent<Props> = ({
       </Tooltip>
       <IssueLabel
         backgroundColor={getStatusColor(issue.fields.status.statusCategory.colorName)}
-        label={issue.fields.status.statusCategory.name}
       >
-        {issue.fields.status.statusCategory.name.toUpperCase()}
+        {issue.fields.status.name.toUpperCase()}
       </IssueLabel>
       {worklog &&
         <Tooltip

@@ -12,8 +12,8 @@ export default function createIpcChannel(
   listener: EventEmitter | any = ipcRenderer,
 ) {
   return eventChannel(emit => {
-    const handler: Handler = (ev) => {
-      emit({ ev, channel });
+    const handler: Handler = (ev, ...payload) => {
+      emit({ ev, channel, payload });
     };
     listener.on(channel, handler);
     // eventChannel must return unsubcribe function

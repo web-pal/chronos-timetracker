@@ -26,7 +26,7 @@ function getScreen(callback) {
       screenshots.push(canvas.toDataURL('image/jpeg'));
 
       if (callback) {
-          // Save screenshot to jpg - base64
+        // Save screenshot to jpg - base64
         if (finalScreenshot) {
           callback(screenshots);
         }
@@ -64,9 +64,9 @@ function getScreen(callback) {
             minWidth: 1280,
             maxWidth: 4000,
             minHeight: 720,
-            maxHeight: 4000
-          }
-        }
+            maxHeight: 4000,
+          },
+        },
       }, (stream) => handleStream(stream, finalScreenshot), handleError);
     }
   });
@@ -74,7 +74,7 @@ function getScreen(callback) {
 
 
 export function makeScreenshot(
-  screenshotTime, userKey, host, showPreview, screenshotPreviewTime, nativeNotifications
+  screenshotTime, userKey, host, showPreview, screenshotPreviewTime, nativeNotifications,
 ) {
   return new Promise((resolve, reject) => {
     getScreen((images) => {

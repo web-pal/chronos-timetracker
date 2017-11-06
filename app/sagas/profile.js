@@ -19,6 +19,7 @@ import { getSettings } from './settings';
 import { getWorklogTypes } from './worklogTypes';
 import { fetchIssueTypes, fetchIssueStatuses } from './issues';
 import { setToStorage, removeFromStorage } from './storage';
+import { throwError } from './ui';
 
 // import Socket from '../socket';
 import jira from '../utils/jiraClient';
@@ -91,7 +92,9 @@ export function* checkJWT(): Generator<*, void, *> {
     }
   } catch (err) {
     yield put(profileActions.setLoginFetching(false));
-    yield loginError(err);
+    yield call(throwError, err);
+    const humanReadableError = new Error('Failed to check JWT for some reason, please try again');
+    yield loginError(humanReadableError);
   }
 }
 
@@ -122,7 +125,9 @@ export function* loginFlow(): Generator<*, void, *> {
       yield put(profileActions.setLoginFetching(true));
     } catch (err) {
       yield put(profileActions.setLoginFetching(false));
-      yield call(loginError, err);
+      yield call(throwError, err);
+      const humanReadableError = new Error('Basic auth failed for unknown reason.');
+      yield call(loginError, humanReadableError);
       Raven.captureException(err);
     }
   }
@@ -199,6 +204,7 @@ export function* loginOAuthFlow(): Generator<*, void, *> {
       yield put(profileActions.setLoginFetching(false));
       yield put(profileActions.setAuthorized(true));
       yield call(getSettings);
+      yield put(settingsActions.requestLocalDesktopSettings());
       yield fork(fetchIssueTypes);
       yield fork(fetchIssueStatuses);
       // yield put({ type: types.CHECK_OFFLINE_SCREENSHOTS });
@@ -206,7 +212,9 @@ export function* loginOAuthFlow(): Generator<*, void, *> {
       // Socket.login();
     } catch (err) {
       yield put(profileActions.setLoginFetching(false));
-      yield call(loginError, err);
+      yield call(throwError, err);
+      const humanReadableError = new Error('OAuth failed for unknown reason.');
+      yield call(loginError, humanReadableError);
       Raven.captureException(err);
     }
   }

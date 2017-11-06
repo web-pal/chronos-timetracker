@@ -37,6 +37,17 @@ export function fetchFields() {
 
 }
 
+export function getIssueTransitions(issueId) {
+  return jira.client.issue.getTransitions({ issueId });
+}
+
+export function transitionIssue(issueId, transitionId) {
+  return jira.client.issue.transitionIssue({
+    issueId,
+    transition: transitionId,
+  });
+}
+
 export function fetchIssues({
   startIndex,
   stopIndex,
@@ -118,8 +129,8 @@ export function fetchSearchIssues({
       ? (opts, callback) => jira.client.search.search(opts, callback)
       : (opts, callback) => jira.client.board.getIssuesForBoard(
         { ...opts, boardId: projectId },
-      callback,
-    );
+        callback,
+      );
 
     const project = projectType === 'project' ? `project = ${projectId}` : '';
     const sprint = (projectType === 'scrum') && sprintId ? `sprint = ${sprintId}` : '';

@@ -15,19 +15,6 @@ import type { UpdateInfo, InstallUpdateRequest } from '../../../types';
 
 const { autoUpdater } = remote.require('electron-updater');
 
-const updateChannels = [{
-  heading: 'Channels',
-  items: [
-    { content: 'Stable', value: 'stable' },
-    { content: 'Beta', value: 'beta' },
-  ],
-}];
-
-const updateItemsMap = {
-  stable: { content: 'Stable', value: 'stable' },
-  beta: { content: 'Beta', value: 'beta' },
-};
-
 type Props = {
   channel: string,
   updateCheckRunning: boolean,

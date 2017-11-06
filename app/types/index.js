@@ -212,6 +212,7 @@ export type {
   IssueTypesMap,
   IssueStatusesMap,
   IssueFilters,
+  IssueTransition,
   IssuesMeta,
   IssuesState,
   FetchIssuesRequestAction,
@@ -248,6 +249,14 @@ export type {
   SetIssuesFilter,
   AddWorklogToIssueAction,
   AddWorklogToIssue,
+  FillAvailableTransitionsAction,
+  FillAvailableTransitions,
+  SetAvailableTransitionsFethchingAction,
+  SetAvailableTransitionsFethching,
+  TransitionIssueRequestAction,
+  TransitionIssueRequest,
+  SetIssueStatusAction,
+  SetIssueStatus,
   IssuesAction,
 } from './issues';
 
@@ -274,6 +283,8 @@ export type {
   SetScreenshotPeriods,
   AddIdleTimeAction,
   AddIdleTime,
+  DismissIdleTimeAction,
+  DismissIdleTime,
   TimerAction,
 } from './timer';
 

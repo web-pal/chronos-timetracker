@@ -30,12 +30,15 @@ export const IssuePriority = styled.img`
 export const IssueLabel = styled.span`
   margin-left: 5px;
   height: 16px;
-  background: #4778C1;
+  background: ${props => props.backgroundColor};
   border-radius: 3px;
   font-size: 12px;
   color: #FFFFFF;
   padding: 0px 4px;
   font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 `;
 
 export const IssueEpic = styled.span`

@@ -15,10 +15,7 @@ import pjson from './package.json';
 const plugins = [
   new webpack.DefinePlugin({
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
-  }),
-  // Define global vars
-  new webpack.ProvidePlugin({
-    Immutable: 'immutable',
+    'process.env.BABEL_ENV': JSON.stringify(process.env.BABEL_ENV || 'production'),
   }),
   /**
     * Babli is an ES6+ aware minifier based on the Babel toolchain (beta)
@@ -33,6 +30,9 @@ const plugins = [
     analyzerMode: process.env.OPEN_ANALYZER === 'true' ? 'server' : 'disabled',
     openAnalyzer: process.env.OPEN_ANALYZER === 'true',
   }),
+
+  new webpack.optimize.OccurrenceOrderPlugin(),
+
 ];
 
 
@@ -61,7 +61,7 @@ export default merge.smart(baseConfig, {
   output: {
     path: path.join(__dirname, 'app/dist'),
     publicPath: '../dist/',
-    filename: '[name]-bundle.js'
+    filename: '[name]-bundle.js',
   },
 
   resolve: {

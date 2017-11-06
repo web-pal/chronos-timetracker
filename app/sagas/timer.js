@@ -24,7 +24,7 @@ import { idleTimeThreshold } from 'config';
 import { randomPeriods } from 'timer-helper';
 
 import createIpcChannel from './ipc';
-import { throwError } from './ui';
+import { throwError, infoLog } from './ui';
 import { uploadWorklog } from './worklogs';
 import {
   uploadScreenshot,
@@ -314,10 +314,14 @@ export function* watchRejectScreenshot() {
 
 export function* watchKeepIdleTime() {
   while (true) {
-    yield take(keepIdleTimeChannel);
+    const ev = yield take(keepIdleTimeChannel);
+    yield call(
+      infoLog,
+      'idle time keeped',
+      ev,
+    );
     const { getGlobal } = remote;
     const { idleDetails } = getGlobal('sharedObj');
-    console.log(idleDetails);
     yield put(timerActions.addIdleTime(idleDetails));
     yield call(cleanExcessScreenshotPeriods);
   }
@@ -325,10 +329,16 @@ export function* watchKeepIdleTime() {
 
 export function* watchDismissIdleTime() {
   while (true) {
-    yield take(dismissIdleTimeChannel);
-    // const seconds = Math.ceil(time / 1000);
+    const ev = yield take(dismissIdleTimeChannel);
+    yield call(
+      infoLog,
+      'idle time dismissed',
+      ev,
+    );
+    const time = ev.payload[0];
+    const seconds = Math.ceil(time / 1000);
     // cutIddles(Math.ceil(seconds / 60));
-    // dismissIdleTime(seconds);
+    yield put(timerActions.dismissIdleTime(seconds));
   }
 }
 

@@ -1,5 +1,5 @@
 // @flow
-import { call, take, select, put } from 'redux-saga/effects';
+import { call, take, select, put, cancel } from 'redux-saga/effects';
 import { delay } from 'redux-saga';
 import Raven from 'raven-js';
 import * as Api from 'api';
@@ -10,7 +10,7 @@ import { stj } from 'time-util';
 import mixpanel from 'mixpanel-browser';
 
 import { getFromStorage, setToStorage } from './storage';
-import { throwError, notify } from './ui';
+import { throwError, notify, infoLog } from './ui';
 import type { Id, Worklog } from '../types';
 
 export function* saveWorklogAsOffline(worklog: any): Generator<*, *, *> {
@@ -33,18 +33,32 @@ type UploadWorklogOptions = {
   keepedIdles: any,
 };
 
-export function* uploadWorklog({
-  issueId,
-  timeSpentSeconds,
-  comment,
-  screenshotsPeriod,
-  worklogType,
-  screenshots,
-  activity,
-  keepedIdles,
-}: UploadWorklogOptions): Generator<*, *, *> {
+export function* uploadWorklog(options: UploadWorklogOptions): Generator<*, *, *> {
   try {
+    yield call(
+      infoLog,
+      'started uploading worklog with options:',
+      options,
+    );
+    const {
+      issueId,
+      timeSpentSeconds,
+      comment,
+      screenshotsPeriod,
+      worklogType,
+      screenshots,
+      activity,
+      keepedIdles,
+    }: UploadWorklogOptions = options;
     const started = moment().utc().format().replace('Z', '.000+0000');
+    // if timeSpentSeconds is less than a minute JIRA wont upload it so cancel
+    if (timeSpentSeconds < 60) {
+      yield call(
+        infoLog,
+        'uploadWorklog cancelled because timeSpentSeconds < 60',
+      );
+      yield cancel();
+    }
     const jiraUploadOptions: {
       issueId: Id,
       adjustEstimate: 'auto',
@@ -79,8 +93,14 @@ export function* uploadWorklog({
     mixpanel.track('Worklog uploaded (Automatic)', { timeSpentSeconds });
     mixpanel.people.increment('Logged time(seconds)', timeSpentSeconds);
     yield call(notify, '', 'Worklog is uploaded');
+    yield call(
+      infoLog,
+      'worklog uploaded',
+      worklog,
+    );
     yield put(issuesActions.addWorklogToIssue(worklog, issueId));
   } catch (err) {
+    const { issueId, timeSpentSeconds, comment } = options;
     const started = moment().utc().format().replace('Z', '.000+0000');
     yield call(saveWorklogAsOffline, {
       issueId,
@@ -129,7 +149,7 @@ export function* addManualWorklogFlow(): Generator<*, *, *> {
       const { payload } = yield take(types.ADD_MANUAL_WORKLOG_REQUEST);
       yield put(worklogsActions.setAddWorklogFetching(true));
       const issueId = yield select(getSelectedIssueId);
-      const { comment, startTime, endTime, date } = payload;
+      const { comment, startTime, endTime } = payload;
       const started = moment(startTime).utc().format().replace('Z', '.000+0000');
       const timeSpentSeconds = endTime.diff(startTime, 's');
       const self = yield select(getUserData);

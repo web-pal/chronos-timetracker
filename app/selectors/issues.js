@@ -13,6 +13,7 @@ import type {
   IssueTypesMap,
   IssueStatusesMap,
   Issue,
+  IssueTransition,
   Id,
 } from '../types';
 
@@ -136,3 +137,9 @@ export const getFiltersApplied = createSelector(
   [getIssueFilters],
   (filters) => (!!filters.type.length || !!filters.status.length || !!filters.assignee.length),
 );
+
+export const getAvailableTransitions =
+  ({ issues }: { issues: IssuesState }): Array<IssueTransition> => issues.meta.availableTransitions;
+
+export const getAvailableTransitionsFetching =
+  ({ issues }: { issues: IssuesState }): boolean => issues.meta.availableTransitionsFetching;

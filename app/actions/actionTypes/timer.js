@@ -9,3 +9,4 @@ export const RESET_TIMER: 'timer/RESET' = 'timer/RESET';
 export const ADD_SCREENSHOT: 'timer/ADD_SCREENSHOT' = 'timer/ADD_SCREENSHOT';
 export const SET_SCREENSHOT_PERIODS: 'timer/SET_SCREENSHOT_PERIODS' = 'timer/SET_SCREENSHOT_PERIODS';
 export const ADD_IDLE_TIME: 'timer/ADD_IDLE_TIME' = 'timer/ADD_IDLE_TIME';
+export const DISMISS_IDLE_TIME: 'timer/DISMISS_IDLE_TIME' = 'timer/DISMISS_IDLE_TIME';

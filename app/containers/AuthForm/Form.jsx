@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { findDOMNode } from 'react-dom';
 import { Flex } from 'components';
 
 import calculateSize from 'calculate-size';
@@ -91,8 +90,8 @@ class MaskField extends Component {
   render() {
     /* eslint-disable react/prop-types */
     const {
-      style, underlined, mask, input, label, type,
-      placeholder, meta: { touched, error, warning },
+      style, underlined, mask, input, type,
+      placeholder,
       disabled, autoFocus, onKeyPress,
     } = this.props;
     const { width } = this.state;
@@ -140,4 +139,5 @@ class MaskField extends Component {
   }
 }
 
+// eslint-disable-next-line import/prefer-default-export
 export const renderField = (props) => <MaskField {...props} />;
