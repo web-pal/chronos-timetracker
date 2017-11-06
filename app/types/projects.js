@@ -2,7 +2,7 @@
 import { types } from 'actions';
 import type { Id } from './index';
 
-export type ProjectType = 'scrum' | 'kanban' | 'project';
+export type ProjectType = 'scrum' | 'kanban' | 'project' | 'simple';
 
 export type Project = {
   avatarUrls: {

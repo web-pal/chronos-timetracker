@@ -58,7 +58,6 @@ const SidebarItem: StatelessFunctionalComponent<Props> = ({
         />
       </Tooltip>
     </Flex>
-    {console.log(issue)}
     <IssueDescription>
       {issue.fields.summary}
     </IssueDescription>

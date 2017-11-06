@@ -104,7 +104,7 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
             <DetailsLabel>
               Status:
             </DetailsLabel>
-            <DetailsValue>
+            <DetailsValue style={{ maxWidth: 'calc(100% - 50px)' }}>
               <IssueLabel
                 backgroundColor={getStatusColor(issue.fields.status.statusCategory.colorName)}
               >

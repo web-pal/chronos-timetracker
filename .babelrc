@@ -11,7 +11,16 @@
   "plugins": ["add-module-exports"],
   "env": {
     "production": {
-      "presets": ["react-optimize"],
+      "presets": [
+        "react-optimize",
+        [
+          "minify",
+          {
+            "mangle": false,   
+            "evaluate": false,
+          }
+        ],
+      ],
       "plugins": ["babel-plugin-dev-expression", "transform-decorators-legacy"]
     },
     "development": {
