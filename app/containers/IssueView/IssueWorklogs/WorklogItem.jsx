@@ -37,20 +37,35 @@ const WorklogItem: StatelessFunctionalComponent<Props> = ({
       work – {moment(worklog.started).format('DD/MMM/YY h:mm A')}
       <WorklogActions>
         <Tooltip description="Open worklog in JIRA">
-          <LinkIcon onClick={openWorklogInBrowser(worklog, issueKey)} />
+          <LinkIcon
+            onClick={openWorklogInBrowser(worklog, issueKey)}
+            label="Open in browser"
+            size="small"
+            primaryColor="#707070"
+          />
         </Tooltip>
         <Tooltip description="Edit worklog">
-          <EditFilledIcon onClick={() => editWorklogRequest(worklog)} />
+          <EditFilledIcon
+            onClick={() => editWorklogRequest(worklog)}
+            label="Edit"
+            size="small"
+            primaryColor="#707070"
+          />
         </Tooltip>
         <Tooltip description="Delete worklog" position="left">
-          <TrashIcon onClick={() => deleteWorklogRequest(worklog)} />
+          <TrashIcon
+            onClick={() => deleteWorklogRequest(worklog)}
+            label="Delete"
+            size="small"
+            primaryColor="#707070"
+          />
         </Tooltip>
       </WorklogActions>
     </Flex>
-    <Flex row alignCenter style={{ marginLeft: 32 }}>
+    <Flex row alignCenter style={{ marginLeft: 32, marginTop: 10 }}>
       <span style={{ color: '#5e6c84' }}>Time spent:</span>&nbsp;{worklog.timeSpent}
     </Flex>
-    <Flex row alignCenter style={{ marginLeft: 32 }}>
+    <Flex row alignCenter style={{ marginLeft: 32, marginTop: 5 }}>
       <span style={{ color: '#5e6c84' }}>Comment:</span>&nbsp;{worklog.comment || '<no comment>'}
     </Flex>
   </WorklogContainer>
