@@ -1,5 +1,5 @@
 // @flow
-import React, { PropTypes } from 'react';
+import React from 'react';
 import type { StatelessFunctionalComponent, Node } from 'react';
 import moment from 'moment';
 import { stj } from 'time-util';

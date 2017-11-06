@@ -1,3 +1,9 @@
+/* eslint-disable */
+/*
+ * THIS COMPONENT IS TEMPORARY FORKED FROM
+ * https://bitbucket.org/atlassian/atlaskit
+ * BECAUSE IT'S BROKEN
+ */
 import React, { Component } from 'react';
 import Flag from '@atlaskit/flag';
 
