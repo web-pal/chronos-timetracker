@@ -120,6 +120,7 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
         <Button onClick={() => setWorklogModalOpen(true)}>
           Log work
         </Button>
+        <div style={{ width: 10 }} />
         {availableTransitionsFetching
           ? <Button isDisabled iconAfter={<Spinner />} >
             Workflow
@@ -134,6 +135,7 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
             <DropdownItemGroup>
               {availableTransitions.map(t =>
                 <DropdownItem
+                  key={t.id}
                   onClick={() => transitionIssueRequest(t, selectedIssue)}
                 >
                   {t.name}

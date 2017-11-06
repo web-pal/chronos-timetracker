@@ -15,6 +15,7 @@ import type {
   SetAlertModalOpen, SetAlertModalOpenAction,
   SetWorklogModalOpen, SetWorklogModalOpenAction,
   RemoveFlag, RemoveFlagAction,
+  SetScreenshotsAlowed, SetScreenshotsAlowedAction,
   AddFlag, AddFlagAction, FlagType,
   AuthFormStep, SidebarType, TabLabel, UpdateInfo,
 } from '../types';
@@ -123,4 +124,11 @@ export const addFlag: AddFlag = (
 export const removeFlag: RemoveFlag = (
 ): RemoveFlagAction => ({
   type: types.REMOVE_FLAG,
+});
+
+export const setScreenshotsAllowed: SetScreenshotsAlowed = (
+  payload: boolean
+): SetScreenshotsAlowedAction => ({
+  type: types.SET_SCREENSHOTS_ALLOWED,
+  payload,
 });

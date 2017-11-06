@@ -21,7 +21,7 @@ export function randomPeriods(
 }
 
 type Params = {
-  currentIdleList: Array<any>,
+  currentIdleList: Array<number>,
   timeSpentSeconds: number,
   screenshotsPeriod: number,
   firstPeriodInMinute: number,
@@ -39,7 +39,9 @@ export function calculateActivity({
   // time wasted in first Idle-minute
   firstPeriodIdleSec += currentIdleList.slice(1, firstPeriodInMinute)
     .reduce((totalWasted, wastedHere) => (totalWasted + wastedHere), 0) / 1000;
-  const firstPeriodTotalTimeSec: number = (secondsToMinutesGrid + ((firstPeriodInMinute - 1) * 60));
+
+  const firstPeriodTotalTimeSec: number =
+    (secondsToMinutesGrid + ((firstPeriodInMinute - 1) * 60));
 
   const minutesInPeriod: number = (screenshotsPeriod / 60);
   const lastPeriodsIdleSec: Array<any> = currentIdleList.slice(firstPeriodInMinute);

@@ -32,10 +32,6 @@ global.sharedObj = {
 
 const menuTemplate = [
   {
-    label: 'Logged today: 00:00',
-    enabled: false,
-  },
-  {
     label: 'No selected issue',
     click: () => {
       if (mainWindow) {
@@ -277,19 +273,10 @@ ipcMain.on('stop-timer', () => {
 });
 
 ipcMain.on('select-issue', (event, issueKey) => {
-  menuTemplate[1].label = `Selected issue: ${issueKey}`;
+  menuTemplate[0].label = `Selected issue: ${issueKey}`;
   if (menuTemplate[4].enabled !== true) {
     menuTemplate[3].enabled = true;
   }
-  menu.clear();
-  menuTemplate.forEach(m => {
-    menu.append(new MenuItem(m));
-  });
-  tray.setContextMenu(menu);
-});
-
-ipcMain.on('set-logged-today', (event, logged) => {
-  menuTemplate[0].label = `Logged today: ${logged}`;
   menu.clear();
   menuTemplate.forEach(m => {
     menu.append(new MenuItem(m));

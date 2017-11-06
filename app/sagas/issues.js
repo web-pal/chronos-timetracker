@@ -13,6 +13,7 @@ import {
   getIssuesSearchValue,
   getFoundIssueIds,
   getIssueFilters,
+  getSelectedIssueId,
 } from 'selectors';
 import { issuesActions, uiActions, types } from 'actions';
 import normalizePayload from 'normalize-util';
@@ -63,6 +64,10 @@ export function* fetchIssues({
       response,
     );
     const normalizedIssues = yield call(normalizePayload, response.issues, 'issues');
+    const selectedIssueId = yield select(getSelectedIssueId);
+    if (normalizedIssues.ids.includes(selectedIssueId)) {
+      yield put(issuesActions.selectIssue(normalizedIssues.map[selectedIssueId]));
+    }
     yield put(issuesActions.setIssuesTotalCount(response.total));
     yield put(issuesActions.addIssues(normalizedIssues));
     if (search) {
@@ -145,8 +150,7 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
         payload: worklogsFromChronosBackend.filter(w => w.worklogType),
       });
     }
-    const allWorklogs = yield select(state => state.worklogs.byId);
-    setLoggedTodayOnTray(allWorklogs, worklogAuthor); */
+    */
     yield put(issuesActions.setRecentIssuesFetching(false));
   } catch (err) {
     yield put(issuesActions.setRecentIssuesFetching(false));
@@ -260,10 +264,14 @@ export function* transitionIssueFlow(): Generator<*, void, *> {
       yield put(issuesActions.selectIssue(newIssue));
       yield call(notify,
         '',
-        `Transitioned issue ${issue.key} to ${transition.to.name}`,
+        `Moved issue ${issue.key} to ${transition.to.name}`,
       );
     }
   } catch (err) {
+    yield call(notify,
+      '',
+      'Issue transition failed. Probably no permission',
+    );
     yield call(throwError, err);
     Raven.captureException(err);
   }

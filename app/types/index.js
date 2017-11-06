@@ -135,6 +135,8 @@ export type {
   RemoveFlag,
   AddFlagAction,
   AddFlag,
+  SetScreenshotsAlowedAction,
+  SetScreenshotsAlowed,
   UiAction,
 } from './ui';
 
