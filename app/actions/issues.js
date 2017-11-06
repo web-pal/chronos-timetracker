@@ -115,9 +115,11 @@ export const setIssuesTotalCount: SetIssuesTotalCount = (
 
 export const selectIssue: SelectIssue = (
   payload: Issue | null,
+  meta: Worklog | void,
 ): SelectIssueAction => ({
   type: types.SELECT_ISSUE,
   payload,
+  meta,
 });
 
 export const setTrackingIssue: SetTrackingIssue = (

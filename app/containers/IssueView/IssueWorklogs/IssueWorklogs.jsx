@@ -9,16 +9,18 @@ import { worklogsActions } from 'actions';
 
 import WorklogItem from './WorklogItem';
 
-import type { Issue, DeleteWorklogRequest } from '../../../types';
+import type { Issue, DeleteWorklogRequest, EditWorklogRequest } from '../../../types';
 
 type Props = {
   selectedIssue: Issue,
   deleteWorklogRequest: DeleteWorklogRequest,
+  editWorklogRequest: EditWorklogRequest,
 };
 
 const IssueWorklogs: StatelessFunctionalComponent<Props> = ({
   selectedIssue,
   deleteWorklogRequest,
+  editWorklogRequest,
 }: Props): Node => (
   <Flex column>
     <Flex row alignCenter spaceBetween style={{ marginBottom: 25 }}>
@@ -30,9 +32,11 @@ const IssueWorklogs: StatelessFunctionalComponent<Props> = ({
     <Flex column style={{ overflowX: 'scroll' }}>
       {selectedIssue.fields.worklog.worklogs.map(worklog =>
         <WorklogItem
+          key={worklog.id}
           worklog={worklog}
           issueKey={selectedIssue.key}
           deleteWorklogRequest={deleteWorklogRequest}
+          editWorklogRequest={editWorklogRequest}
         />,
       )}
     </Flex>

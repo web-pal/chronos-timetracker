@@ -63,7 +63,28 @@ export function* fetchIssues({
       'fetchIssues response',
       response,
     );
+    const incompleteIssues = response.issues.filter(issue => issue.fields.worklog.total > 20);
     const normalizedIssues = yield call(normalizePayload, response.issues, 'issues');
+    if (incompleteIssues.length) {
+      yield call(
+        infoLog,
+        'found issues lacking worklogs',
+        incompleteIssues,
+      );
+      const _issues = yield call(getAdditionalWorklogsForIssues, incompleteIssues);
+      yield call(
+        infoLog,
+        'getAdditionalWorklogsForIssues response:',
+        _issues,
+      );
+
+      merge(normalizedIssues.map, _issues);
+      yield call(
+        infoLog,
+        'filled issues with lacking worklogs: ',
+        normalizedIssues.map,
+      );
+    }
     const selectedIssueId = yield select(getSelectedIssueId);
     if (normalizedIssues.ids.includes(selectedIssueId)) {
       yield put(issuesActions.selectIssue(normalizedIssues.map[selectedIssueId]));
@@ -112,13 +133,14 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
       'fetchRecentIssues response:',
       response,
     );
-    let issues = response.issues;
+    const issues = response.issues;
 
     const incompleteIssues = response.issues.filter(issue => issue.fields.worklog.total > 20);
+    const normalizedIssues = yield call(normalizePayload, issues, 'issues');
     if (incompleteIssues.length) {
       yield call(
         infoLog,
-        'found issues lacking worklogs, starting getAdditionalWorklogsForIssues: ',
+        'found issues lacking worklogs',
         incompleteIssues,
       );
       const _issues = yield call(getAdditionalWorklogsForIssues, incompleteIssues);
@@ -128,14 +150,13 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
         _issues,
       );
 
-      issues = merge(_issues, issues);
+      merge(normalizedIssues.map, _issues);
       yield call(
         infoLog,
         'filled issues with lacking worklogs: ',
-        issues,
+        normalizedIssues.map,
       );
     }
-    const normalizedIssues = yield call(normalizePayload, issues, 'issues');
     yield put(issuesActions.addIssues(normalizedIssues));
     yield put(issuesActions.fillRecentIssueIds(normalizedIssues.ids));
     /* TODO
@@ -232,19 +253,33 @@ export function* watchFiltersChange(): Generator<*, *, *> {
   );
 }
 
-export function* watchIssueSelect(): Generator<*, *, *> {
-  while (true) {
-    const { payload }: SelectIssueAction = yield take(types.SELECT_ISSUE);
-    // TBD turning off this temporary
-    // yield put(uiActions.setIssueViewTab('Details'));
+export function* issueSelectFlow({ payload, meta }: SelectIssueAction): Generator<*, *, *> {
+  // TBD turning off this temporary
+  // yield put(uiActions.setIssueViewTab('Details'));
+  if (payload) {
+    yield fork(getIssueTransitions, payload.id);
     if (payload) {
-      yield fork(getIssueTransitions, payload.id);
-      if (payload) {
-        const issueKey = payload.key;
-        ipcRenderer.send('select-issue', issueKey);
+      const issueKey = payload.key;
+      ipcRenderer.send('select-issue', issueKey);
+    }
+  }
+  if (meta) {
+    yield put(uiActions.setIssueViewTab('Worklogs'));
+    yield call(delay, 500);
+    const worklogEl = document.querySelector(`#worklog-${meta.id}`);
+    if (worklogEl) {
+      worklogEl.scrollIntoView({ behavior: 'smooth' });
+      worklogEl.className += ' blink';
+      yield call(delay, 2000);
+      if (worklogEl) {
+        worklogEl.className = worklogEl.className.slice(0, -6);
       }
     }
   }
+}
+
+export function* watchIssueSelect(): Generator<*, void, *> {
+  yield takeEvery(types.SELECT_ISSUE, issueSelectFlow);
 }
 
 export function* transitionIssueFlow(): Generator<*, void, *> {

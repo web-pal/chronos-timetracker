@@ -108,7 +108,7 @@ export const WorklogContainer = styled.div`
   display: flex;
   flex-flow: column nowrap;
   &:hover {
-    background-color: #f4f5f7;
+    background-color: #f4f5f7 !important;
   };
   padding: 10px;
   flex: 1 0 0%;

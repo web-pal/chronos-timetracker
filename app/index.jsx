@@ -13,6 +13,8 @@ import './assets/stylesheets/main.less';
 
 import pjson from '../package.json';
 
+require('smoothscroll-polyfill').polyfill();
+
 Raven.addPlugin(require('./raven-electron-plugin')); // eslint-disable-line
 if (process.env.UPLOAD_SENTRY !== '0') {
   Raven

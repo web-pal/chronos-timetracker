@@ -67,7 +67,7 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
                 key={`${key}_${worklog.id}_${i}`}
                 issue={worklog.issue}
                 active={false}
-                selectIssue={selectIssue}
+                selectIssue={(issue) => selectIssue(issue, worklog)}
                 worklog={worklog}
               />,
             )}
