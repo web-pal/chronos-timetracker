@@ -116,7 +116,7 @@ const SidebarFilters: StatelessFunctionalComponent<Props> = ({
           appearance="primary"
           onClick={() => setSidebarFiltersOpen(false)}
         >
-          Apply
+          Close
         </Button>
       </ButtonGroup>
     </FilterActionsContainer>
