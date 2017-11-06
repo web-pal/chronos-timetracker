@@ -145,7 +145,7 @@ export type IssuesState = {|
 export type FetchIssuesRequestAction =
   {|
     type: typeof types.FETCH_ISSUES_REQUEST,
-    payload: { startIndex: ?number, stopIndex: ?number, search: ?boolean }
+    +payload: { startIndex: ?number, stopIndex: ?number, search: ?boolean }
   |}
 
 export type FetchIssuesRequest = {
@@ -158,7 +158,7 @@ export type FetchIssuesRequest = {
 
 //
 export type FillIssuesAction =
-  {| type: typeof types.FILL_ISSUES, payload: { ids: Array<Id>, map: IssuesMap }|}
+  {| type: typeof types.FILL_ISSUES, +payload: { ids: Array<Id>, map: IssuesMap }|}
 
 export type FillIssues = {
   (payload: { ids: Array<Id>, map: IssuesMap }): FillIssuesAction
@@ -166,7 +166,7 @@ export type FillIssues = {
 
 //
 export type FillRecentIssueIdsAction =
-  {| type: typeof types.FILL_RECENT_ISSUE_IDS, payload: Array<Id> |}
+  {| type: typeof types.FILL_RECENT_ISSUE_IDS, +payload: Array<Id> |}
 
 export type FillRecentIssueIds = {
   (payload: Array<Id>): FillRecentIssueIdsAction
@@ -174,7 +174,7 @@ export type FillRecentIssueIds = {
 
 //
 export type FillIssueTypesAction =
-  {| type: typeof types.FILL_ISSUE_TYPES, payload: { ids: Array<Id>, map: IssueTypesMap }|}
+  {| type: typeof types.FILL_ISSUE_TYPES, +payload: { ids: Array<Id>, map: IssueTypesMap }|}
 
 export type FillIssueTypes = {
   (payload: { ids: Array<Id>, map: IssueTypesMap }): FillIssueTypesAction
@@ -182,7 +182,7 @@ export type FillIssueTypes = {
 
 //
 export type FillIssueStatusesAction =
-  {| type: typeof types.FILL_ISSUE_STATUSES, payload: { ids: Array<Id>, map: IssueStatusesMap }|}
+  {| type: typeof types.FILL_ISSUE_STATUSES, +payload: { ids: Array<Id>, map: IssueStatusesMap }|}
 
 export type FillIssueStatuses = {
   (payload: { ids: Array<Id>, map: IssueStatusesMap }): FillIssueStatusesAction
@@ -190,7 +190,7 @@ export type FillIssueStatuses = {
 
 //
 export type FillFoundIssueIdsAction =
-  {| type: typeof types.FILL_FOUND_ISSUE_IDS, payload: Array<Id> |}
+  {| type: typeof types.FILL_FOUND_ISSUE_IDS, +payload: Array<Id> |}
 
 export type FillFoundIssueIds = {
   (payload: Array<Id>): FillFoundIssueIdsAction
@@ -198,7 +198,7 @@ export type FillFoundIssueIds = {
 
 //
 export type AddFoundIssueIdsAction =
-  {| type: typeof types.ADD_FOUND_ISSUE_IDS, payload: Array<Id> |}
+  {| type: typeof types.ADD_FOUND_ISSUE_IDS, +payload: Array<Id> |}
 
 export type AddFoundIssueIds = {
   (payload: Array<Id>): AddFoundIssueIdsAction
@@ -206,7 +206,7 @@ export type AddFoundIssueIds = {
 
 //
 export type AddIssuesAction =
-  {| type: typeof types.ADD_ISSUES, payload: { ids: Array<Id>, map: IssuesMap }|}
+  {| type: typeof types.ADD_ISSUES, +payload: { ids: Array<Id>, map: IssuesMap }|}
 
 export type AddIssues = {
   (payload: { ids: Array<Id>, map: IssuesMap }): AddIssuesAction
@@ -246,10 +246,10 @@ export type SetIssuesTotalCount = {
 
 //
 export type SelectIssueAction =
-  {| type: typeof types.SELECT_ISSUE, +payload: Issue | null |}
+  {| type: typeof types.SELECT_ISSUE, +payload: Issue | null, +meta: Worklog | void |}
 
 export type SelectIssue = {
-  (payload: Issue | null): SelectIssueAction,
+  (payload: Issue | null, meta: Worklog | void): SelectIssueAction,
 }
 
 //
@@ -270,7 +270,7 @@ export type SetIssuesSearchValue = {
 
 //
 export type SetIssuesFilterAction =
-  {| type: typeof types.SET_ISSUES_FILTER, payload: Array<string>, meta: { filterName: string } |}
+  {| type: typeof types.SET_ISSUES_FILTER, +payload: Array<string>, meta: { filterName: string } |}
 
 export type SetIssuesFilter = {
   (value: Array<string>, filterName: string): SetIssuesFilterAction
@@ -278,15 +278,23 @@ export type SetIssuesFilter = {
 
 //
 export type AddWorklogToIssueAction =
-  {| type: types.ADD_WORKLOG_TO_ISSUE, payload: Worklog, meta: Id |};
+  {| type: types.ADD_WORKLOG_TO_ISSUE, +payload: Worklog, meta: Id |};
 
 export type AddWorklogToIssue = {
   (payload: Worklog, issueId: Id): AddWorklogToIssueAction
 };
 
 //
+export type DeleteWorklogFromIssueAction =
+  {| type: types.DELETE_WORKLOG_FROM_ISSUE, +payload: Worklog, meta: Id |};
+
+export type DeleteWorklogFromIssue = {
+  (payload: Worklog, issueId: Id): DeleteWorklogFromIssueAction
+};
+
+//
 export type FillAvailableTransitionsAction =
-  {| type: types.FILL_AVAILABLE_TRANSITIONS, payload: Array<IssueTransition> |};
+  {| type: types.FILL_AVAILABLE_TRANSITIONS, +payload: Array<IssueTransition> |};
 
 export type FillAvailableTransitions = {
   (payload: Array<IssueTransition>): FillAvailableTransitionsAction
@@ -294,7 +302,7 @@ export type FillAvailableTransitions = {
 
 //
 export type SetAvailableTransitionsFetching =
-  {| type: types.SET_AVAILABLE_TRANSITIONS_FETCHING, payload: boolean |};
+  {| type: types.SET_AVAILABLE_TRANSITIONS_FETCHING, +payload: boolean |};
 
 export type SetAvailableTransitions = {
   (payload: boolean): SetAvailableTransitionsFetching
@@ -302,7 +310,7 @@ export type SetAvailableTransitions = {
 
 //
 export type TransitionIssueRequestAction =
-  {| type: types.TRANSITION_ISSUE_REQUEST, payload: IssueTransition, meta: Issue |};
+  {| type: types.TRANSITION_ISSUE_REQUEST, +payload: IssueTransition, meta: Issue |};
 
 export type TransitionIssueRequest = {
   (transition: IssueTransition, issue: Issue): TransitionIssueRequestAction
@@ -310,10 +318,26 @@ export type TransitionIssueRequest = {
 
 //
 export type SetIssueStatusAction =
-  {| type: types.SET_ISSUE_STATUS, payload: IssueStatus, meta: Issue |};
+  {| type: types.SET_ISSUE_STATUS, +payload: IssueStatus, meta: Issue |};
 
 export type SetIssueStatus = {
   (status: IssueStatus, issue: Issue): SetIssueStatusAction
+};
+
+//
+export type AssignIssueRequestAction =
+  {| type: types.ASSIGN_ISSUE_REQEST, +payload: Issue |};
+
+export type AssignIssueRequest = {
+  (payload: Issue): AssignIssueRequestAction
+};
+
+//
+export type SetIssueAssigneeAction =
+  {| type: types.SET_ISSUE_ASSIGNEE, +payload: User, meta: Issue |};
+
+export type SetIssueAssignee = {
+  (assignee: User, issue: Issue): SetIssueAssigneeAction
 };
 
 export type IssuesAction =

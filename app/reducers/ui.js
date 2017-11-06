@@ -14,7 +14,9 @@ const initialState: UiState = {
   supportModalOpen: false,
   aboutModalOpen: false,
   alertModalOpen: false,
+  confirmDeleteWorklogModalOpen: false,
   worklogModalOpen: false,
+  editWorklogModalOpen: false,
   flags: [],
   screenshotsAllowed: false,
 };
@@ -76,10 +78,20 @@ export default function ui(state: UiState = initialState, action: Action) {
         ...state,
         alertModalOpen: action.payload,
       };
+    case types.SET_CONFIRM_DELETE_WORKLOG_MODAL_OPEN:
+      return {
+        ...state,
+        confirmDeleteWorklogModalOpen: action.payload,
+      };
     case types.SET_WORKLOG_MODAL_OPEN:
       return {
         ...state,
         worklogModalOpen: action.payload,
+      };
+    case types.SET_EDIT_WORKLOG_MODAL_OPEN:
+      return {
+        ...state,
+        editWorklogModalOpen: action.payload,
       };
     case types.REMOVE_FLAG:
       return {

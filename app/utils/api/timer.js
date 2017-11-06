@@ -31,7 +31,7 @@ function getScreen(callback) {
           callback(screenshots);
         }
       } else {
-        console.log('Need callback!');
+        // console.log('Need callback!');
       }
 
       // Remove hidden video tag
@@ -40,7 +40,7 @@ function getScreen(callback) {
         // Destroy connect to stream
         stream.getTracks()[0].stop();
       } catch (e) {
-        console.log(e);
+        // console.log(e);
       }
     };
     video.src = URL.createObjectURL(stream);
@@ -48,7 +48,7 @@ function getScreen(callback) {
   }
 
   function handleError(e) {
-    console.log(e);
+    // console.log(e);
   }
 
   desktopCapturer.getSources({ types: ['screen'] }, (error, sources) => {

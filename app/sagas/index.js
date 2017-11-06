@@ -30,6 +30,7 @@ export default function* rootSaga(): Generator<*, *, *> {
     fork(issueSagas.watchFiltersChange),
     fork(issueSagas.watchIssueSelect),
     fork(issueSagas.transitionIssueFlow),
+    fork(issueSagas.assignIssueFlow),
 
     // timer
     fork(timerSagas.watchStartTimer),
@@ -40,6 +41,8 @@ export default function* rootSaga(): Generator<*, *, *> {
 
     // worklogs
     fork(worklogsSagas.addManualWorklogFlow),
+    fork(worklogsSagas.watchDeleteWorklogRequest),
+    fork(worklogsSagas.watchEditWorklogRequest),
 
     // updater
     fork(updaterSagas.watchInstallUpdateRequest),

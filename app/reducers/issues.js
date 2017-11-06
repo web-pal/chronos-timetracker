@@ -2,6 +2,7 @@
 import { combineReducers } from 'redux';
 import union from 'lodash.union';
 import merge from 'lodash.merge';
+import filter from 'lodash.filter';
 import { types } from 'actions';
 
 import type { Id, IssuesMap, IssuesMeta, IssueTypesMap, IssueStatusesMap } from '../types';
@@ -29,8 +30,8 @@ function itemsById(state: IssuesMap = {}, action): IssuesMap {
       return action.payload.map;
     case types.ADD_ISSUES:
       return merge(
-        action.payload.map,
-        state,
+        { ...action.payload.map },
+        { ...state },
       );
     case types.ADD_WORKLOG_TO_ISSUE:
       return {
@@ -49,6 +50,23 @@ function itemsById(state: IssuesMap = {}, action): IssuesMap {
           },
         },
       };
+    case types.DELETE_WORKLOG_FROM_ISSUE:
+      return {
+        ...state,
+        [action.meta]: {
+          ...state[action.meta],
+          fields: {
+            ...state[action.meta].fields,
+            worklog: {
+              ...state[action.meta].fields.worklog,
+              worklogs: filter(
+                state[action.meta].fields.worklog.worklogs,
+                (value) => value.id !== action.payload.id,
+              ),
+            },
+          },
+        },
+      };
     case types.SET_ISSUE_STATUS:
       return {
         ...state,
@@ -57,6 +75,17 @@ function itemsById(state: IssuesMap = {}, action): IssuesMap {
           fields: {
             ...state[action.meta.id].fields,
             status: action.payload,
+          },
+        },
+      };
+    case types.SET_ISSUE_ASSIGNEE:
+      return {
+        ...state,
+        [action.meta.id]: {
+          ...state[action.meta.id],
+          fields: {
+            ...state[action.meta.id].fields,
+            assignee: action.payload,
           },
         },
       };

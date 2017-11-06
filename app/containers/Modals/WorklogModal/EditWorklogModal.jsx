@@ -14,8 +14,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Flex, Calendar, TextField } from 'components';
 import { uiActions, worklogsActions } from 'actions';
-import { getWorklogModalOpen, getEditWorklogFetching } from 'selectors';
-import { jts, stj } from 'time-util';
+import { getEditWorklogModalOpen, getEditWorklogFetching, getEditingWorklog } from 'selectors';
+import { jts } from 'time-util';
 
 import {
   InputLabel,
@@ -24,32 +24,48 @@ import {
   InputExample,
 } from './styled';
 
-import type { SetWorklogModalOpen, AddManualWorklogRequest } from '../../../types';
+import type { SetEditWorklogModalOpen, Worklog, ConfirmEditWorklog } from '../../../types';
 
 type Props = {
   isOpen: boolean,
   fetching: boolean,
-  setWorklogModalOpen: SetWorklogModalOpen,
-  addManualWorklogRequest: AddManualWorklogRequest,
+  worklog: Worklog | null,
+  setEditWorklogModalOpen: SetEditWorklogModalOpen,
+  confirmEditWorklog: ConfirmEditWorklog,
 };
 
 type State = {
   calendarOpened: boolean,
   date: mixed,
-  startTime: any,
+  started: any,
   comment: string,
-  totalSpent: string,
+  timeSpent: string,
   jiraTimeError: string | null,
 };
 
-class WorklogModal extends Component<Props, State> {
-  state = {
-    calendarOpened: false,
-    date: moment().format('MM/DD/YYYY'),
-    startTime: moment(),
-    comment: '',
-    totalSpent: '20m',
-    jiraTimeError: null,
+class EditWorklogModal extends Component<Props, State> {
+  constructor(props) {
+    super(props);
+    this.state = {
+      calendarOpened: false,
+      date: moment().format('MM/DD/YYYY'),
+      started: moment(),
+      comment: '',
+      timeSpent: '10m',
+      jiraTimeError: null,
+    };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.worklog) {
+      const { started, comment, timeSpent } = nextProps.worklog;
+      this.setState({
+        date: moment(started).format(''),
+        started: moment(started),
+        timeSpent,
+        comment,
+      });
+    }
   }
 
   handleTimeChange = (label) => value => {
@@ -60,9 +76,9 @@ class WorklogModal extends Component<Props, State> {
     const jiraTime = e.target.value || '';
     const isValid = this.checkIfJiraTime(jiraTime);
     if (isValid) {
-      this.setState({ totalSpent: jiraTime, jiraTimeError: null });
+      this.setState({ timeSpent: jiraTime, jiraTimeError: null });
     } else {
-      this.setState({ totalSpent: jiraTime, jiraTimeError: 'invalid format' });
+      this.setState({ timeSpent: jiraTime, jiraTimeError: 'invalid format' });
     }
   }
 
@@ -74,19 +90,12 @@ class WorklogModal extends Component<Props, State> {
   }
 
   render() {
-    const { isOpen, setWorklogModalOpen, fetching }: Props = this.props;
-    const {
-      calendarOpened,
-      date,
-      startTime,
-      comment,
-      totalSpent,
-      jiraTimeError,
-    }: State = this.state;
+    const { isOpen, setEditWorklogModalOpen, fetching, worklog }: Props = this.props;
+    const { calendarOpened, date, started, comment, timeSpent, jiraTimeError }: State = this.state;
 
     return isOpen && (
       <ModalDialog
-        onClose={() => setWorklogModalOpen(false)}
+        onClose={() => setEditWorklogModalOpen(false)}
         footer={() => (
           <ModalFooter>
             <Flex row style={{ justifyContent: 'flex-end', width: '100%' }}>
@@ -95,13 +104,19 @@ class WorklogModal extends Component<Props, State> {
                   appearance="primary"
                   disabled={fetching}
                   onClick={() => {
-                    this.props.addManualWorklogRequest({ startTime, totalSpent, comment, date });
+                    this.props.confirmEditWorklog({
+                      ...worklog,
+                      started: moment(started).utc().format().replace('Z', '.000+0000'),
+                      comment,
+                      timeSpentSeconds: jts(timeSpent),
+                      timeSpent,
+                    });
                   }}
                   iconAfter={fetching ? <Spinner invertColor /> : null}
                 >
-                  Log work
+                  Confirm
                 </Button>
-                <Button appearance="subtle" onClick={() => setWorklogModalOpen(false)}>
+                <Button appearance="subtle" onClick={() => setEditWorklogModalOpen(false)}>
                   Cancel
                 </Button>
               </ButtonGroup>
@@ -110,7 +125,7 @@ class WorklogModal extends Component<Props, State> {
         )}
         header={() => (
           <ModalHeader>
-            <ModalTitle>Add worklog</ModalTitle>
+            <ModalTitle>Edit worklog</ModalTitle>
           </ModalHeader>
         )}
       >
@@ -120,7 +135,7 @@ class WorklogModal extends Component<Props, State> {
           <InputLabel style={{ marginTop: 0 }}>Time spent</InputLabel>
           <Flex row alignCenter>
             <TextField
-              value={totalSpent}
+              value={timeSpent}
               onChange={this.handleTotalSpentChange}
               isLabelHidden
               isInvalid={!!jiraTimeError}
@@ -174,8 +189,8 @@ class WorklogModal extends Component<Props, State> {
           <Flex column style={{ width: 165 }}>
             <InputLabel>Started</InputLabel>
             <TimePicker
-              value={startTime}
-              onChange={this.handleTimeChange('startTime')}
+              value={started}
+              onChange={this.handleTimeChange('started')}
               className="TimePicker"
               popupClassName="TimePickerPopup"
               format="HH:mm"
@@ -198,7 +213,8 @@ class WorklogModal extends Component<Props, State> {
 
 function mapStateToProps(state) {
   return {
-    isOpen: getWorklogModalOpen(state),
+    isOpen: getEditWorklogModalOpen(state),
+    worklog: getEditingWorklog(state),
     fetching: getEditWorklogFetching(state),
   };
 }
@@ -207,4 +223,4 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ ...uiActions, ...worklogsActions }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(WorklogModal);
+export default connect(mapStateToProps, mapDispatchToProps)(EditWorklogModal);

@@ -17,11 +17,15 @@ import type {
   SetIssuesSearchValue, SetIssuesSearchValueAction,
   SetIssuesFilter, SetIssuesFilterAction,
   AddWorklogToIssue, AddWorklogToIssueAction,
+  DeleteWorklogFromIssue, DeleteWorklogFromIssueAction,
   FillAvailableTransitions, FillAvailableTransitionsAction,
   SetAvailableTransitionsFetching, SetAvailableTransitionsFethchingAction,
   TransitionIssueRequest, TransitionIssueRequestAction,
   SetIssueStatus, SetIssueStatusAction,
+  AssignIssueRequest, AssignIssueRequestAction,
+  SetIssueAssignee, SetIssueAssigneeAction,
   IssuesMap, Id, IssueTypesMap, IssueStatus, IssueStatusesMap, Issue, Worklog, IssueTransition,
+  User,
 } from '../types';
 
 export const fetchIssuesRequest: FetchIssuesRequest = (
@@ -111,9 +115,11 @@ export const setIssuesTotalCount: SetIssuesTotalCount = (
 
 export const selectIssue: SelectIssue = (
   payload: Issue | null,
+  meta: Worklog | void,
 ): SelectIssueAction => ({
   type: types.SELECT_ISSUE,
   payload,
+  meta,
 });
 
 export const setTrackingIssue: SetTrackingIssue = (
@@ -150,6 +156,15 @@ export const addWorklogToIssue: AddWorklogToIssue = (
   meta: issueId,
 });
 
+export const deleteWorklogFromIssue: DeleteWorklogFromIssue = (
+  payload: Worklog,
+  issueId: Id,
+): DeleteWorklogFromIssueAction => ({
+  type: types.DELETE_WORKLOG_FROM_ISSUE,
+  payload,
+  meta: issueId,
+});
+
 export const fillAvailableTransitions: FillAvailableTransitions = (
   payload: Array<IssueTransition>,
 ): FillAvailableTransitionsAction => ({
@@ -179,5 +194,21 @@ export const setIssueStatus: SetIssueStatus = (
 ): SetIssueStatusAction => ({
   type: types.SET_ISSUE_STATUS,
   payload: status,
+  meta: issue,
+});
+
+export const assignIssueRequest: AssignIssueRequest = (
+  payload: Issue,
+): AssignIssueRequestAction => ({
+  type: types.ASSIGN_ISSUE_REQEST,
+  payload,
+});
+
+export const setIssueAssignee: SetIssueAssignee = (
+  assignee: User,
+  issue: Issue,
+): SetIssueAssigneeAction => ({
+  type: types.SET_ISSUE_ASSIGNEE,
+  payload: assignee,
   meta: issue,
 });

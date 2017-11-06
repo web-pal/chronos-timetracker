@@ -23,7 +23,7 @@ function getScreen(callback) {
         // Save screenshot to jpg - base64
         callback(canvas.toDataURL('image/jpeg'));
       } else {
-        console.log('Need callback!');
+        // console.log('Need callback!');
       }
 
       // Remove hidden video tag
@@ -38,7 +38,7 @@ function getScreen(callback) {
   };
 
   this.handleError = (e) => {
-    console.log(e);
+    // console.log(e);
   };
 
   desktopCapturer.getSources({ types: ['screen'] }, (error, sources) => {

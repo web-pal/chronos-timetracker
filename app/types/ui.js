@@ -33,8 +33,10 @@ export type UiState = {|
   +settingsModalOpen: boolean,
   +supportModalOpen: boolean,
   +aboutModalOpen: boolean,
+  +confirmDeleteWorklogModalOpen: boolean,
   +alertModalOpen: boolean,
   +worklogModalOpen: boolean,
+  +editWorklogModalOpen: boolean,
   +flags: FlagsArray,
   +screenshotsAllowed: boolean,
 |};
@@ -144,11 +146,27 @@ export type SetAlertModalOpen = {
 };
 
 //
+export type SetConfirmDeleteWorklogModalOpenAction =
+  {| type: typeof types.SET_CONFIRM_DELETE_WORKLOG_MODAL_OPEN, +payload: boolean |};
+
+export type SetConfirmDeleteWorklogModalOpen = {
+  (payload: boolean): SetConfirmDeleteWorklogModalOpenAction
+};
+
+//
 export type SetWorklogModalOpenAction =
   {| type: typeof types.SET_WORKLOG_MODAL_OPEN, +payload: boolean |};
 
 export type SetWorklogModalOpen = {
   (payload: boolean): SetWorklogModalOpenAction
+};
+
+//
+export type SetEditWorklogModalOpenAction =
+  {| type: typeof types.SET_EDIT_WORKLOG_MODAL_OPEN, +payload: boolean |};
+
+export type SetEditWorklogModalOpen = {
+  (payload: boolean): SetEditWorklogModalOpenAction
 };
 
 //
@@ -169,10 +187,18 @@ export type AddFlag = {
 
 //
 export type SetScreenshotsAlowedAction =
-  {| type: types.SET_SCREENSHOTS_ALLOWED, payload: boolean |};
+  {| type: typeof types.SET_SCREENSHOTS_ALLOWED, payload: boolean |};
 
 export type SetScreenshotsAlowed = {
   (payload: boolean): SetScreenshotsAlowedAction
+};
+
+//
+export type ConfirmDeleteWorklogAction =
+  {| type: typeof types.CONFIRM_DELETE_WORKLOG |};
+
+export type ConfirmDeleteWorklog = {
+  (): ConfirmDeleteWorklogAction
 };
 
 export type UiAction =
@@ -188,3 +214,4 @@ export type UiAction =
   | SetWorklogModalOpenAction
   | RemoveFlagAction
   | AddFlagAction;
+

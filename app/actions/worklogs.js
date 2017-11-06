@@ -7,12 +7,16 @@ import type {
   FillRecentWorklogIds, FillRecentWorklogIdsAction,
   AddRecentWorklogIds, AddRecentWorklogIdsAction,
   SetWorklogsFetching, SetWorklogsFetchingAction,
-  SetAddWorklogFetching, SetAddWorklogFetchingAction,
+  SetEditWorklogFetching, SetEditWorklogFetchingAction,
   SetWorklogComment, SetWorklogCommentAction,
   SelectWorklog, SelectWorklogAction,
   SetTemporaryWorklogId, SetTemporaryWorklogIdAction,
   AddManualWorklogRequest, AddManualWorklogRequestAction,
-  Id, WorklogsMap, ManualWorklogData,
+  DeleteWorklogRequest, DeleteWorklogRequestAction,
+  EditWorklogRequest, EditWorklogRequestAction,
+  SetEditingWorklog, SetEditingWorklogAction,
+  ConfirmEditWorklog, ConfirmEditWorklogAction,
+  Id, WorklogsMap, ManualWorklogData, Worklog,
 } from '../types';
 
 export const fillWorklogs: FillWorklogs = (
@@ -53,9 +57,9 @@ export const setWorklogsFetching: SetWorklogsFetching = (
   payload,
 });
 
-export const setAddWorklogFetching: SetAddWorklogFetching = (
+export const setEditWorklogFetching: SetEditWorklogFetching = (
   payload: boolean,
-): SetAddWorklogFetchingAction => ({
+): SetEditWorklogFetchingAction => ({
   type: types.SET_ADD_WORKLOG_FETCHING,
   payload,
 });
@@ -85,5 +89,33 @@ export const addManualWorklogRequest: AddManualWorklogRequest = (
   payload: ManualWorklogData,
 ): AddManualWorklogRequestAction => ({
   type: types.ADD_MANUAL_WORKLOG_REQUEST,
+  payload,
+});
+
+export const deleteWorklogRequest: DeleteWorklogRequest = (
+  payload: Worklog,
+): DeleteWorklogRequestAction => ({
+  type: types.DELETE_WORKLOG_REQUEST,
+  payload,
+});
+
+export const editWorklogRequest: EditWorklogRequest = (
+  payload: Worklog,
+): EditWorklogRequestAction => ({
+  type: types.EDIT_WORKLOG_REQUEST,
+  payload,
+});
+
+export const setEditingWorklog: SetEditingWorklog = (
+  payload: Worklog | null,
+): SetEditingWorklogAction => ({
+  type: types.SET_EDITING_WORKLOG,
+  payload,
+});
+
+export const confirmEditWorklog: ConfirmEditWorklog = (
+  payload: Worklog,
+): ConfirmEditWorklogAction => ({
+  type: types.CONFIRM_EDIT_WORKLOG,
   payload,
 });

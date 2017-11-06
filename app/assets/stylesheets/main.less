@@ -121,3 +121,19 @@ li.rc-time-picker-panel-select-option-selected {
   background: #FAFBFC;
   color: #0052cc;
 }
+
+@keyframes blink {
+  0% {
+    background: #fff;
+  }
+  50% {
+    background: #f4f5f7;
+  }
+  100% {
+    background: #fff;
+  }
+}
+
+div.blink {
+  animation: blink 2s ease forwards;
+}

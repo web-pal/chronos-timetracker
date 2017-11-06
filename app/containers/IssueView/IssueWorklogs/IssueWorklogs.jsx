@@ -1,36 +1,56 @@
 // @flow
 import React from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import type { StatelessFunctionalComponent, Node } from 'react';
 import { Flex } from 'components';
+import { getSelectedIssue } from 'selectors';
+import { worklogsActions } from 'actions';
 
 import WorklogItem from './WorklogItem';
 
-import {
-  Button,
-} from './styled';
+import type { Issue, DeleteWorklogRequest, EditWorklogRequest } from '../../../types';
 
-const IssueWorklogs: StatelessFunctionalComponent<{}> = (): Node => (
+type Props = {
+  selectedIssue: Issue,
+  deleteWorklogRequest: DeleteWorklogRequest,
+  editWorklogRequest: EditWorklogRequest,
+};
+
+const IssueWorklogs: StatelessFunctionalComponent<Props> = ({
+  selectedIssue,
+  deleteWorklogRequest,
+  editWorklogRequest,
+}: Props): Node => (
   <Flex column>
     <Flex row alignCenter spaceBetween style={{ marginBottom: 25 }}>
       <Flex row style={{ paddingBottom: 5 }}>
         <span style={{ color: 'rgb(112,112,112)', marginRight: 5 }}>Logged today: </span>
         <span style={{ fontWeight: 500, color: '#0052cc' }}>2h 32min</span>
       </Flex>
-      <Flex row>
-        <Button>
-          Calendar view
-        </Button>
-        <Button>
-          Add manual time
-        </Button>
-      </Flex>
     </Flex>
-    <Flex column style={{ overflowY: 'auto' }}>
-      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
-        <WorklogItem key={i} />
-      ))}
+    <Flex column style={{ overflowX: 'scroll' }}>
+      {selectedIssue.fields.worklog.worklogs.map(worklog =>
+        <WorklogItem
+          key={worklog.id}
+          worklog={worklog}
+          issueKey={selectedIssue.key}
+          deleteWorklogRequest={deleteWorklogRequest}
+          editWorklogRequest={editWorklogRequest}
+        />,
+      )}
     </Flex>
   </Flex>
 );
 
-export default IssueWorklogs;
+function mapStateToProps(state) {
+  return {
+    selectedIssue: getSelectedIssue(state),
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(worklogsActions, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(IssueWorklogs);
