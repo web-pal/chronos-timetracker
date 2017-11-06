@@ -134,6 +134,7 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
             <DropdownItemGroup>
               {availableTransitions.map(t =>
                 <DropdownItem
+                  key={t.id}
                   onClick={() => transitionIssueRequest(t, selectedIssue)}
                 >
                   {t.name}
