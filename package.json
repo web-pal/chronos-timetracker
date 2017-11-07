@@ -53,6 +53,7 @@
       "main.prod.js.map",
       "package.json"
     ],
+    "asarUnpack": "./node_modules/node-notifier/vendor/**",
     "dmg": {
       "contents": [
         {
