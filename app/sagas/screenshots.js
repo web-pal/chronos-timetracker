@@ -18,7 +18,7 @@ import { throwError } from './ui';
 
 export function* uploadScreenshot({
   screenshotTime,
-  timeStamp,
+  timestamp,
   lastScreenshotPath,
   lastScreenshotThumbPath,
 }) {
@@ -51,7 +51,7 @@ export function* uploadScreenshot({
       fileName,
       screenshotTime,
       thumbFilename,
-      timeStamp,
+      timestamp,
     };
 
     yield put(timerActions.addScreenshot(screenshot, screenshotTime));

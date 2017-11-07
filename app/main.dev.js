@@ -400,7 +400,7 @@ ipcMain.on('screenshot-reject', rejectScreenshot);
 
 function acceptScreenshot() {
   if (mainWindow) {
-    mainWindow.webContents.send(';screenshot-accept');
+    mainWindow.webContents.send('screenshot-accept');
   }
 }
 ipcMain.on('screenshot-accept', acceptScreenshot);

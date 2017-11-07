@@ -95,7 +95,7 @@ export function makeScreenshot(
         return imageObj;
       });
       const now = Date.now();
-      const screenhotName = `${host}_${userKey}_${screenshotTime}_${now}`;
+      const screenshotName = `${host}_${userKey}_${screenshotTime}_${now}`;
       mergeImages(
         imagesWithCords,
         { width: totalWidth, height: maxHeight, format: 'image/jpeg', quality: 0.9 },
@@ -106,20 +106,22 @@ export function makeScreenshot(
             const canvas = window.document.createElement('canvas');
             const context = canvas.getContext('2d');
             const img = new Image();
+            img.onload = () => {
+              context.drawImage(img, 0, 0, 300, 150);
+              const thumb = canvas.toDataURL('image/jpeg').replace(/^data:image\/jpeg;base64,/, '');
+              const thumbImageDir = `${remote.getGlobal('appDir')}/screens/${screenshotName}_thumb.jpeg`;
+              fs.writeFile(thumbImageDir, thumb, 'base64');
+              remote.getGlobal('sharedObj').lastScreenshotThumbPath = thumbImageDir;
+            };
             img.src = merged;
-            context.drawImage(img, 0, 0, 300, 150);
-            const thumb = canvas.toDataURL('image/jpeg').replace(/^data:image\/jpeg;base64,/, '');
-            const thumbImageDir = `${remote.getGlobal('appDir')}/screens/${screenhotName}_thumb.jpeg`;
-            fs.writeFile(thumbImageDir, thumb, 'base64');
 
             // Screen
             const validImage = merged.replace(/^data:image\/jpeg;base64,/, '');
-            const imageDir = `${remote.getGlobal('appDir')}/screens/${screenhotName}.jpeg`;
+            const imageDir = `${remote.getGlobal('appDir')}/screens/${screenshotName}.jpeg`;
             fs.writeFile(imageDir, validImage, 'base64', (err) => {
               if (err) reject();
 
               remote.getGlobal('sharedObj').lastScreenshotPath = imageDir;
-              remote.getGlobal('sharedObj').lastScreenshotThumbPath = thumbImageDir;
               remote.getGlobal('sharedObj').screenshotTime = screenshotTime;
               remote.getGlobal('sharedObj').timestamp = now;
               remote.getGlobal('sharedObj').screenshotPreviewTime = screenshotPreviewTime;

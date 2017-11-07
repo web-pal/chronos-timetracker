@@ -16,6 +16,7 @@ import {
   getWorklogComment,
   getLastScreenshotTime,
   getLocalDesktopSettings,
+  getKeepedIdles,
   getIdles,
 } from 'selectors';
 import Raven from 'raven-js';
@@ -117,7 +118,6 @@ function* screenshotsCheck() {
     const time = yield select(getTimerTime);
     const idleState = yield select(getTimerIdleState);
     let periods = yield select(getScreenshotPeriods);
-    console.log('SCREENSHOTS CHECK', periods);
     if (time === periods[0]) {
       if (!idleState) {
         yield fork(takeScreenshot);
@@ -144,7 +144,11 @@ function* activityCheck(secondsToMinutesGrid) {
         infoLog,
         `add idle time -- ${totalIdleTimeDuringOneMinute} seconds`,
       );
-      yield put(timerActions.addIdleTime(totalIdleTimeDuringOneMinute));
+      const idle = {
+        from: time - totalIdleTimeDuringOneMinute,
+        to: time,
+      };
+      yield put(timerActions.addIdleTime(idle));
       totalIdleTimeDuringOneMinute = 0;
     }
   } catch (err) {
@@ -206,12 +210,13 @@ function* stopTimer(channel, timerInstance) {
     const time = yield select(getTimerTime);
     const comment = yield select(getWorklogComment);
     const screenshots = yield select(getScreenshots);
-    const keepedIdles = yield select(getIdles);
+    const keepedIdles = yield select(getKeepedIdles);
+    const idles = yield select(getIdles);
     const { screenshotsPeriod } = yield select(getScreenshotsSettings);
     // TODO
     const worklogType = null;
     const activity = calculateActivity({
-      currentIdleList: keepedIdles.map(idle => idle.to - idle.from),
+      currentIdleList: idles.map(idle => idle.to - idle.from),
       timeSpentSeconds: time,
       screenshotsPeriod,
       firstPeriodInMinute: 1,
