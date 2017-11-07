@@ -128,6 +128,7 @@ function* screenshotsCheck() {
     if (time === nextPeriod) {
       nextPeriod += screenshotsPeriod;
       periods = randomPeriods(screenshotsQuantity, time, nextPeriod);
+      yield call(infoLog, 'created new screenshot periods', initialPeriods);
       yield put(timerActions.setScreenshotPeriods(periods));
     }
   } catch (err) {
@@ -197,6 +198,7 @@ export function* runTimer(channel) {
   const periodRange = (periodNumber * minutePeriod) - minutes;
   nextPeriod = (periodRange * 60) - currentSeconds;
   const initialPeriods = randomPeriods(screenshotsQuantity, 1, nextPeriod);
+  yield call(infoLog, 'created initial screenshot periods', initialPeriods);
   yield put(timerActions.setScreenshotPeriods(initialPeriods));
   yield takeEvery(channel, timerStep, screenshotsAllowed, secondsToMinutesGrid);
 }
