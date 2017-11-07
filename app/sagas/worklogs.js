@@ -6,7 +6,7 @@ import * as Api from 'api';
 import filter from 'lodash.filter';
 import pull from 'lodash.pull';
 import { types, worklogsActions, uiActions, issuesActions } from 'actions';
-import { getUserData, getSelectedIssue, getRecentIssueIds } from 'selectors';
+import { getUserData, getSelectedIssue, getRecentIssueIds, getIssuesMap } from 'selectors';
 import moment from 'moment';
 import { jts } from 'time-util';
 import mixpanel from 'mixpanel-browser';
@@ -203,7 +203,11 @@ export function* addManualWorklogFlow(): Generator<*, *, *> {
       mixpanel.people.increment('Logged time(seconds)', timeSpentSeconds);
       yield call(delay, 1000);
       yield call(notify, '', 'Manual worklog succesfully added');
-      yield put(issuesActions.addWorklogToIssue(newWorklog, issueId));
+      // need to update issue if it is still present in reducer
+      const issues = yield select(getIssuesMap);
+      if (issues[issueId]) {
+        yield put(issuesActions.addWorklogToIssue(newWorklog, issueId));
+      }
       // neew to add issue in recent issues list if it's not there
       const recentIssueIds = yield select(getRecentIssueIds);
       if (!recentIssueIds.includes(selectedIssue.id)) {
