@@ -203,19 +203,6 @@ export function* addManualWorklogFlow(): Generator<*, *, *> {
       mixpanel.people.increment('Logged time(seconds)', timeSpentSeconds);
       yield call(delay, 1000);
       yield call(notify, '', 'Manual worklog succesfully added');
-      // need to update issue if it is still present in reducer
-      const issues = yield select(getIssuesMap);
-      if (issues[issueId]) {
-        yield put(issuesActions.addWorklogToIssue(newWorklog, issueId));
-      }
-      // neew to add issue in recent issues list if it's not there
-      const recentIssueIds = yield select(getRecentIssueIds);
-      if (!recentIssueIds.includes(selectedIssue.id)) {
-        const newRecentIssueIds = [...recentIssueIds];
-        newRecentIssueIds.push(selectedIssue.id);
-        yield put(issuesActions.fillRecentIssueIds(newRecentIssueIds));
-      }
-      // need to reselect issue to update issue saved in selectedIssue
       const newIssue = {
         ...selectedIssue,
         fields: {
@@ -229,6 +216,21 @@ export function* addManualWorklogFlow(): Generator<*, *, *> {
           },
         },
       };
+      // need to update issue if it is still present in reducer
+      const issues = yield select(getIssuesMap);
+      if (issues[issueId]) {
+        yield put(issuesActions.addWorklogToIssue(newWorklog, issueId));
+      } else {
+        yield put(issuesActions.addIssues({ map: { [issueId]: newIssue }, ids: [issueId] }));
+      }
+      // neew to add issue in recent issues list if it's not there
+      const recentIssueIds = yield select(getRecentIssueIds);
+      if (!recentIssueIds.includes(selectedIssue.id)) {
+        const newRecentIssueIds = [...recentIssueIds];
+        newRecentIssueIds.push(selectedIssue.id);
+        yield put(issuesActions.fillRecentIssueIds(newRecentIssueIds));
+      }
+      // need to reselect issue to update issue saved in selectedIssue
       yield put(issuesActions.selectIssue(newIssue));
     }
   } catch (err) {
@@ -264,7 +266,6 @@ export function* deleteWorklogFlow({ payload }: DeleteWorklogRequestAction): Gen
     };
     yield call(Api.deleteWorklog, opts);
     yield call(infoLog, 'worklog deleted', worklog);
-    yield put(issuesActions.deleteWorklogFromIssue(worklog, worklog.issueId));
     // need to reselect issue to update issue saved in selectedIssue
     const newIssue = {
       ...selectedIssue,
@@ -279,8 +280,15 @@ export function* deleteWorklogFlow({ payload }: DeleteWorklogRequestAction): Gen
         },
       },
     };
+    const issueId = worklog.issueId;
+    const issues = yield select(getIssuesMap);
+    if (issues[issueId]) {
+      yield put(issuesActions.deleteWorklogFromIssue(worklog, issueId));
+    } else {
+      yield put(issuesActions.addIssues({ map: { [issueId]: newIssue }, ids: [issueId] }));
+    }
     yield put(issuesActions.selectIssue(newIssue));
-    // neew to delete issue from recent issues list if you deleted your last worklog
+    // need to delete issue from recent issues list if you deleted your last worklog
     const { key } = yield select(getUserData);
     const selfWorklogs = filter(
       newIssue.fields.worklog.worklogs,
