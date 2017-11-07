@@ -14,13 +14,11 @@ import { throwError, notify } from './ui';
 
 import type { SelectProjectAction, Id, SidebarType, ProjectType } from '../types';
 
-export function* fetchProjects(): Generator<*, *, *> {
+export function* fetchBoards(): Generator<*, void, *> {
   try {
     yield put(projectsActions.setProjectsFetching(true));
-    const projects = yield call(Api.fetchProjects);
     const boards = yield call(Api.fetchAllBoards);
     const normalizedBoards = yield call(normalizePayload, boards.values, 'boards');
-    const normalizedProjects = yield call(normalizePayload, projects, 'projects');
     const { scrumBoards, kanbanBoards } = normalizedBoards.ids.reduce(
       (filter, id) => (
         normalizedBoards.map[id].type === 'scrum'
@@ -29,8 +27,22 @@ export function* fetchProjects(): Generator<*, *, *> {
       ) && filter,
       { scrumBoards: [], kanbanBoards: [] },
     );
-    yield put(projectsActions.fillProjects(normalizedProjects));
     yield put(projectsActions.fillBoards(normalizedBoards, scrumBoards, kanbanBoards));
+  } catch (err) {
+    yield call(notify, '', 'Failed to load boards, check your permissions');
+    yield put(projectsActions.setProjectsFetching(false));
+    yield call(throwError, err);
+    Raven.captureException(err);
+  }
+}
+
+export function* fetchProjects(): Generator<*, *, *> {
+  try {
+    yield put(projectsActions.setProjectsFetching(true));
+    const projects = yield call(Api.fetchProjects);
+    const normalizedProjects = yield call(normalizePayload, projects, 'projects');
+    yield put(projectsActions.fillProjects(normalizedProjects));
+    yield call(fetchBoards);
     const lastProjectSelected: Id | null = yield call(getFromStorage, 'lastProjectSelected');
     const lastProjectSelectedType: ProjectType | null = yield call(getFromStorage, 'lastProjectSelectedType');
     if (lastProjectSelected) {
