@@ -23,3 +23,6 @@ export const getScreenshots =
 
 export const getIdles =
   ({ timer }: { timer: TimerState }): Array<any> => timer.idles;
+
+export const getKeepedIdles =
+  ({ timer }: { timer: TimerState }): Array<any> => timer.keepedIdles;

@@ -1,17 +1,18 @@
 // @flow
-import { put, call, select, takeLatest, take } from 'redux-saga/effects';
+import { put, call, select, takeLatest, take, fork } from 'redux-saga/effects';
 import Raven from 'raven-js';
 import normalizePayload from 'normalize-util';
 
 import { types, projectsActions, issuesActions } from 'actions';
-import { getSelectedBoardId } from 'selectors';
+import { getSelectedBoardId, getSidebarType } from 'selectors';
 import * as Api from 'api';
 
 import { setToStorage, getFromStorage } from './storage';
 
+import { fetchRecentIssues } from './issues';
 import { throwError, notify } from './ui';
 
-import type { SelectProjectAction, Id, ProjectType } from '../types';
+import type { SelectProjectAction, Id, SidebarType, ProjectType } from '../types';
 
 export function* fetchProjects(): Generator<*, *, *> {
   try {
@@ -75,5 +76,9 @@ export function* watchProjectSelection(): Generator<*, *, *> {
     yield put(issuesActions.selectIssue(null));
     yield put(issuesActions.clearIssues());
     yield put(issuesActions.fetchIssuesRequest());
+    const sidebarType: SidebarType = yield select(getSidebarType);
+    if (sidebarType === 'recent') {
+      yield fork(fetchRecentIssues);
+    }
   }
 }

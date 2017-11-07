@@ -1,6 +1,6 @@
 {
   "name": "Chronos",
-  "version": "2.2.0-beta.1",
+  "version": "2.2.0",
   "description": "Full functionality time tracking software with direct JIRA integration",
   "scripts": {
     "test": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 node --trace-warnings ./test/runTests.js",
@@ -53,6 +53,7 @@
       "main.prod.js.map",
       "package.json"
     ],
+    "asarUnpack": "./node_modules/node-notifier/vendor/**",
     "dmg": {
       "contents": [
         {
@@ -193,7 +194,7 @@
     "commitizen": "^2.9.6",
     "electron-json-storage": "^3.1.0",
     "electron-log": "^2.2.9",
-    "electron-updater": "^2.13.0",
+    "electron-updater": "^2.16.2",
     "font-awesome": "^4.7.0",
     "immutable": "^3.8.1",
     "jira-connector": "github:web-pal/jira-connector",

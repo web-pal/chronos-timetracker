@@ -20,6 +20,7 @@ export const getWorklogListScrollIndex = createSelector(
   (selectedWorklogId, issue) => {
     if (!issue) return 0;
     const worklogs = issue.fields.worklog.worklogs;
+    if (!worklogs.findIndex) return 0;
     return worklogs.findIndex((w) => w.id === selectedWorklogId);
   },
 );

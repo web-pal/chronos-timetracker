@@ -16,6 +16,7 @@ import {
   getWorklogComment,
   getLastScreenshotTime,
   getLocalDesktopSettings,
+  getKeepedIdles,
   getIdles,
 } from 'selectors';
 import Raven from 'raven-js';
@@ -99,10 +100,6 @@ function* idleCheck(secondsToMinutesGrid) {
       totalIdleTimeDuringOneMinute += prevIdleTime;
     }
     prevIdleTime = idleTime;
-    if (currentTime % 60 === secondsToMinutesGrid) {
-      // yield put(timerActions.addIdleTime(totalIdleTimeDuringOneMinute));
-      totalIdleTimeDuringOneMinute = 0;
-    }
   } catch (err) {
     yield call(throwError, err);
     Raven.captureException(err);
@@ -117,7 +114,6 @@ function* screenshotsCheck() {
     const time = yield select(getTimerTime);
     const idleState = yield select(getTimerIdleState);
     let periods = yield select(getScreenshotPeriods);
-    console.log('SCREENSHOTS CHECK', periods);
     if (time === periods[0]) {
       if (!idleState) {
         yield fork(takeScreenshot);
@@ -128,6 +124,7 @@ function* screenshotsCheck() {
     if (time === nextPeriod) {
       nextPeriod += screenshotsPeriod;
       periods = randomPeriods(screenshotsQuantity, time, nextPeriod);
+      yield call(infoLog, 'created new screenshot periods', periods);
       yield put(timerActions.setScreenshotPeriods(periods));
     }
   } catch (err) {
@@ -144,7 +141,11 @@ function* activityCheck(secondsToMinutesGrid) {
         infoLog,
         `add idle time -- ${totalIdleTimeDuringOneMinute} seconds`,
       );
-      yield put(timerActions.addIdleTime(totalIdleTimeDuringOneMinute));
+      const idle = {
+        from: time - totalIdleTimeDuringOneMinute,
+        to: time,
+      };
+      yield put(timerActions.addIdleTime(idle));
       totalIdleTimeDuringOneMinute = 0;
     }
   } catch (err) {
@@ -193,6 +194,7 @@ export function* runTimer(channel) {
   const periodRange = (periodNumber * minutePeriod) - minutes;
   nextPeriod = (periodRange * 60) - currentSeconds;
   const initialPeriods = randomPeriods(screenshotsQuantity, 1, nextPeriod);
+  yield call(infoLog, 'created initial screenshot periods', initialPeriods);
   yield put(timerActions.setScreenshotPeriods(initialPeriods));
   yield takeEvery(channel, timerStep, screenshotsAllowed, secondsToMinutesGrid);
 }
@@ -206,12 +208,13 @@ function* stopTimer(channel, timerInstance) {
     const time = yield select(getTimerTime);
     const comment = yield select(getWorklogComment);
     const screenshots = yield select(getScreenshots);
-    const keepedIdles = yield select(getIdles);
+    const keepedIdles = yield select(getKeepedIdles);
+    const idles = yield select(getIdles);
     const { screenshotsPeriod } = yield select(getScreenshotsSettings);
     // TODO
     const worklogType = null;
     const activity = calculateActivity({
-      currentIdleList: keepedIdles.map(idle => idle.to - idle.from),
+      currentIdleList: idles.map(idle => idle.to - idle.from),
       timeSpentSeconds: time,
       screenshotsPeriod,
       firstPeriodInMinute: 1,
