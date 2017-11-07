@@ -91,7 +91,9 @@ export function* uploadScreenshot({
 
 export function* rejectScreenshot(screenshotPath) {
   const lastScreenshotTime = yield select(getLastScreenshotTime);
-  yield put(timerActions.setTime(lastScreenshotTime));
+  const time = yield select(getTimerTime);
+  const timeDiff = time - lastScreenshotTime;
+  yield put(timerActions.dismissIdleTime(timeDiff));
   yield cps(fs.unlink, screenshotPath);
 }
 
