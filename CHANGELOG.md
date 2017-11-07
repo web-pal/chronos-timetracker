@@ -1,3 +1,22 @@
+<a name="2.2.0"></a>
+# [2.2.0](https://github.com/web-pal/Chronos/compare/2.2.0-beta.1...2.2.0) (2017-11-07)
+
+
+### Bug Fixes
+
+* fixed flow errors and idle time ([b3f9b81](https://github.com/web-pal/Chronos/commit/b3f9b81))
+* **Browsing Issues:** finally fix worklogs crashing ([891b60e](https://github.com/web-pal/Chronos/commit/891b60e))
+* **Browsing Issues:** fix manual worklog adding when issue is gone bug ([5d7cc86](https://github.com/web-pal/Chronos/commit/5d7cc86))
+* **Browsing Issues:** fix recent issues don't refetch on project change ([6857ae2](https://github.com/web-pal/Chronos/commit/6857ae2))
+* **Browsing Issues:** fix worklog deleting ([1c6ed26](https://github.com/web-pal/Chronos/commit/1c6ed26))
+* **Build:** fix terminal-notifier on production ([eccc0c3](https://github.com/web-pal/Chronos/commit/eccc0c3))
+* **Socket:** fix socket connect ([07a9e0c](https://github.com/web-pal/Chronos/commit/07a9e0c))
+* **Tracking:** fix app crash when issue don't have worklogs ([9879816](https://github.com/web-pal/Chronos/commit/9879816))
+* **Tracking:** fix screenshot reject ([2bab117](https://github.com/web-pal/Chronos/commit/2bab117))
+* **Tracking:** fix screenshots ([7e7fd6c](https://github.com/web-pal/Chronos/commit/7e7fd6c))
+
+
+
 <a name="2.2.0-beta.1"></a>
 # 2.2.0-beta.1 (2017-11-06)
 
