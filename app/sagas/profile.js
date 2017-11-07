@@ -15,13 +15,14 @@ import type {
   AcceptOAuthAction,
 } from '../types';
 
+
 import { getSettings } from './settings';
 import { getWorklogTypes } from './worklogTypes';
 import { fetchIssueTypes, fetchIssueStatuses, fetchIssueFields, fetchEpics } from './issues';
 import { setToStorage, removeFromStorage } from './storage';
 import { throwError } from './ui';
 
-// import Socket from '../socket';
+import Socket from '../socket';
 import jira from '../utils/jiraClient';
 
 export function* initializeMixpanel(): Generator<*, void, *> {
@@ -118,9 +119,9 @@ function* afterLogin(): Generator<*, void, *> {
   yield fork(fetchIssueStatuses);
   yield fork(fetchIssueFields);
   yield fork(fetchEpics);
+  Socket.login();
   // yield put({ type: types.CHECK_OFFLINE_SCREENSHOTS });
   // yield put({ type: types.CHECK_OFFLINE_WORKLOGS });
-  // Socket.login();
 }
 
 export function* loginFlow(): Generator<*, void, *> {
