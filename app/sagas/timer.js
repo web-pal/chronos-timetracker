@@ -100,10 +100,6 @@ function* idleCheck(secondsToMinutesGrid) {
       totalIdleTimeDuringOneMinute += prevIdleTime;
     }
     prevIdleTime = idleTime;
-    if (currentTime % 60 === secondsToMinutesGrid) {
-      // yield put(timerActions.addIdleTime(totalIdleTimeDuringOneMinute));
-      totalIdleTimeDuringOneMinute = 0;
-    }
   } catch (err) {
     yield call(throwError, err);
     Raven.captureException(err);
@@ -128,7 +124,7 @@ function* screenshotsCheck() {
     if (time === nextPeriod) {
       nextPeriod += screenshotsPeriod;
       periods = randomPeriods(screenshotsQuantity, time, nextPeriod);
-      yield call(infoLog, 'created new screenshot periods', initialPeriods);
+      yield call(infoLog, 'created new screenshot periods', periods);
       yield put(timerActions.setScreenshotPeriods(periods));
     }
   } catch (err) {

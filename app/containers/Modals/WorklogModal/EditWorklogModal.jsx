@@ -38,7 +38,7 @@ type State = {
   calendarOpened: boolean,
   date: mixed,
   started: any,
-  comment: string,
+  comment: string | null,
   timeSpent: string,
   jiraTimeError: string | null,
 };

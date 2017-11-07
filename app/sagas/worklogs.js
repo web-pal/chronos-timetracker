@@ -334,8 +334,9 @@ export function* editWorklogFlow({ payload }: EditWorklogRequestAction): Generat
       worklogId: Id,
       adjustEstimate: 'auto',
       worklog: {
+        started: any,
         timeSpentSeconds: number,
-        comment: string,
+        comment?: string | null,
       },
     } = {
       issueId,
