@@ -142,7 +142,6 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
               Epic link:
             </DetailsLabel>
             <DetailsValue>
-              {console.log(epic)}
               {epic
                 ? <IssueLabel
                   backgroundColor={getEpicColor(epic.fields.epicColor)}

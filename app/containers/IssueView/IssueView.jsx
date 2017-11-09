@@ -28,7 +28,7 @@ export type Tab = {
 
 const tabs: { [TabLabel]: Tab } = {
   Details: { label: 'Details', content: <IssueDetails /> },
-  // Comments: { label: 'Comments', content: <IssueComments /> },
+  Comments: { label: 'Comments', content: <IssueComments /> },
   Worklogs: { label: 'Worklogs', content: <IssueWorklogs /> },
   // Reports: { label: 'Report', content: <Statistics /> },
 };

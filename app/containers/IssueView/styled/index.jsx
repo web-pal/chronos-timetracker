@@ -138,4 +138,5 @@ export const IssueViewHeaderContainer = styled.div`
   flex-direction: column;
   margin: 16px 20px;
   min-height: 102px;
+  height: 102px;
 `;

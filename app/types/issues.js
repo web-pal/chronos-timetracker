@@ -21,8 +21,20 @@ export type Version = {
   released: boolean,
 }
 
-// TODO type for issueField
-export type IssueField = any;
+export type IssueField = {
+  id: string,
+  key: string,
+  name: string,
+  custom: boolean,
+  orderable: boolean,
+  navigable: boolean,
+  searchable: boolean,
+  clauseNames: Array<string>,
+  schema: {
+    type: string,
+    system: string,
+  },
+};
 
 export type IssueLabel = string
 
@@ -110,6 +122,16 @@ export type IssueTransition = {
   to: IssueStatus,
 };
 
+export type IssueComment = {
+  author: User,
+  body: string,
+  created: string,
+  id: Id,
+  self: string,
+  updateAuthor: User,
+  updated: string,
+};
+
 export type IssueFilters = {
   type: Array<Id>,
   status: Array<Id>,
@@ -131,6 +153,9 @@ export type IssuesMeta = {|
   +fields: Array<IssueField>,
   +availableTransitions: Array<IssueTransition>,
   +availableTransitionsFetching: boolean,
+  +comments: Array<IssueComment>,
+  +commentsFetching: boolean,
+  +commentsAdding: boolean,
 |}
 
 export type IssuesState = {|
@@ -320,6 +345,38 @@ export type TransitionIssueRequestAction =
 
 export type TransitionIssueRequest = {
   (transition: IssueTransition, issue: Issue): TransitionIssueRequestAction
+};
+
+//
+export type FillCommentsAction =
+  {| type: types.FILL_COMMENTS, +payload: Array<IssueComment> |};
+
+export type FillComments = {
+  (payload: Array<IssueComment>): FillCommentsAction
+};
+
+//
+export type SetCommentsFetchingAction =
+  {| type: types.SET_COMMENTS_FETCHING, +payload: boolean |};
+
+export type SetCommentsFetching = {
+  (payload: boolean): SetCommentsFetchingAction
+};
+
+//
+export type CommentRequestAction =
+  {| type: types.COMMENT_REQUEST, +payload: string, +meta: Issue |};
+
+export type CommentRequest = {
+  (payload: string, meta: Issue): CommentRequestAction
+};
+
+//
+export type SetCommentsAddingAction =
+  {| type: types.SET_COMMENTS_ADDING, +payload: boolean |};
+
+export type SetCommentsAdding = {
+  (payload: boolean): SetCommentsAddingAction
 };
 
 //

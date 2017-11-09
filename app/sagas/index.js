@@ -31,6 +31,7 @@ export default function* rootSaga(): Generator<*, *, *> {
     fork(issueSagas.watchIssueSelect),
     fork(issueSagas.transitionIssueFlow),
     fork(issueSagas.assignIssueFlow),
+    fork(issueSagas.addIssueCommentFlow),
 
     // timer
     fork(timerSagas.watchStartTimer),

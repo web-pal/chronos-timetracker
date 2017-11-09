@@ -180,3 +180,11 @@ export function assignIssue(opts) {
 export function fetchIssueFields() {
   return jira.client.field.getAllFields();
 }
+
+export function fetchIssueComments(issueId) {
+  return jira.client.issue.getComments({ issueId });
+}
+
+export function addComment(opts) {
+  return jira.client.issue.addComment(opts);
+}

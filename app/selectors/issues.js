@@ -14,6 +14,7 @@ import type {
   IssueStatusesMap,
   Issue,
   IssueTransition,
+  IssueComment,
   Id,
 } from '../types';
 
@@ -150,6 +151,14 @@ export const getAvailableTransitions =
 export const getAvailableTransitionsFetching =
   ({ issues }: { issues: IssuesState }): boolean => issues.meta.availableTransitionsFetching;
 
+export const getComments =
+  ({ issues }: { issues: IssuesState }): Array<IssueComment> => issues.meta.comments;
+
+export const getCommentsFetching =
+  ({ issues }: { issues: IssuesState }): boolean => issues.meta.commentsFetching;
+
+export const getCommentsAdding =
+  ({ issues }: { issues: IssuesState }): boolean => issues.meta.commentsAdding;
 
 export const getFieldIdByName =
   ({ issues }: { issues: IssuesState }, fieldName: string): string | null => {
