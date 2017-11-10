@@ -6,7 +6,14 @@ import * as Api from 'api';
 import filter from 'lodash.filter';
 import pull from 'lodash.pull';
 import { types, worklogsActions, uiActions, issuesActions } from 'actions';
-import { getUserData, getSelectedIssue, getRecentIssueIds, getIssuesMap } from 'selectors';
+import {
+  getUserData,
+  getSelectedIssue,
+  getRecentIssueIds,
+  getIssuesMap,
+  getTrackingIssue,
+  getSelectedIssueId,
+} from 'selectors';
 import moment from 'moment';
 import { jts } from 'time-util';
 import mixpanel from 'mixpanel-browser';
@@ -37,6 +44,7 @@ type UploadWorklogOptions = {
 
 export function* uploadWorklog(options: UploadWorklogOptions): Generator<*, *, *> {
   try {
+    const trackingIssue = yield select(getTrackingIssue);
     yield call(
       infoLog,
       'started uploading worklog with options:',
@@ -100,23 +108,36 @@ export function* uploadWorklog(options: UploadWorklogOptions): Generator<*, *, *
       'worklog uploaded',
       worklog,
     );
-    yield put(issuesActions.addWorklogToIssue(worklog, issueId));
-    // need to reselect issue to update issue saved in selectedIssue
-    const selectedIssue = yield select(getSelectedIssue);
-    if (selectedIssue.id === issueId) {
-      const newIssue = {
-        ...selectedIssue,
-        fields: {
-          ...selectedIssue.fields,
-          worklog: {
-            ...selectedIssue.fields.worklog,
-            worklogs: {
-              worklog,
-              ...selectedIssue.fields.worklog.worklogs,
-            },
-          },
+    const newIssue = {
+      ...trackingIssue,
+      fields: {
+        ...trackingIssue.fields,
+        worklog: {
+          ...trackingIssue.fields.worklog,
+          worklogs: [
+            worklog,
+            ...trackingIssue.fields.worklog.worklogs,
+          ],
         },
-      };
+      },
+    };
+    // need to update issue if it is still present in reducer
+    const issues = yield select(getIssuesMap);
+    if (issues[issueId]) {
+      yield put(issuesActions.addWorklogToIssue(worklog, issueId));
+    } else {
+      yield put(issuesActions.addIssues({ map: { [issueId]: newIssue }, ids: [issueId] }));
+    }
+    // neew to add issue in recent issues list if it's not there
+    const recentIssueIds = yield select(getRecentIssueIds);
+    if (!recentIssueIds.includes(trackingIssue.id)) {
+      const newRecentIssueIds = [...recentIssueIds];
+      newRecentIssueIds.push(trackingIssue.id);
+      yield put(issuesActions.fillRecentIssueIds(newRecentIssueIds));
+    }
+    const selectedIssueId = yield select(getSelectedIssueId);
+    // need to reselect issue to update issue saved in selectedIssue
+    if (selectedIssueId === newIssue.id) {
       yield put(issuesActions.selectIssue(newIssue));
     }
   } catch (err) {
