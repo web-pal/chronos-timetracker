@@ -1,30 +1,39 @@
+// @flow
+/* eslint-disable no-console */
 import { take, put, call, fork, select } from 'redux-saga/effects';
-import { ipcRenderer } from 'electron';
 import moment from 'moment';
 import { uiActions, timerActions, issuesActions, types } from 'actions';
 import { getSelectedIssue } from 'selectors';
+import type { LogLevel, LogLevels, FlagType, FlagAction } from '../types';
 
 import createIpcChannel from './ipc';
 
-const LOG_LEVELS = {
+const LOG_LEVELS: LogLevels = {
   info: 'info',
-  verb: 'log',
+  log: 'log',
   error: 'error',
   warn: 'warn',
 };
 
-const mutedText = 'color: #888; font-weight: 100;';
+const mutedText: string = 'color: #888; font-weight: 100;';
 
-const LOG_STYLE = {
+const LOG_STYLE: { [LogLevel]: string } = {
   info: 'color: white; background: blue;',
-  verb: 'color: white; background: magenta;',
+  log: 'color: white; background: magenta;',
   error: 'color: white; background: red;',
   warn: 'color: white; background: orange;',
 };
 
-export function* notify(message = '', title = '', level = 'normal', icon = 'bellIcon') {
-  const newFlag = {
+export function* notify(
+  message: string = '',
+  title: string = '',
+  actions: Array<FlagAction> = [],
+  level: string = 'normal',
+  icon: string = 'bellIcon',
+): Generator<*, void, *> {
+  const newFlag: FlagType = {
     title,
+    actions,
     appearance: level,
     description: message,
     icon,
@@ -32,8 +41,8 @@ export function* notify(message = '', title = '', level = 'normal', icon = 'bell
   yield put(uiActions.addFlag(newFlag));
 }
 
-export function* infoLog(...argw) {
-  const level = LOG_LEVELS.info;
+export function* infoLog(...argw: any): Generator<*, void, *> {
+  const level: LogLevel = LOG_LEVELS.info;
   yield call(
     console.groupCollapsed,
     `%c log %c ${level} %c ${argw[0]} %c @ ${moment().format('hh:mm:ss')}`,
@@ -46,7 +55,7 @@ export function* infoLog(...argw) {
   yield call(console.groupEnd);
 }
 
-export function* throwError(err) {
+export function* throwError(err: mixed): Generator<*, void, *> {
   yield call(console.error, err);
   // TODO
   // yield call(notify, 'unexpected error in runtime', 'Error in runtime', 'normal', 'errorIcon');

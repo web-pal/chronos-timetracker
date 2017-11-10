@@ -2,6 +2,7 @@
 import { put, call, select, takeLatest, take, fork } from 'redux-saga/effects';
 import Raven from 'raven-js';
 import normalizePayload from 'normalize-util';
+import { openURLInBrowser } from 'external-open-util';
 
 import { types, projectsActions, issuesActions } from 'actions';
 import { getSelectedBoardId, getSidebarType } from 'selectors';
@@ -12,7 +13,7 @@ import { setToStorage, getFromStorage } from './storage';
 import { fetchRecentIssues } from './issues';
 import { throwError, notify } from './ui';
 
-import type { SelectProjectAction, Id, SidebarType, ProjectType } from '../types';
+import type { SelectProjectAction, Id, SidebarType, ProjectType, FlagAction } from '../types';
 
 export function* fetchBoards(): Generator<*, void, *> {
   try {
@@ -29,10 +30,21 @@ export function* fetchBoards(): Generator<*, void, *> {
     );
     yield put(projectsActions.fillBoards(normalizedBoards, scrumBoards, kanbanBoards));
   } catch (err) {
-    yield call(notify, '', 'Failed to load boards, check your permissions');
     yield put(projectsActions.setProjectsFetching(false));
     yield call(throwError, err);
-    Raven.captureException(err);
+    if (JSON.parse(err).statusCode === 403) {
+      const helpUrl =
+        'https://web-pal.atlassian.net/wiki/spaces/CHRONOS/pages/173899778/Problem+with+loading+boards';
+      const flagActions: Array<FlagAction> = [
+        {
+          content: 'How to resolve this?',
+          onClick: openURLInBrowser(helpUrl),
+        },
+      ];
+      yield call(notify, '', 'Can not load boards', flagActions);
+    } else {
+      Raven.captureException(err);
+    }
   }
 }
 
