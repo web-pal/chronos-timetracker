@@ -38,6 +38,12 @@ import type {
   CommentRequestAction,
 } from '../types';
 
+const JQL_RESTRICTED_CHARS_REGEX = /[+.,;?|*/%^$#@[\]]/;
+
+export function transformFilterValue(value: string): string {
+  return JQL_RESTRICTED_CHARS_REGEX.test(value) ? `"${value}"` : String(value);
+}
+
 export function* fetchIssues({
   payload: { startIndex, stopIndex, search },
 }: FetchIssuesRequestAction): Generator<*, *, *> {
@@ -270,6 +276,7 @@ function* onSidebarTabChange({ payload }: { payload: string }): Generator<*, *, 
 export function* watchSidebarTabChange(): Generator<*, *, *> {
   yield takeEvery(types.SET_SIDEBAR_TYPE, onSidebarTabChange);
 }
+
 
 function* handleIssueFiltersChange(): Generator<*, *, *> {
   yield call(delay, 500);

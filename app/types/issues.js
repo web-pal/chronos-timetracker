@@ -30,9 +30,9 @@ export type IssueField = {
   navigable: boolean,
   searchable: boolean,
   clauseNames: Array<string>,
-  schema: {
+  schema?: {
     type: string,
-    system: string,
+    system?: string,
   },
 };
 
