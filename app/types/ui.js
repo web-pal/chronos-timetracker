@@ -6,11 +6,23 @@ export type AuthFormStep = 1 | 2;
 
 export type FlagAppearance = 'error' | 'info' | 'normal' | 'success' | 'warning';
 
+export type LogLevel = 'info' | 'error' | 'warn' | 'log';
+
+export type LogLevels = { [LogLevel]: LogLevel };
+
+export type FlagAction = {
+  content: string,
+  onClick: {
+    (): void
+  },
+}
+
 export type FlagType = {
   title: string,
   appearance: string,
   description: string,
   icon: Node,
+  actions?: Array<FlagAction>,
 };
 
 export type FlagsArray = Array<FlagType>;
