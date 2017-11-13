@@ -13,9 +13,14 @@ import {
 } from 'selectors';
 
 import TimestampItem from './SidebarTimestampItem';
-import SidebarItem from './SidebarItem';
+import WorklogItem from './WorklogItem/WorklogItem';
 
 import type { IssuesMap, SelectIssue, SelectWorklog, Id } from '../../../types';
+
+import {
+  RecentItemsContainer,
+  RecentItemsBlock,
+} from './styled';
 
 moment.locale('en', {
   calendar: {
@@ -56,19 +61,19 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
   selectWorklog,
 }: Props): Node => (fetching ?
   <RecentItemsPlaceholder /> :
-  <div className="RecentItems" style={{ display: sidebarType === 'recent' ? 'block' : 'none' }}>
+  <RecentItemsContainer style={{ display: sidebarType === 'recent' ? 'block' : 'none' }}>
     {Object.keys(items).sort(daySorter).map((key) => {
       const item = items[key].sort(worklogSorter);
 
       return (
-        <Flex key={key} column className="RecentItems__block">
+        <RecentItemsBlock key={key}>
           <TimestampItem
             date={moment(key)}
             worklogs={item}
           />
           <Flex column className="RecentItems__list">
             {item.map((worklog, i) =>
-              <SidebarItem
+              <WorklogItem
                 key={`${key}_${worklog.id}_${i}`}
                 issue={worklog.issue}
                 active={selectedWorklogId === worklog.id}
@@ -80,10 +85,10 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
               />,
             )}
           </Flex>
-        </Flex>
+        </RecentItemsBlock>
       );
     })}
-  </div>);
+  </RecentItemsContainer>);
 
 function mapStateToProps(state) {
   return {

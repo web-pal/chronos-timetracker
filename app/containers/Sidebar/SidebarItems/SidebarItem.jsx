@@ -35,11 +35,6 @@ const SidebarItem: StatelessFunctionalComponent<Props> = ({
     active={active}
     onClick={() => {
       selectIssue(issue);
-      // if (worklog) {
-      // selectWorklog(worklog.get('id'));
-      // } else {
-      // selectWorklogByIssueId(issue.get('id'));
-      // }
     }}
   >
     <Flex row style={{ alignItems: 'flex-end' }}>

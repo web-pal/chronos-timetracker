@@ -180,3 +180,4 @@ export const TimeLogged = styled.span`
   display: block;
   transform: translateY(-2px);
 `;
+

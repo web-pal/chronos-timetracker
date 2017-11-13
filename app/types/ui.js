@@ -29,7 +29,7 @@ export type FlagsArray = Array<FlagType>;
 
 export type SidebarType = 'all' | 'recent';
 
-export type TabLabel = 'Details' | 'Comments' | 'Worklogs';
+export type TabLabel = 'Details' | 'Comments' | 'Worklogs' | 'Report';
 
 // TODO update info type
 export type UpdateInfo = any;
