@@ -15,7 +15,7 @@ import {
 
 import SidebarNoItems from './SidebarNoItems';
 import SidebarAllItems from './SidebarAllItems';
-import SidebarRecentItems from './SidebarRecentItems';
+import SidebarRecentItems from '../SidebarRecentItems/SidebarRecentItems';
 
 import type { SidebarType } from '../../../types';
 

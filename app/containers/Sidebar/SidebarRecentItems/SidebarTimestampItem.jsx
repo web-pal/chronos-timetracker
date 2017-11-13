@@ -3,9 +3,12 @@ import React from 'react';
 import type { StatelessFunctionalComponent, Node } from 'react';
 import moment from 'moment';
 import { stj } from 'time-util';
-import { Flex } from 'components';
 
 import type { Worklog } from '../../../types';
+
+import {
+  Timestamp,
+} from './styled';
 
 type Props = {
   date: any,
@@ -16,14 +19,13 @@ const TimestampItem: StatelessFunctionalComponent<Props> = ({
   date,
   worklogs,
 }: Props): Node =>
-  <Flex row className="RecentItems__timestamp">
+  <Timestamp>
     <span>
       {moment(date).calendar()}&nbsp;
     </span>
-    <span className="flex-item--end">
+    <span>
       {stj(worklogs.reduce((total, item) => total + item.timeSpentSeconds, 0), 'h[h] m[m]')}
-      &nbsp;Total
     </span>
-  </Flex>;
+  </Timestamp>;
 
 export default TimestampItem;
