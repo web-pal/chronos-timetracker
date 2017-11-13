@@ -13,7 +13,7 @@ import type { Id, TabLabel } from '../../types';
 import IssueDetails from './IssueDetails/IssueDetails';
 import IssueComments from './IssueComments/IssueComments';
 import IssueWorklogs from './IssueWorklogs/IssueWorklogs';
-import IssueReport from './IssueReport/IssueReport';
+// import IssueReport from './IssueReport/IssueReport';
 import TrackingBar from './TrackingBar/TrackingBar';
 
 type Props = {
@@ -31,7 +31,7 @@ const tabs: { [TabLabel]: Tab } = {
   Details: { label: 'Details', content: <IssueDetails /> },
   Comments: { label: 'Comments', content: <IssueComments /> },
   Worklogs: { label: 'Worklogs', content: <IssueWorklogs /> },
-  Report: { label: 'Report', content: <IssueReport /> },
+  // Report: { label: 'Report', content: <IssueReport /> },
 };
 
 const IssueView: StatelessFunctionalComponent<Props> = ({

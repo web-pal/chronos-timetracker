@@ -1,10 +1,8 @@
 import React from 'react';
 import type { StatelessFunctionalComponent, Node } from 'react';
-import moment from 'moment';
 
 import Tooltip from '@atlaskit/tooltip';
 import CommentIcon from '@atlaskit/icon/glyph/comment';
-import CameraIcon from '@atlaskit/icon/glyph/camera';
 import { Flex } from 'components';
 import {
   WorklogItemContainer,
