@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import FieldTextArea from '@atlaskit/field-text-area';
 
 export const ActivitySection = styled.div`
 `;
@@ -6,19 +7,29 @@ export const ActivitySection = styled.div`
 export const AddCommentContainer = styled.div`
 `;
 
-export const AddCommentInput = styled.textarea`
-  transition: all 0.1s ease;
-  box-sizing: border-box;
+export const CommentInputContainer = styled.div`
   min-height: 60px;
   max-width: 340px;
   padding: 7px 8px;
   width: 100%;
+  margin-left: 40px;
+  margin-top: -20px;
+`;
+
+export const Actions = styled.div`
+  padding: 10px 0px;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-end;
+`;
+
+export const AddCommentInput = styled(FieldTextArea)`
+  transition: all 0.1s ease;
+  box-sizing: border-box;
   background-color: #F4F5F7;
   border: 1px solid #DFE1E6;
   border-radius: 3px;
   resize: none;
-  font-size: 14px;
-  margin-left: 48px;
 `;
 
 export const Mention = styled.a`
@@ -30,10 +41,19 @@ export const Mention = styled.a`
   cursor: pointer;
 `;
 
+export const CommentInput = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+`;
+
 export const Commentd = styled.div`
   display: flex;
   flex-direction: column;
-  min-height: 140px;
+  padding: 10px;
+  :hover {
+    background: #f4f5f7;
+  }
 `;
 
 export const CommentDate = styled.span`

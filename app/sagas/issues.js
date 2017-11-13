@@ -13,9 +13,11 @@ import {
   getUserData,
   getRecentIssueIds,
   getIssuesSearchValue,
+  getComments,
   getFoundIssueIds,
   getIssueFilters,
   getSelectedIssueId,
+  getSelectedIssue,
   getIssueViewTab,
   getSelectedProjectType,
 } from 'selectors';
@@ -32,7 +34,15 @@ import type {
   User,
   IssueFilters,
   SelectIssueAction,
+  Issue,
+  CommentRequestAction,
 } from '../types';
+
+const JQL_RESTRICTED_CHARS_REGEX = /[+.,;?|*/%^$#@[\]]/;
+
+export function transformFilterValue(value: string): string {
+  return JQL_RESTRICTED_CHARS_REGEX.test(value) ? `"${value}"` : String(value);
+}
 
 export function* fetchIssues({
   payload: { startIndex, stopIndex, search },
@@ -189,6 +199,23 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
   }
 }
 
+export function* getIssueComments(): Generator<*, void, *> {
+  try {
+    const selectedIssue: Issue = yield select(getSelectedIssue);
+    yield put(issuesActions.setCommentsFetching(true));
+    const issueId: Id = selectedIssue.id;
+    yield call(infoLog, `fetching comments for issue ${issueId}`);
+    const { comments } = yield call(Api.fetchIssueComments, issueId);
+    yield call(infoLog, `got comments for issue ${issueId}`, comments);
+    yield put(issuesActions.fillComments(comments));
+    yield put(issuesActions.setCommentsFetching(false));
+  } catch (err) {
+    yield put(issuesActions.setCommentsFetching(false));
+    yield call(throwError, err);
+    Raven.captureException(err);
+  }
+}
+
 function* getIssueTransitions(issueId: string): Generator<*, void, *> {
   try {
     yield put(issuesActions.setAvailableTransitionsFetching(true));
@@ -250,6 +277,7 @@ export function* watchSidebarTabChange(): Generator<*, *, *> {
   yield takeEvery(types.SET_SIDEBAR_TYPE, onSidebarTabChange);
 }
 
+
 function* handleIssueFiltersChange(): Generator<*, *, *> {
   yield call(delay, 500);
   yield put(issuesActions.fetchIssuesRequest({ startIndex: 0, stopIndex: 10, search: true }));
@@ -266,6 +294,7 @@ export function* issueSelectFlow({ payload, meta }: SelectIssueAction): Generato
   const issueViewTab = yield select(getIssueViewTab);
   if (payload) {
     yield fork(getIssueTransitions, payload.id);
+    yield fork(getIssueComments, payload.id);
     if (payload) {
       const issueKey = payload.key;
       ipcRenderer.send('select-issue', issueKey);
@@ -380,6 +409,37 @@ export function* fetchEpics(): Generator<*, void, *> {
     const normalizedEpics = yield call(normalizePayload, issues, 'epics');
     yield put(issuesActions.fillEpics(normalizedEpics));
   } catch (err) {
+    yield call(throwError, err);
+    Raven.captureException(err);
+  }
+}
+
+
+export function* addIssueCommentFlow(): Generator<*, void, *> {
+  try {
+    while (true) {
+      const { payload, meta }: CommentRequestAction = yield take(types.COMMENT_REQUEST);
+      yield call(infoLog, 'adding comment', payload, meta);
+      yield put(issuesActions.setCommentsAdding(true));
+      const opts = {
+        issueId: meta.id,
+        comment: {
+          body: payload,
+        },
+      };
+      const newComment = yield call(Api.addComment, opts);
+      yield call(infoLog, 'comment added', newComment);
+      const comments = yield select(getComments);
+      const newComments = [
+        ...comments,
+        newComment,
+      ];
+      yield put(issuesActions.fillComments(newComments));
+      yield put(issuesActions.setCommentsAdding(false));
+    }
+  } catch (err) {
+    yield put(issuesActions.setCommentsAdding(false));
+    yield call(notify, '', 'failed to add comment');
     yield call(throwError, err);
     Raven.captureException(err);
   }

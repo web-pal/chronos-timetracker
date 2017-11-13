@@ -2,6 +2,7 @@ export Flex from './Flex/Flex';
 export AutoSizeableList from './Virtualized/AutosizableList';
 export InfiniteLoadingList from './Virtualized/InfiniteLoadingList';
 export IssueItemPlaceholder from './Placeholders/IssueItemPlaceholder/IssueItemPlaceholder';
+export IssueCommentPlaceholder from './Placeholders/IssueCommentPlaceholder/IssueCommentPlaceholder.jsx';
 export IssueViewPlaceholder from './Placeholders/IssueViewPlaceholder/IssueViewPlaceholder';
 export RecentItemsPlaceholder from './Placeholders/RecentItemsPlaceholder/RecentItemsPlaceholder';
 export Img from './Img/Img';

@@ -25,7 +25,13 @@ const FlagsContainer: StatelessFunctionalComponent<Props> = ({
 }: Props): Node => (
   <FlagGroup onDismissed={removeFlag}>
     {flags.map((flag, i) => (
-      <Flag key={i} {...flag} icon={getIcon(flag.icon)} onDismissed={() => {}} isDismissAllowed />
+      <Flag
+        key={i}
+        {...flag}
+        icon={getIcon(flag.icon)}
+        onDismissed={() => {}}
+        isDismissAllowed
+      />
     ))}
   </FlagGroup>
 );

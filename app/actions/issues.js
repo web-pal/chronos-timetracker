@@ -21,13 +21,17 @@ import type {
   FillAvailableTransitions, FillAvailableTransitionsAction,
   SetAvailableTransitionsFetching, SetAvailableTransitionsFethchingAction,
   TransitionIssueRequest, TransitionIssueRequestAction,
+  FillComments, FillCommentsAction,
+  SetCommentsFetching, SetCommentsFetchingAction,
+  CommentRequest, CommentRequestAction,
+  SetCommentsAdding, SetCommentsAddingAction,
   SetIssueStatus, SetIssueStatusAction,
   AssignIssueRequest, AssignIssueRequestAction,
   SetIssueAssignee, SetIssueAssigneeAction,
   FillIssueFields, FillIssueFieldsAction,
   FillEpics, FillEpicsAction,
   IssuesMap, Id, IssueTypesMap, IssueStatus, IssueStatusesMap, Issue, Worklog, IssueTransition,
-  User, IssueField,
+  User, IssueField, IssueComment,
 } from '../types';
 
 export const fetchIssuesRequest: FetchIssuesRequest = (
@@ -188,6 +192,36 @@ export const transitionIssueRequest: TransitionIssueRequest = (
   type: types.TRANSITION_ISSUE_REQUEST,
   payload: transition,
   meta: issueToTransition,
+});
+
+export const fillComments: FillComments = (
+  payload: Array<IssueComment>,
+): FillCommentsAction => ({
+  type: types.FILL_COMMENTS,
+  payload,
+});
+
+export const setCommentsFetching: SetCommentsFetching = (
+  payload: boolean,
+): SetCommentsFetchingAction => ({
+  type: types.SET_COMMENTS_FETCHING,
+  payload,
+});
+
+export const commentRequest: CommentRequest = (
+  payload: string,
+  meta: Issue,
+): CommentRequestAction => ({
+  type: types.COMMENT_REQUEST,
+  payload,
+  meta,
+});
+
+export const setCommentsAdding: SetCommentsAdding = (
+  payload: boolean,
+): SetCommentsAddingAction => ({
+  type: types.SET_COMMENTS_ADDING,
+  payload,
 });
 
 export const setIssueStatus: SetIssueStatus = (

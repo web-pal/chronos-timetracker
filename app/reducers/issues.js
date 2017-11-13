@@ -212,6 +212,9 @@ const initialMeta: IssuesMeta = {
   fields: [],
   availableTransitions: [],
   availableTransitionsFetching: false,
+  comments: [],
+  commentsFetching: false,
+  commentsAdding: false,
 };
 
 function meta(state: IssuesMeta = initialMeta, action) {
@@ -277,6 +280,21 @@ function meta(state: IssuesMeta = initialMeta, action) {
       return {
         ...state,
         availableTransitionsFetching: action.payload,
+      };
+    case types.FILL_COMMENTS:
+      return {
+        ...state,
+        comments: action.payload,
+      };
+    case types.SET_COMMENTS_FETCHING:
+      return {
+        ...state,
+        commentsFetching: action.payload,
+      };
+    case types.SET_COMMENTS_ADDING:
+      return {
+        ...state,
+        commentsAdding: action.payload,
       };
     default:
       return state;

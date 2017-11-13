@@ -1,17 +1,24 @@
 // @flow
 import React from 'react';
+import moment from 'moment';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import type { StatelessFunctionalComponent, Node } from 'react';
 import { projectAvatar } from 'data/svg';
-import { Flex } from 'components';
+import { getComments, getCommentsFetching, getSelectedIssue, getCommentsAdding } from 'selectors';
+import { issuesActions } from 'actions';
+import { Flex, IssueCommentPlaceholder } from 'components';
+import ReactMarkdown from 'react-markdown';
+import Spinner from '@atlaskit/spinner';
+import Button from '@atlaskit/button';
 
 import {
   ActivitySection,
   AddCommentInput,
+  Actions,
 
-  Mention,
-  OptionsButton,
-  Dots,
-
+  CommentInputContainer,
+  CommentInput,
   Commentd,
   CommentDate,
   CommentBody,
@@ -20,50 +27,111 @@ import {
   YourComment,
 } from './styled';
 
-const IssueComments: StatelessFunctionalComponent<{}> = (): Node => (
+import type {
+  IssueComment,
+  Issue,
+  CommentRequest,
+} from '../../../types';
+
+type Props = {
+  comments: Array<IssueComment>,
+  fetching: boolean,
+  adding: boolean,
+  selectedIssue: Issue,
+  commentRequest: CommentRequest,
+};
+
+const IssueComments: StatelessFunctionalComponent<Props> = ({
+  comments,
+  fetching,
+  adding,
+  selectedIssue,
+  commentRequest,
+}: Props): Node => (
   <ActivitySection>
     <Flex column>
-      {[1, 2, 3, 4, 5].map((i) => (
-        <Commentd key={i}>
-          <Flex row alignCenter spaceBetween style={{ marginBottom: 5 }}>
-            <Flex row alignCenter>
-              <CommentAvatar src={projectAvatar} alt="" />
-              <Flex row>
-                <CommentAuthor>
-                  Jim Bunnings
-                </CommentAuthor>
-                <CommentDate>
-                  30, August 2016
-                </CommentDate>
+      <Flex column>
+        {fetching && [1, 2, 3, 4, 5, 6].map(i => <IssueCommentPlaceholder key={i} />)}
+        {!fetching && comments.length === 0 &&
+          <Flex row>
+            There are no comments yet on this issue.
+          </Flex>
+        }
+        {!fetching && comments.map((comment) => (
+          <Commentd key={comment.id}>
+            <Flex row alignCenter spaceBetween style={{ marginBottom: 5 }}>
+              <Flex row alignCenter>
+                <CommentAvatar src={projectAvatar} alt="" />
+                <Flex row>
+                  <CommentAuthor>
+                    {comment.author.displayName}
+                  </CommentAuthor>
+                  <CommentDate>
+                    {moment(comment.updated).format('DD, MMMM YYYY')}
+                  </CommentDate>
+                </Flex>
               </Flex>
             </Flex>
-            <OptionsButton>
-              <Dots>...</Dots>
-            </OptionsButton>
+            <Flex column>
+              <CommentBody>
+                <ReactMarkdown
+                  softBreak="br"
+                  source={comment.body}
+                />
+              </CommentBody>
+            </Flex>
+          </Commentd>
+        ))}
+      </Flex>
+      {!fetching &&
+        <CommentInput>
+          <Flex row alignCenter style={{ marginBottom: 5 }}>
+            <CommentAvatar src={projectAvatar} alt="" />
+            <YourComment>
+              Comment
+            </YourComment>
           </Flex>
-          <Flex column>
-            <CommentBody>
-              {"You've mentioned the reasons for changing the name. But what were the reasons for holding onto the old name so long? I remember "}
-              <Mention>@Jesse Byler</Mention>
-              {' suggesting the name change back in January in: Re: Y U NO use Confluence'}
-            </CommentBody>
-          </Flex>
-        </Commentd>
-      ))}
-      <Commentd>
-        <Flex row alignCenter style={{ marginBottom: 5 }}>
-          <CommentAvatar src={projectAvatar} alt="" />
-          <YourComment>
-            Comment
-          </YourComment>
-        </Flex>
-        <AddCommentInput
-          type="text"
-          placeholder="Type your comment here"
-        />
-      </Commentd>
+          <CommentInputContainer>
+            <AddCommentInput
+              type="text"
+              placeholder="Type your comment here"
+              shouldFitContainer
+              id="comment-input"
+            />
+            <Actions>
+              <Button
+                onClick={() => {
+                  const input = document.querySelector('#comment-input');
+                  if (input) {
+                    // $FlowFixMe
+                    const value = input.value;
+                    commentRequest(value, selectedIssue);
+                  }
+                }}
+                iconAfter={adding ? <Spinner /> : null}
+                isDisabled={adding}
+              >
+                Add
+              </Button>
+            </Actions>
+          </CommentInputContainer>
+        </CommentInput>
+      }
     </Flex>
   </ActivitySection>
 );
 
-export default IssueComments;
+function mapStateToProps(state) {
+  return {
+    selectedIssue: getSelectedIssue(state),
+    comments: getComments(state),
+    fetching: getCommentsFetching(state),
+    adding: getCommentsAdding(state),
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(issuesActions, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(IssueComments);
