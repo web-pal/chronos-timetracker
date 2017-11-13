@@ -60,16 +60,18 @@ const WorklogItem: StatelessFunctionalComponent<Props> = ({
           />
         </Tooltip>
         */}
-        <Tooltip
-          description={issue.comment || 'No comment'}
-          position="bottom"
-        >
-          <CommentIcon
-            size="small"
-            label="Momment"
-            primaryColor={(issue.comment && issue.comment !== '') ? '#0052CC' : '#7A869A'}
-          />
-        </Tooltip>
+        {(issue.comment && issue.comment !== '') &&
+          <Tooltip
+            description={issue.comment || 'No comment'}
+            position="bottom"
+          >
+            <CommentIcon
+              size="small"
+              label="Momment"
+              primaryColor={(issue.comment && issue.comment !== '') ? '#0052CC' : '#7A869A'}
+            />
+          </Tooltip>
+        }
       </IssueMeta>
     </Flex>
     <Time>{worklog.timeSpent}</Time>

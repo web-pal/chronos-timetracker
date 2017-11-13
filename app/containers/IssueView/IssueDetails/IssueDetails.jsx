@@ -153,6 +153,15 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
             </DetailsValue>
           </Flex>
 
+          <Flex row spaceBetween>
+            <DetailsLabel>
+              Reporter:
+            </DetailsLabel>
+            <DetailsValue>
+              {issue.fields.reporter.displayName}
+            </DetailsValue>
+          </Flex>
+
         </DetailsColumn>
       </Flex>
 

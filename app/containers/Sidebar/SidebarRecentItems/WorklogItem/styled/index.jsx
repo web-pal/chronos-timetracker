@@ -9,10 +9,15 @@ export const WorklogItemContainer = styled.div`
   background: white;
   border-bottom: 1px solid #dfe1e6;
   cursor: pointer;
-  ${props => props.isSelected && 'background-color: #ebf2f9;'}
   :hover {
-    background-color: #f4f5f7;
+    background-color: #EBECF0;
   }
+  ${props => props.isSelected && `
+    background-color: #ebf2f9;
+    :hover {
+      background-color: #e2edf9;
+    }
+  `}
 `;
 
 export const Summary = styled.span`
