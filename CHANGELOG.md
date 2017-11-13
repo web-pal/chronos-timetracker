@@ -1,3 +1,19 @@
+<a name="2.2.2"></a>
+## [2.2.2](https://github.com/web-pal/chronos-app-jira/compare/2.2.1...2.2.2) (2017-11-13)
+
+
+### Bug Fixes
+
+* **Tracking:** fix bug when new worklog didn't add to recent if lauched tracking from search ([01e766c](https://github.com/web-pal/chronos-app-jira/commit/01e766c))
+
+
+### Features
+
+* **Browsing Issues:** ass link to Jira Software permission problem solution ([95b2b80](https://github.com/web-pal/chronos-app-jira/commit/95b2b80))
+* **Issue Detail View:** implement comments ([b2ae983](https://github.com/web-pal/chronos-app-jira/commit/b2ae983))
+
+
+
 <a name="2.2.0"></a>
 # [2.2.0](https://github.com/web-pal/Chronos/compare/2.2.0-beta.1...2.2.0) (2017-11-07)
 
