@@ -157,6 +157,7 @@ export type {
   LoginError,
   ProfileState,
   AuthFormData,
+  oAuthData,
   LoginRequestAction,
   LoginRequest,
   LoginOAuthRequestAction,

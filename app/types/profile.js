@@ -50,6 +50,14 @@ export type ChronosBackendUserData = {
   token_secret?: string,
 };
 
+export type oAuthData = {
+  token: string,
+  token_secret: string,
+  oauth_verifier: string,
+  consumer_key: string,
+  private_key: string,
+};
+
 export type LoginError = string;
 
 export type ProfileState = {|

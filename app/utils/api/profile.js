@@ -1,28 +1,45 @@
-import { apiUrl } from 'config';
+// @flow
+import { apiUrl } from '../config';
 import jira from '../jiraClient';
 import { getHeaders } from './helper';
+import type { oAuthData } from '../../types';
 
-
-function clearHost(host) {
+function clearHost(host: string): string {
   let formatHost = host.startsWith('https://') ? host.slice(8) : host;
   formatHost = formatHost.startsWith('http://') ? formatHost.slice(7) : formatHost;
   return formatHost;
 }
 
-export function jiraProfile() {
+export function jiraProfile(): Promise<*> {
   return jira.client.myself.getMyself()
     .then(
       res => res,
     );
 }
 
-export function jiraAuth({ host, username, password }) {
+export function jiraAuth({
+  host,
+  username,
+  password,
+}: {
+  host: string,
+  username: string,
+  password: string,
+}): Promise<any> {
   const formatHost = `${clearHost(host)}.atlassian.net`;
   jira.auth(formatHost, username, password);
   return jiraProfile();
 }
 
-export function chronosBackendAuth({ host, username, password }) {
+export function chronosBackendAuth({
+  host,
+  username,
+  password,
+}: {
+  host: string,
+  username: string,
+  password: string,
+}): Promise<*> {
   return fetch(`${apiUrl}/desktop-tracker/authenticate`, {
     method: 'POST',
     headers: {
@@ -43,7 +60,15 @@ export function chronosBackendAuth({ host, username, password }) {
     });
 }
 
-export function chronosBackendOAuth({ baseUrl, token, token_secret }) {
+export function chronosBackendOAuth({
+  baseUrl,
+  token,
+  token_secret,
+}: {
+  baseUrl: string,
+  token: string,
+  token_secret: string,
+}): Promise<*> {
   return fetch(`${apiUrl}/desktop-tracker/authenticate`, {
     method: 'POST',
     headers: {
@@ -58,7 +83,7 @@ export function chronosBackendOAuth({ baseUrl, token, token_secret }) {
   }).then(res => res.json());
 }
 
-export function getOAuthUrl(options) {
+export function getOAuthUrl(options: { oauth: oAuthData, host: string }): Promise<*> {
   return new Promise((resolve) => {
     jira.getOAuthUrl(options, (err, res) => {
       if (err) {
@@ -75,7 +100,7 @@ export function getOAuthUrl(options) {
     );
 }
 
-export function getOAuthToken(options) {
+export function getOAuthToken(options: { oauth: oAuthData, host: string }): Promise<*> {
   return new Promise((resolve) => {
     jira.getOAuthToken(options, (err, res) => {
       if (err) {
@@ -89,23 +114,8 @@ export function getOAuthToken(options) {
     );
 }
 
-export function oAuth(options) {
-  return new Promise((resolve) => {
-    jira.oauth(options, (err, res) => {
-      if (err) {
-        throw new Error(`Error with oAuth: ${err.message}`);
-      }
-      resolve(res);
-    });
-  })
-    .then(
-      (res) => res,
-    );
-}
-
-
-export async function chronosBackendGetJiraCredentials() {
-  const url = `${apiUrl}/desktop-tracker/authenticate`;
+export async function chronosBackendGetJiraCredentials(): Promise<*> {
+  const url: string = `${apiUrl}/desktop-tracker/authenticate`;
   return fetch(url, {
     headers: await getHeaders(),
   })
@@ -117,8 +127,8 @@ export async function chronosBackendGetJiraCredentials() {
     });
 }
 
-export function getDataForOAuth(baseUrl) {
-  const url = `${apiUrl}/desktop-tracker/getDataForOAuth?baseUrl=${baseUrl}`;
+export function getDataForOAuth(baseUrl: string): Promise<*> {
+  const url: string = `${apiUrl}/desktop-tracker/getDataForOAuth?baseUrl=${baseUrl}`;
   return fetch(url, {
     headers: {
       Accept: 'application/json',

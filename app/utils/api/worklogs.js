@@ -1,59 +1,52 @@
-import { apiUrl } from 'config';
-import { sendInfoLog } from 'log-util';
+// @flow
+import { apiUrl } from '../config';
 
 import jira from '../jiraClient';
 import { getHeaders } from './helper';
 
-// Can we fetch only current author worklogs? -- no.
-export function fetchWorklogs(issues) {
+import type { Issue, Id } from '../../types';
+
+export function fetchWorklogs(issues: Array<Issue>): Promise<*> {
   return new Promise((resolve) => {
     const promises = issues.map(issue => (
-      new Promise((resolve) => {
+      // eslint-disable-next-line promise/param-names
+      new Promise((resolve2) => {
         jira.client.issue.getWorkLogs({
           issueId: issue.id,
         }, (err, response) => {
-          resolve(response ? response.worklogs : []);
+          resolve2(response ? response.worklogs : []);
         });
       })
     ));
-    Promise.all(promises).then((results) => {
+    return Promise.all(promises).then((results) => {
       const items = [].concat(...results.map(i => i));
       resolve(items);
+      return items;
     });
   });
 }
 
-export async function fetchChronosBackendWorklogs(ids) {
-  sendInfoLog('call fetchChronosBackendWorklogs', { ids });
+export async function fetchChronosBackendWorklogs(ids: Array<Id>): Promise<*> {
   return fetch(`${apiUrl}/api/tracker/worklogs?worklogIds=${ids.join(',')}`, {
     method: 'GET',
     headers: await getHeaders(),
   }).then(res => res.json());
 }
 
-export function jiraUploadWorklog(opts) {
-  sendInfoLog('call jiraUploadWorklog', opts);
+type jiraUploadOptions = {
+  issueId: Id,
+  adjustEstimate: 'auto',
+  worklog: {
+    timeSpentSeconds: number,
+    comment: string,
+  },
+};
+
+export function jiraUploadWorklog(opts: jiraUploadOptions): Promise<*> {
   return jira.client.issue.addWorkLog(opts);
 }
 
-export function jiraSetWorklogProperty(opts) {
-  sendInfoLog('call jiraSetWorklogProperty', opts);
-  return jira.client.issue.setWorklogProperty(opts);
-}
-
-export function jiraGetWorklogPropertyKeys(opts) {
-  sendInfoLog('call jiraGetWorklogPropertyKeys', opts);
-  return jira.client.issue.getWorkLogProperties(opts);
-}
-
-
-export function jiraGetWorklogProperty(opts) {
-  sendInfoLog('call jiraGetWorklogProperty', opts);
-  return jira.client.issue.getWorkLogProperty(opts);
-}
-
-export async function chronosBackendUploadWorklog(worklog) {
-  sendInfoLog('call chronosBackendUploadWorklog', worklog);
+export async function chronosBackendUploadWorklog(worklog: any): Promise<*> {
   return fetch(`${apiUrl}/api/tracker/worklog`, {
     method: 'POST',
     headers: await getHeaders(),
@@ -61,7 +54,10 @@ export async function chronosBackendUploadWorklog(worklog) {
   });
 }
 
-export async function chronosBackendUpdateWorklogType({ worklogType, worklogId }) {
+export async function chronosBackendUpdateWorklogType({
+  worklogType,
+  worklogId,
+}: { worklogType: string, worklogId: string }): Promise<*> {
   const url = `${apiUrl}/api/tracker/updateWorklogType`;
   const options = {
     method: 'POST',
@@ -72,7 +68,7 @@ export async function chronosBackendUpdateWorklogType({ worklogType, worklogId }
 }
 
 
-export async function signUploadUrlForS3Bucket(fileName) {
+export async function signUploadUrlForS3Bucket(fileName: string): Promise<*> {
   const url = `${apiUrl}/desktop-tracker/sign-bucket-url`;
   const options = {
     method: 'POST',
@@ -88,7 +84,10 @@ export async function signUploadUrlForS3Bucket(fileName) {
     });
 }
 
-export function uploadScreenshotOnS3Bucket({ url, image }) {
+export function uploadScreenshotOnS3Bucket({
+  url,
+  image,
+}: { url: string, image: string }): Promise<*> {
   return fetch(url, {
     method: 'PUT',
     headers: {
@@ -98,19 +97,27 @@ export function uploadScreenshotOnS3Bucket({ url, image }) {
   });
 }
 
-export async function fetchWorklogTypes() {
+export async function fetchWorklogTypes(): Promise<*> {
   const url = `${apiUrl}/api/tracker/settings/worklogTypes`;
   return fetch(url, { headers: await getHeaders() }).then(res => res.json());
 }
 
-export function addWorklog(opts) {
+export function addWorklog(opts: jiraUploadOptions): Promise<*> {
   return jira.client.issue.addWorkLog(opts);
 }
 
-export function deleteWorklog(opts) {
-  return jira.client.issue.deleteWorkLog(opts);
+export function deleteWorklog({
+  issueId,
+  worklogId,
+  adjustEstimate,
+}: {
+  issueId: string,
+  worklogId: string,
+  adjustEstimate: string,
+}): Promise<*> {
+  return jira.client.issue.deleteWorkLog({ issueId, worklogId, adjustEstimate });
 }
 
-export function updateWorklog(opts) {
+export function updateWorklog(opts: jiraUploadOptions): Promise<*> {
   return jira.client.issue.updateWorkLog(opts);
 }

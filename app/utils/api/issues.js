@@ -1,6 +1,7 @@
+// @flow
 import jira from '../jiraClient';
 
-const requiredFields = [
+const requiredFields: Array<string> = [
   'issuetype',
   'project',
   'labels',
@@ -19,62 +20,42 @@ const requiredFields = [
   'components',
 ];
 
-function mapAssignee(assigneeId) {
-  return assigneeId === 'unassigned' ? 'assignee is EMPTY' : 'assignee = currentUser()';
-}
-
-function mapSearchValue(searchValue, projectKey) {
-  if (searchValue.startsWith(`${projectKey}-`)) {
-    return `key = "${searchValue}"`;
-  }
-  if (/^[0-9]*$/.test(searchValue)) {
-    return `(key = "${projectKey}-${searchValue}" OR summary ~ "${searchValue}")`;
-  }
-  return `summary ~ "${searchValue}"`;
-}
-
-export function getIssueTransitions(issueId) {
+export function getIssueTransitions(issueId: string): Promise<*> {
   return jira.client.issue.getTransitions({ issueId });
 }
 
-export function transitionIssue(issueId, transitionId) {
+export function transitionIssue(issueId: string, transitionId: string): Promise<*> {
   return jira.client.issue.transitionIssue({
     issueId,
     transition: transitionId,
   });
 }
 
-export function fetchEpics() {
-  const jql = "issuetype = 'Epic'";
+export function fetchEpics(): Promise<*> {
+  const jql: string = "issuetype = 'Epic'";
   return jira.client.search.search({ jql, maxResults: 1000, startAt: 0 });
 }
+
+type fetchIssuesParams = {
+  startIndex: number,
+  stopIndex: number,
+  jql: string,
+  epicLinkFieldId?: string,
+  projectId: string,
+  projectType: string,
+};
 
 export function fetchIssues({
   startIndex,
   stopIndex,
+  jql,
+  epicLinkFieldId,
   projectId,
   projectType,
-  sprintId,
-  searchValue,
-  projectKey,
-  filters,
-  epicLinkFieldId,
-}) {
-  const typeFilters = filters.type;
-  const statusFilters = filters.status;
-  const assigneeFilter = filters.assignee[0];
-  const jql = [
-    (projectType === 'project' ? `project = ${projectId}` : ''),
-    ((projectType === 'scrum') && sprintId ? `sprint = ${sprintId}` : ''),
-    (searchValue ? mapSearchValue(searchValue, projectKey) : ''),
-    (typeFilters.length ? `issueType in (${typeFilters.join(',')})` : ''),
-    (statusFilters.length ? `status in (${statusFilters.join(',')})` : ''),
-    (assigneeFilter ? mapAssignee(assigneeFilter) : ''),
-  ].filter(f => !!f).join(' AND ');
+}: fetchIssuesParams): Promise<*> {
   const api = projectType === 'project'
     ? opts => jira.client.search.search(opts)
     : opts => jira.client.board.getIssuesForBoard({ ...opts, boardId: projectId });
-  console.log(jql, projectType);
   let _requiredFields = requiredFields;
   if (epicLinkFieldId) {
     _requiredFields = [...requiredFields, epicLinkFieldId];
@@ -87,19 +68,23 @@ export function fetchIssues({
   });
 }
 
-export function fetchIssue(issueId) {
+export function fetchIssue(issueId: string): Promise<*> {
   return jira.client.issue.getIssue({
     issueId,
     fields: requiredFields,
   });
 }
 
-
 export function fetchRecentIssues({
   projectId,
   projectType,
   sprintId,
   worklogAuthor,
+}: {
+  projectId: string,
+  projectType: string,
+  sprintId?: string,
+  worklogAuthor: string,
 }) {
   const jql = [
     (projectType === 'project' ? `project = ${projectId}` : ''),
@@ -119,72 +104,29 @@ export function fetchRecentIssues({
   });
 }
 
-export function fetchSearchIssues({
-  projectId,
-  projectType,
-  sprintId,
-  projectKey,
-  searchValue,
-}) {
-  return new Promise((resolve) => {
-    const promises = [];
-    const searchValueWithKey = (projectType === 'project') && (/^\d+$/.test(searchValue))
-      ? `${projectKey}-${searchValue}`
-      : searchValue;
-
-    const api = projectType === 'project'
-      ? (opts, callback) => jira.client.search.search(opts, callback)
-      : (opts, callback) => jira.client.board.getIssuesForBoard(
-        { ...opts, boardId: projectId },
-        callback,
-      );
-
-    const project = projectType === 'project' ? `project = ${projectId}` : '';
-    const sprint = (projectType === 'scrum') && sprintId ? `sprint = ${sprintId}` : '';
-
-    promises.push(new Promise((r) => {
-      api({
-        jql: [
-          project,
-          sprint,
-          `issuekey = "${searchValueWithKey}"`,
-        ].filter(f => !!f).join(' AND '),
-        maxResults: 1000,
-        fields: requiredFields,
-      }, (error, response) => r(response ? response.issues : []));
-    }));
-
-    promises.push(new Promise((r) => {
-      api({
-        jql: [
-          project,
-          sprint,
-          `summary ~ "${searchValue}"`,
-        ].filter(f => !!f).join(' AND '),
-        maxResults: 1000,
-        fields: requiredFields,
-      }, (error, response) => r(response ? response.issues : []));
-    }));
-
-    Promise.all(promises).then((results) => {
-      const items = [].concat(...results.map(i => i));
-      resolve(items);
-    });
-  });
+export function assignIssue({
+  issueKey,
+  assignee,
+}: { issueKey: string, assignee: string }): Promise<*> {
+  return jira.client.issue.assignIssue({ issueKey, assignee });
 }
 
-export function assignIssue(opts) {
-  return jira.client.issue.assignIssue(opts);
-}
-
-export function fetchIssueFields() {
+export function fetchIssueFields(): Promise<*> {
   return jira.client.field.getAllFields();
 }
 
-export function fetchIssueComments(issueId) {
+export function fetchIssueComments(issueId: string): Promise<*> {
   return jira.client.issue.getComments({ issueId });
 }
 
-export function addComment(opts) {
-  return jira.client.issue.addComment(opts);
+export function addComment({
+  issueId,
+  comment,
+}: {
+  issueId: string,
+  comment: {
+    body: string,
+  }
+}): Promise<*> {
+  return jira.client.issue.addComment({ issueId, comment });
 }
