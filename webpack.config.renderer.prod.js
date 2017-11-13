@@ -41,7 +41,7 @@ if (process.env.UPLOAD_SENTRY !== '0') {
     new SentryPlugin({
       organisation: 'webpal',
       project: 'chronos-desktop',
-      apiKey: '9eacb1fa468a41b29bd005a1a46c039644fe1ca5ea614540b9e6b03db719a5ee',
+      apiKey: process.env.SENTRY_API_KEY,
       release: `${pjson.version}_${process.platform}`,
     }),
   );
