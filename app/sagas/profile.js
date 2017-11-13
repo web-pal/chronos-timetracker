@@ -26,7 +26,7 @@ import Socket from '../socket';
 import jira from '../utils/jiraClient';
 
 export function* initializeMixpanel(): Generator<*, void, *> {
-  yield call(mixpanel.init, '215bb01399c3711761bff4ea32d86337');
+  yield call(mixpanel.init, process.env.MIXPANEL_API_TOKEN); 
 }
 
 function* loginError(error: ErrorObj): Generator<*, void, *> {
