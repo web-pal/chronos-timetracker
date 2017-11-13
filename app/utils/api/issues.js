@@ -40,7 +40,7 @@ type fetchIssuesParams = {
   startIndex: number,
   stopIndex: number,
   jql: string,
-  epicLinkFieldId?: string,
+  epicLinkFieldId?: string | null,
   projectId: string,
   projectType: string,
 };
