@@ -20,13 +20,21 @@ import { getSettings } from './settings';
 import { getWorklogTypes } from './worklogTypes';
 import { fetchIssueTypes, fetchIssueStatuses, fetchIssueFields, fetchEpics } from './issues';
 import { setToStorage, removeFromStorage } from './storage';
-import { throwError } from './ui';
+import { throwError, infoLog } from './ui';
 
 import Socket from '../socket';
 import jira from '../utils/jiraClient';
 
 export function* initializeMixpanel(): Generator<*, void, *> {
-  yield call(mixpanel.init, process.env.MIXPANEL_API_TOKEN); 
+  if (process.env.DISABLE_MIXPANEL === '1') {
+    yield call(infoLog, 'mixpanel disabled with ENV var');
+    yield cancel();
+  }
+  if (!process.env.MIXPANEL_API_TOKEN) {
+    yield call(throwError, 'MIXPANEL_API_TOKEN not set!');
+    yield cancel();
+  }
+  yield call(mixpanel.init, process.env.MIXPANEL_API_TOKEN);
 }
 
 function* loginError(error: ErrorObj): Generator<*, void, *> {
