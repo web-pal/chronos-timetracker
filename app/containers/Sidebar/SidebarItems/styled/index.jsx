@@ -8,9 +8,6 @@ export const IssueContainer = styled.div`
   height: 80px;
   padding: 10px 20px;
   border-bottom: 1px solid rgba(151, 151, 151, .35);
-  :hover {
-    background-color: #F4F5F7;
-  }
   // :first-child {
   //   border-top: 1px solid rgba(151, 151, 151, .35);
   //   >img {
@@ -18,13 +15,12 @@ export const IssueContainer = styled.div`
   //   }
   // }
   ${props => props.active && `
-    background-color: hsla(216, 78%, 96%, 1);
-    background-color: #ebf2f9;
+    background-color: hsla(216, 78%, 96%, 1) !important;
     // border-bottom: 1px solid hsla(216, 48%, 76%, 1);
-    :hover {
-      background-color: #e2edf9;
-    }
   `}
+  :hover {
+    background-color: hsla(216, 18%, 98%, 1);
+  }
 `;
 
 export const IssueName = styled.a`

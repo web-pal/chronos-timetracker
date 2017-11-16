@@ -33,3 +33,6 @@ export const arrowDownWhite = require('./chevron-down-white.svg');
 
 export const taskType = require('./jira/types/task.svg');
 export const majorPriority = require('./jira/priorities/major.svg');
+
+// totally needed
+export const atlassianLogoVertical = require('./atlassian-vertical-white.svg');

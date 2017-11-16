@@ -11,7 +11,7 @@ export const HeaderContainer = styled.header`
   height: 70px;
   min-height: 70px;
   padding: 15px 20px 0px 20px;
-  background-image: linear-gradient(to top, #4778c1 0%, #0052CC 99%, #0052CC 100%);
+  background: #0052CC;
   -webkit-app-region: drag;
 `;
 
