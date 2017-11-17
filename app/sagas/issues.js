@@ -44,6 +44,42 @@ export function transformFilterValue(value: string): string {
   return JQL_RESTRICTED_CHARS_REGEX.test(value) ? `"${value}"` : String(value);
 }
 
+function mapAssignee(assigneeId: string) {
+  return assigneeId === 'unassigned' ? 'assignee is EMPTY' : 'assignee = currentUser()';
+}
+
+function mapSearchValue(searchValue: string, projectKey: string): string {
+  if (searchValue.startsWith(`${projectKey}-`)) {
+    return `key = "${searchValue}"`;
+  }
+  if (/^[0-9]*$/.test(searchValue)) {
+    return `(key = "${projectKey}-${searchValue}" OR summary ~ "${searchValue}")`;
+  }
+  return `summary ~ "${searchValue}"`;
+}
+
+function* buildJQLQuery(): Generator<*, string, *> {
+  const filters: IssueFilters = yield select(getIssueFilters);
+  const typeFilters = filters.type;
+  const statusFilters = filters.status;
+  const assigneeFilter = filters.assignee[0];
+  const selectedProject: Project | null = yield select(getSelectedProject);
+  const projectId: string | null = yield select(getSelectedProjectId);
+  const projectType: string | null = yield select(getSelectedProjectType);
+  const searchValue: string = yield select(getIssuesSearchValue);
+  const sprintId: Id = yield select(getSelectedSprintId);
+  const projectKey: string | null = selectedProject && selectedProject.key;
+  const jql = [
+    (projectType === 'project' && projectId ? `project = ${projectId}` : ''),
+    ((projectType === 'scrum') && sprintId ? `sprint = ${sprintId}` : ''),
+    (searchValue && projectKey ? mapSearchValue(searchValue, projectKey) : ''),
+    (typeFilters.length ? `issueType in (${typeFilters.join(',')})` : ''),
+    (statusFilters.length ? `status in (${statusFilters.join(',')})` : ''),
+    (assigneeFilter ? mapAssignee(assigneeFilter) : ''),
+  ].filter(f => !!f).join(' AND ');
+  return jql;
+}
+
 export function* fetchIssues({
   payload: { startIndex, stopIndex, search },
 }: FetchIssuesRequestAction): Generator<*, *, *> {
@@ -58,22 +94,16 @@ export function* fetchIssues({
       yield put(issuesActions.clearFoundIssueIds());
     }
     const epicLinkFieldId: string | null = yield select(getFieldIdByName, 'Epic Link');
-    const selectedProject: Project | null = yield select(getSelectedProject);
     const selectedProjectId: string | null = yield select(getSelectedProjectId);
     const selectedProjectType: string | null = yield select(getSelectedProjectType);
-    const selectedSprintId: Id = yield select(getSelectedSprintId);
-    const searchValue: string = yield select(getIssuesSearchValue);
-    const filters: IssueFilters = yield select(getIssueFilters);
+    const jql: string = yield call(buildJQLQuery);
     const opts = {
       startIndex,
       stopIndex,
+      jql,
+      epicLinkFieldId,
       projectId: selectedProjectId,
       projectType: selectedProjectType || 'project',
-      sprintId: selectedSprintId,
-      searchValue,
-      projectKey: selectedProject && selectedProject.key,
-      filters,
-      epicLinkFieldId,
     };
     const response = yield call(Api.fetchIssues, opts);
     yield call(
