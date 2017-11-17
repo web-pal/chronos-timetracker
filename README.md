@@ -28,6 +28,46 @@ You can pass all the same flags you would normally use with git commit.
   yarn run commit -- -a
 ```
 
+## Packaging
+To package an app for production, please ensure that `MIXPANEL_API_TOKEN` and `SENTRY_API_KEY`
+env variables are set.
+
+```
+  export MIXPANEL_API_TOKEN=<your_mixpanel_api_token>
+  export SENTRY_API_KEY=<your_sentry_api_key>
+```
+
+If you don't want to use sentry of mixpanel, you can toggle them with enc variables `DISABLE_MIXPANEL=1` or `DISABLE_SENTRY=1`
+
+```
+  export DISABLE_MIXPANEL=1
+  export DISABLE_SENTRY=1
+```
+
+Then you can package an app with:
+
+#### will include uploading sentry artifacts
+```
+  yarn package
+```
+
+#### will **exclude* uploading sentry artifacts
+```
+  cross-env UPLOAD_SENTRY=0 yarn package
+```
+
+
+#### will include uploading release to a github
+```
+  yarn package-release
+```
+
+
+#### will include chrome development tools on production for debugging purposes
+```
+  yarn package-dev
+```
+
 ## State architecture
 This architecure based on [redux documentation](http://redux.js.org/), so for deeply understanding just read it.
 

@@ -16,6 +16,10 @@ const plugins = [
   new webpack.DefinePlugin({
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
     'process.env.BABEL_ENV': JSON.stringify(process.env.BABEL_ENV || 'production'),
+    'process.env.SENTRY_API_KEY': JSON.stringify(process.env.SENTRY_API_KEY || ''),
+    'process.env.MIXPANEL_API_TOKEN': JSON.stringify(process.env.MIXPANEL_API_TOKEN || ''),
+    'process.env.DISABLE_MIXPANEL': JSON.stringify(process.env.DISABLE_MIXPANEL || ''),
+    'process.env.DISABLE_SENTRY': JSON.stringify(process.env.DISABLE_SENTRY || ''),
   }),
   /**
     * Babli is an ES6+ aware minifier based on the Babel toolchain (beta)
@@ -36,7 +40,7 @@ const plugins = [
 ];
 
 
-if (process.env.UPLOAD_SENTRY !== '0') {
+if (process.env.UPLOAD_SENTRY !== '0' && process.env.DISABLE_SENTRY !== '1') {
   plugins.push(
     new SentryPlugin({
       organisation: 'webpal',
