@@ -238,8 +238,8 @@ function showScreenPreview() {
 }
 
 ipcMain.on('start-timer', () => {
-  menuTemplate[3].enabled = false;
-  menuTemplate[4].enabled = true;
+  menuTemplate[2].enabled = false;
+  menuTemplate[3].enabled = true;
 
   if (process.platform !== 'darwin') {
     tray.setPressedImage(path.join(__dirname, './assets/images/icon-active.png'));
@@ -256,8 +256,8 @@ ipcMain.on('start-timer', () => {
 
 ipcMain.on('stop-timer', () => {
   tray.setTitle('');
-  menuTemplate[3].enabled = true;
-  menuTemplate[4].enabled = false;
+  menuTemplate[2].enabled = true;
+  menuTemplate[3].enabled = false;
 
   if (process.platform !== 'darwin') {
     tray.setPressedImage(path.join(__dirname, './assets/images/icon.png'));
@@ -274,8 +274,8 @@ ipcMain.on('stop-timer', () => {
 
 ipcMain.on('select-issue', (event, issueKey) => {
   menuTemplate[0].label = `Selected issue: ${issueKey}`;
-  if (menuTemplate[4].enabled !== true) {
-    menuTemplate[3].enabled = true;
+  if (menuTemplate[3].enabled !== true) {
+    menuTemplate[2].enabled = true;
   }
   menu.clear();
   menuTemplate.forEach(m => {
