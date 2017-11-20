@@ -132,6 +132,7 @@ export const DescriptionSectionHeader = styled.div`
   border-top: 2px solid rgba(0, 0, 0, .1);
   margin-top: 10px;
   padding-top: 10px;
+  word-break: break-all;
 `;
 
 export const SectionHeader = styled.div`
