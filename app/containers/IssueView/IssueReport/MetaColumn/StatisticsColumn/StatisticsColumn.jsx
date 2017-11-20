@@ -1,5 +1,6 @@
 // @flow
 import React from 'react';
+import { stj } from 'time-util';
 import type { StatelessFunctionalComponent, Node } from 'react';
 import { Flex } from 'components';
 
@@ -7,9 +8,9 @@ import { MetaItem } from './styled';
 import { MetaItemName, MetaItemValue, BorderLeft } from '../../styled';
 
 type Props = {
-  youLogged: any,
-  youLoggedTotal: any,
-  loggedTotal: any,
+  youLoggedToday: number,
+  youLoggedTotal: number,
+  loggedTotal: number,
 };
 
 // TODO: time values in this component should have next format:
@@ -18,7 +19,7 @@ type Props = {
 
 // eslint-disable-next-line
 const StatisticsRow: StatelessFunctionalComponent<Props> = ({
-  youLogged,
+  youLoggedToday,
   youLoggedTotal,
   loggedTotal,
 }: Props): Node => (
@@ -34,7 +35,7 @@ const StatisticsRow: StatelessFunctionalComponent<Props> = ({
       <BorderLeft color="#FFAB00" />
       <Flex column alignCenter>
         <MetaItemName>Logged by you today</MetaItemName>
-        <MetaItemValue>{youLogged}</MetaItemValue>
+        <MetaItemValue>{stj(youLoggedToday)}</MetaItemValue>
       </Flex>
       <div />
     </MetaItem>
@@ -42,7 +43,7 @@ const StatisticsRow: StatelessFunctionalComponent<Props> = ({
       <BorderLeft color="#FFF0B2" />
       <Flex column alignCenter>
         <MetaItemName>Total logged by you</MetaItemName>
-        <MetaItemValue>{youLoggedTotal}</MetaItemValue>
+        <MetaItemValue>{stj(youLoggedTotal)}</MetaItemValue>
       </Flex>
       <div />
     </MetaItem>
@@ -50,7 +51,7 @@ const StatisticsRow: StatelessFunctionalComponent<Props> = ({
       <BorderLeft color="#B2D4FF" />
       <Flex column alignCenter>
         <MetaItemName>Total logged</MetaItemName>
-        <MetaItemValue>{loggedTotal}</MetaItemValue>
+        <MetaItemValue>{stj(loggedTotal)}</MetaItemValue>
       </Flex>
       <div />
     </MetaItem>

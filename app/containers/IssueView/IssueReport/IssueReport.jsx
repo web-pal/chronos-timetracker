@@ -1,12 +1,13 @@
 // @flow
 import React from 'react';
+import moment from 'moment';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import type { StatelessFunctionalComponent, Node } from 'react';
 import Spinner from '@atlaskit/spinner';
 import { Flex } from 'components';
-import { getSelectedIssue } from 'selectors';
-import { shell } from 'electron';
+import { getSelectedIssue, getSelfKey, getHost } from 'selectors';
+import { openURLInBrowser } from 'external-open-util';
 
 import type { Issue } from '../../../types';
 
@@ -38,22 +39,28 @@ import BackgroundShapes from './BackgroundShapes';
 
 type Props = {
   selectedIssue: Issue,
+  selfKey: string,
+  host: string,
 };
 
 const IssueReport: StatelessFunctionalComponent<Props> = ({
   selectedIssue,
+  selfKey,
+  host,
 }: Props): Node => {
-  const estimate = selectedIssue.fields.timeestimate;
-  const logged = selectedIssue.fields.timespent;
-  const remaining = estimate - logged < 0 ? 0 : estimate - logged;
+  const estimate = selectedIssue.fields.timeestimate || 0;
+  const loggedTotal = selectedIssue.fields.timespent || 0;
+  const remaining = estimate - loggedTotal < 0 ? 0 : estimate - loggedTotal;
 
-  const youLogged = '2h 16min';
-  const youLoggedTotal = '3h 33min';
+  const worklogs = selectedIssue.fields.worklog.worklogs;
 
-  // Percent values for progress bar
-  const youLoggedPercent = 36;
-  const youLoggedTotalPercent = 54;
-  const loggedTotalPercent = 76;
+  const yourWorklogs = worklogs.filter(w => w.author.key === selfKey);
+
+  const youLoggedTotal = yourWorklogs.reduce((v, w) => v + w.timeSpentSeconds, 0);
+
+  const yourWorklogsToday = yourWorklogs.filter(w => moment(w.updated).isSameOrAfter(moment().startOf('day')));
+
+  const youLoggedToday = yourWorklogsToday.reduce((v, w) => v + w.timeSpentSeconds, 0);
 
   const isLoading = false;
   if (isLoading) {
@@ -82,12 +89,10 @@ const IssueReport: StatelessFunctionalComponent<Props> = ({
           <Flex column style={{ width: '100%' }}>
             <StatisticsRow
               estimate={estimate}
-              remaining={estimate}
+              remaining={remaining}
             />
             <ProgressBar
-              youLoggedPercent={youLoggedPercent}
-              youLoggedTotalPercent={youLoggedTotalPercent}
-              loggedTotalPercent={loggedTotalPercent}
+              loggedTotal={loggedTotal}
               remaining={remaining}
             />
           </Flex>
@@ -97,7 +102,7 @@ const IssueReport: StatelessFunctionalComponent<Props> = ({
               View reports and calculate salaries in Chronos Timesheets
             </Heading>
             <CTAButton
-              onClick={() => { /* TODO */ }}
+              onClick={openURLInBrowser(`https://${host}.atlassian.net/plugins/servlet/ac/jira-chronos/api-page-jira`)}
             >
               Open plugin
             </CTAButton>
@@ -105,9 +110,7 @@ const IssueReport: StatelessFunctionalComponent<Props> = ({
           </CTAArea>
 
           <HelpText
-            onClick={() =>
-              shell.openExternal('https://marketplace.atlassian.com/plugins/jira-chronos/cloud/overview')
-            }
+            onClick={openURLInBrowser('https://marketplace.atlassian.com/plugins/jira-chronos/cloud/overview')}
           >
             View on Marketplace
           </HelpText>
@@ -115,9 +118,9 @@ const IssueReport: StatelessFunctionalComponent<Props> = ({
 
         <MetaColumn>
           <StatisticsColumn
-            youLogged={youLogged}
+            youLoggedToday={youLoggedToday}
             youLoggedTotal={youLoggedTotal}
-            loggedTotal={logged}
+            loggedTotal={loggedTotal}
           />
 
           {/* CLOCK */}
@@ -147,9 +150,7 @@ const IssueReport: StatelessFunctionalComponent<Props> = ({
               <br />
               <br />
               <LearnMoreLink
-                onClick={() =>
-                  shell.openExternal('https://marketplace.atlassian.com/plugins/jira-chronos/cloud/overview')
-                }
+                onClick={openURLInBrowser('https://marketplace.atlassian.com/plugins/jira-chronos/cloud/overview')}
               >Learn more →</LearnMoreLink>
             </ChronosDescription>
           </ChronosDescriptionMetaItem>
@@ -171,6 +172,8 @@ const IssueReport: StatelessFunctionalComponent<Props> = ({
 function mapStateToProps(state) {
   return {
     selectedIssue: getSelectedIssue(state),
+    selfKey: getSelfKey(state),
+    host: getHost(state),
   };
 }
 
