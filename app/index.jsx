@@ -39,7 +39,7 @@ render(
 
 if (module.hot) {
   module.hot.accept('./containers/App', () => {
-    const App = require('./containers/App').default; // eslint-disable-line
+    const App = require('./containers/App'); // eslint-disable-line
     render(
       <AppContainer>
         <Provider store={store}>
