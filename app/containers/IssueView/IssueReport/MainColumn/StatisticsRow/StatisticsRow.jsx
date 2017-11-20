@@ -1,5 +1,6 @@
 // @flow
 import React from 'react';
+import { stj } from 'time-util';
 import type { StatelessFunctionalComponent, Node } from 'react';
 import { Flex } from 'components';
 
@@ -11,11 +12,6 @@ type Props = {
   remaining: any,
 };
 
-// TODO: time values in this component should have next format:
-// 4h 20min
-// 30min
-
-// eslint-disable-next-line
 const StatisticsRow: StatelessFunctionalComponent<Props> = ({
   estimate,
   remaining,
@@ -24,13 +20,13 @@ const StatisticsRow: StatelessFunctionalComponent<Props> = ({
     <StatisticsItem bgTheme="orange" style={{ marginRight: 16 }}>
       <Flex column>
         <MetaItemName>Estimated</MetaItemName>
-        <MetaItemValue>{estimate}</MetaItemValue>
+        <MetaItemValue>{stj(estimate)}</MetaItemValue>
       </Flex>
     </StatisticsItem>
     <StatisticsItem bgTheme="white">
       <Flex column>
         <MetaItemName>Remaining</MetaItemName>
-        <MetaItemValue>{remaining}</MetaItemValue>
+        <MetaItemValue>{stj(remaining)}</MetaItemValue>
       </Flex>
     </StatisticsItem>
   </Flex>

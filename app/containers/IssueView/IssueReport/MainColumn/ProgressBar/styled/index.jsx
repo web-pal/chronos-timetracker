@@ -18,8 +18,8 @@ export const ProgressBarItem = styled.div`
 `;
 
 export const ProgressBarFill = styled.div`
-  // width: ${props => props.width || 100}%;
-  width: 100%;
+  visibility: ${props => props.width === 0 ? 'hidden' : 'visible'};
+  width: ${props => props.width || 100}%;
   border-radius: 10px;
   background-color: ${props => props.color};
   position: absolute;
