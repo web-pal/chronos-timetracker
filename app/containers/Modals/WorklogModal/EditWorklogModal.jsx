@@ -68,7 +68,7 @@ class EditWorklogModal extends Component<Props, State> {
     }
   }
 
-  handleTimeChange = (label) => value => {
+  handleTimeChange = label => (value) => {
     this.setState({ [label]: value });
   }
 
@@ -90,8 +90,20 @@ class EditWorklogModal extends Component<Props, State> {
   }
 
   render() {
-    const { isOpen, setEditWorklogModalOpen, fetching, worklog }: Props = this.props;
-    const { calendarOpened, date, started, comment, timeSpent, jiraTimeError }: State = this.state;
+    const {
+      isOpen,
+      setEditWorklogModalOpen,
+      fetching,
+      worklog,
+    }: Props = this.props;
+    const {
+      calendarOpened,
+      date,
+      started,
+      comment,
+      timeSpent,
+      jiraTimeError,
+    }: State = this.state;
 
     return isOpen && (
       <ModalDialog
@@ -203,7 +215,7 @@ class EditWorklogModal extends Component<Props, State> {
             shouldFitContainer
             label="Worklog comment"
             value={comment}
-            onChange={(ev) => this.setState({ comment: ev.target.value })}
+            onChange={ev => this.setState({ comment: ev.target.value })}
           />
         </ModalContentContainer>
       </ModalDialog>

@@ -7,7 +7,7 @@ export const StatisticsItem = styled.div`
   align-items: flex-start;
   padding: 8px;
   border-radius: 3px;
-  ${props => props.bgTheme === 'orange' ? `
+  ${props => (props.bgTheme === 'orange' ? `
     background-color: #FFAB00;
     .MetaItemName {
       color: #42526E !important;
@@ -23,5 +23,5 @@ export const StatisticsItem = styled.div`
     .MetaItemValue {
       color: #0052CC !important;
     }
-  `}
+  `)}
 `;

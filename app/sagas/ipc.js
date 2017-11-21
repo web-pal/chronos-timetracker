@@ -11,7 +11,7 @@ export default function createIpcChannel(
   channel: string,
   listener: EventEmitter | any = ipcRenderer,
 ) {
-  return eventChannel(emit => {
+  return eventChannel((emit) => {
     const handler: Handler = (ev, ...payload) => {
       emit({ ev, channel, payload });
     };

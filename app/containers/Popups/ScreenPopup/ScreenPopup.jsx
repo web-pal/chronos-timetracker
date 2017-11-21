@@ -14,19 +14,17 @@ type State = {
   maxTime: number,
   currentTime: number,
   lastScreenshotPath: string,
-  screenshotTime: number,
 }
 
 export default class ScreenPopup extends Component<{}, State> {
   constructor(props: {}) {
     super(props);
-    const { lastScreenshotPath, screenshotTime, screenshotPreviewTime } = getGlobal('sharedObj');
+    const { lastScreenshotPath, screenshotPreviewTime } = getGlobal('sharedObj');
     remote.getCurrentWindow().flashFrame(true);
     this.state = {
       maxTime: screenshotPreviewTime,
       currentTime: 0,
       lastScreenshotPath,
-      screenshotTime,
     };
   }
 

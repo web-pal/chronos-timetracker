@@ -140,4 +140,4 @@ class MaskField extends Component {
 }
 
 // eslint-disable-next-line import/prefer-default-export
-export const renderField = (props) => <MaskField {...props} />;
+export const renderField = props => <MaskField {...props} />;

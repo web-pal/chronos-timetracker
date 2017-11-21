@@ -110,7 +110,7 @@ export function getOAuthToken(options: { oauth: oAuthData, host: string }): Prom
     });
   })
     .then(
-      (res) => res,
+      res => res,
     );
 }
 

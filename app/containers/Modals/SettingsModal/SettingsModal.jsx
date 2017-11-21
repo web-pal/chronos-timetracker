@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
 import type { StatelessFunctionalComponent, Node } from 'react';
-import ModalDialog, { ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
+import ModalDialog, { ModalFooter } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -50,6 +50,7 @@ type Props = {
   installUpdateRequest: InstallUpdateRequest,
 }
 
+/* eslint-disable indent */ // buggy rule
 const SettingsModal: StatelessFunctionalComponent<Props> = ({
   isOpen,
   tab,
@@ -75,11 +76,6 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
           </Button>
         </Flex>
       </ModalFooter>
-    )}
-    header={() => (
-      <ModalHeader>
-        <ModalTitle>Settings</ModalTitle>
-      </ModalHeader>
     )}
   >
     <ModalContentContainer>
@@ -108,7 +104,7 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
         {tab === 'General' &&
           <GeneralSettings
             settings={settings}
-            setTraySettings={(value) => setLocalDesktopSetting(value, 'trayShowTimer')}
+            setTraySettings={value => setLocalDesktopSetting(value, 'trayShowTimer')}
           />
         }
         {tab === 'Notifications' &&
@@ -120,7 +116,7 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
         {tab === 'Updates' &&
           <UpdateSettings
             channel={settings.updateChannel}
-            setChannel={(value) => setLocalDesktopSetting(value, 'updateChannel')}
+            setChannel={value => setLocalDesktopSetting(value, 'updateChannel')}
             updateCheckRunning={updateCheckRunning}
             updateAvailable={updateAvailable}
             updateFetching={updateFetching}

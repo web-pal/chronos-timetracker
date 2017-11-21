@@ -151,7 +151,7 @@ export const AtlassianLogo = styled.img.attrs({
 `;
 
 export const BackgroundShape = styled.div`
-  ${props => {
+  ${(props) => {
     switch (props.number) {
       case 1:
         return `

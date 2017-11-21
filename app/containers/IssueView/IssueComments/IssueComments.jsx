@@ -57,7 +57,7 @@ const IssueComments: StatelessFunctionalComponent<Props> = ({
             There are no comments yet on this issue.
           </Flex>
         }
-        {!fetching && comments.map((comment) => (
+        {!fetching && comments.map(comment => (
           <Commentd key={comment.id}>
             <Flex row alignCenter spaceBetween style={{ marginBottom: 5 }}>
               <Flex row alignCenter>

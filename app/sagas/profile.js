@@ -170,13 +170,13 @@ export function* loginOAuthFlow(): Generator<*, void, *> {
       let accessToken: string;
       let tokenSecret: string;
       if (meta) {
-        accessToken = meta.accessToken;
-        tokenSecret = meta.tokenSecret;
+        accessToken = meta.accessToken; // eslint-disable-line
+        tokenSecret = meta.tokenSecret; // eslint-disable-line
       } else {
         const { token, url, ...rest }: { token: string, url: string, tokenSecret: string } =
           yield call(Api.getOAuthUrl, { oauth: oAuthData, host });
 
-        tokenSecret = rest.tokenSecret;
+        tokenSecret = rest.tokenSecret; // eslint-disable-line
 
         // opening oAuth modal
         ipcRenderer.send('open-oauth-url', url);
@@ -192,17 +192,16 @@ export function* loginOAuthFlow(): Generator<*, void, *> {
         }
 
         // if not denied get oAuth Token
-        accessToken = yield call(Api.getOAuthToken,
-          { host,
-            oauth: {
-              token,
-              token_secret: tokenSecret,
-              oauth_verifier: code.payload,
-              consumer_key: oAuthData.consumerKey,
-              private_key: oAuthData.privateKey,
-            },
+        accessToken = yield call(Api.getOAuthToken, {
+          host,
+          oauth: {
+            token,
+            token_secret: tokenSecret,
+            oauth_verifier: code.payload,
+            consumer_key: oAuthData.consumerKey,
+            private_key: oAuthData.privateKey,
           },
-        );
+        });
 
         const data = yield call(
           Api.chronosBackendOAuth,
@@ -212,16 +211,15 @@ export function* loginOAuthFlow(): Generator<*, void, *> {
         yield call(setToStorage, 'desktop_tracker_jwt', data.token);
       }
 
-      yield call(jira.oauth,
-        { host,
-          oauth: {
-            token: accessToken,
-            token_secret: tokenSecret,
-            consumer_key: oAuthData.consumerKey,
-            private_key: oAuthData.privateKey,
-          },
+      yield call(jira.oauth, {
+        host,
+        oauth: {
+          token: accessToken,
+          token_secret: tokenSecret,
+          consumer_key: oAuthData.consumerKey,
+          private_key: oAuthData.privateKey,
         },
-      );
+      });
 
       const userData: User = yield call(Api.jiraProfile);
 

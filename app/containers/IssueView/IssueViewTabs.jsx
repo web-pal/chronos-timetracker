@@ -27,7 +27,7 @@ const IssueViewTabs: StatelessFunctionalComponent<Props> = ({
       {
         // $FlowFixMe: Object.keys() bugged in flow
         Object.keys(tabs).map((key: TabLabel): Node => {
-          const label: TabLabel = tabs[key].label;
+          const { label }: Tab = tabs[key];
           return (
             <TabItem
               key={label}

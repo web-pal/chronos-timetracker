@@ -96,9 +96,8 @@ export const getSelectedSprint = createSelector(
 
 export const getSelectedSprintOption = createSelector(
   [getSelectedSprint],
-  (sprint) => (sprint
-    ? ({ value: sprint.id, content: sprint.name, meta: { sprint } })
-    : null
+  sprint => (
+    sprint ? ({ value: sprint.id, content: sprint.name, meta: { sprint } }) : null
   ),
 );
 
@@ -107,12 +106,12 @@ export const getProjectsOptions = createSelector(
   (projects, boards) => [
     {
       heading: 'Projects',
-      items: projects.map((project) =>
+      items: projects.map(project =>
         ({ value: project.id, content: project.name, meta: { project } })),
     },
     {
       heading: 'Boards',
-      items: boards.map((board) =>
+      items: boards.map(board =>
         ({ value: board.id, content: board.name, meta: { board } })),
     },
   ],
@@ -120,9 +119,9 @@ export const getProjectsOptions = createSelector(
 
 export const getSprintsOptions = createSelector(
   [getSprints],
-  (sprints) => [{
+  sprints => [{
     heading: 'Sprints',
-    items: sprints.map((sprint) =>
+    items: sprints.map(sprint =>
       ({ value: sprint.id, content: sprint.name, meta: { sprint } })),
   }],
 );
