@@ -10,7 +10,8 @@
   "plugins": ["add-module-exports"],
   "env": {
     "production": {
-      "presets": ["react-optimize"]
+      "presets": ["react-optimize"],
+      "plugins": ["transform-flow-strip-types"]
     },
     "development": {
       "plugins": [

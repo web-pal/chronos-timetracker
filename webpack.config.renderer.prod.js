@@ -5,10 +5,10 @@
 import path from 'path';
 import webpack from 'webpack';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
+import BabelMinify from 'babel-minify-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import SentryPlugin from 'webpack-sentry-plugin';
 import merge from 'webpack-merge';
-// import BabiliPlugin from 'babili-webpack-plugin';
 import baseConfig from './webpack.config.base';
 import pjson from './package.json';
 
@@ -24,7 +24,7 @@ const plugins = [
   /**
     * Babli is an ES6+ aware minifier based on the Babel toolchain (beta)
     */
-  // new BabiliPlugin(),
+  new BabelMinify(),
 
   new ExtractTextPlugin({
     filename: 'name.css',
