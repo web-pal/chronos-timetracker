@@ -248,7 +248,7 @@ ipcMain.on('start-timer', () => {
   }
 
   menu.clear();
-  menuTemplate.forEach(m => {
+  menuTemplate.forEach((m) => {
     menu.append(new MenuItem(m));
   });
   tray.setContextMenu(menu);
@@ -266,7 +266,7 @@ ipcMain.on('stop-timer', () => {
   }
 
   menu.clear();
-  menuTemplate.forEach(m => {
+  menuTemplate.forEach((m) => {
     menu.append(new MenuItem(m));
   });
   tray.setContextMenu(menu);
@@ -278,7 +278,7 @@ ipcMain.on('select-issue', (event, issueKey) => {
     menuTemplate[2].enabled = true;
   }
   menu.clear();
-  menuTemplate.forEach(m => {
+  menuTemplate.forEach((m) => {
     menu.append(new MenuItem(m));
   });
   tray.setContextMenu(menu);
@@ -408,7 +408,7 @@ ipcMain.on('screenshot-accept', acceptScreenshot);
 ipcMain.on('show-screenshot-popup', () => {
   let nativeNotifications = process.platform === 'darwin';
   if (process.platform === 'darwin' && mainWindow) {
-    nativeNotifications = global.sharedObj.nativeNotifications;
+    nativeNotifications = global.sharedObj.nativeNotifications; // eslint-disable-line
   }
   if (nativeNotifications) {
     const nc = new notifier.NotificationCenter();

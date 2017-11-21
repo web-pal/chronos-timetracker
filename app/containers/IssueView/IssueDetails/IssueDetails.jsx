@@ -27,15 +27,14 @@ type Props = {
   epic: Issue,
 }
 
-const IssueDetails: StatelessFunctionalComponent<Props> = ({
-  issue,
-  epic,
-}: Props): Node => {
-  const versions = issue.fields.versions;
-  const fixVersions = issue.fields.fixVersions;
-  const components = issue.fields.components;
-  const labels = issue.fields.labels;
-  const resolution = issue.fields.resolution;
+const IssueDetails: StatelessFunctionalComponent<Props> = ({ issue, epic }: Props): Node => {
+  const {
+    versions,
+    fixVersions,
+    components,
+    labels,
+    resolution,
+  } = issue.fields;
   return (
     <IssueDetailsContainer>
       <Flex row spaceBetween>
@@ -142,13 +141,13 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
               Epic link:
             </DetailsLabel>
             <DetailsValue>
-              {epic
-                ? <IssueLabel
+              {epic ?
+                <IssueLabel
                   backgroundColor={getEpicColor(epic.fields.epicColor)}
                 >
                   {epic.fields.epicName}
-                </IssueLabel>
-                : 'none'
+                </IssueLabel> :
+                'none'
               }
             </DetailsValue>
           </Flex>

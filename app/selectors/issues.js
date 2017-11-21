@@ -75,7 +75,7 @@ export const getRecentIssueIds =
 
 export const getRecentIssuesTotalCount = createSelector(
   [getRecentIssueIds],
-  (ids) => ids.length,
+  ids => ids.length,
 );
 
 export const getRecentIssues = createSelector(
@@ -89,21 +89,19 @@ export const getRecentItems = createSelector(
     const selfKey = self ? self.key : '';
     const recentWorklogs =
       map
-        .reduce((worklogs, value) => worklogs.concat(value.fields.worklog.worklogs), []);
-    const _recentWorklogs = recentWorklogs.map(w => {
-      const _w = w;
-      _w.issue = iMap[_w.issueId];
-      return _w;
-    });
+        .reduce(
+          (worklogs, value) => worklogs.concat(value.fields.worklog.worklogs),
+          [],
+        ).map(w => ({ ...w, issue: iMap[w.issueId] }));
     const recentWorklogsFiltered =
       filter(
-        _recentWorklogs,
-        (w) =>
+        recentWorklogs,
+        w =>
           moment(w.started).isSameOrAfter(moment().subtract(4, 'weeks')) &&
           w.author.key === selfKey,
       );
     const grouped =
-      groupBy(recentWorklogsFiltered, (value) => moment(value.started).startOf('day').format());
+      groupBy(recentWorklogsFiltered, value => moment(value.started).startOf('day').format());
     return grouped;
   },
 );
@@ -142,7 +140,7 @@ export const getIssueFilters =
 
 export const getFiltersApplied = createSelector(
   [getIssueFilters],
-  (filters) => (!!filters.type.length || !!filters.status.length || !!filters.assignee.length),
+  filters => (!!filters.type.length || !!filters.status.length || !!filters.assignee.length),
 );
 
 export const getAvailableTransitions =
@@ -162,7 +160,7 @@ export const getCommentsAdding =
 
 export const getFieldIdByName =
   ({ issues }: { issues: IssuesState }, fieldName: string): string | null => {
-    const fields = issues.meta.fields;
+    const { fields } = issues.meta;
     if (fields) {
       const found = fields.find(f => f.name === fieldName);
       if (found) {
@@ -177,9 +175,9 @@ export const getIssueEpic = createSelector(
   [
     getSelectedIssue,
     getEpicsMap,
-    (state) => getFieldIdByName(state, 'Epic Link'),
-    (state) => getFieldIdByName(state, 'Epic Name'),
-    (state) => getFieldIdByName(state, 'Epic Color'),
+    state => getFieldIdByName(state, 'Epic Link'),
+    state => getFieldIdByName(state, 'Epic Name'),
+    state => getFieldIdByName(state, 'Epic Color'),
   ],
   (issue, map, epicLinkFieldId, epicNameFieldId, epicColorFieldId) => {
     if (Object.keys(map).length && issue) {

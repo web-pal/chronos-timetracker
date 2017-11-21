@@ -19,7 +19,7 @@ class WorklogEditDialog extends PureComponent {
     };
   }
 
-  setTempComment = (value) => this.setState({ tempComment: value });
+  setTempComment = value => this.setState({ tempComment: value });
 
   toggleDialog = () => this.setState({ dialogOpen: !this.state.dialogOpen })
 
@@ -77,7 +77,7 @@ class WorklogEditDialog extends PureComponent {
           onClose={(e) => {
             // Atlaskit HACK.
             // without it inline dialog gets closed on clicking inline-edit action buttons
-            const path = e.event.path;
+            const { path } = e.event;
             const shouldClose = !path.some(el => el.className === 'worklog-edit-popup');
             if (shouldClose) {
               this.setState({ dialogOpen: false });

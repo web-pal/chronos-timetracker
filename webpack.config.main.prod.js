@@ -4,7 +4,7 @@
 
 import webpack from 'webpack';
 import merge from 'webpack-merge';
-import BabelMinify from 'babel-minify-webpack-plugin';
+// import BabelMinify from 'babel-minify-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import baseConfig from './webpack.config.base';
 
@@ -25,7 +25,10 @@ export default merge.smart(baseConfig, {
     /**
      * Babli is an ES6+ aware minifier based on the Babel toolchain (beta)
      */
-    new BabelMinify(),
+    // Wait when will be resolved:
+    // https://github.com/webpack-contrib/babel-minify-webpack-plugin/issues/68https://github.com/webpack-contrib/babel-minify-webpack-plugin/issues/68
+    // https://github.com/webpack/webpack/issues/5931
+    // new BabelMinify(),
 
     new BundleAnalyzerPlugin({
       analyzerMode: process.env.OPEN_ANALYZER === 'true' ? 'server' : 'disabled',

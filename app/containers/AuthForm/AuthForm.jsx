@@ -114,7 +114,7 @@ class AuthForm extends Component<Props> {
             />
           </ContentOuter>
         </Flex>
-        <Hint>{"Can't log in?"}</Hint>
+        <Hint>Can not log in?</Hint>
       </Container>
     );
   }
