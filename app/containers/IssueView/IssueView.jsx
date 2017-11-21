@@ -40,7 +40,7 @@ const IssueView: StatelessFunctionalComponent<Props> = ({
   timerRunning,
 }: Props): Node => (selectedIssueId
   ? (
-    <IssueViewContainer column className="tracker">
+    <IssueViewContainer column>
       {timerRunning &&
         <TrackingBar />
       }

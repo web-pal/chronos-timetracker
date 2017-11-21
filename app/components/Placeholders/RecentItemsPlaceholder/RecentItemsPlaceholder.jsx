@@ -2,6 +2,8 @@
 import React from 'react';
 import type { StatelessFunctionalComponent, Node } from 'react';
 
+import { RecentItems, RecentItemsBlock, RecentItemsList } from './styled';
+
 import IssueItemPlaceholder from '../IssueItemPlaceholder/IssueItemPlaceholder';
 import Flex from '../../Flex/Flex';
 
@@ -11,29 +13,29 @@ import {
 } from './styled';
 
 const RecentItemsPlaceholder: StatelessFunctionalComponent<{}> = (): Node => (
-  <div className="RecentItems">
-    <Flex column className="RecentItems__block">
+  <RecentItems>
+    <RecentItemsBlock>
       <TimestampPlaceholderContainer>
-        <TimestampPlaceholder className="animated-background" />
-        <TimestampPlaceholder className="animated-background" />
+        <TimestampPlaceholder />
+        <TimestampPlaceholder />
       </TimestampPlaceholderContainer>
-      <Flex column className="RecentItems__list">
+      <Flex column>
         <IssueItemPlaceholder />
         <IssueItemPlaceholder />
         <IssueItemPlaceholder />
       </Flex>
-    </Flex>
-    <Flex column className="RecentItems__block">
+    </RecentItemsBlock>
+    <RecentItemsBlock>
       <TimestampPlaceholderContainer>
-        <TimestampPlaceholder className="animated-background" />
-        <TimestampPlaceholder className="animated-background" />
+        <TimestampPlaceholder />
+        <TimestampPlaceholder />
       </TimestampPlaceholderContainer>
-      <Flex column className="RecentItems__list">
+      <Flex column>
         <IssueItemPlaceholder />
         <IssueItemPlaceholder />
       </Flex>
-    </Flex>
-  </div>
+    </RecentItemsBlock>
+  </RecentItems>
 );
 
 export default RecentItemsPlaceholder;
