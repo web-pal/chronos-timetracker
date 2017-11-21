@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
 import type { StatelessFunctionalComponent, Node } from 'react';
-import ModalDialog, { ModalFooter } from '@atlaskit/modal-dialog';
+import ModalDialog, { ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -76,6 +76,11 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
           </Button>
         </Flex>
       </ModalFooter>
+    )}
+    header={() => (
+      <ModalHeader>
+        <ModalTitle>Settings</ModalTitle>
+      </ModalHeader>
     )}
   >
     <ModalContentContainer>
