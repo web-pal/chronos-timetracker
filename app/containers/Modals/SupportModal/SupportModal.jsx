@@ -26,12 +26,12 @@ type Props = {
   setSupportModalOpen: SetSupportModalOpen,
 };
 
+/* eslint-disable indent */ // buggy rule
 const SupportModal: StatelessFunctionalComponent<Props> = ({
   isOpen,
   setSupportModalOpen,
 }): Node => isOpen &&
   <ModalDialog
-    onClose={() => setSupportModalOpen(false)}
     footer={(
       <Flex row style={{ justifyContent: 'flex-end' }}>
         <ButtonGroup>
@@ -44,6 +44,7 @@ const SupportModal: StatelessFunctionalComponent<Props> = ({
         </ButtonGroup>
       </Flex>
     )}
+    onClose={() => setSupportModalOpen(false)}
   >
     <Flex column style={{ margin: '20px 10px 10px 4px' }}>
       <H700 style={{ marginBottom: 28 }}>Have a question?</H700>

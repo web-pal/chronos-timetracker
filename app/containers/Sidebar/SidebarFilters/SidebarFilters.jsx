@@ -77,25 +77,24 @@ const SidebarFilters: StatelessFunctionalComponent<Props> = ({
                 option={option}
                 isChecked={filters[criteria.key].includes(option.id)}
                 onChange={(value, checked) => {
-                  let _filters;
+                  let newFilters;
                   if (criteria.key === 'assignee') {
-                    _filters = [];
+                    newFilters = [];
                   } else {
-                    _filters = filters[criteria.key];
+                    newFilters = filters[criteria.key];
                   }
                   if (!checked) {
-                    _filters.push(value);
+                    newFilters.push(value);
                   } else {
-                    pull(_filters, value);
+                    pull(newFilters, value);
                   }
-                  setIssuesFilter(_filters, criteria.key);
+                  setIssuesFilter(newFilters, criteria.key);
                 }}
                 showIcons={criteria.showIcons}
               />
             ))}
           </FilterOptions>
-        </FilterItem>,
-      )}
+        </FilterItem>)}
     </FilterItems>
     <FilterActionsContainer>
       <IssuesFoundText>

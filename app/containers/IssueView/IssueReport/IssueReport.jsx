@@ -151,7 +151,8 @@ const IssueReport: StatelessFunctionalComponent<Props> = ({
               <br />
               <LearnMoreLink
                 onClick={openURLInBrowser('https://marketplace.atlassian.com/plugins/jira-chronos/cloud/overview')}
-              >Learn more →</LearnMoreLink>
+              >Learn more →
+              </LearnMoreLink>
             </ChronosDescription>
           </ChronosDescriptionMetaItem>
 

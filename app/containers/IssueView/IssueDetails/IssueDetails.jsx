@@ -72,7 +72,7 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({ issue, epic }: Prop
             </DetailsLabel>
             <DetailsValue>
               {versions.length === 0 && 'None'}
-              {versions.map(v => <a key={v.id}>{v.name}</a>)}
+              {versions.map(v => <a href="#version" key={v.id}>{v.name}</a>)}
             </DetailsValue>
           </Flex>
 
@@ -82,7 +82,7 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({ issue, epic }: Prop
             </DetailsLabel>
             <DetailsValue>
               {components.length === 0 && 'None'}
-              {components.map(v => <a key={v.id}>{v.name}</a>)}
+              {components.map(v => <a href="#component" key={v.id}>{v.name}</a>)}
             </DetailsValue>
           </Flex>
 
@@ -132,7 +132,7 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({ issue, epic }: Prop
             </DetailsLabel>
             <DetailsValue>
               {fixVersions.length === 0 && 'None'}
-              {fixVersions.map(v => <a key={v.id}>{v.name}</a>)}
+              {fixVersions.map(v => <a href="#version" key={v.id}>{v.name}</a>)}
             </DetailsValue>
           </Flex>
 

@@ -50,6 +50,7 @@ type Props = {
   installUpdateRequest: InstallUpdateRequest,
 }
 
+/* eslint-disable indent */ // buggy rule
 const SettingsModal: StatelessFunctionalComponent<Props> = ({
   isOpen,
   tab,

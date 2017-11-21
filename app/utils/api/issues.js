@@ -56,15 +56,15 @@ export function fetchIssues({
   const api = projectType === 'project'
     ? opts => jira.client.search.search(opts)
     : opts => jira.client.board.getIssuesForBoard({ ...opts, boardId: projectId });
-  let _requiredFields = requiredFields;
+  let newRequiredFields = requiredFields;
   if (epicLinkFieldId) {
-    _requiredFields = [...requiredFields, epicLinkFieldId];
+    newRequiredFields = [...requiredFields, epicLinkFieldId];
   }
   return api({
     jql,
     maxResults: (stopIndex - startIndex) + 1,
     startAt: startIndex,
-    fields: _requiredFields,
+    fields: newRequiredFields,
   });
 }
 

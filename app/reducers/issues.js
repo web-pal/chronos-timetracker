@@ -61,7 +61,7 @@ function itemsById(state: IssuesMap = {}, action): IssuesMap {
               ...state[action.meta].fields.worklog,
               worklogs: filter(
                 state[action.meta].fields.worklog.worklogs,
-                (value) => value.id !== action.payload.id,
+                value => value.id !== action.payload.id,
               ),
             },
           },

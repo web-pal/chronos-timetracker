@@ -271,15 +271,16 @@ export function* watchStartTimer() {
 }
 
 
-export function* cutIddlesFromLastScreenshot() {
+/* export function* cutIddlesFromLastScreenshot() {
   const lastScreenshotTime = yield select(getLastScreenshotTime);
   const time = yield select(getTimerTime);
   const iddles = Math.ceil((time - lastScreenshotTime) / 60);
-  /* TBD wtf is this yield put({
+  [>TBD wtf is this
+   * yield put({
     type: types.CUT_IDDLES,
     payload: iddles,
-  }); */
-}
+  });<]
+} */
 
 /* function forceSave() {
   const { getGlobal } = remote;
@@ -353,7 +354,7 @@ export function* watchRejectScreenshot() {
     if (running) {
       const { getGlobal } = remote;
       const { lastScreenshotPath } = getGlobal('sharedObj');
-      yield call(cutIddlesFromLastScreenshot);
+      /* yield call(cutIddlesFromLastScreenshot); */
       yield call(rejectScreenshot, lastScreenshotPath);
     }
   }
