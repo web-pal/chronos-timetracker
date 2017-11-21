@@ -3,10 +3,11 @@ import React from 'react';
 import type { StatelessFunctionalComponent, Node } from 'react';
 
 import { PlaceholderContainer, Placeholder } from './styled';
+import { AnimatedPlaceholder } from '../styled';
 
 const IssueItemPlaceholder: StatelessFunctionalComponent<{}> = (): Node => (
   <PlaceholderContainer>
-    <div className="animated-background">
+    <AnimatedPlaceholder>
       <Placeholder type="issueRight" />
       <Placeholder type="issueBottom" />
       <Placeholder type="descriptionRight" />
@@ -15,7 +16,7 @@ const IssueItemPlaceholder: StatelessFunctionalComponent<{}> = (): Node => (
       <Placeholder type="descriptionBottomSecond" />
       <Placeholder type="attributesRight" />
       <Placeholder type="attributesBottom" />
-    </div>
+    </AnimatedPlaceholder>
   </PlaceholderContainer>
 );
 

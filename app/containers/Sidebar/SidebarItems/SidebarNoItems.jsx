@@ -3,7 +3,7 @@ import React from 'react';
 import type { StatelessFunctionalComponent, Node } from 'react';
 import { noIssuesImage } from 'data/assets';
 import { Flex } from 'components';
-import { NoIssuesImage, Title, Subtitle } from './styled';
+import { NoIssuesImage, Title, Subtitle, NoItemsContainer } from './styled';
 
 type Props = {
   recent: boolean
@@ -14,7 +14,7 @@ const SidebarNoItems: StatelessFunctionalComponent<Props> = ({ recent }: Props):
     column
     centered
     alignCenter
-    style={{ width: '100%', height: '100%' }}
+    style={{ width: '100%', height: '100%', flex: '1 0 100%' }}
   >
     <NoIssuesImage src={noIssuesImage} alt="Not found" />
     {recent

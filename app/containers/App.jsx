@@ -8,6 +8,8 @@ import type { Node, StatelessFunctionalComponent } from 'react';
 import AuthForm from './AuthForm/AuthForm';
 import Main from './Main/Main';
 
+import { AppWrapper } from 'styles';
+
 import type { State } from '../types';
 
 type Props = {
@@ -15,12 +17,12 @@ type Props = {
 };
 
 const App: StatelessFunctionalComponent<Props> = (props: Props): Node => (
-  <div className="wrapper">
+  <AppWrapper>
     {props.isAuthorized
       ? <Main />
       : <AuthForm />
     }
-  </div>
+  </AppWrapper>
 );
 
 function mapStateToProps(state: State): Props {

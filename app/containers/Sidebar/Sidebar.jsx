@@ -13,6 +13,8 @@ import SidebarSearch from './SidebarSearch';
 import SidebarFilters from './SidebarFilters/SidebarFilters';
 import SidebarItems from './SidebarItems/SidebarItems';
 
+import { SidebarNothingSelected, SidebarWrapper, SidebarContainer } from './styled';
+
 import type { SetSidebarType, SidebarType, Id } from '../../types';
 
 type Props = {
@@ -28,13 +30,13 @@ const Sidebar: StatelessFunctionalComponent<Props> = ({
   selectedProjectId,
   sidebarFiltersOpen,
 }: Props): Node => (
-  <Flex column className="SidebarWrapper">
+  <SidebarWrapper>
     <ProjectPicker />
     <SidebarHeader
       sidebarType={sidebarType}
       setSidebarType={setSidebarType}
     />
-    <Flex column className="sidebar">
+    <SidebarContainer>
       {sidebarType === 'all' &&
         <SidebarSearch />
       }
@@ -43,12 +45,12 @@ const Sidebar: StatelessFunctionalComponent<Props> = ({
       }
       {selectedProjectId ?
         <SidebarItems /> :
-        <span className="sidebar-nothing-selected">
+        <SidebarNothingSelected>
           <span>Select project from dropdown above</span>
-        </span>
+        </SidebarNothingSelected>
       }
-    </Flex>
-  </Flex>
+    </SidebarContainer>
+  </SidebarWrapper>
 );
 
 function mapStateToProps(state) {

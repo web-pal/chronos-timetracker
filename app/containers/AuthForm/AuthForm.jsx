@@ -36,9 +36,6 @@ type Props = {
   step: number,
   loginError: string,
   fetching: boolean,
-
-  initialize: any,
-  throwLoginError: any,
 } & FormProps
 
 class AuthForm extends Component<Props> {
