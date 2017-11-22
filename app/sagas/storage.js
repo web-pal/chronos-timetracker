@@ -57,10 +57,10 @@ export function* getFromStorage(key: string): Generator<*, mixed, *> {
 }
 
 export function* setToStorage(key: string, data: *): Generator<*, Promise<void>, *> {
-  const host: string = yield select(getHost);
+  const host: string | null = yield select(getHost);
   // $FlowFixMe: array methods buggy with Enums
   if (prefixedKeys.includes(key) && !host) {
-    throw new Error('Need to fill host before getting prefixed keys from storage');
+    throw new Error('Can\'t set prefixed variable to storage if no host provided');
   }
   return storageSetPromise(
     // $FlowFixMe: array methods buggy with Enums
@@ -70,10 +70,10 @@ export function* setToStorage(key: string, data: *): Generator<*, Promise<void>,
 }
 
 export function* removeFromStorage(key: string): Generator<*, Promise<void>, *> {
-  const host: string = yield select(getHost);
+  const host: string | null = yield select(getHost);
   // $FlowFixMe: array methods buggy with Enums
   if (prefixedKeys.includes(key) && !host) {
-    throw new Error('Need to fill host before getting prefixed keys from storage');
+    throw new Error('Can\'t remove prefixed variable from storage if no host provided');
   }
   return storageRemovePromise(
     // $FlowFixMe: array methods buggy with Enums

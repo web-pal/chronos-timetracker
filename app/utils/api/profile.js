@@ -4,12 +4,6 @@ import jira from '../jiraClient';
 import { getHeaders } from './helper';
 import type { oAuthData } from '../../types';
 
-function clearHost(host: string): string {
-  let formatHost = host.startsWith('https://') ? host.slice(8) : host;
-  formatHost = formatHost.startsWith('http://') ? formatHost.slice(7) : formatHost;
-  return formatHost;
-}
-
 export function jiraProfile(): Promise<*> {
   return jira.client.myself.getMyself()
     .then(
@@ -26,7 +20,7 @@ export function jiraAuth({
   username: string,
   password: string,
 }): Promise<any> {
-  const formatHost = `${clearHost(host)}.atlassian.net`;
+  const formatHost = host;
   jira.auth(formatHost, username, password);
   return jiraProfile();
 }
@@ -42,7 +36,7 @@ export function checkUserPlan({
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      baseUrl: `${clearHost(host)}.atlassian.net`,
+      baseUrl: host,
     }),
   })
     .then(
@@ -75,7 +69,7 @@ export function chronosBackendAuth({
     },
     body: JSON.stringify({
       type: 'basic_auth',
-      baseUrl: `${clearHost(host)}.atlassian.net`,
+      baseUrl: host,
       username,
       password,
     }),
@@ -115,6 +109,7 @@ export function getOAuthUrl(options: any): Promise<*> {
   return new Promise((resolve) => {
     jira.getOAuthUrl(options, (err, res) => {
       if (err) {
+        console.error(err);
         throw new Error('To use oAuth ask your jira admin configure application link');
       }
       resolve(res);

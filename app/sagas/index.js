@@ -23,6 +23,7 @@ export default function* rootSaga(): Generator<*, void, *> {
     fork(profileSagas.logoutFlow),
     fork(profileSagas.checkJWT),
     fork(profileSagas.initializeMixpanel),
+    fork(profileSagas.watchSetAuthFormStep),
 
     // projects
     fork(projectSagas.watchFetchProjectsRequest),

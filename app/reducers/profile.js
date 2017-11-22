@@ -8,6 +8,7 @@ const initialState: ProfileState = {
   userData: null,
   loginError: '',
   loginFetching: false,
+  isPaidUser: false,
 };
 
 function profile(state: ProfileState = initialState, action: Action) {
@@ -36,6 +37,11 @@ function profile(state: ProfileState = initialState, action: Action) {
       return {
         ...state,
         loginFetching: action.payload,
+      };
+    case types.SET_IS_PAID_USER:
+      return {
+        ...state,
+        isPaidUser: action.payload,
       };
     case types.___CLEAR_ALL_REDUCERS___:
       return initialState;

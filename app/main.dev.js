@@ -241,12 +241,13 @@ function showScreenPreview() {
 ipcMain.on('store-credentials', (event, credentials) => {
   const { username, password } = credentials;
   keytar.setPassword('Chronos', username, password);
+  event.returnValue = true; // eslint-disable-line no-param-reassign
 });
 
 ipcMain.on('get-credentials', (event, username) => {
   keytar.getPassword('Chronos', username)
     .then(
-      password => {
+      (password) => {
         const credentials = {
           username,
           password,

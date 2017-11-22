@@ -11,6 +11,7 @@ import type {
   FillUserData, FillUserDataAction,
   SetHost, SetHostAction,
   SetLoginFetching, SetLoginFetchingAction,
+  SetIsPaidUser, SetIsPaidUserAction,
   LoginError, AuthFormData, User,
 } from '../types';
 
@@ -83,5 +84,12 @@ export const setLoginFetching: SetLoginFetching = (
   payload: boolean,
 ): SetLoginFetchingAction => ({
   type: types.SET_LOGIN_FETCHING,
+  payload,
+});
+
+export const setIsPaidUser: SetIsPaidUser = (
+  payload: boolean,
+): SetIsPaidUserAction => ({
+  type: types.SET_IS_PAID_USER,
   payload,
 });

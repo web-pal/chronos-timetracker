@@ -19,32 +19,50 @@ import {
   Lock,
   ContentIconContainer,
   BackButtonContainer,
+  Title,
+  Subtitle,
 } from '../styled';
 
 type Props = {
   loginError: string,
   onContinue: () => ProfileAction,
   isActiveStep: boolean,
-  onBack: () => ProfileAction,
+  onBack: () => any,
   loginRequestInProcess: boolean,
+  isPaidUser: boolean,
 } & FormProps
 
 const EmailStep = ({
-  loginError, onContinue, onJiraClick, isActiveStep, onBack, loginRequestInProcess,
+  loginError,
+  onContinue,
+  onJiraClick,
+  isActiveStep,
+  onBack,
+  loginRequestInProcess,
+  isPaidUser,
 }: Props) =>
   <ContentInner isActiveStep={isActiveStep} step={2}>
     <ContentIconContainer>
       <Lock src={lockBlue} alt="" width="18" />
     </ContentIconContainer>
     <Flex column alignCenter style={{ width: '100%' }}>
-      <OauthButton
-        onClick={onJiraClick}
-        disabled={loginRequestInProcess}
-      >
-        <img src={jiraIcon} alt="" style={{ height: 20 }} />
-        Log in with JIRA
-      </OauthButton>
-      <ContentSeparator>OR</ContentSeparator>
+      {isPaidUser
+        ? [
+          <OauthButton
+            key={1}
+            onClick={onJiraClick}
+            disabled={loginRequestInProcess}
+          >
+            <img src={jiraIcon} alt="" style={{ height: 20 }} />
+            Log in with JIRA
+          </OauthButton>,
+          <ContentSeparator key={2}>OR</ContentSeparator>,
+        ]
+        : [
+          <Title key={1}>Enter your credentials</Title>,
+          <Subtitle key={2}>Please fill in your JIRA account</Subtitle>,
+        ]
+      }
       {isActiveStep &&
         <Field
           name="username"

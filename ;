@@ -164,7 +164,6 @@ export function* loginFlow(): Generator<*, void, *> {
         const jiraLoginSuccess: boolean = yield call(jiraLogin, payload);
         if (jiraLoginSuccess) {
           yield call(setToStorage, 'jira_credentials', { ...payload, password: '' });
-          yield call((): void => { ipcRenderer.sendSync('store-credentials', payload); });
           yield call(afterLogin);
         }
       }
