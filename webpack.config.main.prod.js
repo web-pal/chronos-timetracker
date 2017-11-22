@@ -4,8 +4,8 @@
 
 import webpack from 'webpack';
 import merge from 'webpack-merge';
-// import BabelMinify from 'babel-minify-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+import BabelMinify from 'babel-minify-webpack-plugin';
 import baseConfig from './webpack.config.base';
 
 export default merge.smart(baseConfig, {
@@ -23,22 +23,6 @@ export default merge.smart(baseConfig, {
 
   plugins: [
     /**
-     * Babli is an ES6+ aware minifier based on the Babel toolchain (beta)
-     */
-    // Wait when will be resolved:
-    // https://github.com/webpack-contrib/babel-minify-webpack-plugin/issues/68https://github.com/webpack-contrib/babel-minify-webpack-plugin/issues/68
-    // https://github.com/webpack/webpack/issues/5931
-    // new BabelMinify({
-      // mangle: false,
-      // evaluate: false,
-    // }),
-
-    new BundleAnalyzerPlugin({
-      analyzerMode: process.env.OPEN_ANALYZER === 'true' ? 'server' : 'disabled',
-      openAnalyzer: process.env.OPEN_ANALYZER === 'true',
-    }),
-
-    /**
      * Create global constants which can be configured at compile time.
      *
      * Useful for allowing different behaviour between development builds and
@@ -55,6 +39,13 @@ export default merge.smart(baseConfig, {
       'process.env.DISABLE_MIXPANEL': JSON.stringify(process.env.DISABLE_MIXPANEL || ''),
       'process.env.DISABLE_SENTRY': JSON.stringify(process.env.DISABLE_SENTRY || ''),
     }),
+    new BabelMinify(),
+    new BundleAnalyzerPlugin({
+      analyzerMode: process.env.OPEN_ANALYZER === 'true' ? 'server' : 'disabled',
+      openAnalyzer: true,
+    }),
+
+    new webpack.optimize.OccurrenceOrderPlugin(),
   ],
 
   /**

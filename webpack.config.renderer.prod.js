@@ -5,9 +5,10 @@
 import path from 'path';
 import webpack from 'webpack';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
-// import BabelMinify from 'babel-minify-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import SentryPlugin from 'webpack-sentry-plugin';
+// import UglifyJsPlugin from 'uglifyjs-webpack-plugin';
+import BabelMinify from 'babel-minify-webpack-plugin';
 import merge from 'webpack-merge';
 import baseConfig from './webpack.config.base';
 import pjson from './package.json';
@@ -21,30 +22,25 @@ const plugins = [
     'process.env.DISABLE_MIXPANEL': JSON.stringify(process.env.DISABLE_MIXPANEL || '""'),
     'process.env.DISABLE_SENTRY': JSON.stringify(process.env.DISABLE_SENTRY || '""'),
   }),
-  /**
-    * Babli is an ES6+ aware minifier based on the Babel toolchain (beta)
-    */
-  // Wait when will be resolved:
-  // https://github.com/webpack-contrib/babel-minify-webpack-plugin/issues/68https://github.com/webpack-contrib/babel-minify-webpack-plugin/issues/68
-  // https://github.com/webpack/webpack/issues/5931
-  // new BabelMinify(),
-  //
-  // new BabelMinify({
-    // mangle: false,
-    // evaluate: false,
-  // }),
 
   new ExtractTextPlugin({
     filename: 'name.css',
   }),
 
-  new BundleAnalyzerPlugin({
-    analyzerMode: 'server',
-    openAnalyzer: true,
+  new BabelMinify(),
+
+  new webpack.optimize.CommonsChunkPlugin({
+    name: 'commons',
+    filename: 'commons.js',
+    chunks: ['main', 'screenPopup', 'idleTimePopup'],
   }),
 
   new webpack.optimize.OccurrenceOrderPlugin(),
 
+  new BundleAnalyzerPlugin({
+    analyzerMode: process.env.OPEN_ANALYZER === 'true' ? 'server' : 'server',
+    openAnalyzer: true,
+  }),
 ];
 
 
@@ -60,7 +56,7 @@ if (process.env.UPLOAD_SENTRY !== '0' && process.env.DISABLE_SENTRY !== '1') {
 }
 
 export default merge.smart(baseConfig, {
-  devtool: 'source-map',
+  devtool: 'cheap-source-map',
 
   target: 'electron-renderer',
 
