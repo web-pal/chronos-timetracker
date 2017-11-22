@@ -50,7 +50,8 @@ class AuthForm extends Component<Props> {
         if (credentials.host && credentials.host !== '') {
           this.props.setAuthFormStep(2);
         }
-        this.props.initialize(credentials);
+        const host = credentials.host.slice(0, credentials.host.indexOf('.'))
+        this.props.initialize({ ...credentials, host });
       }
     });
     storage.get('desktop_tracker_jwt', (err, token) => {
@@ -77,7 +78,6 @@ class AuthForm extends Component<Props> {
 
   oAuth = () => {
     if (this.props.host !== null && this.props.host.length) {
-      storage.set('jira_credentials', { host: this.props.host });
       this.props.loginOAuthRequest(`${this.props.host}.atlassian.net`);
     } else {
       this.props.throwLoginError('You need to fill JIRA host at first');

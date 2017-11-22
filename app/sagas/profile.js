@@ -165,6 +165,7 @@ export function* loginOAuthFlow(): Generator<*, void, *> {
       // collecting basic oAuth data
       const host: string = payload;
       yield put(profileActions.setHost(host));
+      yield call(setToStorage, 'jira_credentials', { host });
       const oAuthData = yield call(Api.getDataForOAuth, host);
       let accessToken: string;
       let tokenSecret: string;
