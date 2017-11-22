@@ -1,3 +1,20 @@
+<a name="2.3.1"></a>
+## [2.3.1](https://github.com/web-pal/chronos-app-jira/compare/2.3.0-alpha.2...2.3.1) (2017-11-21)
+
+
+### Bug Fixes
+
+* **Issue Detail View:** fix description width ([6d6371e](https://github.com/web-pal/chronos-app-jira/commit/6d6371e))
+* **Tray:** fix start and stop buttons ([fb62f7e](https://github.com/web-pal/chronos-app-jira/commit/fb62f7e))
+* add missing font ([d7e5224](https://github.com/web-pal/chronos-app-jira/commit/d7e5224))
+
+
+### Features
+
+* **Issue Detail View:** fill real data in Issue Report ([f5a14c4](https://github.com/web-pal/chronos-app-jira/commit/f5a14c4))
+
+
+
 <a name="2.2.2"></a>
 ## [2.2.2](https://github.com/web-pal/chronos-app-jira/compare/2.2.1...2.2.2) (2017-11-13)
 

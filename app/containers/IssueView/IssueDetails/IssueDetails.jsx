@@ -27,15 +27,14 @@ type Props = {
   epic: Issue,
 }
 
-const IssueDetails: StatelessFunctionalComponent<Props> = ({
-  issue,
-  epic,
-}: Props): Node => {
-  const versions = issue.fields.versions;
-  const fixVersions = issue.fields.fixVersions;
-  const components = issue.fields.components;
-  const labels = issue.fields.labels;
-  const resolution = issue.fields.resolution;
+const IssueDetails: StatelessFunctionalComponent<Props> = ({ issue, epic }: Props): Node => {
+  const {
+    versions,
+    fixVersions,
+    components,
+    labels,
+    resolution,
+  } = issue.fields;
   return (
     <IssueDetailsContainer>
       <Flex row spaceBetween>
@@ -73,7 +72,7 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
             </DetailsLabel>
             <DetailsValue>
               {versions.length === 0 && 'None'}
-              {versions.map(v => <a key={v.id}>{v.name}</a>)}
+              {versions.map(v => <a href="#version" key={v.id}>{v.name}</a>)}
             </DetailsValue>
           </Flex>
 
@@ -83,7 +82,7 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
             </DetailsLabel>
             <DetailsValue>
               {components.length === 0 && 'None'}
-              {components.map(v => <a key={v.id}>{v.name}</a>)}
+              {components.map(v => <a href="#component" key={v.id}>{v.name}</a>)}
             </DetailsValue>
           </Flex>
 
@@ -133,7 +132,7 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
             </DetailsLabel>
             <DetailsValue>
               {fixVersions.length === 0 && 'None'}
-              {fixVersions.map(v => <a key={v.id}>{v.name}</a>)}
+              {fixVersions.map(v => <a href="#version" key={v.id}>{v.name}</a>)}
             </DetailsValue>
           </Flex>
 
@@ -142,13 +141,13 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
               Epic link:
             </DetailsLabel>
             <DetailsValue>
-              {epic
-                ? <IssueLabel
+              {epic ?
+                <IssueLabel
                   backgroundColor={getEpicColor(epic.fields.epicColor)}
                 >
                   {epic.fields.epicName}
-                </IssueLabel>
-                : 'none'
+                </IssueLabel> :
+                'none'
               }
             </DetailsValue>
           </Flex>

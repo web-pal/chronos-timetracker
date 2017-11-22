@@ -69,17 +69,19 @@ const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
           return <IssueItemPlaceholder />;
         }
 
-        return <div style={style} key={key}>
-          {item
-            ? <SidebarItem
-              issue={item}
-              active={selectedIssueId === item.id}
-              tracking={trackingIssueId === item.id}
-              selectIssue={selectIssue}
-            />
-            : <IssueItemPlaceholder />
-          }
-        </div>;
+        return (
+          <div style={style} key={key}>
+            {item
+              ? <SidebarItem
+                issue={item}
+                active={selectedIssueId === item.id}
+                tracking={trackingIssueId === item.id}
+                selectIssue={selectIssue}
+              />
+              : <IssueItemPlaceholder />
+              }
+          </div>
+        );
       },
     }}
   />;

@@ -32,7 +32,7 @@ const IssueAttachments: StatelessFunctionalComponent<{}> = (): Node => (
         </span>
       </Flex>
       <AttachmentsList>
-        {[1, 2, 3, 4, 5].map((i) => (
+        {[1, 2, 3, 4, 5].map(i => (
           <AttachmentItem key={i}>
             <FileContainer>
               <AttachmentIcon label="Attachment" primaryColor="#e9e9e9" size="xlarge" />

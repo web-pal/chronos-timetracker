@@ -119,14 +119,14 @@ export function* fetchIssues({
         'found issues lacking worklogs',
         incompleteIssues,
       );
-      const _issues = yield call(getAdditionalWorklogsForIssues, incompleteIssues);
+      const additionalIssues = yield call(getAdditionalWorklogsForIssues, incompleteIssues);
       yield call(
         infoLog,
         'getAdditionalWorklogsForIssues response:',
-        _issues,
+        additionalIssues,
       );
 
-      merge(normalizedIssues.map, _issues);
+      merge(normalizedIssues.map, additionalIssues);
       yield call(
         infoLog,
         'filled issues with lacking worklogs: ',
@@ -182,9 +182,9 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
       'fetchRecentIssues response:',
       response,
     );
-    const issues = response.issues;
+    const { issues } = response;
 
-    const incompleteIssues = response.issues.filter(issue => issue.fields.worklog.total > 20);
+    const incompleteIssues = issues.filter(issue => issue.fields.worklog.total > 20);
     const normalizedIssues = yield call(normalizePayload, issues, 'issues');
     if (incompleteIssues.length) {
       yield call(
@@ -192,14 +192,14 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
         'found issues lacking worklogs',
         incompleteIssues,
       );
-      const _issues = yield call(getAdditionalWorklogsForIssues, incompleteIssues);
+      const additionalIssues = yield call(getAdditionalWorklogsForIssues, incompleteIssues);
       yield call(
         infoLog,
         'getAdditionalWorklogsForIssues response:',
-        _issues,
+        additionalIssues,
       );
 
-      merge(normalizedIssues.map, _issues);
+      merge(normalizedIssues.map, additionalIssues);
       yield call(
         infoLog,
         'filled issues with lacking worklogs: ',
@@ -364,13 +364,15 @@ export function* transitionIssueFlow(): Generator<*, void, *> {
         },
       };
       yield put(issuesActions.selectIssue(newIssue));
-      yield call(notify,
+      yield call(
+        notify,
         '',
         `Moved issue ${issue.key} to ${transition.to.name}`,
       );
     }
   } catch (err) {
-    yield call(notify,
+    yield call(
+      notify,
       '',
       'Issue transition failed. Probably no permission',
     );
@@ -410,7 +412,8 @@ export function* assignIssueFlow(): Generator<*, void, *> {
       );
     }
   } catch (err) {
-    yield call(notify,
+    yield call(
+      notify,
       '',
       'Cannot assign issue. Probably no permission',
     );

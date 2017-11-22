@@ -32,7 +32,7 @@ const UpdateSettings: StatelessFunctionalComponent<Props> = ({
   updateAvailable,
   updateFetching,
   installUpdateRequest,
-}: Props): Node => (
+} : Props): Node => (
   <SettingsSectionContent style={{ width: '100%' }}>
     <ContentLabel>
       Updates
@@ -46,8 +46,8 @@ const UpdateSettings: StatelessFunctionalComponent<Props> = ({
           }
         </H100>
         <ButtonGroup>
-          {updateAvailable
-            ? <Flex row>
+          {updateAvailable ?
+            <Flex row>
               <div>
                 <Button
                   appearance="primary"
@@ -71,8 +71,8 @@ const UpdateSettings: StatelessFunctionalComponent<Props> = ({
                   download latest release manually
                 </Button>
               </Flex>
-            </Flex>
-            : <Button
+            </Flex> :
+            <Button
               isDisabled={updateCheckRunning}
               onClick={() => autoUpdater.checkForUpdates()}
               iconAfter={updateCheckRunning ? <Spinner /> : false}
@@ -85,7 +85,13 @@ const UpdateSettings: StatelessFunctionalComponent<Props> = ({
           }
         </ButtonGroup>
         {updateAvailable && process.platform === 'linux' &&
-          <H100 style={{ color: '#FFAB00', fontWeight: 300, fontSize: 10, marginTop: 5 }}>
+          <H100 style={{
+              color: '#FFAB00',
+              fontWeight: 300,
+              fontSize: 10,
+              marginTop: 5,
+            }}
+          >
             Sorry, linux auto-updating is not available now, please download release manually
           </H100>
         }
@@ -98,7 +104,7 @@ const UpdateSettings: StatelessFunctionalComponent<Props> = ({
           isChecked={channel === 'beta'}
           value={channel}
           onChange={(ev) => {
-            const value = ev.target.value;
+            const { value } = ev.target;
             if (value === 'stable') {
               setChannel('beta');
             } else {
@@ -108,7 +114,13 @@ const UpdateSettings: StatelessFunctionalComponent<Props> = ({
           label="Subscribe for pre-releases"
           name="allowPrerelease"
         />
-        <H100 style={{ color: '#FFAB00', fontWeight: 300, fontSize: 10, marginTop: 5 }}>
+        <H100 style={{
+          color: '#FFAB00',
+          fontWeight: 300,
+          fontSize: 10,
+          marginTop: 5,
+          }}
+        >
           Warning! Prerelease is not ready for production, is unstable and may contain bugs!
         </H100>
       </Flex>

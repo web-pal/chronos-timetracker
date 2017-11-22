@@ -238,8 +238,8 @@ function showScreenPreview() {
 }
 
 ipcMain.on('start-timer', () => {
-  menuTemplate[3].enabled = false;
-  menuTemplate[4].enabled = true;
+  menuTemplate[2].enabled = false;
+  menuTemplate[3].enabled = true;
 
   if (process.platform !== 'darwin') {
     tray.setPressedImage(path.join(__dirname, './assets/images/icon-active.png'));
@@ -248,7 +248,7 @@ ipcMain.on('start-timer', () => {
   }
 
   menu.clear();
-  menuTemplate.forEach(m => {
+  menuTemplate.forEach((m) => {
     menu.append(new MenuItem(m));
   });
   tray.setContextMenu(menu);
@@ -256,8 +256,8 @@ ipcMain.on('start-timer', () => {
 
 ipcMain.on('stop-timer', () => {
   tray.setTitle('');
-  menuTemplate[3].enabled = true;
-  menuTemplate[4].enabled = false;
+  menuTemplate[2].enabled = true;
+  menuTemplate[3].enabled = false;
 
   if (process.platform !== 'darwin') {
     tray.setPressedImage(path.join(__dirname, './assets/images/icon.png'));
@@ -266,7 +266,7 @@ ipcMain.on('stop-timer', () => {
   }
 
   menu.clear();
-  menuTemplate.forEach(m => {
+  menuTemplate.forEach((m) => {
     menu.append(new MenuItem(m));
   });
   tray.setContextMenu(menu);
@@ -274,11 +274,11 @@ ipcMain.on('stop-timer', () => {
 
 ipcMain.on('select-issue', (event, issueKey) => {
   menuTemplate[0].label = `Selected issue: ${issueKey}`;
-  if (menuTemplate[4].enabled !== true) {
-    menuTemplate[3].enabled = true;
+  if (menuTemplate[3].enabled !== true) {
+    menuTemplate[2].enabled = true;
   }
   menu.clear();
-  menuTemplate.forEach(m => {
+  menuTemplate.forEach((m) => {
     menu.append(new MenuItem(m));
   });
   tray.setContextMenu(menu);
@@ -408,7 +408,7 @@ ipcMain.on('screenshot-accept', acceptScreenshot);
 ipcMain.on('show-screenshot-popup', () => {
   let nativeNotifications = process.platform === 'darwin';
   if (process.platform === 'darwin' && mainWindow) {
-    nativeNotifications = global.sharedObj.nativeNotifications;
+    nativeNotifications = global.sharedObj.nativeNotifications; // eslint-disable-line
   }
   if (nativeNotifications) {
     const nc = new notifier.NotificationCenter();

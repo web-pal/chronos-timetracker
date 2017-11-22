@@ -20,7 +20,7 @@ import type { Issue, SelectIssue, Worklog } from '../../../types';
 
 type Props = {
   issue: Issue,
-  worklog?: Worklog,
+  worklog?: Worklog | null,
   active: boolean,
   selectIssue: SelectIssue,
 }
@@ -30,7 +30,7 @@ const SidebarItem: StatelessFunctionalComponent<Props> = ({
   worklog,
   active,
   selectIssue,
-}: Props): Node =>
+}: Props = {}): Node =>
   <IssueContainer
     active={active}
     onClick={() => {

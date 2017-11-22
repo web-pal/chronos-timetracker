@@ -8,5 +8,5 @@ render(
   <div id="root">
     <ScreenPopup />
   </div>,
-  document.getElementById('root'),
+  document.getElementById('root') || document.createElement('div'),
 );

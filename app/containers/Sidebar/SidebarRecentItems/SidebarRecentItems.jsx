@@ -71,10 +71,10 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
             date={moment(key)}
             worklogs={item}
           />
-          <Flex column className="RecentItems__list">
+          <Flex column>
             {item.map((worklog, i) =>
               <WorklogItem
-                key={`${key}_${worklog.id}_${i}`}
+                key={`${key}_${worklog.id}`}
                 issue={worklog.issue}
                 active={selectedWorklogId === worklog.id}
                 selectIssue={(issue) => {
@@ -82,8 +82,7 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
                   selectWorklog(worklog.id);
                 }}
                 worklog={worklog}
-              />,
-            )}
+              />)}
           </Flex>
         </RecentItemsBlock>
       );

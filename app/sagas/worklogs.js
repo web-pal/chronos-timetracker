@@ -59,7 +59,8 @@ export function* uploadWorklog(options: UploadWorklogOptions): Generator<*, *, *
       screenshots,
       activity,
       keepedIdles,
-    }: UploadWorklogOptions = options;
+    }:
+    UploadWorklogOptions = options;
     const started = moment().utc().format().replace('Z', '.000+0000');
     // if timeSpentSeconds is less than a minute JIRA wont upload it so cancel
     if (timeSpentSeconds < 60) {
@@ -179,11 +180,7 @@ export function* getAdditionalWorklogsForIssues(
       }
       return issue;
     });
-    return issues.reduce((map, issue) => {
-      const _map = { ...map };
-      _map[issue.id] = issue;
-      return _map;
-    }, {});
+    return issues.reduce((map, issue) => ({ ...map, [issue.id]: issue }), {});
   } catch (err) {
     yield call(throwError, err);
     Raven.captureException(err);
@@ -296,12 +293,12 @@ export function* deleteWorklogFlow({ payload }: DeleteWorklogRequestAction): Gen
           ...selectedIssue.fields.worklog,
           worklogs: filter(
             selectedIssue.fields.worklog.worklogs,
-            (value) => value.id !== worklog.id,
+            value => value.id !== worklog.id,
           ),
         },
       },
     };
-    const issueId = worklog.issueId;
+    const { issueId } = worklog;
     const issues = yield select(getIssuesMap);
     if (issues[issueId]) {
       yield put(issuesActions.deleteWorklogFromIssue(worklog, issueId));
@@ -313,7 +310,7 @@ export function* deleteWorklogFlow({ payload }: DeleteWorklogRequestAction): Gen
     const { key } = yield select(getUserData);
     const selfWorklogs = filter(
       newIssue.fields.worklog.worklogs,
-      (value) => value.author.key === key,
+      value => value.author.key === key,
     );
     if (selfWorklogs.length === 0) {
       const recentIssueIds = yield select(getRecentIssueIds);
@@ -361,7 +358,13 @@ export function* editWorklogFlow({ payload }: EditWorklogRequestAction): Generat
     }
     yield put(worklogsActions.setEditWorklogFetching(true));
     const newWorklog: Worklog = confirm.payload;
-    const { started, timeSpentSeconds, issueId, comment, id } = newWorklog;
+    const {
+      started,
+      timeSpentSeconds,
+      issueId,
+      comment,
+      id,
+    } = newWorklog;
     const jiraUploadOptions: {
       issueId: Id,
       worklogId: Id,
@@ -384,7 +387,7 @@ export function* editWorklogFlow({ payload }: EditWorklogRequestAction): Generat
     yield call(Api.updateWorklog, jiraUploadOptions);
     yield call(infoLog, 'success updating worklog', newWorklog);
     const newIssue = { ...selectedIssue };
-    const newWorklogs = selectedIssue.fields.worklog.worklogs.map(w => {
+    const newWorklogs = selectedIssue.fields.worklog.worklogs.map((w) => {
       if (w.id === newWorklog.id) {
         return newWorklog;
       }

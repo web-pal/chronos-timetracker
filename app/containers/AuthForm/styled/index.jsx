@@ -50,7 +50,7 @@ export const ContentInner = styled.div`
   width: 300px;
   min-width: 300px;
   position: absolute;
-  left: ${props => {
+  left: ${(props) => {
     if (props.isActiveStep) return 0;
     if (props.step === 1) return -380;
     if (props.step === 2) return 380;

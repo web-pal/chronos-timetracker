@@ -50,6 +50,7 @@ type Props = {
   installUpdateRequest: InstallUpdateRequest,
 }
 
+/* eslint-disable indent */ // buggy rule
 const SettingsModal: StatelessFunctionalComponent<Props> = ({
   isOpen,
   tab,
@@ -108,7 +109,7 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
         {tab === 'General' &&
           <GeneralSettings
             settings={settings}
-            setTraySettings={(value) => setLocalDesktopSetting(value, 'trayShowTimer')}
+            setTraySettings={value => setLocalDesktopSetting(value, 'trayShowTimer')}
           />
         }
         {tab === 'Notifications' &&
@@ -120,7 +121,7 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
         {tab === 'Updates' &&
           <UpdateSettings
             channel={settings.updateChannel}
-            setChannel={(value) => setLocalDesktopSetting(value, 'updateChannel')}
+            setChannel={value => setLocalDesktopSetting(value, 'updateChannel')}
             updateCheckRunning={updateCheckRunning}
             updateAvailable={updateAvailable}
             updateFetching={updateFetching}

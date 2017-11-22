@@ -3,11 +3,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { reduxForm, formValueSelector } from 'redux-form';
+import { reduxForm, formValueSelector, FormProps } from 'redux-form';
 import { ipcRenderer } from 'electron';
 import storage from 'electron-json-storage';
 import { Flex } from 'components';
-import type { FormProps } from 'redux-form';
 import { logoShadowed } from 'data/assets';
 import { profileActions, uiActions } from 'actions';
 import { getAuthFormStep, getLoginError, getLoginFetching } from 'selectors';
@@ -37,7 +36,8 @@ type Props = {
   step: number,
   loginError: string,
   fetching: boolean,
-} & FormProps;
+}
+// } & FormProps
 
 class AuthForm extends Component<Props> {
   static defaultProps = {
@@ -76,7 +76,7 @@ class AuthForm extends Component<Props> {
   }
 
   oAuth = () => {
-    if (this.props.host && this.props.host.length) {
+    if (this.props.host !== null && this.props.host.length) {
       storage.set('jira_credentials', { host: this.props.host });
       this.props.loginOAuthRequest(`${this.props.host}.atlassian.net`);
     } else {
@@ -113,7 +113,7 @@ class AuthForm extends Component<Props> {
             />
           </ContentOuter>
         </Flex>
-        <Hint>{"Can't log in?"}</Hint>
+        <Hint>Can not log in?</Hint>
       </Container>
     );
   }

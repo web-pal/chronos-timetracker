@@ -32,7 +32,7 @@ export function jts(jiraTimeString: string): number {
   return resultSeconds;
 }
 
-export function stj(seconds: number, format: string): string {
+export function stj(seconds: number, format?: string = 'h[h] m[m]'): string {
   // $FlowFixMe
   return moment.duration(seconds * 1000).format(format);
 }

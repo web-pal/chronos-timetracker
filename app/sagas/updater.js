@@ -45,7 +45,7 @@ function* watchCheckingForUpdates(): Generator<*, *, *> {
 function* watchUpdateAvailable(): Generator<*, *, *> {
   while (true) {
     const meta = yield take(updateAvailableChannel);
-    const ev = meta.ev;
+    const { ev } = meta;
     yield call(
       infoLog,
       'update is availible',

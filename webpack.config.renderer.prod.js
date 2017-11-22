@@ -5,10 +5,10 @@
 import path from 'path';
 import webpack from 'webpack';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
+// import BabelMinify from 'babel-minify-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import SentryPlugin from 'webpack-sentry-plugin';
 import merge from 'webpack-merge';
-// import BabiliPlugin from 'babili-webpack-plugin';
 import baseConfig from './webpack.config.base';
 import pjson from './package.json';
 
@@ -24,15 +24,23 @@ const plugins = [
   /**
     * Babli is an ES6+ aware minifier based on the Babel toolchain (beta)
     */
-  // new BabiliPlugin(),
+  // Wait when will be resolved:
+  // https://github.com/webpack-contrib/babel-minify-webpack-plugin/issues/68https://github.com/webpack-contrib/babel-minify-webpack-plugin/issues/68
+  // https://github.com/webpack/webpack/issues/5931
+  // new BabelMinify(),
+  //
+  // new BabelMinify({
+    // mangle: false,
+    // evaluate: false,
+  // }),
 
   new ExtractTextPlugin({
     filename: 'name.css',
   }),
 
   new BundleAnalyzerPlugin({
-    analyzerMode: process.env.OPEN_ANALYZER === 'true' ? 'server' : 'disabled',
-    openAnalyzer: process.env.OPEN_ANALYZER === 'true',
+    analyzerMode: 'server',
+    openAnalyzer: true,
   }),
 
   new webpack.optimize.OccurrenceOrderPlugin(),

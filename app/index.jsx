@@ -1,5 +1,6 @@
 // @flow
 import React from 'react';
+import type { Node, StatelessFunctionalComponent } from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { AppContainer } from 'react-hot-loader';
@@ -34,19 +35,20 @@ render(
       <App />
     </Provider>
   </AppContainer>,
-  document.getElementById('root'),
+  document.getElementById('root') || document.createElement('div'),
 );
 
 if (module.hot) {
   module.hot.accept('./containers/App', () => {
-    const App = require('./containers/App').default; // eslint-disable-line
+    // $FlowFixMe
+    const App = require('./containers/App'); // eslint-disable-line
     render(
       <AppContainer>
         <Provider store={store}>
           <App />
         </Provider>
       </AppContainer>,
-      document.getElementById('root'),
+      document.getElementById('root') || document.createElement('div'),
     );
   });
 }

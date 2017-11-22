@@ -49,8 +49,8 @@ electron-is-dev@^0.3.0:
   resolved "https://registry.yarnpkg.com/electron-is-dev/-/electron-is-dev-0.3.0.tgz#14e6fda5c68e9e4ecbeff9ccf037cbd7c05c5afe"
 
 electron-log@^2.2.9:
-  version "2.2.9"
-  resolved "https://registry.yarnpkg.com/electron-log/-/electron-log-2.2.9.tgz#e0484cb1a8a84593095e3b69f47361ae15d73bdf"
+  version "2.2.11"
+  resolved "https://registry.yarnpkg.com/electron-log/-/electron-log-2.2.11.tgz#dc99118cda054aa866e47d081d1431c76baacd68"
 
 electron-updater@^2.16.2:
   version "2.16.2"
@@ -123,8 +123,8 @@ ms@2.0.0:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
 
 nan@^2.0.0:
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/nan/-/nan-2.6.2.tgz#e4ff34e6c95fdfb5aecc08de6596f43605a7db45"
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/nan/-/nan-2.8.0.tgz#ed715f3fe9de02b57a5e6252d90a96675e1f085a"
 
 node-notifier@^5.1.2:
   version "5.1.2"

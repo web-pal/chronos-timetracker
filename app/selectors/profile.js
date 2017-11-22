@@ -10,6 +10,10 @@ export const getHost =
 export const getUserData =
   ({ profile }: { profile: ProfileState }): User | null => profile.userData;
 
+export const getSelfKey =
+  ({ profile }: { profile: ProfileState }): string | null =>
+    profile.userData && profile.userData.key;
+
 export const getLoginError =
   ({ profile }: { profile: ProfileState }): string => profile.loginError;
 

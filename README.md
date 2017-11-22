@@ -93,3 +93,23 @@ Actions must begin with some verb - set, fetch, fill, add, delete, etc...
 ## Containers and Components
 * [Simple article about it](https://medium.com/@learnreact/container-components-c0e67432e005)
 * [Dan Abramov about it](https://medium.com/@dan_abramov/smart-and-dumb-components-7ca2f9a7c7d0)
+
+### Module Structure
+
+This boilerplate uses a [two package.json structure](https://www.electron.build/tutorials/two-package-structure).
+This means, you will have two `package.json` files.
+
+1. `./package.json` in the root of your project
+1. `./app/package.json` inside `app` folder
+
+### Which `package.json` file to use
+
+**Rule of thumb** is: all modules go into `./package.json` except native modules.
+Native modules go into `./app/package.json`.
+
+1. If the module is native to a platform (like system-idle-time) or otherwise should be included
+with the published package (i.e. bcrypt, openbci), it should be listed under `dependencies` in `./app/package.json`.
+2. If a module is `import`ed by another module, include it in `dependencies` in `./package.json`.
+See [this ESLint rule](https://github.com/benmosher/eslint-plugin-import/blob/master/docs/rules/no-extraneous-dependencies.md).
+Examples of such modules are `redux-saga`, `redux-form`, and `moment`.
+3. Otherwise, modules used for building, testing and debugging should be included in `devDependencies` in `./package.json`.

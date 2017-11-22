@@ -1,10 +1,11 @@
 import styled from 'styled-components';
+import { AnimatedPlaceholder } from '../../styled';
 
 export const PlaceholderContainer = styled.div`
   padding: 10px;
 `;
 
-export const Placeholder = styled.div`
+export const Placeholder = AnimatedPlaceholder.extend`
   background: #fff;
   position: absolute; 
 ${(props) => {

@@ -8,13 +8,13 @@ import { PlaceholderContainer, Placeholder } from './styled';
 const IssueCommentPlaceholder: StatelessFunctionalComponent<{}> = (): Node => (
   <PlaceholderContainer>
     <Flex row>
-      <Placeholder type="avatar" className="animated-background" />
-      <Placeholder type="title" className="animated-background" />
+      <Placeholder type="avatar" />
+      <Placeholder type="title" />
     </Flex>
     <Flex column>
-      <Placeholder type="body" className="animated-background" />
-      <Placeholder type="body2" className="animated-background" />
-      <Placeholder type="body3" className="animated-background" />
+      <Placeholder type="body" />
+      <Placeholder type="body2" />
+      <Placeholder type="body3" />
     </Flex>
   </PlaceholderContainer>
 );

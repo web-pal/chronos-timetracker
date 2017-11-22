@@ -51,7 +51,7 @@ class WorklogModal extends Component<Props, State> {
     jiraTimeError: null,
   }
 
-  handleTimeChange = (label) => value => {
+  handleTimeChange = label => (value) => {
     this.setState({ [label]: value });
   }
 
@@ -94,7 +94,12 @@ class WorklogModal extends Component<Props, State> {
                   appearance="primary"
                   disabled={fetching}
                   onClick={() => {
-                    this.props.addManualWorklogRequest({ startTime, totalSpent, comment, date });
+                    this.props.addManualWorklogRequest({
+                      startTime,
+                      totalSpent,
+                      comment,
+                      date,
+                    });
                   }}
                   iconAfter={fetching ? <Spinner invertColor /> : null}
                 >
@@ -187,7 +192,7 @@ class WorklogModal extends Component<Props, State> {
             shouldFitContainer
             label="Worklog comment"
             value={comment}
-            onChange={(ev) => this.setState({ comment: ev.target.value })}
+            onChange={ev => this.setState({ comment: ev.target.value })}
           />
         </ModalContentContainer>
       </ModalDialog>

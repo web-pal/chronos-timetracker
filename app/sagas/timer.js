@@ -81,7 +81,7 @@ function timerChannel() {
 let prevIdleTime = 0;
 let totalIdleTimeDuringOneMinute = 0;
 
-function* idleCheck(secondsToMinutesGrid) {
+function* idleCheck() {
   try {
     const idleTime = system.getIdleTime();
     const idleState = yield select(getTimerIdleState);
@@ -157,7 +157,7 @@ function* activityCheck(secondsToMinutesGrid) {
 function* setTimeToTray() {
   const time = yield select(getTimerTime);
   const localDesktopSettings = yield select(getLocalDesktopSettings);
-  const trayShowTimer = localDesktopSettings.trayShowTimer;
+  const { trayShowTimer } = localDesktopSettings;
   if (trayShowTimer) {
     const humanFormat = new Date(time * 1000).toISOString().substr(11, 5);
     remote.getGlobal('tray').setTitle(humanFormat);
@@ -271,15 +271,16 @@ export function* watchStartTimer() {
 }
 
 
-export function* cutIddlesFromLastScreenshot() {
+/* export function* cutIddlesFromLastScreenshot() {
   const lastScreenshotTime = yield select(getLastScreenshotTime);
   const time = yield select(getTimerTime);
   const iddles = Math.ceil((time - lastScreenshotTime) / 60);
-  /* TBD wtf is this yield put({
+  [>TBD wtf is this
+   * yield put({
     type: types.CUT_IDDLES,
     payload: iddles,
-  }); */
-}
+  });<]
+} */
 
 /* function forceSave() {
   const { getGlobal } = remote;
@@ -353,7 +354,7 @@ export function* watchRejectScreenshot() {
     if (running) {
       const { getGlobal } = remote;
       const { lastScreenshotPath } = getGlobal('sharedObj');
-      yield call(cutIddlesFromLastScreenshot);
+      /* yield call(cutIddlesFromLastScreenshot); */
       yield call(rejectScreenshot, lastScreenshotPath);
     }
   }

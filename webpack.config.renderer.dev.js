@@ -38,21 +38,12 @@ export default merge.smart(baseConfig, {
 
   entry: {
     main: [
-      'react-hot-loader/patch',
-      `webpack-dev-server/client?http://localhost:${port}/`,
-      'webpack/hot/only-dev-server',
       path.join(__dirname, 'app/index.jsx'),
     ],
     screenPopup: [
-      'react-hot-loader/patch',
-      `webpack-dev-server/client?http://localhost:${port}/`,
-      'webpack/hot/only-dev-server',
       path.join(__dirname, 'app/screenPopup.jsx'),
     ],
     idleTimePopup: [
-      'react-hot-loader/patch',
-      `webpack-dev-server/client?http://localhost:${port}/`,
-      'webpack/hot/only-dev-server',
       path.join(__dirname, 'app/idlePopup.jsx'),
     ],
   },
@@ -64,6 +55,25 @@ export default merge.smart(baseConfig, {
 
   module: {
     rules: [
+      {
+        test: /\.jsx?$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            cacheDirectory: true,
+            plugins: [
+              // Here, we include babel plugins that are only required for the
+              // renderer process. The 'transform-*' plugins must be included
+              // before react-hot-loader/babel
+              //
+              'transform-class-properties',
+              'transform-es2015-classes',
+              'react-hot-loader/babel'
+            ],
+          }
+        }
+      },
       {
         test: /\.less$/,
         use: [{
@@ -141,10 +151,9 @@ export default merge.smart(baseConfig, {
     /**
      * https://webpack.js.org/concepts/hot-module-replacement/
      */
-    new webpack.HotModuleReplacementPlugin({
-      // @TODO: Waiting on https://github.com/jantimon/html-webpack-plugin/issues/533
-      // multiStep: true
-    }),
+
+    new webpack.NamedModulesPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
 
     new webpack.NoEmitOnErrorsPlugin(),
 
@@ -204,6 +213,7 @@ export default merge.smart(baseConfig, {
     contentBase: path.join(__dirname, 'dist'),
     watchOptions: {
       aggregateTimeout: 300,
+      ignored: /node_modules/,
       poll: 100,
     },
     historyApiFallback: {
@@ -212,9 +222,10 @@ export default merge.smart(baseConfig, {
     },
     setup() {
       if (process.env.START_HOT) {
+        console.log('Staring Main Process...');
         spawn(
           'npm',
-          ['run', 'start-hot-renderer'],
+          ['run', 'start-main-dev'],
           { shell: true, env: process.env, stdio: 'inherit' },
         )
           .on('close', code => process.exit(code))

@@ -48,7 +48,7 @@ function getScreen(callback) {
   }
 
   function handleError(e) {
-    // console.log(e);
+    console.log(e);
   }
 
   desktopCapturer.getSources({ types: ['screen'] }, (error, sources) => {
@@ -67,7 +67,7 @@ function getScreen(callback) {
             maxHeight: 4000,
           },
         },
-      }, (stream) => handleStream(stream, finalScreenshot), handleError);
+      }, stream => handleStream(stream, finalScreenshot), handleError);
     }
   });
 }
@@ -98,7 +98,12 @@ export function makeScreenshot(
       const screenshotName = `${host}_${userKey}_${screenshotTime}_${now}`;
       mergeImages(
         imagesWithCords,
-        { width: totalWidth, height: maxHeight, format: 'image/jpeg', quality: 0.9 },
+        {
+          width: totalWidth,
+          height: maxHeight,
+          format: 'image/jpeg',
+          quality: 0.9,
+        },
       )
         .then(
           (merged) => {

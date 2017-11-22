@@ -116,6 +116,9 @@ export const IssueViewContainer = styled.div`
   display: flex;
   flex-direction: column;
   height: 100vh;
+  background: #fff;
+  position: relative;
+  width: ~"calc(100% - 320px)";
 `;
 
 export const IssueContainer = styled.div`

@@ -44,31 +44,27 @@ export const storageRemovePromise = (key: string): Promise<void> => new Promise(
 
 export function* getFromStorage(key: string): Generator<*, mixed, *> {
   const host: string = yield select(getHost);
-  let _key: string = key;
   // $FlowFixMe: array methods buggy with Enums
-  if (prefixedKeys.includes(key)) {
-    _key = `${host}_${key}`;
-  }
-  const data = yield call(storageGetPromise, _key);
+  const data = yield call(
+    storageGetPromise,
+    prefixedKeys.includes(key) ? `${host}_${key}` : key,
+  );
   return data;
 }
 
 export function* setToStorage(key: string, data: *): Generator<*, Promise<void>, *> {
   const host: string = yield select(getHost);
-  let _key: string = key;
   // $FlowFixMe: array methods buggy with Enums
-  if (prefixedKeys.includes(key)) {
-    _key = `${host}_${key}`;
-  }
-  return storageSetPromise(_key, data);
+  return storageSetPromise(
+    prefixedKeys.includes(key) ? `${host}_${key}` : key,
+    data,
+  );
 }
 
 export function* removeFromStorage(key: string): Generator<*, Promise<void>, *> {
   const host: string = yield select(getHost);
-  let _key: string = key;
   // $FlowFixMe: array methods buggy with Enums
-  if (prefixedKeys.includes(key)) {
-    _key = `${host}_${key}`;
-  }
-  return storageRemovePromise(_key);
+  return storageRemovePromise(
+    prefixedKeys.includes(key) ? `${host}_${key}` : key,
+  );
 }

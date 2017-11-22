@@ -19,8 +19,8 @@ export const getWorklogListScrollIndex = createSelector(
   [getSelectedWorklogId, getSelectedIssue],
   (selectedWorklogId, issue) => {
     if (!issue) return 0;
-    const worklogs = issue.fields.worklog.worklogs;
+    const { worklogs } = issue.fields.worklog;
     if (!worklogs.findIndex) return 0;
-    return worklogs.findIndex((w) => w.id === selectedWorklogId);
+    return worklogs.findIndex(w => w.id === selectedWorklogId);
   },
 );
