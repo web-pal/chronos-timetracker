@@ -38,7 +38,7 @@ const plugins = [
   new webpack.optimize.OccurrenceOrderPlugin(),
 
   new BundleAnalyzerPlugin({
-    analyzerMode: process.env.OPEN_ANALYZER === 'true' ? 'server' : 'server',
+    analyzerMode: process.env.OPEN_ANALYZER === 'true' ? 'server' : 'disabled',
     openAnalyzer: true,
   }),
 ];

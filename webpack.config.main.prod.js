@@ -9,7 +9,7 @@ import BabelMinify from 'babel-minify-webpack-plugin';
 import baseConfig from './webpack.config.base';
 
 export default merge.smart(baseConfig, {
-  devtool: 'source-map',
+  devtool: 'cheap-source-map',
 
   target: 'electron-main',
 
