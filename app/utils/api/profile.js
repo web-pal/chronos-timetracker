@@ -83,7 +83,7 @@ export function chronosBackendOAuth({
   }).then(res => res.json());
 }
 
-export function getOAuthUrl(options: { oauth: oAuthData, host: string }): Promise<*> {
+export function getOAuthUrl(options: any): Promise<*> {
   return new Promise((resolve) => {
     jira.getOAuthUrl(options, (err, res) => {
       if (err) {
