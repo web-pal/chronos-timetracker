@@ -36,7 +36,8 @@ type Props = {
   step: number,
   loginError: string,
   fetching: boolean,
-} & FormProps
+}
+// } & FormProps
 
 class AuthForm extends Component<Props> {
   static defaultProps = {

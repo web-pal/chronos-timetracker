@@ -1,8 +1,6 @@
 /* eslint-disable no-confusing-arrow */
 import styled from 'styled-components';
 import { atlassianLogoVertical } from 'data/svg';
-import '../../../../assets/fonts/lineto-circular-bold-c.ttf';
-import '../../../../assets/fonts/lineto-circular-book-c.ttf';
 
 export const ReportTabContainer = styled.div`
   display: flex;
@@ -38,7 +36,6 @@ export const MetaColumn = styled.div`
 export const MetaItemName = styled.span.attrs({
   className: 'MetaItemName',
 })`
-  font-family: Circular-Book !important;
   color: rgba(225, 225, 225, .9);
   font-size: 14px;
 `;
@@ -46,7 +43,6 @@ export const MetaItemName = styled.span.attrs({
 export const MetaItemValue = styled.span.attrs({
   className: 'MetaItemValue',
 })`
-  font-family: Circular-Bold !important;
   color: white;
   font-size: 28px;
 `;
@@ -54,7 +50,6 @@ export const MetaItemValue = styled.span.attrs({
 export const CTAButton = styled.div`
   background: #FFAB00;
   border-radius: 3px;
-  font-family: Circular-Bold !important;
   font-size: 18px;
   color: #091E42;
   letter-spacing: 0.6px;
@@ -76,7 +71,6 @@ export const CTAArea = styled.div`
 `;
 
 export const Heading = styled.div`
-  font-family: Circular-Bold !important;
   font-size: 24px;
   text-align: center;
   color: #FFFFFF;
@@ -84,7 +78,6 @@ export const Heading = styled.div`
 
 export const HelpText = styled.a`
   color: rgba(255,255,255,0.85);
-  font-family: Circular-Book !important;
   font-size: 12px;
   cursor: pointer;
   :hover {
@@ -106,7 +99,6 @@ export const ChronosDescriptionMetaItem = styled.div`
 `;
 
 export const ChronosDescription = styled.div`
-  font-family: Circular-Book !important;
   font-size: 10px;
   color: rgba(225, 225, 225, .85);
   text-align: center;
@@ -114,7 +106,6 @@ export const ChronosDescription = styled.div`
   margin-top: 5px;
   b {
     color: white;
-    font-family: Circular-Bold !important;
   }
 `;
 
@@ -190,7 +181,6 @@ export const LearnMoreLink = styled.a`
   text-decoration: none;
   font-size: 10px;
   color: white;
-  font-family: Circular-Bold !important;
   cursor: pointer;
   :hover {
     color: white;

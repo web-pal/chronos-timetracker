@@ -139,15 +139,14 @@ export function* loginFlow(): Generator<*, void, *> {
       yield put(profileActions.setLoginFetching(true));
       yield put(profileActions.setHost(payload.host));
       const chronosBackendLoginSuccess: boolean = yield call(chronosBackendLogin, payload);
-      if (!chronosBackendLoginSuccess) yield cancel();
-      const jiraLoginSuccess: boolean = yield call(jiraLogin, payload);
-      if (!jiraLoginSuccess) yield cancel();
-
-      if (jiraLoginSuccess && chronosBackendLoginSuccess) {
-        yield call(setToStorage, 'jira_credentials', { ...payload, password: '' });
-        yield call(afterLogin);
+      if (chronosBackendLoginSuccess) {
+        const jiraLoginSuccess: boolean = yield call(jiraLogin, payload);
+        if (jiraLoginSuccess) {
+          yield call(setToStorage, 'jira_credentials', { ...payload, password: '' });
+          yield call(afterLogin);
+        }
       }
-      yield put(profileActions.setLoginFetching(true));
+      yield put(profileActions.setLoginFetching(false));
     } catch (err) {
       yield put(profileActions.setLoginFetching(false));
       yield call(throwError, err);
