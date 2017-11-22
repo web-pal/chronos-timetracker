@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from 'styled-components2';
 import { placeholderShimmer } from 'styles/animations';
 
 export const AnimatedPlaceholder = styled.div`

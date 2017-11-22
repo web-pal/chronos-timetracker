@@ -31,6 +31,34 @@ export function jiraAuth({
   return jiraProfile();
 }
 
+export function checkUserPlan({
+  host,
+}: {
+  host: string,
+}): Promise<*> {
+  return fetch(`${apiUrl}/desktop-tracker/check-user-plan`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      baseUrl: `${clearHost(host)}.atlassian.net`,
+    }),
+  })
+    .then(
+      (res) => {
+        const status = res.status;
+        if (status === 200) { // user is a part of jira team who bought Chronos Jira plugin
+          return res.json();
+        }
+        return { success: false };
+      },
+    )
+    .then(
+      (json: { success: boolean }) => json.success,
+    );
+}
+
 export function chronosBackendAuth({
   host,
   username,

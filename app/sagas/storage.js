@@ -45,8 +45,12 @@ export const storageRemovePromise = (key: string): Promise<void> => new Promise(
 export function* getFromStorage(key: string): Generator<*, mixed, *> {
   const host: string = yield select(getHost);
   // $FlowFixMe: array methods buggy with Enums
+  if (prefixedKeys.includes(key) && !host) {
+    throw new Error('Need to fill host before getting prefixed keys from storage');
+  }
   const data = yield call(
     storageGetPromise,
+    // $FlowFixMe: array methods buggy with Enums
     prefixedKeys.includes(key) ? `${host}_${key}` : key,
   );
   return data;
@@ -55,7 +59,11 @@ export function* getFromStorage(key: string): Generator<*, mixed, *> {
 export function* setToStorage(key: string, data: *): Generator<*, Promise<void>, *> {
   const host: string = yield select(getHost);
   // $FlowFixMe: array methods buggy with Enums
+  if (prefixedKeys.includes(key) && !host) {
+    throw new Error('Need to fill host before getting prefixed keys from storage');
+  }
   return storageSetPromise(
+    // $FlowFixMe: array methods buggy with Enums
     prefixedKeys.includes(key) ? `${host}_${key}` : key,
     data,
   );
@@ -64,7 +72,11 @@ export function* setToStorage(key: string, data: *): Generator<*, Promise<void>,
 export function* removeFromStorage(key: string): Generator<*, Promise<void>, *> {
   const host: string = yield select(getHost);
   // $FlowFixMe: array methods buggy with Enums
+  if (prefixedKeys.includes(key) && !host) {
+    throw new Error('Need to fill host before getting prefixed keys from storage');
+  }
   return storageRemovePromise(
+    // $FlowFixMe: array methods buggy with Enums
     prefixedKeys.includes(key) ? `${host}_${key}` : key,
   );
 }

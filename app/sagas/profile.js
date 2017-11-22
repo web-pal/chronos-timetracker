@@ -1,5 +1,6 @@
 // @flow
 import { race, take, put, call, fork, cancel } from 'redux-saga/effects';
+// import keytar from 'keytar';
 import Raven from 'raven-js';
 import { ipcRenderer, remote } from 'electron';
 import { types, profileActions, clearAllReducers, settingsActions } from 'actions';
@@ -136,6 +137,7 @@ export function* loginFlow(): Generator<*, void, *> {
   while (true) {
     try {
       const { payload }: LoginRequestAction = yield take(types.LOGIN_REQUEST);
+      const { host } = payload;
       yield put(profileActions.setLoginFetching(true));
       yield put(profileActions.setHost(payload.host));
       const chronosBackendLoginSuccess: boolean = yield call(chronosBackendLogin, payload);
@@ -143,6 +145,7 @@ export function* loginFlow(): Generator<*, void, *> {
         const jiraLoginSuccess: boolean = yield call(jiraLogin, payload);
         if (jiraLoginSuccess) {
           yield call(setToStorage, 'jira_credentials', { ...payload, password: '' });
+          yield call((): void => { ipcRenderer.sendSync('store-credentials', payload); });
           yield call(afterLogin);
         }
       }
@@ -150,7 +153,7 @@ export function* loginFlow(): Generator<*, void, *> {
     } catch (err) {
       yield put(profileActions.setLoginFetching(false));
       yield call(throwError, err);
-      const humanReadableError = new Error('Basic auth failed for unknown reason.');
+      const humanReadableError = new Error('Can not authenticate user. Please try again');
       yield call(loginError, humanReadableError);
       Raven.captureException(err);
     }

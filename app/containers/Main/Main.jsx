@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import { ThemeProvider } from 'styled-components';
+import { ThemeProvider } from 'styled-components2';
 import { Flex } from 'components';
 
 import type { StatelessFunctionalComponent, Node } from 'react';

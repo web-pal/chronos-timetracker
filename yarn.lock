@@ -56,7 +56,7 @@
     prop-types "^15.5.10"
     styled-components "^1.4.6"
 
-"@atlaskit/checkbox@^1.0.0":
+"@atlaskit/checkbox@1.1.4":
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/@atlaskit/checkbox/-/checkbox-1.1.4.tgz#178b0e72468e609231a9af38fc42084bc8407e9c"
   dependencies:
@@ -109,7 +109,7 @@
     prop-types "^15.5.10"
     styled-components "^1.4.6"
 
-"@atlaskit/field-radio-group@^1.6.4":
+"@atlaskit/field-radio-group@1.7.4":
   version "1.7.4"
   resolved "https://registry.yarnpkg.com/@atlaskit/field-radio-group/-/field-radio-group-1.7.4.tgz#8e63b2eebf9a8eb3875e32db22c56d26938bc2cc"
   dependencies:
@@ -154,7 +154,7 @@
     react-transition-group "^1.2.0"
     styled-components "^1.4.6"
 
-"@atlaskit/icon@^10.0.0", "@atlaskit/icon@^10.1.0", "@atlaskit/icon@^10.1.3":
+"@atlaskit/icon@10.3.1", "@atlaskit/icon@^10.1.0", "@atlaskit/icon@^10.1.3":
   version "10.3.1"
   resolved "https://registry.yarnpkg.com/@atlaskit/icon/-/icon-10.3.1.tgz#bc5cbb78334bf99fca30738445af11a414f381de"
   dependencies:
@@ -178,7 +178,7 @@
     prop-types "^15.5.10"
     styled-components "^1.3.0"
 
-"@atlaskit/inline-dialog@^5.0.1":
+"@atlaskit/inline-dialog@5.0.4", "@atlaskit/inline-dialog@^5.0.1":
   version "5.0.4"
   resolved "https://registry.yarnpkg.com/@atlaskit/inline-dialog/-/inline-dialog-5.0.4.tgz#439b3a7dd861790c53d627d2637a3e89f8080a8d"
   dependencies:
@@ -188,7 +188,7 @@
     prop-types "^15.5.10"
     styled-components "^1.4.6"
 
-"@atlaskit/inline-edit@^4.5.2":
+"@atlaskit/inline-edit@4.5.5":
   version "4.5.5"
   resolved "https://registry.yarnpkg.com/@atlaskit/inline-edit/-/inline-edit-4.5.5.tgz#daab3f056a073ec8f1378d076a90e917cdc8132e"
   dependencies:
@@ -201,7 +201,7 @@
     prop-types "^15.5.10"
     styled-components "^1.4.5"
 
-"@atlaskit/input@^1.5.3":
+"@atlaskit/input@1.6.1":
   version "1.6.1"
   resolved "https://registry.yarnpkg.com/@atlaskit/input/-/input-1.6.1.tgz#4c20a218048b90b5e30ca183fd1ede95ae6ad497"
   dependencies:
@@ -240,7 +240,7 @@
     prop-types "^15.5.10"
     styled-components "^1.4.6"
 
-"@atlaskit/modal-dialog@^3.1.1":
+"@atlaskit/modal-dialog@3.2.2":
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/@atlaskit/modal-dialog/-/modal-dialog-3.2.2.tgz#b1782709f511313f38cc8b97e7a34e111fb674c4"
   dependencies:
@@ -257,7 +257,7 @@
     styled-components "^1.4.6"
     tabbable "^1.0.6"
 
-"@atlaskit/single-select@^2.0.1":
+"@atlaskit/single-select@2.0.5":
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/@atlaskit/single-select/-/single-select-2.0.5.tgz#d7e007bad7b1904b9ad592dd66081b475c7f8e70"
   dependencies:
@@ -272,7 +272,7 @@
     prop-types "^15.5.10"
     styled-components "^1.4.6"
 
-"@atlaskit/spinner@^4.0.0":
+"@atlaskit/spinner@4.0.2", "@atlaskit/spinner@^4.0.0":
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/@atlaskit/spinner/-/spinner-4.0.2.tgz#37ec068ec99e9d056f7c476cc617002dc394a13b"
   dependencies:
@@ -1768,7 +1768,7 @@ buffer@^4.3.0:
     ieee754 "^1.1.4"
     isarray "^1.0.0"
 
-buffer@^5.0.2, buffer@^5.0.3:
+buffer@^5.0.2:
   version "5.0.8"
   resolved "https://registry.yarnpkg.com/buffer/-/buffer-5.0.8.tgz#84daa52e7cf2fa8ce4195bc5cf0f7809e0930b24"
   dependencies:
@@ -2429,10 +2429,6 @@ css-animation@^1.3.2:
     babel-runtime "6.x"
     component-classes "^1.2.5"
 
-css-color-keywords@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/css-color-keywords/-/css-color-keywords-1.0.0.tgz#fea2616dc676b2962686b3af8dbdbe180b244e05"
-
 css-color-list@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/css-color-list/-/css-color-list-0.0.1.tgz#8718e8695ae7a2cc8787be8715f1c008a7f28b15"
@@ -2481,14 +2477,6 @@ css-to-react-native@^1.0.6:
     css-color-list "0.0.1"
     fbjs "^0.8.5"
     nearley "^2.7.7"
-
-css-to-react-native@^2.0.3:
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/css-to-react-native/-/css-to-react-native-2.0.4.tgz#cf4cc407558b3474d4ba8be1a2cd3b6ce713101b"
-  dependencies:
-    css-color-keywords "^1.0.0"
-    fbjs "^0.8.5"
-    postcss-value-parser "^3.3.0"
 
 cssesc@^0.1.0:
   version "0.1.0"
@@ -4281,7 +4269,7 @@ hoek@4.x.x:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/hoek/-/hoek-4.2.0.tgz#72d9d0754f7fe25ca2d01ad8f8f9a9449a89526d"
 
-hoist-non-react-statics@^1.0.0, hoist-non-react-statics@^1.2.0:
+hoist-non-react-statics@^1.0.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-1.2.0.tgz#aa448cf0986d55cc40773b17174b7dd066cb7cfb"
 
@@ -4467,8 +4455,8 @@ inherits@2.0.1:
   resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.1.tgz#b17d08d326b4423e568eff719f91b0b1cbdf69f1"
 
 ini@^1.3.4, ini@~1.3.0:
-  version "1.3.4"
-  resolved "https://registry.yarnpkg.com/ini/-/ini-1.3.4.tgz#0537cb79daf59b59a1a517dff706c86ec039162e"
+  version "1.3.5"
+  resolved "https://registry.yarnpkg.com/ini/-/ini-1.3.5.tgz#eee25f56db1c9ec6085e0c22778083f596abf927"
 
 inline-style-prefixer@^2.0.5:
   version "2.0.5"
@@ -4997,7 +4985,7 @@ lcid@^1.0.0:
   dependencies:
     invert-kv "^1.0.0"
 
-less-loader@^4.0.5:
+less-loader@4.0.5:
   version "4.0.5"
   resolved "https://registry.yarnpkg.com/less-loader/-/less-loader-4.0.5.tgz#ae155a7406cac6acd293d785587fcff0f478c4dd"
   dependencies:
@@ -5005,9 +4993,9 @@ less-loader@^4.0.5:
     loader-utils "^1.1.0"
     pify "^2.3.0"
 
-less@^2.7.2:
-  version "2.7.3"
-  resolved "https://registry.yarnpkg.com/less/-/less-2.7.3.tgz#cc1260f51c900a9ec0d91fb6998139e02507b63b"
+less@2.7.2:
+  version "2.7.2"
+  resolved "https://registry.yarnpkg.com/less/-/less-2.7.2.tgz#368d6cc73e1fb03981183280918743c5dcf9b3df"
   optionalDependencies:
     errno "^0.1.1"
     graceful-fs "^4.1.2"
@@ -5015,7 +5003,7 @@ less@^2.7.2:
     mime "^1.2.11"
     mkdirp "^0.5.0"
     promise "^7.1.1"
-    request "2.81.0"
+    request "^2.72.0"
     source-map "^0.5.3"
 
 levn@^0.3.0, levn@~0.3.0:
@@ -6599,8 +6587,8 @@ rabin-bindings@~1.7.3:
     prebuild-install "^2.3.0"
 
 raf-schd@^2.0.1:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/raf-schd/-/raf-schd-2.0.2.tgz#7cf60f260c2d97ba2ba2a448c73604c5bed8cf08"
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/raf-schd/-/raf-schd-2.1.0.tgz#64d645723380ec25cc1714e909b953ef1cf254bf"
 
 railroad-diagrams@^1.0.0:
   version "1.0.0"
@@ -7122,7 +7110,7 @@ request@2.81.0:
     tunnel-agent "^0.6.0"
     uuid "^3.0.0"
 
-request@^2.45.0, request@^2.51.0, request@^2.79.0, request@^2.81.0:
+request@^2.45.0, request@^2.51.0, request@^2.72.0, request@^2.79.0, request@^2.81.0:
   version "2.83.0"
   resolved "https://registry.yarnpkg.com/request/-/request-2.83.0.tgz#ca0b65da02ed62935887808e6f510381034e3356"
   dependencies:
@@ -7746,20 +7734,6 @@ style-loader@0.19.0:
     loader-utils "^1.0.2"
     schema-utils "^0.3.0"
 
-styled-components@2.1.2:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/styled-components/-/styled-components-2.1.2.tgz#bb419978e1287c5d0d88fa9106b2dd75f66a324c"
-  dependencies:
-    buffer "^5.0.3"
-    css-to-react-native "^2.0.3"
-    fbjs "^0.8.9"
-    hoist-non-react-statics "^1.2.0"
-    is-function "^1.0.1"
-    is-plain-object "^2.0.1"
-    prop-types "^15.5.4"
-    stylis "^3.2.1"
-    supports-color "^3.2.3"
-
 styled-components@^1.3.0, styled-components@^1.4.5, styled-components@^1.4.6:
   version "1.4.6"
   resolved "https://registry.yarnpkg.com/styled-components/-/styled-components-1.4.6.tgz#58f32e8a6ab510fb1481e901e838e0477f148b06"
@@ -7772,10 +7746,6 @@ styled-components@^1.3.0, styled-components@^1.4.5, styled-components@^1.4.6:
     is-plain-object "^2.0.1"
     prop-types "^15.5.4"
     supports-color "^3.1.2"
-
-stylis@^3.2.1:
-  version "3.4.3"
-  resolved "https://registry.yarnpkg.com/stylis/-/stylis-3.4.3.tgz#875bd0db3db37bb6de08f89275fc38ee2e32ee75"
 
 sumchecker@^1.2.0:
   version "1.3.1"
@@ -7889,8 +7859,8 @@ tar@^2.2.1:
     inherits "2"
 
 temp-file@^2.0.3:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/temp-file/-/temp-file-2.1.0.tgz#e88851886d9cae17152bd71bb929189fa8b5bcf8"
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/temp-file/-/temp-file-2.1.1.tgz#7c2db304595007461b16a06e3625639cbf69a91d"
   dependencies:
     async-exit-hook "^2.0.1"
     bluebird-lst "^1.0.5"

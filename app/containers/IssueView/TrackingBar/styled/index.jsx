@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from 'styled-components2';
 import EditFilledIcon from '@atlaskit/icon/glyph/edit-filled';
 
 // background: #32A675 !important;

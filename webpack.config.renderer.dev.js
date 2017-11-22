@@ -61,6 +61,15 @@ export default merge.smart(baseConfig, {
         use: {
           loader: 'babel-loader',
           options: {
+            presets: [
+              ['env', {
+                targets: { chrome: 52 },
+                modules: false,
+                useBuiltIns: true,
+              }],
+              'stage-0',
+              'react',
+            ],
             cacheDirectory: true,
             plugins: [
               // Here, we include babel plugins that are only required for the
@@ -69,10 +78,10 @@ export default merge.smart(baseConfig, {
               //
               'transform-class-properties',
               'transform-es2015-classes',
-              'react-hot-loader/babel'
+              'react-hot-loader/babel',
             ],
-          }
-        }
+          },
+        },
       },
       {
         test: /\.less$/,
@@ -170,7 +179,7 @@ export default merge.smart(baseConfig, {
      * 'staging', for example, by changing the ENV variables in the npm scripts
      */
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || '"development"'),
     }),
 
     // Define global vars
@@ -198,6 +207,10 @@ export default merge.smart(baseConfig, {
       path.join(__dirname, 'app/styles'),
       'node_modules',
     ],
+    // We need it because of atlaskit styled-components version
+    alias: {
+      'styled-components2': path.resolve(__dirname, 'app/styled-components.min.js'),
+    },
   },
 
   devServer: {

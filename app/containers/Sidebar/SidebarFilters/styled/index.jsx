@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from 'styled-components2';
 
 export const FiltersContainer = styled.div`
   position: absolute;

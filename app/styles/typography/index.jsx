@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from 'styled-components2';
 
 // A fantastico response at EuroSummit
 export const H800 = styled.span`

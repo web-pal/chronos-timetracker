@@ -1,4 +1,4 @@
-import { keyframes } from 'styled-components';
+import { keyframes } from 'styled-components2';
 
 export const placeholderShimmer = keyframes`
   0%{

@@ -1,5 +1,5 @@
 /* eslint-disable no-confusing-arrow */
-import styled from 'styled-components';
+import styled from 'styled-components2';
 
 export const SettingsSectionLabel = styled.a`
   margin-bottom: 15px;

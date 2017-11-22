@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components2';
 import { Flex } from 'components';
 
 import calculateSize from 'calculate-size';
