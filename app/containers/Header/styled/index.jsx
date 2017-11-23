@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from 'styled-components2';
 import { DropdownItem } from '@atlaskit/dropdown-menu';
 
 // padding top is 15px to avoid OS X window bar

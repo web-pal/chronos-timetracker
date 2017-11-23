@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from 'styled-components2';
 
 export const PlaceholderContainer = styled.div`
   border-bottom: 1px solid rgba(151,151,151,.35);
@@ -9,7 +9,7 @@ export const PlaceholderContainer = styled.div`
 
 export const Placeholder = styled.div`
   background: #fff;
-  position: absolute; 
+  position: absolute;
 ${(props) => {
     switch (props.type) {
       case 'issueRight':

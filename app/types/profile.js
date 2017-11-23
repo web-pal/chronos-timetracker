@@ -66,6 +66,7 @@ export type ProfileState = {|
   +userData: User | null,
   +loginError: string,
   +loginFetching: boolean,
+  +isPaidUser: boolean,
 |};
 
 export type AuthFormData = {|
@@ -166,6 +167,14 @@ export type SetLoginFetching = {
   (payload: boolean): SetLoginFetchingAction
 };
 
+//
+export type SetIsPaidUserAction =
+ {| type: typeof types.SET_IS_PAID_USER, payload: boolean |} & Action;
+
+export type SetIsPaidUser = {
+  (payload: boolean): SetIsPaidUserAction
+};
+
 export type ProfileAction =
   LoginRequestAction
   | LoginOAuthRequestAction
@@ -177,4 +186,5 @@ export type ProfileAction =
   | ThrowLoginErrorAction
   | FillUserDataAction
   | SetHostAction
-  | SetLoginFetchingAction;
+  | SetLoginFetchingAction
+  | SetIsPaidUserAction;

@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from 'styled-components2';
 import { AnimatedPlaceholder } from '../../styled';
 
 export const PlaceholderContainer = styled.div`
@@ -7,7 +7,7 @@ export const PlaceholderContainer = styled.div`
 
 export const Placeholder = AnimatedPlaceholder.extend`
   background: #fff;
-  position: absolute; 
+  position: absolute;
 ${(props) => {
     switch (props.type) {
       case 'avatar':

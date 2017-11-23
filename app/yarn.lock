@@ -110,6 +110,12 @@ jsonfile@^4.0.0:
   optionalDependencies:
     graceful-fs "^4.1.6"
 
+keytar@^4.0.5:
+  version "4.0.5"
+  resolved "https://registry.yarnpkg.com/keytar/-/keytar-4.0.5.tgz#cc1255ef06eeea1a12440b773f7d4a375b048729"
+  dependencies:
+    nan "2.5.1"
+
 lazy-val@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/lazy-val/-/lazy-val-1.0.2.tgz#d9b07fb1fce54cbc99b3c611de431b83249369b6"
@@ -121,6 +127,10 @@ lodash.isequal@^4.5.0:
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
+
+nan@2.5.1:
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/nan/-/nan-2.5.1.tgz#d5b01691253326a97a2bbee9e61c55d8d60351e2"
 
 nan@^2.0.0:
   version "2.8.0"

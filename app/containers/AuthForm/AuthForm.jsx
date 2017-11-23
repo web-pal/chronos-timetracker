@@ -3,17 +3,19 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { reduxForm, formValueSelector, FormProps } from 'redux-form';
+import { reduxForm, formValueSelector } from 'redux-form';
 import { ipcRenderer } from 'electron';
 import storage from 'electron-json-storage';
 import { Flex } from 'components';
 import { logoShadowed } from 'data/assets';
 import { profileActions, uiActions } from 'actions';
-import { getAuthFormStep, getLoginError, getLoginFetching } from 'selectors';
+import { getAuthFormStep, getLoginError, getLoginFetching, getIsPaidUser } from 'selectors';
 import type {
   LoginRequest,
   LoginOAuthRequest,
   DenyOAuth,
+  AcceptOAuth,
+  ThrowLoginError,
   CheckJWTRequest,
   SetAuthFormStep,
 } from '../../types';
@@ -29,13 +31,17 @@ type Props = {
   loginRequest: LoginRequest,
   loginOAuthRequest: LoginOAuthRequest,
   denyOAuth: DenyOAuth,
+  acceptOAuth: AcceptOAuth,
+  throwLoginError: ThrowLoginError,
   checkJWTRequest: CheckJWTRequest,
   setAuthFormStep: SetAuthFormStep,
+  isPaidUser: boolean,
 
   host: string | null,
   step: number,
   loginError: string,
   fetching: boolean,
+  handleSubmit: any,
 }
 // } & FormProps
 
@@ -45,14 +51,6 @@ class AuthForm extends Component<Props> {
   }
 
   componentDidMount() {
-    storage.get('jira_credentials', (err, credentials) => {
-      if (!err && credentials && Object.keys(credentials)) {
-        if (credentials.host && credentials.host !== '') {
-          this.props.setAuthFormStep(2);
-        }
-        this.props.initialize(credentials);
-      }
-    });
     storage.get('desktop_tracker_jwt', (err, token) => {
       if (!err && token && Object.keys(token).length) {
         this.props.checkJWTRequest();
@@ -77,10 +75,9 @@ class AuthForm extends Component<Props> {
 
   oAuth = () => {
     if (this.props.host !== null && this.props.host.length) {
-      storage.set('jira_credentials', { host: this.props.host });
-      this.props.loginOAuthRequest(`${this.props.host}.atlassian.net`);
+      this.props.loginOAuthRequest(`${this.props.host}`);
     } else {
-      this.props.throwLoginError('You need to fill JIRA host at first');
+      this.props.throwLoginError('You need to fill JIRA host first');
     }
   }
 
@@ -91,6 +88,7 @@ class AuthForm extends Component<Props> {
       setAuthFormStep,
       loginError,
       fetching,
+      isPaidUser,
     } = this.props;
 
     return (
@@ -110,6 +108,7 @@ class AuthForm extends Component<Props> {
               isActiveStep={step === 2}
               onBack={() => setAuthFormStep(1)}
               loginRequestInProcess={fetching}
+              isPaidUser={isPaidUser}
             />
           </ContentOuter>
         </Flex>
@@ -130,6 +129,7 @@ function mapStateToProps(state) {
     step: getAuthFormStep(state),
     loginError: getLoginError(state),
     fetching: getLoginFetching(state),
+    isPaidUser: getIsPaidUser(state),
   };
 }
 

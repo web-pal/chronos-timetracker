@@ -12,3 +12,4 @@ export const FILL_USER_DATA: 'profile/FILL_USER_DATA' = 'profile/FILL_USER_DATA'
 export const SET_HOST: 'profile/SET_HOST' = 'profile/SET_HOST';
 export const THROW_LOGIN_ERROR: 'profile/THROW_LOGIN_ERROR' = 'profile/THROW_LOGIN_ERROR';
 export const SET_LOGIN_FETCHING: 'profile/SET_LOGIN_FETCHING' = 'profile/SET_LOGIN_FETCHING';
+export const SET_IS_PAID_USER: 'profile/SET_IS_PAID_USER' = 'profile/SET_IS_PAID_USER';

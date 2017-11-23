@@ -1,5 +1,5 @@
 /* eslint-disable no-confusing-arrow */
-import styled from 'styled-components';
+import styled from 'styled-components2';
 import '../../../../../../assets/fonts/lineto-circular-bold-c.ttf';
 import '../../../../../../assets/fonts/lineto-circular-book-c.ttf';
 

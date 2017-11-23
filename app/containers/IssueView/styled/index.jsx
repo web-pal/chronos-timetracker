@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from 'styled-components2';
 import UserAvatarCircleIcon from '@atlaskit/icon/glyph/user-avatar-circle';
 
 export const TabItem = styled.div`

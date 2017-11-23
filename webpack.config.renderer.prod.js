@@ -5,46 +5,42 @@
 import path from 'path';
 import webpack from 'webpack';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
-// import BabelMinify from 'babel-minify-webpack-plugin';
-import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+// import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import SentryPlugin from 'webpack-sentry-plugin';
+// import UglifyJsPlugin from 'uglifyjs-webpack-plugin';
+import BabelMinify from 'babel-minify-webpack-plugin';
 import merge from 'webpack-merge';
 import baseConfig from './webpack.config.base';
 import pjson from './package.json';
 
 const plugins = [
   new webpack.DefinePlugin({
-    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
-    'process.env.BABEL_ENV': JSON.stringify(process.env.BABEL_ENV || 'production'),
-    'process.env.SENTRY_API_KEY': JSON.stringify(process.env.SENTRY_API_KEY || ''),
-    'process.env.MIXPANEL_API_TOKEN': JSON.stringify(process.env.MIXPANEL_API_TOKEN || ''),
-    'process.env.DISABLE_MIXPANEL': JSON.stringify(process.env.DISABLE_MIXPANEL || ''),
-    'process.env.DISABLE_SENTRY': JSON.stringify(process.env.DISABLE_SENTRY || ''),
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || '"production"'),
+    'process.env.BABEL_ENV': JSON.stringify(process.env.BABEL_ENV || '"production"'),
+    'process.env.SENTRY_API_KEY': JSON.stringify(process.env.SENTRY_API_KEY || '""'),
+    'process.env.MIXPANEL_API_TOKEN': JSON.stringify(process.env.MIXPANEL_API_TOKEN || '""'),
+    'process.env.DISABLE_MIXPANEL': JSON.stringify(process.env.DISABLE_MIXPANEL || '""'),
+    'process.env.DISABLE_SENTRY': JSON.stringify(process.env.DISABLE_SENTRY || '""'),
   }),
-  /**
-    * Babli is an ES6+ aware minifier based on the Babel toolchain (beta)
-    */
-  // Wait when will be resolved:
-  // https://github.com/webpack-contrib/babel-minify-webpack-plugin/issues/68https://github.com/webpack-contrib/babel-minify-webpack-plugin/issues/68
-  // https://github.com/webpack/webpack/issues/5931
-  // new BabelMinify(),
-  //
-  // new BabelMinify({
-    // mangle: false,
-    // evaluate: false,
-  // }),
 
   new ExtractTextPlugin({
     filename: 'name.css',
   }),
 
-  new BundleAnalyzerPlugin({
-    analyzerMode: 'server',
-    openAnalyzer: true,
-  }),
+  new BabelMinify(),
+
+  // new webpack.optimize.CommonsChunkPlugin({
+    // name: 'commons',
+    // filename: 'commons.js',
+    // chunks: ['main', 'screenPopup', 'idleTimePopup'],
+  // }),
 
   new webpack.optimize.OccurrenceOrderPlugin(),
 
+  // new BundleAnalyzerPlugin({
+    // analyzerMode: process.env.OPEN_ANALYZER === 'true' ? 'server' : 'disabled',
+    // openAnalyzer: true,
+  // }),
 ];
 
 
@@ -60,7 +56,7 @@ if (process.env.UPLOAD_SENTRY !== '0' && process.env.DISABLE_SENTRY !== '1') {
 }
 
 export default merge.smart(baseConfig, {
-  devtool: 'source-map',
+  devtool: 'cheap-source-map',
 
   target: 'electron-renderer',
 
@@ -87,6 +83,10 @@ export default merge.smart(baseConfig, {
       path.join(__dirname, 'app/styles'),
       'node_modules',
     ],
+    // We need it because of atlaskit styled-components version
+    alias: {
+      'styled-components2': path.resolve(__dirname, 'app/styled-components.min.js'),
+    },
   },
 
   module: {
@@ -113,7 +113,7 @@ export default merge.smart(baseConfig, {
           options: {
             limit: 10000,
             mimetype: 'application/font-woff',
-          }
+          },
         },
       },
       // WOFF2 Font
@@ -124,8 +124,8 @@ export default merge.smart(baseConfig, {
           options: {
             limit: 10000,
             mimetype: 'application/font-woff',
-          }
-        }
+          },
+        },
       },
       // TTF Font
       {
@@ -134,9 +134,9 @@ export default merge.smart(baseConfig, {
           loader: 'url-loader',
           options: {
             limit: 10000,
-            mimetype: 'application/octet-stream'
-          }
-        }
+            mimetype: 'application/octet-stream',
+          },
+        },
       },
       // EOT Font
       {
@@ -151,15 +151,15 @@ export default merge.smart(baseConfig, {
           options: {
             limit: 10000,
             mimetype: 'image/svg+xml',
-          }
-        }
+          },
+        },
       },
       // Common Image Formats
       {
         test: /\.(?:ico|gif|png|jpg|jpeg|webp)$/,
         use: 'url-loader',
-      }
-    ]
+      },
+    ],
   },
   plugins,
 });

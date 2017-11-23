@@ -19,3 +19,6 @@ export const getLoginError =
 
 export const getLoginFetching =
   ({ profile }: { profile: ProfileState }): boolean => profile.loginFetching;
+
+export const getIsPaidUser =
+  ({ profile }: { profile: ProfileState }): boolean => profile.isPaidUser;

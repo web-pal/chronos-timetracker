@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from 'styled-components2';
 
 export const ModalContentContainer = styled.div`
   margin: 20px 4px;

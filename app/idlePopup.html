@@ -25,6 +25,12 @@
           document.body.appendChild(dllScript);
         }
 
+        if (process.env.NODE_ENV === 'production') {
+          const commonsScript = document.createElement('script');
+          commonsScript.src = './dist/commons.js';
+          document.body.appendChild(commonsScript);
+        }
+
         // Dynamically insert the renderer process
         const script = document.createElement('script');
         const port = process.env.PORT || 1212;

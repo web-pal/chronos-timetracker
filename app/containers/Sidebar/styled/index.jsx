@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from 'styled-components2';
 import FilterIconAK from '@atlaskit/icon/glyph/filter';
 import SearchIconAK from '@atlaskit/icon/glyph/search';
 import RefreshIconAK from '@atlaskit/icon/glyph/refresh';

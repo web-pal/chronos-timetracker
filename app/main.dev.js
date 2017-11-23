@@ -1,5 +1,6 @@
 /* eslint-disable no-console, global-require */
 import path from 'path';
+import keytar from 'keytar';
 import storage from 'electron-json-storage';
 import { app, Tray, Menu, MenuItem, ipcMain, BrowserWindow, screen } from 'electron';
 import notifier from 'node-notifier';
@@ -236,6 +237,25 @@ function showScreenPreview() {
     win.show();
   });
 }
+
+ipcMain.on('store-credentials', (event, credentials) => {
+  const { username, password } = credentials;
+  keytar.setPassword('Chronos', username, password);
+  event.returnValue = true; // eslint-disable-line no-param-reassign
+});
+
+ipcMain.on('get-credentials', (event, username) => {
+  keytar.getPassword('Chronos', username)
+    .then(
+      (password) => {
+        const credentials = {
+          username,
+          password,
+        };
+        event.returnValue = credentials; // eslint-disable-line no-param-reassign
+      },
+    );
+});
 
 ipcMain.on('start-timer', () => {
   menuTemplate[2].enabled = false;

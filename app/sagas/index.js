@@ -10,14 +10,20 @@ import * as worklogsSagas from './worklogs';
 import * as updaterSagas from './updater';
 import * as uiSagas from './ui';
 
-export default function* rootSaga(): Generator<*, *, *> {
+import initializeApp from './initializeApp';
+
+export default function* rootSaga(): Generator<*, void, *> {
   yield all([
+    // INITIALIZATION
+    fork(initializeApp),
+
     // profile
     fork(profileSagas.loginFlow),
     fork(profileSagas.loginOAuthFlow),
     fork(profileSagas.logoutFlow),
     fork(profileSagas.checkJWT),
     fork(profileSagas.initializeMixpanel),
+    fork(profileSagas.watchSetAuthFormStep),
 
     // projects
     fork(projectSagas.watchFetchProjectsRequest),

@@ -1,9 +1,12 @@
 // @flow
-import { race, take, put, call, fork, cancel } from 'redux-saga/effects';
+import { race, take, put, call, fork, select, cancel } from 'redux-saga/effects';
+// import keytar from 'keytar';
 import Raven from 'raven-js';
+import { formValueSelector } from 'redux-form';
 import { ipcRenderer, remote } from 'electron';
-import { types, profileActions, clearAllReducers, settingsActions } from 'actions';
+import { types, profileActions, clearAllReducers, uiActions, settingsActions } from 'actions';
 import * as Api from 'api';
+import { getIsPaidUser } from 'selectors';
 import mixpanel from 'mixpanel-browser';
 import type {
   ErrorObj,
@@ -15,7 +18,6 @@ import type {
   AcceptOAuthAction,
 } from '../types';
 
-
 import { getSettings } from './settings';
 import { getWorklogTypes } from './worklogTypes';
 import { fetchIssueTypes, fetchIssueStatuses, fetchIssueFields, fetchEpics } from './issues';
@@ -24,6 +26,15 @@ import { throwError, infoLog } from './ui';
 
 import Socket from '../socket';
 import jira from '../utils/jiraClient';
+
+function transformValidHost(host: string): string {
+  if (/^[-\w]+.atlassian.net$/.test(host)) {
+    return host;
+  } else if (/^[-\w]+$/.test(host)) {
+    return `${host}.atlassian.net`;
+  }
+  throw new Error('Invalid host');
+}
 
 export function* initializeMixpanel(): Generator<*, void, *> {
   if (process.env.DISABLE_MIXPANEL === '1') {
@@ -40,6 +51,10 @@ export function* initializeMixpanel(): Generator<*, void, *> {
 function* loginError(error: ErrorObj): Generator<*, void, *> {
   const errorMessage: string = error.message || 'Unknown error';
   yield put(profileActions.throwLoginError(errorMessage));
+}
+
+function* clearLoginError(): Generator<*, void, *> {
+  yield put(profileActions.throwLoginError(''));
 }
 
 function identifyInSentryAndMixpanel(host: string, userData: User): void {
@@ -78,6 +93,10 @@ function* jiraLogin(values: AuthFormData): Generator<*, boolean, *> {
 
 function* chronosBackendLogin(values: AuthFormData): Generator<*, boolean, *> {
   try {
+    const isPaidUser = yield select(getIsPaidUser);
+    if (!isPaidUser) {
+      return true;
+    }
     const { token }: { token: string } = yield call(Api.chronosBackendAuth, values);
     yield call(setToStorage, 'desktop_tracker_jwt', token);
     return true;
@@ -136,13 +155,16 @@ export function* loginFlow(): Generator<*, void, *> {
   while (true) {
     try {
       const { payload }: LoginRequestAction = yield take(types.LOGIN_REQUEST);
+      // $FlowFixMe
+      payload.host = yield call(transformValidHost, payload.host);
+      yield call(clearLoginError);
       yield put(profileActions.setLoginFetching(true));
-      yield put(profileActions.setHost(payload.host));
       const chronosBackendLoginSuccess: boolean = yield call(chronosBackendLogin, payload);
       if (chronosBackendLoginSuccess) {
         const jiraLoginSuccess: boolean = yield call(jiraLogin, payload);
         if (jiraLoginSuccess) {
           yield call(setToStorage, 'jira_credentials', { ...payload, password: '' });
+          yield call((): void => { ipcRenderer.sendSync('store-credentials', payload); });
           yield call(afterLogin);
         }
       }
@@ -150,7 +172,7 @@ export function* loginFlow(): Generator<*, void, *> {
     } catch (err) {
       yield put(profileActions.setLoginFetching(false));
       yield call(throwError, err);
-      const humanReadableError = new Error('Basic auth failed for unknown reason.');
+      const humanReadableError = new Error('Can not authenticate user. Please try again');
       yield call(loginError, humanReadableError);
       Raven.captureException(err);
     }
@@ -161,10 +183,9 @@ export function* loginOAuthFlow(): Generator<*, void, *> {
   while (true) {
     try {
       const { payload, meta }: LoginOAuthRequestAction = yield take(types.LOGIN_OAUTH_REQUEST);
-
+      yield call(clearLoginError);
       // collecting basic oAuth data
-      const host: string = payload;
-      yield put(profileActions.setHost(host));
+      const host: string = yield call(transformValidHost, payload);
       const oAuthData = yield call(Api.getDataForOAuth, host);
       let accessToken: string;
       let tokenSecret: string;
@@ -172,6 +193,7 @@ export function* loginOAuthFlow(): Generator<*, void, *> {
         accessToken = meta.accessToken; // eslint-disable-line
         tokenSecret = meta.tokenSecret; // eslint-disable-line
       } else {
+        console.log(oAuthData, host);
         const { token, url, ...rest }: { token: string, url: string, tokenSecret: string } =
           yield call(Api.getOAuthUrl, { oauth: oAuthData, host });
 
@@ -253,5 +275,25 @@ export function* logoutFlow(): Generator<*, *, *> {
     }
     yield call(removeFromStorage, 'desktop_tracker_jwt');
     yield put(clearAllReducers());
+  }
+}
+
+export function* watchSetAuthFormStep(): Generator<*, void, *> {
+  while (true) {
+    const { payload } = yield take(types.SET_AUTH_FORM_STEP);
+    if (payload === 2) {
+      const selector = state => formValueSelector('auth')(state, 'host');
+      // $FlowFixMe
+      const hostFormValue = yield select(selector);
+      if (hostFormValue) {
+        const host = yield call(transformValidHost, hostFormValue);
+        yield call(setToStorage, 'jira_credentials', { host });
+        const isPaidChronosUser = yield call(Api.checkUserPlan, { host });
+        yield put(profileActions.setIsPaidUser(isPaidChronosUser));
+        yield put(profileActions.setHost(host));
+      } else {
+        yield put(uiActions.setAuthFormStep(1));
+      }
+    }
   }
 }

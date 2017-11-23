@@ -1,5 +1,5 @@
 // @flow
-import styled from 'styled-components';
+import styled from 'styled-components2';
 
 export const AppWrapper = styled.div`
   height: 100%;

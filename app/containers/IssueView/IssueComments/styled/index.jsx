@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from 'styled-components2';
 import FieldTextArea from '@atlaskit/field-text-area';
 
 export const ActivitySection = styled.div`

@@ -180,6 +180,8 @@ export type {
   SetHost,
   SetLoginFetchingAction,
   SetLoginFetching,
+  SetIsPaidUserAction,
+  SetIsPaidUser,
   ProfileAction,
 } from './profile';
 

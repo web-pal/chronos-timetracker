@@ -4,12 +4,6 @@ import jira from '../jiraClient';
 import { getHeaders } from './helper';
 import type { oAuthData } from '../../types';
 
-function clearHost(host: string): string {
-  let formatHost = host.startsWith('https://') ? host.slice(8) : host;
-  formatHost = formatHost.startsWith('http://') ? formatHost.slice(7) : formatHost;
-  return formatHost;
-}
-
 export function jiraProfile(): Promise<*> {
   return jira.client.myself.getMyself()
     .then(
@@ -26,9 +20,37 @@ export function jiraAuth({
   username: string,
   password: string,
 }): Promise<any> {
-  const formatHost = `${clearHost(host)}.atlassian.net`;
+  const formatHost = host;
   jira.auth(formatHost, username, password);
   return jiraProfile();
+}
+
+export function checkUserPlan({
+  host,
+}: {
+  host: string,
+}): Promise<*> {
+  return fetch(`${apiUrl}/desktop-tracker/check-user-plan`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      baseUrl: host,
+    }),
+  })
+    .then(
+      (res) => {
+        const status = res.status;
+        if (status === 200) { // user is a part of jira team who bought Chronos Jira plugin
+          return res.json();
+        }
+        return { success: false };
+      },
+    )
+    .then(
+      (json: { success: boolean }) => json.success,
+    );
 }
 
 export function chronosBackendAuth({
@@ -47,7 +69,7 @@ export function chronosBackendAuth({
     },
     body: JSON.stringify({
       type: 'basic_auth',
-      baseUrl: `${clearHost(host)}.atlassian.net`,
+      baseUrl: host,
       username,
       password,
     }),
@@ -83,10 +105,11 @@ export function chronosBackendOAuth({
   }).then(res => res.json());
 }
 
-export function getOAuthUrl(options: { oauth: oAuthData, host: string }): Promise<*> {
+export function getOAuthUrl(options: any): Promise<*> {
   return new Promise((resolve) => {
     jira.getOAuthUrl(options, (err, res) => {
       if (err) {
+        console.error(err);
         throw new Error('To use oAuth ask your jira admin configure application link');
       }
       resolve(res);

@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from 'styled-components2';
 
 // eslint-disable-next-line import/prefer-default-export
 export const Button = styled.button`
