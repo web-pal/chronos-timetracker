@@ -4,7 +4,7 @@
 
 import webpack from 'webpack';
 import merge from 'webpack-merge';
-import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+// import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import BabelMinify from 'babel-minify-webpack-plugin';
 import baseConfig from './webpack.config.base';
 
@@ -40,10 +40,10 @@ export default merge.smart(baseConfig, {
       'process.env.DISABLE_SENTRY': JSON.stringify(process.env.DISABLE_SENTRY || ''),
     }),
     new BabelMinify(),
-    new BundleAnalyzerPlugin({
-      analyzerMode: process.env.OPEN_ANALYZER === 'true' ? 'server' : 'disabled',
-      openAnalyzer: true,
-    }),
+    // new BundleAnalyzerPlugin({
+      // analyzerMode: process.env.OPEN_ANALYZER === 'true' ? 'server' : 'disabled',
+      // openAnalyzer: true,
+    // }),
 
     new webpack.optimize.OccurrenceOrderPlugin(),
   ],

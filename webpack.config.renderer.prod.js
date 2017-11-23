@@ -5,7 +5,7 @@
 import path from 'path';
 import webpack from 'webpack';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
-import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+// import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import SentryPlugin from 'webpack-sentry-plugin';
 // import UglifyJsPlugin from 'uglifyjs-webpack-plugin';
 import BabelMinify from 'babel-minify-webpack-plugin';
@@ -29,18 +29,18 @@ const plugins = [
 
   new BabelMinify(),
 
-  new webpack.optimize.CommonsChunkPlugin({
-    name: 'commons',
-    filename: 'commons.js',
-    chunks: ['main', 'screenPopup', 'idleTimePopup'],
-  }),
+  // new webpack.optimize.CommonsChunkPlugin({
+    // name: 'commons',
+    // filename: 'commons.js',
+    // chunks: ['main', 'screenPopup', 'idleTimePopup'],
+  // }),
 
   new webpack.optimize.OccurrenceOrderPlugin(),
 
-  new BundleAnalyzerPlugin({
-    analyzerMode: process.env.OPEN_ANALYZER === 'true' ? 'server' : 'disabled',
-    openAnalyzer: true,
-  }),
+  // new BundleAnalyzerPlugin({
+    // analyzerMode: process.env.OPEN_ANALYZER === 'true' ? 'server' : 'disabled',
+    // openAnalyzer: true,
+  // }),
 ];
 
 

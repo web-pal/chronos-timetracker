@@ -1,3 +1,19 @@
+<a name="2.3.3"></a>
+## [2.3.3](https://github.com/web-pal/chronos-app-jira/compare/2.3.1...2.3.3) (2017-11-22)
+
+
+### Bug Fixes
+
+* **Authorization:** fix oAuth authorization flow ([ef0d6ed](https://github.com/web-pal/chronos-app-jira/commit/ef0d6ed))
+
+
+### Features
+
+* **Authorization:** remove dependency on our backend ([f64827e](https://github.com/web-pal/chronos-app-jira/commit/f64827e))
+* bring babel-minify back ([12c5565](https://github.com/web-pal/chronos-app-jira/commit/12c5565))
+
+
+
 <a name="2.3.1"></a>
 ## [2.3.1](https://github.com/web-pal/chronos-app-jira/compare/2.3.0-alpha.2...2.3.1) (2017-11-21)
 
