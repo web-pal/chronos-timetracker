@@ -7,7 +7,6 @@ import webpack from 'webpack';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import SentryPlugin from 'webpack-sentry-plugin';
-import BabelMinify from 'babel-minify-webpack-plugin';
 import merge from 'webpack-merge';
 import baseConfig from './webpack.config.base';
 import pjson from './package.json';
@@ -25,8 +24,6 @@ const plugins = [
   new ExtractTextPlugin({
     filename: 'name.css',
   }),
-
-  new BabelMinify(),
 
   new webpack.optimize.OccurrenceOrderPlugin(),
 
