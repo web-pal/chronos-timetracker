@@ -1,3 +1,13 @@
+<a name=""></a>
+#  (2017-11-23)
+
+
+### Bug Fixes
+
+* fix storage flow types ([426d49f](https://github.com/web-pal/chronos-app-jira/commit/426d49f))
+
+
+
 <a name="2.3.3"></a>
 ## [2.3.3](https://github.com/web-pal/chronos-app-jira/compare/2.3.1...2.3.3) (2017-11-22)
 
