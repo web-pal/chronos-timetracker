@@ -72,7 +72,7 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
             worklogs={item}
           />
           <Flex column>
-            {item.map((worklog, i) =>
+            {item.map(worklog =>
               <WorklogItem
                 key={`${key}_${worklog.id}`}
                 issue={worklog.issue}

@@ -41,8 +41,8 @@ export function checkUserPlan({
   })
     .then(
       (res) => {
-        const status = res.status;
-        if (status === 200) { // user is a part of jira team who bought Chronos Jira plugin
+        const { status } = res;
+        if (status === 200) {
           return res.json();
         }
         return { success: false };

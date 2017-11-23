@@ -52,7 +52,7 @@ const IssueReport: StatelessFunctionalComponent<Props> = ({
   const loggedTotal = selectedIssue.fields.timespent || 0;
   const remaining = estimate - loggedTotal < 0 ? 0 : estimate - loggedTotal;
 
-  const worklogs = selectedIssue.fields.worklog.worklogs;
+  const { worklogs } = selectedIssue.fields.worklog;
 
   const yourWorklogs = worklogs.filter(w => w.author.key === selfKey);
 

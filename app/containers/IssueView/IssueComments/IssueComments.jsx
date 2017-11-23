@@ -103,8 +103,7 @@ const IssueComments: StatelessFunctionalComponent<Props> = ({
                 onClick={() => {
                   const input = document.querySelector('#comment-input');
                   if (input) {
-                    // $FlowFixMe
-                    const value = input.value;
+                    const { value } = input;
                     commentRequest(value, selectedIssue);
                   }
                 }}

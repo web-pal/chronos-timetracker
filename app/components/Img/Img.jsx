@@ -8,9 +8,4 @@ Img.propTypes = {
   className: PropTypes.string.isRequired,
 };
 
-Img.defaultProps = {
-  img: '',
-  className: '',
-};
-
 export default Img;

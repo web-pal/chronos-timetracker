@@ -24,7 +24,7 @@ class WorklogEditDialog extends PureComponent {
   toggleDialog = () => this.setState({ dialogOpen: !this.state.dialogOpen })
 
   renderDialog = () => {
-    const { setWorklogComment, worklogComment } = this.props;
+    const { setWorklogComment } = this.props;
 
     return (
       <div className="worklog-edit-popup" style={{ width: 300 }}>

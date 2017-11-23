@@ -2,9 +2,9 @@ import styled from 'styled-components2';
 
 export const Flex = styled.div`
   display: flex;
-  flex-direction: ${props => props.column ? 'column' : 'row'};
-  flex-wrap: ${props => props.wrap ? 'wrap' : 'nowrap'};
-  align-items: ${props => {
+  flex-direction: ${props => (props.column ? 'column' : 'row')};
+  flex-wrap: ${props => (props.wrap ? 'wrap' : 'nowrap')};
+  align-items: ${(props) => {
     if (props.alignCenter) {
       return 'center';
     }
@@ -14,15 +14,15 @@ export const Flex = styled.div`
     if (props.alignStart) {
       return 'flex-start';
     }
-    return props.alignItems || 'normal'
+    return props.alignItems || 'normal';
   }};
-  justify-content: ${props => {
+  justify-content: ${(props) => {
     if (props.spaceBetween) {
       return 'space-between';
     }
     if (props.spaceAround) {
       return 'space-around';
     }
-    return props.justifyContent || 'normal'
+    return props.justifyContent || 'normal';
   }};
 `;
