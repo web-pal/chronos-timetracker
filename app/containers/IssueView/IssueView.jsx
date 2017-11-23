@@ -10,11 +10,11 @@ import IssueViewHeader from '../IssueView/IssueViewHeader';
 import IssueViewTabs from './IssueViewTabs';
 import type { Id, TabLabel } from '../../types';
 
-import IssueDetails from './IssueDetails/IssueDetails';
-import IssueComments from './IssueComments/IssueComments';
-import IssueWorklogs from './IssueWorklogs/IssueWorklogs';
-import IssueReport from './IssueReport/IssueReport';
-import TrackingBar from './TrackingBar/TrackingBar';
+import IssueDetails from './IssueDetails';
+import IssueComments from './IssueComments';
+import IssueWorklogs from './IssueWorklogs';
+import IssueReport from './IssueReport';
+import TrackingBar from './TrackingBar';
 
 type Props = {
   selectedIssueId: Id | null,

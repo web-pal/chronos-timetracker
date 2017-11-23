@@ -3,7 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import type { StatelessFunctionalComponent, Node } from 'react';
-import { Flex, AutoSizeableList as List } from 'components';
+import { Flex, AutosizableList as List } from 'components';
 import { getSelectedIssue, getWorklogListScrollIndex } from 'selectors';
 import { worklogsActions } from 'actions';
 import { noIssuesImage } from 'data/assets';

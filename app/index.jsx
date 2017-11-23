@@ -1,6 +1,5 @@
 // @flow
 import React from 'react';
-import type { Node, StatelessFunctionalComponent } from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { AppContainer } from 'react-hot-loader';
@@ -40,7 +39,6 @@ render(
 
 if (module.hot) {
   module.hot.accept('./containers/App', () => {
-    // $FlowFixMe
     const App = require('./containers/App'); // eslint-disable-line
     render(
       <AppContainer>
