@@ -50,7 +50,7 @@ export const UserAvatar = styled.img`
   user-select: none;
 `;
 
-export const Link = styled.a`
+export const ALink = styled.a`
   cursor: pointer;
 `;
 
