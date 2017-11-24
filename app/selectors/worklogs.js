@@ -15,6 +15,9 @@ export const getEditingWorklog =
 export const getSelectedWorklogId =
   ({ worklogs }: { worklogs: WorklogsState }): Id | null => worklogs.meta.selectedWorklogId;
 
+export const getTemporaryWorklogId =
+  ({ worklogs }: { worklogs: WorklogsState }): Id | null => worklogs.meta.temporaryWorklogId;
+
 export const getWorklogListScrollIndex = createSelector(
   [getSelectedWorklogId, getSelectedIssue],
   (selectedWorklogId, issue) => {

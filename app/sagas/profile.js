@@ -23,8 +23,8 @@ import { getWorklogTypes } from './worklogTypes';
 import { fetchIssueTypes, fetchIssueStatuses, fetchIssueFields, fetchEpics } from './issues';
 import { setToStorage, removeFromStorage } from './storage';
 import { throwError, infoLog } from './ui';
+import { plugSocket } from './socket';
 
-import Socket from '../socket';
 import jira from '../utils/jiraClient';
 
 function transformValidHost(host: string): string {
@@ -137,8 +137,6 @@ export function* checkJWT(): Generator<*, void, *> {
 }
 
 function* afterLogin(): Generator<*, void, *> {
-  yield fork(getWorklogTypes);
-  yield fork(getSettings);
   yield put(settingsActions.requestLocalDesktopSettings());
   yield put(profileActions.setLoginFetching(false));
   yield put(profileActions.setAuthorized(true));
@@ -146,7 +144,14 @@ function* afterLogin(): Generator<*, void, *> {
   yield fork(fetchIssueStatuses);
   yield fork(fetchIssueFields);
   yield fork(fetchEpics);
-  Socket.login();
+
+  const isPaidChronosUser = yield select(getIsPaidUser);
+
+  if (isPaidChronosUser) {
+    yield fork(getSettings);
+    yield fork(getWorklogTypes);
+    yield fork(plugSocket);
+  }
   // yield put({ type: types.CHECK_OFFLINE_SCREENSHOTS });
   // yield put({ type: types.CHECK_OFFLINE_WORKLOGS });
 }
