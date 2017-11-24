@@ -24,7 +24,12 @@ export const EditButton = styled(EditFilledIcon)`
   justify-content: center;
   align-items: center;
   border-radius: 50%;
+  border: 2px solid white;
   padding: 2px;
+`;
+
+export const EditButtonContainer = styled.div`
+  cursor: pointer;
 `;
 
 export const IssueName = styled.span`
