@@ -2,12 +2,12 @@
 import React from 'react';
 import type { StatelessFunctionalComponent, Node } from 'react';
 
-import { RecentItems, RecentItemsBlock, RecentItemsList } from './styled';
-
 import IssueItemPlaceholder from '../IssueItemPlaceholder/IssueItemPlaceholder';
 import Flex from '../../Flex/Flex';
 
 import {
+  RecentItems,
+  RecentItemsBlock,
   TimestampPlaceholderContainer,
   TimestampPlaceholder,
 } from './styled';

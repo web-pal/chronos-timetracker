@@ -1,9 +1,14 @@
-import React, { PropTypes } from 'react';
+// @flow
+import React from 'react';
 import { InfiniteLoader } from 'react-virtualized';
 
 import AutosizableList from './AutosizableList';
 
-const InfiniteLoadingList = props =>
+type Props = {
+  listProps: any
+};
+
+const InfiniteLoadingList = (props: Props) =>
   <InfiniteLoader {...props} >
     {({ onRowsRendered, registerChild }) => (
       <AutosizableList
@@ -16,9 +21,5 @@ const InfiniteLoadingList = props =>
       />
     )}
   </InfiniteLoader>;
-
-InfiniteLoadingList.propTypes = {
-  listProps: PropTypes.object.isRequired,
-};
 
 export default InfiniteLoadingList;

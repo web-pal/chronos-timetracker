@@ -28,7 +28,7 @@ const IssueAttachments: StatelessFunctionalComponent<{}> = (): Node => (
       <Flex row alignCenter>
         <UploadIcon size="medium" label="Upload" />
         <span style={{ marginLeft: 3 }}>
-          Drop files to attach, or <a>browse</a>.
+          Drop files to attach, or <a href="google.com">browse</a>.
         </span>
       </Flex>
       <AttachmentsList>

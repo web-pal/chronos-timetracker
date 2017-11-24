@@ -1,5 +1,4 @@
 // @flow
-// goal:  https://dribbble.com/shots/3768074-Modal-windows
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -9,7 +8,12 @@ import storage from 'electron-json-storage';
 import { Flex } from 'components';
 import { logoShadowed } from 'data/assets';
 import { profileActions, uiActions } from 'actions';
-import { getAuthFormStep, getLoginError, getLoginFetching, getIsPaidUser } from 'selectors';
+import {
+  getAuthFormStep,
+  getLoginError,
+  getLoginFetching,
+  getIsPaidUser,
+} from 'selectors';
 import type {
   LoginRequest,
   LoginOAuthRequest,
@@ -22,10 +26,18 @@ import type {
 
 import { validate } from './validation';
 
-import TeamStep from './Steps/TeamStep';
-import EmailStep from './Steps/EmailStep';
+import {
+  EmailStep,
+  TeamStep,
+} from './Steps';
 
-import { Hint, ContentOuter, Container, Logo, LoginInfo } from './styled';
+import {
+  Hint,
+  ContentOuter,
+  Container,
+  Logo,
+  LoginInfo,
+} from './styled';
 
 type Props = {
   loginRequest: LoginRequest,

@@ -43,7 +43,7 @@ export const storageRemovePromise = (key: string): Promise<void> => new Promise(
 });
 
 export function* getFromStorage(key: string): Generator<*, mixed, *> {
-  const host: string = yield select(getHost);
+  const host: string | null = yield select(getHost);
   // $FlowFixMe: array methods buggy with Enums
   if (prefixedKeys.includes(key) && !host) {
     throw new Error('Need to fill host before getting prefixed keys from storage');

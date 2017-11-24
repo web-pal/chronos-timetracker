@@ -1,3 +1,4 @@
+// @flow
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -10,7 +11,19 @@ import { getWorklogComment } from 'selectors';
 
 import { EditButton } from './styled';
 
-class WorklogEditDialog extends PureComponent {
+import type { SetWorklogComment } from '../../../types';
+
+type Props = {
+  worklogComment: string | null,
+  setWorklogComment: SetWorklogComment,
+};
+
+type State = {
+  dialogOpen: boolean,
+  tempComment: string,
+};
+
+class WorklogEditDialog extends PureComponent<Props, State> {
   constructor(props) {
     super(props);
     this.state = {
@@ -24,7 +37,7 @@ class WorklogEditDialog extends PureComponent {
   toggleDialog = () => this.setState({ dialogOpen: !this.state.dialogOpen })
 
   renderDialog = () => {
-    const { setWorklogComment, worklogComment } = this.props;
+    const { setWorklogComment } = this.props;
 
     return (
       <div className="worklog-edit-popup" style={{ width: 300 }}>

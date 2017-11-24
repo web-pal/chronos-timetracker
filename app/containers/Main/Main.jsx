@@ -1,18 +1,25 @@
 // @flow
 import React from 'react';
 import { ThemeProvider } from 'styled-components2';
+import type {
+  StatelessFunctionalComponent,
+  Node,
+} from 'react';
 import { Flex } from 'components';
 
-import type { StatelessFunctionalComponent, Node } from 'react';
+import {
+  AlertModal,
+  SettingsModal,
+  WorklogModal,
+  EditWorklogModal,
+  ConfirmDeleteWorklogModal,
+} from '../Modals';
+import Header from '../Header';
+import Sidebar from '../Sidebar';
+import IssueView from '../IssueView';
+import FlagsContainer from '../FlagsContainer';
 
-import { AlertModal, SettingsModal, WorklogModal, EditWorklogModal, ConfirmDeleteWorklogModal } from '../Modals';
-import Header from '../Header/Header';
-import Sidebar from '../Sidebar/Sidebar';
-import IssueView from '../IssueView/IssueView';
-import FlagsContainer from '../FlagsContainer/FlagsContainer';
 
-
-// TODO: allow user to customize theme
 const theme = { primary: '#0052CC' };
 
 type Props = {};

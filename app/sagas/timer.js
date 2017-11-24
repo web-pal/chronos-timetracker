@@ -14,7 +14,6 @@ import {
   getSelectedIssue,
   getTrackingIssueId,
   getWorklogComment,
-  getLastScreenshotTime,
   getLocalDesktopSettings,
   getKeepedIdles,
   getIdles,

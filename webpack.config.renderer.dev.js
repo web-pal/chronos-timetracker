@@ -14,7 +14,6 @@ import chalk from 'chalk';
 import merge from 'webpack-merge';
 import { spawn, execSync } from 'child_process';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
-import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import baseConfig from './webpack.config.base';
 
 const port = process.env.PORT || 1212;
@@ -33,12 +32,13 @@ if (!(fs.existsSync(dll) && fs.existsSync(manifest))) {
 }
 
 export default merge.smart(baseConfig, {
-  devtool: 'inline-source-map',
+  devtool: 'source-map',
 
   target: 'electron-renderer',
 
   entry: {
     main: [
+      'react-hot-loader/patch',
       path.join(__dirname, 'app/index.jsx'),
     ],
     screenPopup: [

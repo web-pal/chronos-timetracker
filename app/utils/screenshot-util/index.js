@@ -38,7 +38,7 @@ function getScreen(callback) {
   };
 
   this.handleError = (e) => {
-    // console.log(e);
+    console.log(e);
   };
 
   desktopCapturer.getSources({ types: ['screen'] }, (error, sources) => {

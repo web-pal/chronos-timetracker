@@ -1,7 +1,7 @@
 import JiraClient from 'jira-connector';
 
 
-class jiraClient {
+class JiraClientWrapper {
   constructor() {
     this.client = null;
     this.auth = this.auth.bind(this);
@@ -42,6 +42,6 @@ class jiraClient {
   }
 }
 
-const jira = new jiraClient();
+const jira = new JiraClientWrapper();
 
 export default jira;

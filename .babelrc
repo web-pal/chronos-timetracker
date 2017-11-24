@@ -18,11 +18,7 @@
         // Actually this plugins already included in stage-0 and babel-preset-env
         // But we need it here because of ordering https://babeljs.io/docs/plugins/#plugin-preset-ordering
         "transform-class-properties",
-        "transform-es2015-classes",
-        ["flow-runtime", {
-          "assert": true,
-          "annotate": true
-        }]
+        "transform-es2015-classes"
       ]
     }
   }

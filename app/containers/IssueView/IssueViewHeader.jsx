@@ -30,7 +30,7 @@ import type {
 } from '../../types';
 import {
   ProjectAvatar,
-  Link,
+  ALink,
   Breadcrumb,
   UserAvatarContainer,
   UserAvatar,
@@ -87,13 +87,13 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
         </UserAvatarContainer>
         <Flex column>
           <Flex row>
-            <Link onClick={openProjectInBrowser(selectedIssue.fields.project)}>
+            <ALink onClick={openProjectInBrowser(selectedIssue.fields.project)}>
               {selectedIssue.fields.project.name}
-            </Link>
+            </ALink>
             <Breadcrumb>/</Breadcrumb>
-            <Link onClick={openIssueInBrowser(selectedIssue)}>
+            <ALink onClick={openIssueInBrowser(selectedIssue)}>
               {selectedIssue.key}
-            </Link>
+            </ALink>
           </Flex>
           <Tooltip
             description={selectedIssue.fields.summary}

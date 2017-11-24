@@ -3,7 +3,6 @@ import React from 'react';
 import type { StatelessFunctionalComponent, Node } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Flex } from 'components';
 import { uiActions } from 'actions';
 import { getSidebarType, getSelectedProjectId, getSidebarFiltersOpen } from 'selectors';
 

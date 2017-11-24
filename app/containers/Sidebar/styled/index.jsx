@@ -118,7 +118,7 @@ export const SidebarWrapper = styled.div`
   height: 100%;
   max-width: 435px;
   background: #fff;
-`
+`;
 
 export const SidebarContainer = styled.div`
   display: flex;
@@ -129,4 +129,4 @@ export const SidebarContainer = styled.div`
   list-style: none;
   margin: 0;
   height: 100%;
-`
+`;

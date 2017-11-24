@@ -3,7 +3,7 @@ import React from 'react';
 import type { StatelessFunctionalComponent, Node } from 'react';
 import { noIssuesImage } from 'data/assets';
 import { Flex } from 'components';
-import { NoIssuesImage, Title, Subtitle, NoItemsContainer } from './styled';
+import { NoIssuesImage, Title, Subtitle } from './styled';
 
 type Props = {
   recent: boolean
