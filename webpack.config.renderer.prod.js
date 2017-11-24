@@ -26,11 +26,6 @@ const plugins = [
   }),
 
   new webpack.optimize.OccurrenceOrderPlugin(),
-
-  new BundleAnalyzerPlugin({
-    analyzerMode: 'server',
-    openAnalyzer: true,
-  }),
 ];
 
 
