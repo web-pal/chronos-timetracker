@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { remote, ipcRenderer } from 'electron';
 import { Button } from 'styles/buttons';
 import { Img, Flex } from 'components';
+import { PopupContainer, PopupImage } from './styled';
 
 import PopupTimer from './PopupTimer';
 import '../../../assets/stylesheets/main.less';
@@ -63,9 +64,9 @@ export default class ScreenPopup extends Component<{}, State> {
     const { lastScreenshotPath, currentTime, maxTime } = this.state;
 
     return (
-      <Flex row centered className="popup">
+      <PopupContainer>
         <Flex column>
-          <Img src={lastScreenshotPath} className="screenshot-preview" />
+          <PopupImage src={lastScreenshotPath} />
           <PopupTimer time={maxTime - currentTime} />
           <Flex row centered>
             <Button
@@ -84,7 +85,7 @@ export default class ScreenPopup extends Component<{}, State> {
             </Button>
           </Flex>
         </Flex>
-      </Flex>
+      </PopupContainer>
     );
   }
 }

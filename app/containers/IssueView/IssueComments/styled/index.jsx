@@ -71,6 +71,8 @@ export const CommentAvatar = styled.img`
   width: 32px;
   height: 32px;
   margin-right: 16px;
+  border-radius: 50%;
+  border: 1px solid white;
 `;
 
 export const CommentAuthor = styled.span`

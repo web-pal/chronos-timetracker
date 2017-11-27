@@ -4,8 +4,7 @@ import moment from 'moment';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import type { StatelessFunctionalComponent, Node } from 'react';
-import { projectAvatar } from 'data/svg';
-import { getComments, getCommentsFetching, getSelectedIssue, getCommentsAdding } from 'selectors';
+import { getComments, getCommentsFetching, getUserData, getSelectedIssue, getCommentsAdding } from 'selectors';
 import { issuesActions } from 'actions';
 import { Flex, IssueCommentPlaceholder } from 'components';
 import ReactMarkdown from 'react-markdown';
@@ -31,12 +30,14 @@ import type {
   IssueComment,
   Issue,
   CommentRequest,
+  User,
 } from '../../../types';
 
 type Props = {
   comments: Array<IssueComment>,
   fetching: boolean,
   adding: boolean,
+  self: User,
   selectedIssue: Issue,
   commentRequest: CommentRequest,
 };
@@ -45,6 +46,7 @@ const IssueComments: StatelessFunctionalComponent<Props> = ({
   comments,
   fetching,
   adding,
+  self,
   selectedIssue,
   commentRequest,
 }: Props): Node => (
@@ -61,7 +63,7 @@ const IssueComments: StatelessFunctionalComponent<Props> = ({
           <Commentd key={comment.id}>
             <Flex row alignCenter spaceBetween style={{ marginBottom: 5 }}>
               <Flex row alignCenter>
-                <CommentAvatar src={projectAvatar} alt="" />
+                <CommentAvatar src={comment.author.avatarUrls['48x48']} alt="" />
                 <Flex row>
                   <CommentAuthor>
                     {comment.author.displayName}
@@ -86,13 +88,14 @@ const IssueComments: StatelessFunctionalComponent<Props> = ({
       {!fetching &&
         <CommentInput>
           <Flex row alignCenter style={{ marginBottom: 5 }}>
-            <CommentAvatar src={projectAvatar} alt="" />
+            <CommentAvatar src={self.avatarUrls['48x48']} alt="" />
             <YourComment>
               Comment
             </YourComment>
           </Flex>
           <CommentInputContainer>
             <AddCommentInput
+              label=""
               type="text"
               placeholder="Type your comment here"
               shouldFitContainer
@@ -103,6 +106,7 @@ const IssueComments: StatelessFunctionalComponent<Props> = ({
                 onClick={() => {
                   const input = document.querySelector('#comment-input');
                   if (input) {
+                    // $FlowFixMe
                     const { value } = input;
                     commentRequest(value, selectedIssue);
                   }
@@ -126,6 +130,7 @@ function mapStateToProps(state) {
     comments: getComments(state),
     fetching: getCommentsFetching(state),
     adding: getCommentsAdding(state),
+    self: getUserData(state),
   };
 }
 
