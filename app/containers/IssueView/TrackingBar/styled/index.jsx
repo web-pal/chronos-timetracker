@@ -1,5 +1,6 @@
 import styled from 'styled-components2';
 import EditFilledIcon from '@atlaskit/icon/glyph/edit-filled';
+import { stop, stopHover } from 'data/svg';
 
 // background: #32A675 !important;
 // background: #172B4D !important;
@@ -41,8 +42,8 @@ export const IssueName = styled.span`
   letter-spacing: 0.5px;
   border-bottom: 2px solid white;
   :hover {
-    color: hsla(0, 0%, 80%, 1);
-    border-color: hsla(0, 0%, 85%, 1);
+    color: hsla(219, 77%, 89%, 1);
+    border-color: hsla(219, 77%, 89%, 1);
   }
 `;
 export const Dot = styled.div`
@@ -57,9 +58,15 @@ export const Time = styled.span`
   letter-spacing: 1px;
   font-weight: 700;
 `;
-export const StopButton = styled.img`
+export const StopButton = styled.div`
   height: 60px;
+  width: 60px;
   cursor: pointer;
+  background-size: cover;
+  background-image: url(${stop});
+  :hover {
+    background-image: url(${stopHover});
+  }
 `;
 export const StartButton = styled.img`
   height: 60px;

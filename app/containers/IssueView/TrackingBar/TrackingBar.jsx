@@ -7,7 +7,6 @@ import { getTimerTime, getTrackingIssue, getScreenshotsAllowed } from 'selectors
 import { issuesActions, timerActions } from 'actions';
 import { Flex } from 'components';
 import { CSSTransitionGroup } from 'react-transition-group';
-import { stopWhite } from 'data/svg';
 import moment from 'moment';
 import CameraIcon from '@atlaskit/icon/glyph/camera';
 import Tooltip from '@atlaskit/tooltip';
@@ -99,7 +98,6 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
         }}
       >
         <StopButton
-          src={stopWhite}
           alt="stop"
           onClick={() => stopTimerRequest()}
         />

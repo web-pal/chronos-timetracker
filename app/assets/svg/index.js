@@ -13,7 +13,16 @@ export const paperClip = require('./paper-clip.svg');
 export const stopwatch = require('./stopwatch.svg');
 export const search = require('./search.svg');
 export const link = require('./link.svg');
+
 export const play = require('./play.svg');
+export const playHover = require('./play--hover.svg');
+
+export const stop = require('./stop.svg');
+// export const stopHover = require('./stopHover.svg');
+export const stopHover = require('./stopHoverNew.svg');
+
+export const stopWhite = require('./stop-new.svg');
+
 export const recent = require('./recent.svg');
 export const recentBlue = require('./recent-blue.svg');
 export const star = require('./star.svg');
@@ -27,7 +36,7 @@ export const monitor = require('./monitor.svg');
 export const lockBlue = require('./lock-blue.svg');
 export const peopleBlue = require('./people.svg');
 
-export const stopWhite = require('./stop-white.svg');
+// export const stopWhite = require('./stop-icon.svg');
 export const stopDarkBlue = require('./stop-dark-blue.svg');
 export const arrowDownWhite = require('./chevron-down-white.svg');
 
