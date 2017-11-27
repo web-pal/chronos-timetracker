@@ -63,11 +63,11 @@ export default class ScreenPopup extends Component<{}, State> {
     const { lastScreenshotPath, currentTime, maxTime } = this.state;
 
     return (
-      <Flex row centered className="popup">
+      <Flex row justifyCenter className="popup">
         <Flex column>
           <Img src={lastScreenshotPath} className="screenshot-preview" />
           <PopupTimer time={maxTime - currentTime} />
-          <Flex row centered>
+          <Flex row justifyCenter>
             <Button
               background="hsla(40, 100%, 45%, 1)"
               style={{ marginRight: 5, width: 90 }}

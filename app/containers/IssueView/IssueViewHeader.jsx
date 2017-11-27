@@ -140,7 +140,7 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
           <DropdownItemGroup>
             {availableTransitionsFetching &&
               <DropdownItem>
-                <Flex row centered>
+                <Flex row justifyCenter>
                   <Spinner />
                 </Flex>
               </DropdownItem>
