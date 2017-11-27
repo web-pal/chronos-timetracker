@@ -20,7 +20,7 @@ import type {
 
 import { getSettings } from './settings';
 import { getWorklogTypes } from './worklogTypes';
-import { fetchIssueTypes, fetchIssueStatuses, fetchIssueFields, fetchEpics } from './issues';
+import { fetchIssueFields, fetchEpics } from './issues';
 import { setToStorage, removeFromStorage } from './storage';
 import { throwError, infoLog } from './ui';
 import { plugSocket } from './socket';
@@ -140,8 +140,6 @@ function* afterLogin(): Generator<*, void, *> {
   yield put(settingsActions.requestLocalDesktopSettings());
   yield put(profileActions.setLoginFetching(false));
   yield put(profileActions.setAuthorized(true));
-  yield fork(fetchIssueTypes);
-  yield fork(fetchIssueStatuses);
   yield fork(fetchIssueFields);
   yield fork(fetchEpics);
 
