@@ -17,6 +17,9 @@ export const Flex = styled.div`
     return props.alignItems || 'normal';
   }};
   justify-content: ${(props) => {
+    if (props.justifyCenter) {
+      return 'center';
+    }
     if (props.spaceBetween) {
       return 'space-between';
     }

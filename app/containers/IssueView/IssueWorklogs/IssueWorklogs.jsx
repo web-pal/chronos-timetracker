@@ -50,8 +50,8 @@ const IssueWorklogs: StatelessFunctionalComponent<Props> = ({
         />
       }
       {selectedIssue.fields.worklog.worklogs.length === 0 &&
-        <Flex row centered>
-          <Flex column centered alignCenter>
+        <Flex row justifyCenter>
+          <Flex column alignCenter justifyCenter>
             <img src={noIssuesImage} alt="not found" width="100px" />
             <H600>
               No work logged for this issue
