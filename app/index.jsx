@@ -17,11 +17,13 @@ require('smoothscroll-polyfill').polyfill();
 
 Raven.addPlugin(require('./raven-electron-plugin')); // eslint-disable-line
 if (process.env.UPLOAD_SENTRY !== '0') {
-  Raven
-    .config('https://60a0dae4681d47d29a4cd77703472a29@sentry.io/153064', {
-      release: `${pjson.version}_${process.platform}`,
-    })
-    .install();
+  if (process.env.SENTRY_LINK) {
+    Raven
+      .config(process.env.SENTRY_LINK, {
+        release: `${pjson.version}_${process.platform}`,
+      })
+      .install();
+  }
 }
 
 window.onerror = (...argw) => {

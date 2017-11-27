@@ -35,9 +35,10 @@ env variables are set.
 ```
   export MIXPANEL_API_TOKEN=<your_mixpanel_api_token>
   export SENTRY_API_KEY=<your_sentry_api_key>
+  export SENTRY_LINK=<your_sentry_link>
 ```
 
-If you don't want to use sentry of mixpanel, you can toggle them with enc variables `DISABLE_MIXPANEL=1` or `DISABLE_SENTRY=1`
+If you don't want to use sentry or mixpanel, you can toggle them with enc variables `DISABLE_MIXPANEL=1` or `DISABLE_SENTRY=1`
 
 ```
   export DISABLE_MIXPANEL=1
