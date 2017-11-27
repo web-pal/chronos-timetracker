@@ -1,8 +1,8 @@
 // @flow
 import jira from '../jiraClient';
 
-export function fetchIssueTypes(): Promise<*> {
-  return jira.client.issueType.getAllIssueTypes();
+export function fetchIssueTypes(projectIdOrKey: string): Promise<*> {
+  return jira.client.project.getStatuses({ projectIdOrKey });
 }
 
 export function fetchIssueStatuses(): Promise<*> {

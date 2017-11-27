@@ -1,6 +1,5 @@
 // @flow
-import { delay } from 'redux-saga';
-import { call, take, select, put, fork, takeEvery, takeLatest } from 'redux-saga/effects';
+import { delay } from 'redux-saga'; import { call, take, select, put, fork, takeEvery, takeLatest } from 'redux-saga/effects';
 import { ipcRenderer } from 'electron';
 import * as Api from 'api';
 import merge from 'lodash.merge';
@@ -270,7 +269,11 @@ function* getIssueTransitions(issueId: string): Generator<*, void, *> {
 
 export function* fetchIssueTypes(): Generator<*, *, *> {
   try {
-    const issueTypes = yield call(Api.fetchIssueTypes);
+    const selectedProjectId = yield select(getSelectedProjectId);
+    yield call(infoLog, `fetching issue types for project ${selectedProjectId}`);
+    const metadata = yield call(Api.getIssuesMetadata, selectedProjectId);
+    const issueTypes = metadata.projects[0].issuetypes;
+    yield call(infoLog, `got issue types for project ${selectedProjectId}`, issueTypes);
     const normalizedData = normalizePayload(issueTypes, 'issueTypes');
     yield put(issuesActions.fillIssueTypes(normalizedData));
   } catch (err) {
@@ -281,7 +284,11 @@ export function* fetchIssueTypes(): Generator<*, *, *> {
 
 export function* fetchIssueStatuses(): Generator<*, *, *> {
   try {
-    const issueStatuses = yield call(Api.fetchIssueStatuses);
+    const selectedProjectId = yield select(getSelectedProjectId);
+    yield call(infoLog, `fetching issue statuses for project ${selectedProjectId}`);
+    const issueTypes = yield call(Api.fetchIssueTypes, selectedProjectId);
+    const issueStatuses = issueTypes[0].statuses;
+    yield call(infoLog, `got issue statuses for project ${selectedProjectId}`, issueStatuses);
     const normalizedData = normalizePayload(issueStatuses, 'issueStatuses');
     yield put(issuesActions.fillIssueStatuses(normalizedData));
   } catch (err) {

@@ -10,8 +10,8 @@ import * as Api from 'api';
 
 import { setToStorage, getFromStorage } from './storage';
 
-import { fetchRecentIssues } from './issues';
-import { throwError, notify } from './ui';
+import { fetchRecentIssues, fetchIssueTypes, fetchIssueStatuses } from './issues';
+import { throwError, notify, infoLog } from './ui';
 
 import type { SelectProjectAction, Id, SidebarType, ProjectType, FlagAction } from '../types';
 
@@ -95,6 +95,9 @@ export function* watchFetchSprintsRequest(): Generator<*, *, *> {
 export function* watchProjectSelection(): Generator<*, *, *> {
   while (true) {
     const { payload, meta }: SelectProjectAction = yield take(types.SELECT_PROJECT);
+    yield call(infoLog, `project ${payload} is selected now`);
+    yield fork(fetchIssueTypes);
+    yield fork(fetchIssueStatuses);
     yield call(setToStorage, 'lastProjectSelected', payload);
     yield call(setToStorage, 'lastProjectSelectedType', meta);
     yield put(issuesActions.selectIssue(null));

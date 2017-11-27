@@ -1,6 +1,8 @@
 // @flow
 import jira from '../jiraClient';
 
+import type { Id } from '../../types';
+
 const requiredFields: Array<string> = [
   'issuetype',
   'project',
@@ -129,4 +131,8 @@ export function addComment({
   }
 }): Promise<*> {
   return jira.client.issue.addComment({ issueId, comment });
+}
+
+export function getIssuesMetadata(projectIds: Array<Id>): Promise<*> {
+  return jira.client.issue.getCreateMetadata({ projectIds });
 }
