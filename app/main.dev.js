@@ -222,7 +222,7 @@ function showScreenPreview() {
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   const options = {
     width: 218,
-    height: 212,
+    height: 240,
     x: width - 218,
     y: height - 212,
     frame: false,
