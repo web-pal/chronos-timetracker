@@ -67,7 +67,7 @@ export const throwLoginError: ThrowLoginError = (
 });
 
 export const setHost: SetHost = (
-  payload: string,
+  payload: URL,
 ): SetHostAction => ({
   type: types.SET_HOST,
   payload,

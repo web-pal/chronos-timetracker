@@ -8,13 +8,15 @@ class JiraClientWrapper {
     this.oauth = this.oauth.bind(this);
   }
 
-  auth(host, username, password) {
+  auth(host, username, password, port = '443', protocol = 'https') {
     const client = new JiraClient({
       host,
       basic_auth: {
         username,
         password,
       },
+      port,
+      protocol,
     });
     this.client = client;
   }

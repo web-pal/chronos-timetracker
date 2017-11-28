@@ -37,11 +37,10 @@ const TeamStep = ({ onContinue, isActiveStep }) => (
       <Form>
         <Field
           name="host"
-          placeholder="team"
+          placeholder="example.atlassian.net"
           component={renderField}
           type="text"
           className="host"
-          mask=".atlassian.net"
           underlined
           autoFocus
         />

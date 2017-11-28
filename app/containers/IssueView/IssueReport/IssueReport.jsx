@@ -40,7 +40,7 @@ import BackgroundShapes from './BackgroundShapes';
 type Props = {
   selectedIssue: Issue,
   selfKey: string,
-  host: string,
+  host: URL,
 };
 
 const IssueReport: StatelessFunctionalComponent<Props> = ({
@@ -102,7 +102,7 @@ const IssueReport: StatelessFunctionalComponent<Props> = ({
               View reports and calculate salaries in Chronos Timesheets
             </Heading>
             <CTAButton
-              onClick={openURLInBrowser(`https://${host}/plugins/servlet/ac/jira-chronos/api-page-jira`)}
+              onClick={openURLInBrowser(`https://${host.origin}/plugins/servlet/ac/jira-chronos/api-page-jira`)}
             >
               Open plugin
             </CTAButton>
