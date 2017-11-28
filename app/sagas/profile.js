@@ -94,7 +94,8 @@ function identifyInSentryAndMixpanel(host: URL, userData: User): void {
 function* jiraLogin(values: AuthFormData): Generator<*, boolean, *> {
   try {
     yield call(infoLog, 'starting jira login', values);
-    const userData: User = yield call(Api.jiraAuth, values);
+    const host = yield select(getHost);
+    const userData: User = yield call(Api.jiraAuth, { ...values, host });
     yield call(identifyInSentryAndMixpanel, values.host, userData);
     yield put(profileActions.fillUserData(userData));
     return true;
