@@ -7,6 +7,7 @@ import { getFromStorage } from './storage';
 
 export default function* initializeApp(): Generator<*, void, *> {
   const credentials = yield call(getFromStorage, 'jira_credentials');
+  console.log('CREDENTIALS', credentials);
   if (credentials) {
     const { host, username } = credentials;
     if (username) {

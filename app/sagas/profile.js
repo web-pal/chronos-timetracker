@@ -187,7 +187,7 @@ export function* loginFlow(): Generator<*, void, *> {
       if (chronosBackendLoginSuccess) {
         const jiraLoginSuccess: boolean = yield call(jiraLogin, payload);
         if (jiraLoginSuccess) {
-          yield call(setToStorage, 'jira_credentials', { ...payload, password: '' });
+          yield call(setToStorage, 'jira_credentials', { username: payload.username, password: '', host: host.origin });
           yield call((): void => { ipcRenderer.sendSync('store-credentials', payload); });
           yield call(afterLogin);
         }
@@ -211,7 +211,7 @@ export function* loginOAuthFlow(): Generator<*, void, *> {
       // collecting basic oAuth data
       const host: URL = yield call(transformValidHost, payload);
       const { hostname } = host;
-      const oAuthData = yield call(Api.getDataForOAuth, host: hostname);
+      const oAuthData = yield call(Api.getDataForOAuth, hostname);
       let accessToken: string;
       let tokenSecret: string;
       if (meta) {
@@ -313,7 +313,7 @@ export function* watchSetAuthFormStep(): Generator<*, void, *> {
         try {
           const host = yield call(transformValidHost, hostFormValue);
           yield call(setToStorage, 'jira_credentials', { host: host.origin });
-          const isPaidChronosUser = yield call(Api.checkUserPlan, { host: host.origin });
+          const isPaidChronosUser = yield call(Api.checkUserPlan, { host: host.hostname });
           yield put(profileActions.setIsPaidUser(isPaidChronosUser));
           yield put(profileActions.setHost(host));
         } catch (err) {

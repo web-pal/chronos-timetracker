@@ -67,6 +67,7 @@ export function fetchIssues({
     maxResults: (stopIndex - startIndex) + 1,
     startAt: startIndex,
     fields: newRequiredFields,
+    expand: ['renderedFields'],
   });
 }
 
