@@ -134,6 +134,10 @@ export function addComment({
   return jira.client.issue.addComment({ issueId, comment });
 }
 
-export function getIssuesMetadata(projectIds: Array<Id>): Promise<*> {
-  return jira.client.issue.getCreateMetadata({ projectIds });
+export function getIssuesMetadata(projectId: Id | null): Promise<*> {
+  const opts = {};
+  if (projectId) {
+    opts.projectIds = [projectId];
+  }
+  return jira.client.issue.getCreateMetadata(opts);
 }
