@@ -24,7 +24,6 @@ import { fetchIssueFields, fetchEpics } from './issues';
 import { setToStorage, removeFromStorage } from './storage';
 import { throwError, infoLog } from './ui';
 import { plugSocket } from './socket';
-import initializeApp from './initializeApp';
 
 import jira from '../utils/jiraClient';
 
@@ -296,6 +295,7 @@ export function* logoutFlow(): Generator<*, *, *> {
     }
     yield put(clearAllReducers());
     yield fork(loginFlow);
+    yield fork(loginOAuthFlow);
   }
 }
 
