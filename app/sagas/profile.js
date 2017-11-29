@@ -94,8 +94,7 @@ function identifyInSentryAndMixpanel(host: URL, userData: User): void {
 function* jiraLogin(values: AuthFormData): Generator<*, boolean, *> {
   try {
     yield call(infoLog, 'starting jira login', values);
-    const host = yield select(getHost);
-    const userData: User = yield call(Api.jiraAuth, { ...values, host });
+    const userData: User = yield call(Api.jiraAuth, { ...values });
     yield call(identifyInSentryAndMixpanel, values.host, userData);
     yield put(profileActions.fillUserData(userData));
     return true;
@@ -137,7 +136,7 @@ export function* checkJWT(): Generator<*, void, *> {
     const userData: ChronosBackendUserData = yield call(Api.chronosBackendGetJiraCredentials);
     if (userData.authType === 'basic_auth' || userData.authType === undefined) {
       yield put(profileActions.loginRequest({
-        host: userData.baseUrl.split('.')[0],
+        host: transformValidHost(userData.baseUrl.split('.')[0]),
         username: userData.username,
         password: userData.password,
       }));
@@ -179,15 +178,16 @@ export function* loginFlow(): Generator<*, void, *> {
     try {
       const { payload }: LoginRequestAction = yield take(types.LOGIN_REQUEST);
       const host = yield select(getHost);
-      // $FlowFixMe
-      payload.host = host;
+      if (!payload.host) {
+        payload.host = host;
+      }
       yield call(clearLoginError);
       yield put(profileActions.setLoginFetching(true));
       const chronosBackendLoginSuccess: boolean = yield call(chronosBackendLogin, payload);
       if (chronosBackendLoginSuccess) {
         const jiraLoginSuccess: boolean = yield call(jiraLogin, payload);
         if (jiraLoginSuccess) {
-          yield call(setToStorage, 'jira_credentials', { username: payload.username, password: '', host: host.origin });
+          yield call(setToStorage, 'jira_credentials', { username: payload.username, password: '', host: payload.host.origin });
           yield call((): void => { ipcRenderer.sendSync('store-credentials', payload); });
           yield call(afterLogin);
         }
