@@ -24,6 +24,7 @@ import { fetchIssueFields, fetchEpics } from './issues';
 import { setToStorage, removeFromStorage } from './storage';
 import { throwError, infoLog } from './ui';
 import { plugSocket } from './socket';
+import initializeApp from './initializeApp';
 
 import jira from '../utils/jiraClient';
 
@@ -134,13 +135,6 @@ export function* checkJWT(): Generator<*, void, *> {
   yield put(profileActions.setLoginFetching(true));
   try {
     const userData: ChronosBackendUserData = yield call(Api.chronosBackendGetJiraCredentials);
-    if (userData.authType === 'basic_auth' || userData.authType === undefined) {
-      yield put(profileActions.loginRequest({
-        host: transformValidHost(userData.baseUrl.split('.')[0]),
-        username: userData.username,
-        password: userData.password,
-      }));
-    }
     if (userData.authType === 'OAuth') {
       yield put(profileActions.loginOAuthRequest(userData.baseUrl, {
         accessToken: userData.token,
@@ -177,8 +171,10 @@ export function* loginFlow(): Generator<*, void, *> {
   while (true) {
     try {
       const { payload }: LoginRequestAction = yield take(types.LOGIN_REQUEST);
+      yield call(infoLog, 'loginFlow started', payload);
       const host = yield select(getHost);
-      if (!payload.host) {
+      if (!payload.host || (!(payload.host instanceof URL) && host instanceof URL)) {
+        // $FlowFixMe
         payload.host = host;
       }
       yield call(clearLoginError);
@@ -286,6 +282,7 @@ export function* loginOAuthFlow(): Generator<*, void, *> {
 export function* logoutFlow(): Generator<*, *, *> {
   while (true) {
     yield take(types.LOGOUT_REQUEST);
+    yield call(removeFromStorage, 'desktop_tracker_jwt');
     const { getGlobal } = remote;
     const { running, uploading } = getGlobal('sharedObj');
 
@@ -297,8 +294,8 @@ export function* logoutFlow(): Generator<*, *, *> {
       // eslint-disable-next-line no-alert
       window.alert('Currently app in process of saving worklog, wait few seconds please');
     }
-    yield call(removeFromStorage, 'desktop_tracker_jwt');
     yield put(clearAllReducers());
+    yield fork(loginFlow);
   }
 }
 
