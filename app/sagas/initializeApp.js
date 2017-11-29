@@ -7,7 +7,6 @@ import { getFromStorage } from './storage';
 
 export default function* initializeApp(): Generator<*, void, *> {
   const credentials = yield call(getFromStorage, 'jira_credentials');
-  console.log('CREDENTIALS', credentials);
   if (credentials) {
     const { host, username } = credentials;
     if (username) {
@@ -15,7 +14,12 @@ export default function* initializeApp(): Generator<*, void, *> {
       yield put(initialize('auth', { host, username, password: '' }));
       yield put(uiActions.setAuthFormStep(2));
       if (password) {
-        yield put(profileActions.loginRequest({ host, username, password }));
+        const loginData = {
+          host: new URL(host),
+          username,
+          password,
+        };
+        yield put(profileActions.loginRequest(loginData));
       }
     } else if (host) {
       yield put(initialize('auth', { host }));
