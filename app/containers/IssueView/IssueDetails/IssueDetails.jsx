@@ -168,11 +168,14 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({ issue, epic }: Prop
         <strong>
           Description
         </strong>
-        <div
-          dangerouslySetInnerHTML={{
-            __html: issue.renderedFields.description,
-          }}
-        />
+        {issue.renderedFields
+          ?  <div
+            dangerouslySetInnerHTML={{
+              __html: issue.renderedFields.description,
+            }}
+          />
+          : <ReactMarkdown source={issue.fields.description || '*No description*'} />
+        }
       </DescriptionSectionHeader>
       {
         /* TODO <IssueAttachments /> */
