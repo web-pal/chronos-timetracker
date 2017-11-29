@@ -1,4 +1,5 @@
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+[![license](https://img.shields.io/github/license/desktop/desktop.svg?style=flat-square)](https://github.com/web-pal/chronos-timetracker/blob/master/LICENSE)
 
 # Chronos timetracker
 
