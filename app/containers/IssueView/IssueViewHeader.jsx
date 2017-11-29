@@ -9,7 +9,6 @@ import DropdownMenu, { DropdownItemGroup, DropdownItem } from '@atlaskit/dropdow
 import Tooltip from '@atlaskit/tooltip';
 import Button, { ButtonGroup } from '@atlaskit/button';
 import Spinner from '@atlaskit/spinner';
-import { play } from 'data/svg';
 import {
   getSelectedIssue,
   getTimerRunning,
@@ -108,7 +107,6 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
       {timerRunning
         ? <StartButtonPlaceholder />
         : <StartButton
-          src={play}
           alt="Start Tracking"
           onClick={() => {
             startTimer();
@@ -140,7 +138,7 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
           <DropdownItemGroup>
             {availableTransitionsFetching &&
               <DropdownItem>
-                <Flex row centered>
+                <Flex row justifyCenter>
                   <Spinner />
                 </Flex>
               </DropdownItem>

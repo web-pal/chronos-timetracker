@@ -107,7 +107,7 @@ export function* takeScreenshot() {
       Api.makeScreenshot,
       screenshotTime,
       userData.key,
-      host,
+      host.hostname,
       localDesktopSettings.showScreenshotPreview,
       localDesktopSettings.screenshotPreviewTime,
       localDesktopSettings.nativeNotifications,

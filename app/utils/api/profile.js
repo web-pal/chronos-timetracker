@@ -16,12 +16,12 @@ export function jiraAuth({
   username,
   password,
 }: {
-  host: string,
+  host: URL,
   username: string,
   password: string,
 }): Promise<any> {
-  const formatHost = host;
-  jira.auth(formatHost, username, password);
+  const port = host.port.length ? host.port : '443';
+  jira.auth(host.hostname, username, password, port, host.protocol);
   return jiraProfile();
 }
 
@@ -58,7 +58,7 @@ export function chronosBackendAuth({
   username,
   password,
 }: {
-  host: string,
+  host: URL,
   username: string,
   password: string,
 }): Promise<*> {
@@ -69,7 +69,7 @@ export function chronosBackendAuth({
     },
     body: JSON.stringify({
       type: 'basic_auth',
-      baseUrl: host,
+      baseUrl: host.hostname,
       username,
       password,
     }),

@@ -43,7 +43,7 @@ export const storageRemovePromise = (key: string): Promise<void> => new Promise(
 });
 
 export function* getFromStorage(key: string): Generator<*, mixed, *> {
-  const host: string | null = yield select(getHost);
+  const host: URL | null = yield select(getHost);
   // $FlowFixMe: array methods buggy with Enums
   if (prefixedKeys.includes(key) && !host) {
     throw new Error('Need to fill host before getting prefixed keys from storage');
@@ -51,32 +51,32 @@ export function* getFromStorage(key: string): Generator<*, mixed, *> {
   const data = yield call(
     storageGetPromise,
     // $FlowFixMe: array methods buggy with Enums
-    prefixedKeys.includes(key) ? `${host}_${key}` : key,
+    prefixedKeys.includes(key) ? `${host.hostname}_${key}` : key,
   );
   return data;
 }
 
 export function* setToStorage(key: string, data: *): Generator<*, Promise<void>, *> {
-  const host: string | null = yield select(getHost);
+  const host: URL | null = yield select(getHost);
   // $FlowFixMe: array methods buggy with Enums
   if (prefixedKeys.includes(key) && !host) {
     throw new Error('Can\'t set prefixed variable to storage if no host provided');
   }
   return storageSetPromise(
     // $FlowFixMe: array methods buggy with Enums
-    prefixedKeys.includes(key) ? `${host}_${key}` : key,
+    prefixedKeys.includes(key) ? `${host.hostname}_${key}` : key,
     data,
   );
 }
 
 export function* removeFromStorage(key: string): Generator<*, Promise<void>, *> {
-  const host: string | null = yield select(getHost);
+  const host: URL | null = yield select(getHost);
   // $FlowFixMe: array methods buggy with Enums
   if (prefixedKeys.includes(key) && !host) {
     throw new Error('Can\'t remove prefixed variable from storage if no host provided');
   }
   return storageRemovePromise(
     // $FlowFixMe: array methods buggy with Enums
-    prefixedKeys.includes(key) ? `${host}_${key}` : key,
+    prefixedKeys.includes(key) ? `${host.hostname}_${key}` : key,
   );
 }

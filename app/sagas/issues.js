@@ -1,12 +1,12 @@
 // @flow
-import { delay } from 'redux-saga';
-import { call, take, select, put, fork, takeEvery, takeLatest } from 'redux-saga/effects';
+import { delay } from 'redux-saga'; import { call, take, select, put, fork, takeEvery, takeLatest } from 'redux-saga/effects';
 import { ipcRenderer } from 'electron';
 import * as Api from 'api';
 import merge from 'lodash.merge';
 import Raven from 'raven-js';
 import {
   getSelectedProject,
+  getSelectedBoard,
   getSelectedProjectId,
   getSelectedSprintId,
   getFieldIdByName,
@@ -270,7 +270,15 @@ function* getIssueTransitions(issueId: string): Generator<*, void, *> {
 
 export function* fetchIssueTypes(): Generator<*, *, *> {
   try {
-    const issueTypes = yield call(Api.fetchIssueTypes);
+    const selectedProjectType = yield select(getSelectedProjectType);
+    let selectedProjectId = null;
+    if (selectedProjectType === 'project') {
+      selectedProjectId = yield select(getSelectedProjectId);
+    }
+    yield call(infoLog, `fetching issue types for project ${selectedProjectId}`);
+    const metadata = yield call(Api.getIssuesMetadata, selectedProjectId);
+    const issueTypes = metadata.projects[0].issuetypes;
+    yield call(infoLog, `got issue types for project ${selectedProjectId}`, issueTypes);
     const normalizedData = normalizePayload(issueTypes, 'issueTypes');
     yield put(issuesActions.fillIssueTypes(normalizedData));
   } catch (err) {
@@ -281,7 +289,20 @@ export function* fetchIssueTypes(): Generator<*, *, *> {
 
 export function* fetchIssueStatuses(): Generator<*, *, *> {
   try {
-    const issueStatuses = yield call(Api.fetchIssueStatuses);
+    const selectedProjectType = yield select(getSelectedProjectType);
+    let selectedProjectId = null;
+    let issueTypes;
+    let issueStatuses;
+    if (selectedProjectType === 'project') {
+      selectedProjectId = yield select(getSelectedProjectId);
+      yield call(infoLog, `fetching issue statuses for project ${selectedProjectId}`);
+      issueTypes = yield call(Api.fetchIssueTypes, selectedProjectId);
+      issueStatuses = issueTypes[0].statuses;
+    } else {
+      yield call(infoLog, `fetching issue statuses for all projects`);
+      issueStatuses = yield call(Api.fetchIssueStatuses);
+    }
+    yield call(infoLog, `got issue statuses for project ${selectedProjectId}`, issueStatuses);
     const normalizedData = normalizePayload(issueStatuses, 'issueStatuses');
     yield put(issuesActions.fillIssueStatuses(normalizedData));
   } catch (err) {

@@ -92,7 +92,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === true) {
-  app.commandLine.appendSwitch('allow-insecure-localhost');
+  // app.commandLine.appendSwitch('allow-insecure-localhost');
   require('electron-debug')();
   const p = path.join(__dirname, '..', 'app', 'node_modules');
   require('module').globalPaths.push(p);
@@ -222,7 +222,7 @@ function showScreenPreview() {
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   const options = {
     width: 218,
-    height: 212,
+    height: 240,
     x: width - 218,
     y: height - 212,
     frame: false,

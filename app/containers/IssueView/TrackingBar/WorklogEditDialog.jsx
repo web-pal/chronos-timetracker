@@ -9,7 +9,7 @@ import { Flex } from 'components';
 import { worklogsActions } from 'actions';
 import { getWorklogComment } from 'selectors';
 
-import { EditButton } from './styled';
+import { EditButton, EditButtonContainer } from './styled';
 
 import type { SetWorklogComment } from '../../../types';
 
@@ -83,7 +83,7 @@ class WorklogEditDialog extends PureComponent<Props, State> {
 
   render() {
     return (
-      <div>
+      <EditButtonContainer>
         <InlineDialog
           content={this.renderDialog()}
           isOpen={this.state.dialogOpen}
@@ -100,13 +100,13 @@ class WorklogEditDialog extends PureComponent<Props, State> {
         >
           <EditButton
             size="medium"
-            primaryColor="#172B4D"
-            secondaryColor="white"
+            primaryColor="white"
+            secondaryColor="#172B4D"
             label="Toggle Tracking View"
             onClick={this.toggleDialog}
           />
         </InlineDialog>
-      </div>
+      </EditButtonContainer>
     );
   }
 }

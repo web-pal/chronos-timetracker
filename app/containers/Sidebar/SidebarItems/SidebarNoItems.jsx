@@ -12,7 +12,7 @@ type Props = {
 const SidebarNoItems: StatelessFunctionalComponent<Props> = ({ recent }: Props): Node =>
   <Flex
     column
-    centered
+    justifyCenter
     alignCenter
     style={{ width: '100%', height: '100%', flex: '1 0 100%' }}
   >

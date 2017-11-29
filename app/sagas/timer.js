@@ -19,7 +19,7 @@ import {
   getIdles,
 } from 'selectors';
 import Raven from 'raven-js';
-import { uiActions, timerActions, issuesActions, types } from 'actions';
+import { uiActions, timerActions, issuesActions, worklogsActions, types } from 'actions';
 import { idleTimeThreshold } from 'config';
 import { randomPeriods, calculateActivity } from 'timer-helper';
 
@@ -221,6 +221,7 @@ function* stopTimer(channel, timerInstance) {
     });
     //
     yield put(timerActions.resetTimer());
+    yield put(worklogsActions.setTemporaryWorklogId(null));
     yield call(uploadWorklog, {
       issueId: trackingIssueId,
       timeSpentSeconds: time,
@@ -241,6 +242,8 @@ export function* timerFlow(): Generator<*, *, *> {
   try {
     const selectedIssue = yield select(getSelectedIssue);
     yield put(issuesActions.setTrackingIssue(selectedIssue));
+    const tempId = Math.random().toString(36).substr(2, 9);
+    yield put(worklogsActions.setTemporaryWorklogId(tempId));
     ipcRenderer.send('start-timer');
     const channel = yield call(timerChannel);
     const timerInstance = yield fork(runTimer, channel);

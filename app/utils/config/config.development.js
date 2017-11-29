@@ -4,8 +4,8 @@ const config = {
   apiUrl: 'https://chronos-api.web-pal.com', // server url
   // apiUrl: 'http://127.0.0.1:5000', // server url (dev)
   socketUrl: 'https://chronos-socket.web-pal.com', // url of socket server
-  // socketUrl: 'https://127.0.0.1:5001', // url of socket server (dev)
-  idleTimeThreshold: 300, // seconds of inactivity considering user is idle
+  // socketUrl: 'http://127.0.0.1:5001', // url of socket server (dev)
+  idleTimeThreshold: 10, // seconds of inactivity considering user is idle
   checkUpdates: false,
   infoLog: false,
 };

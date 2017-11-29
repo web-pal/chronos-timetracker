@@ -36,12 +36,6 @@ import type {
   SetSidebarFiltersOpen,
 } from '../../../types';
 
-// const sortOptions = fromJS([
-//   { label: 'Proprity', value: 'all' },
-//   { label: 'Date', value: 'me' },
-//   { label: 'Name', value: 'me' },
-// ]);
-//
 type Props = {
   setIssuesFilter: SetIssuesFilter,
   issueTypes: Array<IssueType>,

@@ -11,15 +11,18 @@ export default function* initializeApp(): Generator<*, void, *> {
     const { host, username } = credentials;
     if (username) {
       const { password } = ipcRenderer.sendSync('get-credentials', username);
-      const slicedHost = host.slice(0, host.indexOf('.'));
-      yield put(initialize('auth', { host: slicedHost, username, password: '' }));
+      yield put(initialize('auth', { host, username, password: '' }));
       yield put(uiActions.setAuthFormStep(2));
       if (password) {
-        yield put(profileActions.loginRequest({ host, username, password }));
+        const loginData = {
+          host: new URL(host),
+          username,
+          password,
+        };
+        yield put(profileActions.loginRequest(loginData));
       }
     } else if (host) {
-      const slicedHost = host.slice(0, host.indexOf('.'));
-      yield put(initialize('auth', { host: slicedHost }));
+      yield put(initialize('auth', { host }));
       yield put(uiActions.setAuthFormStep(2));
     }
   }

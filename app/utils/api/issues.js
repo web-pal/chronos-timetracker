@@ -1,6 +1,8 @@
 // @flow
 import jira from '../jiraClient';
 
+import type { Id } from '../../types';
+
 const requiredFields: Array<string> = [
   'issuetype',
   'project',
@@ -65,6 +67,7 @@ export function fetchIssues({
     maxResults: (stopIndex - startIndex) + 1,
     startAt: startIndex,
     fields: newRequiredFields,
+    expand: ['renderedFields'],
   });
 }
 
@@ -129,4 +132,12 @@ export function addComment({
   }
 }): Promise<*> {
   return jira.client.issue.addComment({ issueId, comment });
+}
+
+export function getIssuesMetadata(projectId: Id | null): Promise<*> {
+  const opts = {};
+  if (projectId) {
+    opts.projectIds = [projectId];
+  }
+  return jira.client.issue.getCreateMetadata(opts);
 }

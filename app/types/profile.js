@@ -62,7 +62,7 @@ export type LoginError = string;
 
 export type ProfileState = {|
   +authorized: boolean,
-  +host: string | null,
+  +host: URL | null,
   +userData: User | null,
   +loginError: string,
   +loginFetching: boolean,
@@ -70,7 +70,7 @@ export type ProfileState = {|
 |};
 
 export type AuthFormData = {|
-  +host: string,
+  +host: URL,
   +username?: string,
   +password?: string,
 |};
@@ -153,10 +153,10 @@ export type FillUserData = {
 
 //
 export type SetHostAction =
- {| type: typeof types.SET_HOST, payload: string |} & Action;
+ {| type: typeof types.SET_HOST, payload: URL |} & Action;
 
 export type SetHost = {
-  (payload: string): SetHostAction
+  (payload: URL): SetHostAction
 };
 
 //

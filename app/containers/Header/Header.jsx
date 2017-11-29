@@ -39,7 +39,7 @@ import type {
 
 type Props = {
   userData: User,
-  host: string,
+  host: URL,
   updateAvailable: UpdateInfo,
   updateFetching: boolean,
 
@@ -62,7 +62,7 @@ const Header: StatelessFunctionalComponent<Props> = ({
       <ProfilePicture src={userData.avatarUrls['48x48']} alt="" />
       <ProfileInfo>
         <Name>{userData.displayName}</Name>
-        <Team>{host}</Team>
+        <Team>{host.hostname}</Team>
       </ProfileInfo>
     </Flex>
     <Flex row style={{ position: 'relative' }}>

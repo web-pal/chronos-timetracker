@@ -1,5 +1,6 @@
 import styled from 'styled-components2';
 import UserAvatarCircleIcon from '@atlaskit/icon/glyph/user-avatar-circle';
+import { play, playHover } from 'data/svg';
 
 export const TabItem = styled.div`
   display: flex;
@@ -78,14 +79,16 @@ export const ActionButton = styled.button`
   }
 `;
 
-export const StartButton = styled.img`
+export const StartButton = styled.div`
   width: 60px;
   height: 60px;
   cursor: pointer;
   border-radius: 50%;
+  background-image: url(${play});
   user-select: none;
+  background-size: cover;
   :hover {
-    box-shadow: 0 4px 8px 0 rgba(9, 30, 66, 0.32);
+    background-image: url(${playHover});
   }
 `;
 

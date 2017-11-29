@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>Stop-icon</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard" transform="translate(-132.000000, -2.000000)">
+            <g id="Play-Copy" transform="translate(130.000000, 0.000000)">
+                <g id="Stop-icon" transform="translate(3.000000, 3.000000)">
+                    <rect id="Rectangle" fill="#FFFFFF" x="6" y="6" width="6" height="6" rx="1"></rect>
+                    <circle id="Oval" stroke="#FFFFFF" cx="9.04999352" cy="9.0199995" r="9.39999962"></circle>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

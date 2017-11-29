@@ -2,9 +2,9 @@
 import React, { Component } from 'react';
 import { remote, ipcRenderer } from 'electron';
 import { Button } from 'styles/buttons';
-import { Img, Flex } from 'components';
+import { Flex } from 'components';
+import { PopupContainer, PopupImage } from './styled';
 
-import PopupTimer from './PopupTimer';
 import '../../../assets/stylesheets/main.less';
 
 const { getGlobal } = remote;
@@ -63,28 +63,35 @@ export default class ScreenPopup extends Component<{}, State> {
     const { lastScreenshotPath, currentTime, maxTime } = this.state;
 
     return (
-      <Flex row centered className="popup">
+      <PopupContainer>
         <Flex column>
-          <Img src={lastScreenshotPath} className="screenshot-preview" />
-          <PopupTimer time={maxTime - currentTime} />
-          <Flex row centered>
+          <PopupImage src={lastScreenshotPath} />
+          <Flex row justifyCenter style={{ fontSize: '1.5em' }}>
+            {maxTime - currentTime}
+          </Flex>
+          <Flex row justifyCenter>
             <Button
               background="hsla(40, 100%, 45%, 1)"
-              style={{ marginRight: 5, width: 90 }}
+              style={{
+                marginRight: 5,
+                width: 90,
+                lineHeight: '16px',
+                borderRadius: 2,
+              }}
               onClick={this.rejectScreenshot}
             >
               Reject
             </Button>
             <Button
               background="#36B37E"
-              style={{ width: 90 }}
+              style={{ width: 90, lineHeight: '16px', borderRadius: 2 }}
               onClick={this.acceptScreenshot}
             >
               Accept
             </Button>
           </Flex>
         </Flex>
-      </Flex>
+      </PopupContainer>
     );
   }
 }
