@@ -1,116 +1,102 @@
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 
-## GitFlow
-We use [Vincent Driessen's branching model.](http://nvie.com/posts/a-successful-git-branching-model/)  
-Read details here:  
-- http://nvie.com/posts/a-successful-git-branching-model/  
-- https://www.atlassian.com/git/tutorials/comparing-workflows#gitflow-workflow  
-- http://danielkummer.github.io/git-flow-cheatsheet/  
+# Chronos timetracker
 
-Use [git-flow](https://github.com/petervanderdoes/gitflow-avh) package for working with branches.
+Desktop client for JIRA. Track time, upload automatic and manual worklogs without a hassle.
+Cross-platform. Open-sourced.
 
-#### git flow init
-Use all init settings as default, except tag prefix, it must be 'v'.
+Your working tool kit. Open a tracker, browse tasks, pick what you want to work on and start
+tracking. Move it to "Done" when you've finished. Without leaving an app.
 
+![Chronos-timetracker Screenshot](https://chronos.web-pal.com/static/chronos-screenshot.eafbd89a.png)
 
-## Commit changes
+## Features
 
-#### Conventional Commits
-We use [conventional commits specification](https://conventionalcommits.org/) for commit messages.
+### Simple to manage your tasks
+Chronos is also minimalistic JIRA client, where you can perform most needed actions like changing
+issue’s status or checking it’s details.
 
-#### Commitzen
-To ensure that all commit messages are formatted correctly, we use [Commitizen](http://commitizen.github.io/cz-cli/) in this repository.
-It provides interactive interface that creates your commit messages for you.
-Running commitizen is as simple as running yarn run commit from the root of the repo.
-You can pass all the same flags you would normally use with git commit.
+### Customizable worklogs
+Besides native JIRA worklogs information we provide a lot of data like screenshots,
+activities, types and comments. You also can add worklogs manually.
 
-```
-  yarn run commit -- -a
-```
+### Secured and open-sourced
+Code of the project is in public access and hosted on Github.
 
-## Packaging
-To package an app for production, please ensure that `MIXPANEL_API_TOKEN` and `SENTRY_API_KEY`
-env variables are set.
+### Free
+It’s free. If you think our product rocks or just want to support us, check out
+[Chronos Timesheets][marketplace].
 
-```
-  export MIXPANEL_API_TOKEN=<your_mixpanel_api_token>
-  export SENTRY_API_KEY=<your_sentry_api_key>
-  export SENTRY_LINK=<your_sentry_link>
-```
+# Chronos timesheets
 
-If you don't want to use sentry or mixpanel, you can toggle them with enc variables `DISABLE_MIXPANEL=1` or `DISABLE_SENTRY=1`
+JIRA plugin to view worklogs. Watch what your team is busy with, calculate salaries, view
+screenshots and activity levels. Rich and flexible.
 
-```
-  export DISABLE_MIXPANEL=1
-  export DISABLE_SENTRY=1
-```
+[View on marketplace][marketplace]
 
-Then you can package an app with:
+![Chronos-timesheets Screenshot](https://chronos.web-pal.com/static/calendar-view.6baf2267.png)
 
-#### will include uploading sentry artifacts
-```
-  yarn package
-```
+## Installing
 
-#### will **exclude* uploading sentry artifacts
-```
-  cross-env UPLOAD_SENTRY=0 yarn package
-```
+To get started you must have atlassian account.
+
+You can download compiled versions of Chronos-timetracker for Mac OS X, Linux and Windows from:
+* [OSX][OSX]
+* [Linux][Linux]
+* [Windows][Windows]
 
 
-#### will include uploading release to a github
-```
-  yarn package-release
-```
+## Built With
+
+* [electron][electron] - Build cross platform desktop apps with JavaScript, HTML, and CSS
+* [react][react] - A JavaScript library for building user interfaces
+* [redux][redux] - Is a predictable state container for JavaScript apps
+* [redux-saga][redux-saga] - An alternative side effect model for Redux apps
+* [flowtype][flowtype] - Is a static type checker for JavaScript
+* [reselect][reselect] - Selector library for Redux
+* [recompose][recompose] - A React utility belt for function components and higher-order components.
+* [styled-components][styled-components] - Visual primitives for the component age
+* [atlaskit][atlaskit] - It is a collection of reusable components from atlassian
 
 
-#### will include chrome development tools on production for debugging purposes
-```
-  yarn package-dev
-```
+## Contributing
 
-## State architecture
-This architecure based on [redux documentation](http://redux.js.org/), so for deeply understanding just read it.
+Please read [CONTRIBUTING.md][contributing] for details on our code of conduct, and the process
+for submitting pull requests to us.
 
-#### To keep clean project's architecture, use these principles:
-* [Data normalizing](http://redux.js.org/docs/recipes/reducers/NormalizingStateShape.html) is the most important thing that you have to use.
-* [Simple reducer](http://redux.js.org/docs/recipes/reducers/UpdatingNormalizedData.html) I suggest to use "Slice Reducer Composition".
-* [Memorized selectors](https://github.com/reactjs/reselect)
+## Versioning
 
+We use [SemVer][SemVer] for versioning. For the versions available, see the [tags on this repository][tags]
 
-## Naming convention
-Use airbnb naming conventions:  
-- https://github.com/airbnb/javascript/tree/master/react#naming  
-- https://github.com/airbnb/javascript#naming-conventions
-#### Variables
-Use declarative style and avoid single letter names.
-If you use abbreveature leave comment with deciphering abbreviations.
-#### Selectors
-All selectors should have a 'get' prefix.
-#### Actions
-Actions must begin with some verb - set, fetch, fill, add, delete, etc...
+## Authors
+
+We're small team of developers. We make web, mobile and
+desktop apps. We're hardworking and passionate about our products.
+If you want to collaborate or hire us, contact at [it@web-pal.com](mailto:it@web-pal.com)
+
+See also the list of [contributors][contributors] who participated in this project.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
 
-## Containers and Components
-* [Simple article about it](https://medium.com/@learnreact/container-components-c0e67432e005)
-* [Dan Abramov about it](https://medium.com/@dan_abramov/smart-and-dumb-components-7ca2f9a7c7d0)
+[OSX]: https://chronos-api.web-pal.com/release/dmg
+[Linux]: https://chronos-api.web-pal.com/release/AppImage
+[Windows]: https://chronos-api.web-pal.com/release/exe
+[marketplace]: https://marketplace.atlassian.com/plugins/jira-chronos/cloud/overview
 
-### Module Structure
+[SemVer]: http://semver.org/
+[tags]: https://github.com/web-pal/chronos-timetracker/tags
+[contributors]: https://github.com/web-pal/chronos-timetracker/contributors
+[contributing]: https://github.com/web-pal/chronos-timetracker/blob/master/CONTRIBUTING.md
 
-This boilerplate uses a [two package.json structure](https://www.electron.build/tutorials/two-package-structure).
-This means, you will have two `package.json` files.
-
-1. `./package.json` in the root of your project
-1. `./app/package.json` inside `app` folder
-
-### Which `package.json` file to use
-
-**Rule of thumb** is: all modules go into `./package.json` except native modules.
-Native modules go into `./app/package.json`.
-
-1. If the module is native to a platform (like system-idle-time) or otherwise should be included
-with the published package (i.e. bcrypt, openbci), it should be listed under `dependencies` in `./app/package.json`.
-2. If a module is `import`ed by another module, include it in `dependencies` in `./package.json`.
-See [this ESLint rule](https://github.com/benmosher/eslint-plugin-import/blob/master/docs/rules/no-extraneous-dependencies.md).
-Examples of such modules are `redux-saga`, `redux-form`, and `moment`.
-3. Otherwise, modules used for building, testing and debugging should be included in `devDependencies` in `./package.json`.
+[electron]: https://electronjs.org/
+[react]: https://reactjs.org/
+[redux]: http://redux.js.org
+[recompose]: https://github.com/acdlite/recompose
+[redux-saga]: https://github.com/redux-saga/redux-saga
+[reselect]: https://github.com/reactjs/reselect
+[styled-components]: https://www.styled-components.com
+[flowtype]: https://flow.org/
+[atlaskit]: https://bitbucket.org/atlassian/atlaskit
