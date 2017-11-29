@@ -1,3 +1,24 @@
+<a name="2.4.0"></a>
+# [2.4.0](https://github.com/web-pal/chronos-app-jira/compare/2.3.4...2.4.0) (2017-11-29)
+
+
+### Bug Fixes
+
+* **Authorization:** fix jiraAuth method arguments ([9e1eb2a](https://github.com/web-pal/chronos-app-jira/commit/9e1eb2a))
+* **Issue Detail View:** fix "no worklogs" markup ([0f9583e](https://github.com/web-pal/chronos-app-jira/commit/0f9583e))
+* **Issue Detail View:** fix edit worklog button ([55d611e](https://github.com/web-pal/chronos-app-jira/commit/55d611e))
+* popup styles ([e537768](https://github.com/web-pal/chronos-app-jira/commit/e537768))
+
+
+### Features
+
+* **Authorization:** ability to authorize for Jira servers ([1e3c5a1](https://github.com/web-pal/chronos-app-jira/commit/1e3c5a1))
+* **Browsing Issues:** show only available statuses and issuetypes in filters ([444b9d7](https://github.com/web-pal/chronos-app-jira/commit/444b9d7))
+* **Issue Detail View:** render Jira markdown in issue details ([b59f334](https://github.com/web-pal/chronos-app-jira/commit/b59f334))
+* **Tracking:** repair socket ([1174588](https://github.com/web-pal/chronos-app-jira/commit/1174588))
+
+
+
 <a name=""></a>
 #  (2017-11-23)
 
