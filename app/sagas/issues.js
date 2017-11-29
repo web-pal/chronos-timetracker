@@ -6,6 +6,7 @@ import merge from 'lodash.merge';
 import Raven from 'raven-js';
 import {
   getSelectedProject,
+  getSelectedBoard,
   getSelectedProjectId,
   getSelectedSprintId,
   getFieldIdByName,
@@ -269,7 +270,11 @@ function* getIssueTransitions(issueId: string): Generator<*, void, *> {
 
 export function* fetchIssueTypes(): Generator<*, *, *> {
   try {
-    const selectedProjectId = yield select(getSelectedProjectId);
+    const selectedProjectType = yield select(getSelectedProjectType);
+    let selectedProjectId = null;
+    if (selectedProjectType === 'project') {
+      selectedProjectId = yield select(getSelectedProjectId);
+    }
     yield call(infoLog, `fetching issue types for project ${selectedProjectId}`);
     const metadata = yield call(Api.getIssuesMetadata, selectedProjectId);
     const issueTypes = metadata.projects[0].issuetypes;
@@ -284,10 +289,19 @@ export function* fetchIssueTypes(): Generator<*, *, *> {
 
 export function* fetchIssueStatuses(): Generator<*, *, *> {
   try {
-    const selectedProjectId = yield select(getSelectedProjectId);
-    yield call(infoLog, `fetching issue statuses for project ${selectedProjectId}`);
-    const issueTypes = yield call(Api.fetchIssueTypes, selectedProjectId);
-    const issueStatuses = issueTypes[0].statuses;
+    const selectedProjectType = yield select(getSelectedProjectType);
+    let selectedProjectId = null;
+    let issueTypes;
+    let issueStatuses;
+    if (selectedProjectType === 'project') {
+      selectedProjectId = yield select(getSelectedProjectId);
+      yield call(infoLog, `fetching issue statuses for project ${selectedProjectId}`);
+      issueTypes = yield call(Api.fetchIssueTypes, selectedProjectId);
+      issueStatuses = issueTypes[0].statuses;
+    } else {
+      yield call(infoLog, `fetching issue statuses for all projects`);
+      issueStatuses = yield call(Api.fetchIssueStatuses);
+    }
     yield call(infoLog, `got issue statuses for project ${selectedProjectId}`, issueStatuses);
     const normalizedData = normalizePayload(issueStatuses, 'issueStatuses');
     yield put(issuesActions.fillIssueStatuses(normalizedData));
