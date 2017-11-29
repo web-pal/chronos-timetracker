@@ -93,7 +93,7 @@ export function* watchShowWorklogChannel(socket) {
       const timeSpent = yield call(stj, timeSpentSeconds);
       const issue = yield select(getTrackingIssue);
       const issueId = issue.id;
-      const self = `https://${host}/rest/api/2/issue/${issueId}/worklog/${tempId}`;
+      const self = `https://${host.hostname}/rest/api/2/issue/${issueId}/worklog/${tempId}`;
       const updateAuthor = author;
       const currentProjectId = yield select(getSelectedProjectId);
 
