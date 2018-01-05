@@ -95,7 +95,11 @@ class WorklogModal extends Component<Props, State> {
                   disabled={fetching}
                   onClick={() => {
                     this.props.addManualWorklogRequest({
-                      startTime,
+                      startTime: startTime.set({
+                        year: date.split('/')[2],
+                        month: parseInt(date.split('/')[0], 10) - 1,
+                        date: date.split('/')[1],
+                      }),
                       totalSpent,
                       comment,
                       date,

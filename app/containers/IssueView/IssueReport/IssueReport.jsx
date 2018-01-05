@@ -102,7 +102,7 @@ const IssueReport: StatelessFunctionalComponent<Props> = ({
               View reports and calculate salaries in Chronos Timesheets
             </Heading>
             <CTAButton
-              onClick={openURLInBrowser(`https://${host.origin}/plugins/servlet/ac/jira-chronos/api-page-jira`)}
+              onClick={openURLInBrowser(`${host.origin}/plugins/servlet/ac/jira-chronos/api-page-jira`)}
             >
               Open plugin
             </CTAButton>

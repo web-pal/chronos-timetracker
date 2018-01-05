@@ -139,6 +139,8 @@ export function* checkJWT(): Generator<*, void, *> {
         accessToken: userData.token,
         tokenSecret: userData.token_secret,
       }));
+    } else {
+      yield put(profileActions.setLoginFetching(false));
     }
   } catch (err) {
     yield put(profileActions.setLoginFetching(false));
