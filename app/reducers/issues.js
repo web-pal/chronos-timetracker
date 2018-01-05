@@ -43,8 +43,8 @@ function itemsById(state: IssuesMap = {}, action): IssuesMap {
             worklog: {
               ...state[action.meta].fields.worklog,
               worklogs: [
-                action.payload,
                 ...state[action.meta].fields.worklog.worklogs,
+                action.payload,
               ],
             },
           },

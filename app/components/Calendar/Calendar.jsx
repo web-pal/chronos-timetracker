@@ -24,7 +24,7 @@ export default class Calendar extends PureComponent {
   constructor(props) {
     super(props);
     const today = moment().date();
-    const thisMonth = moment().month();
+    const thisMonth = moment().month() + 1;
     const thisYear = moment().year();
     this.state = {
       day: today,
@@ -47,8 +47,9 @@ export default class Calendar extends PureComponent {
     });
   }
 
-  handleSelect = ({ iso, day }) => {
+  handleSelect = ({ iso, day, month, year }) => {
     const { selected } = this.state;
+    this.handleChange({ day, month, year });
     if (selected.indexOf(iso) === -1) {
       this.setState({ selected: [iso], focused: day });
       console.log('CALENDAR onUpdate', iso, moment(iso).format('MM/DD/YYYY'));

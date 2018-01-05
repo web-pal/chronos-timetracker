@@ -36,7 +36,6 @@ export const MetaColumn = styled.div`
 export const MetaItemName = styled.span.attrs({
   className: 'MetaItemName',
 })`
-  font-family: Circular-Book !important;
   color: rgba(225, 225, 225, .9);
   font-size: 14px;
 `;
@@ -44,7 +43,6 @@ export const MetaItemName = styled.span.attrs({
 export const MetaItemValue = styled.span.attrs({
   className: 'MetaItemValue',
 })`
-  font-family: Circular-Bold !important;
   color: white;
   font-size: 28px;
 `;
@@ -58,7 +56,6 @@ export const CTAButton = styled.div`
   padding: 8px 16px;
   margin-top: 8px;
   cursor: pointer;
-  font-family: Circular-Book !important;
   :hover {
     background: #FF991F;
     border-color: #FF991F;
@@ -76,14 +73,12 @@ export const CTAArea = styled.div`
 export const Heading = styled.div`
   font-size: 24px;
   text-align: center;
-  font-family: Circular-Bold !important;
   color: #FFFFFF;
 `;
 
 export const HelpText = styled.a`
   color: rgba(255,255,255,0.85);
   font-size: 12px;
-  font-family: Circular-Book !important;
   cursor: pointer;
   :hover {
     color: white;
@@ -100,11 +95,9 @@ export const ChronosDescriptionMetaItem = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  font-family: Circular-Book !important;
   margin-bottom: 4px;
   b {
     color: white;
-    font-family: Circular-Bold !important;
   }
 `;
 
@@ -191,7 +184,6 @@ export const LearnMoreLink = styled.a`
   text-decoration: none;
   font-size: 10px;
   color: white;
-  font-family: Circular-Bold !important;
   cursor: pointer;
   :hover {
     color: white;
