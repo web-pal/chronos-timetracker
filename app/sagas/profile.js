@@ -313,7 +313,7 @@ export function* watchSetAuthFormStep(): Generator<*, void, *> {
       if (hostFormValue) {
         try {
           const host = yield call(transformValidHost, hostFormValue);
-          yield call(setToStorage, 'jira_credentials', { host: host.origin });
+          yield call(setToStorage, 'jira_credentials', { host: host.href });
           const isPaidChronosUser = yield call(Api.checkUserPlan, { host: host.hostname });
           yield put(profileActions.setIsPaidUser(isPaidChronosUser));
           yield put(profileActions.setHost(host));
