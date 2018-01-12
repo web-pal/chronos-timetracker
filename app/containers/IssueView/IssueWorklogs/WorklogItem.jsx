@@ -15,7 +15,12 @@ import {
   WorklogContainer,
   UserAvatar,
   WorklogActions,
+  Edited,
 } from './styled';
+
+const isEdited = (worklog: Worklog) => (
+  moment(worklog.created).format('D/M/H/m') !== moment(worklog.updated).format('D/M/H/m')
+);
 
 type Props = {
   style: any,
@@ -37,6 +42,9 @@ const WorklogItem: StatelessFunctionalComponent<Props> = ({
       <UserAvatar src={worklog.author.avatarUrls['32x32']} />
       {worklog.author.displayName} logged
       work – {moment(worklog.started).format('DD/MMM/YY h:mm A')}
+      {isEdited(worklog) && (
+        <Edited>- <span>edited</span></Edited>
+      )}
       <WorklogActions>
         <Tooltip description="Open worklog in JIRA" position="left">
           <LinkIcon

@@ -133,3 +133,10 @@ export const WorklogActions = styled.div`
     }
   }
 `;
+
+export const Edited = styled.span`
+  margin-left: 5px;
+  span {
+    color: #d41919;
+  }
+`;
