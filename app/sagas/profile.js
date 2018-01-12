@@ -73,22 +73,24 @@ function* clearLoginError(): Generator<*, void, *> {
 }
 
 function identifyInSentryAndMixpanel(host: URL, userData: User): void {
-  mixpanel.identify((`${host.origin} - ${userData.emailAddress}`));
-  mixpanel.people.set({
-    host: host.origin,
-    locale: userData.locale,
-    $timezone: userData.timeZone,
-    $name: userData.displayName,
-    $email: userData.emailAddress,
-    $distinct_id: `${host.origin} - ${userData.emailAddress}`,
-  });
-  Raven.setUserContext({
-    host: host.origin,
-    locale: userData.locale,
-    timeZone: userData.timeZone,
-    name: userData.displayName,
-    email: userData.emailAddress,
-  });
+  if (process.env.DISABLE_MIXPANEL !== '1') {
+    mixpanel.identify((`${host.origin} - ${userData.emailAddress}`));
+    mixpanel.people.set({
+      host: host.origin,
+      locale: userData.locale,
+      $timezone: userData.timeZone,
+      $name: userData.displayName,
+      $email: userData.emailAddress,
+      $distinct_id: `${host.origin} - ${userData.emailAddress}`,
+    });
+    Raven.setUserContext({
+      host: host.origin,
+      locale: userData.locale,
+      timeZone: userData.timeZone,
+      name: userData.displayName,
+      email: userData.emailAddress,
+    });
+  }
 }
 
 function* jiraLogin(values: AuthFormData): Generator<*, boolean, *> {
@@ -311,7 +313,7 @@ export function* watchSetAuthFormStep(): Generator<*, void, *> {
       if (hostFormValue) {
         try {
           const host = yield call(transformValidHost, hostFormValue);
-          yield call(setToStorage, 'jira_credentials', { host: host.origin });
+          yield call(setToStorage, 'jira_credentials', { host: host.href });
           const isPaidChronosUser = yield call(Api.checkUserPlan, { host: host.hostname });
           yield put(profileActions.setIsPaidUser(isPaidChronosUser));
           yield put(profileActions.setHost(host));
