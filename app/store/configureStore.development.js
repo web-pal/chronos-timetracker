@@ -17,7 +17,7 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 export default function configureStore(initialState) {
   const sagaMiddleware = createSagaMiddleware();
   const enhancer = composeEnhancers(
-    applyMiddleware(sagaMiddleware),
+    applyMiddleware(sagaMiddleware, logger),
   );
   const store = createStore(
     rootReducer,
