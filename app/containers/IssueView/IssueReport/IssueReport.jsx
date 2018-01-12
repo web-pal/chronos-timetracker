@@ -48,9 +48,9 @@ const IssueReport: StatelessFunctionalComponent<Props> = ({
   selfKey,
   host,
 }: Props): Node => {
-  const estimate = selectedIssue.fields.timeestimate || 0;
   const loggedTotal = selectedIssue.fields.timespent || 0;
-  const remaining = estimate - loggedTotal < 0 ? 0 : estimate - loggedTotal;
+  const remaining = selectedIssue.fields.timeestimate || 0;
+  const estimate = remaining - loggedTotal < 0 ? 0 : remaining - loggedTotal;
 
   const { worklogs } = selectedIssue.fields.worklog;
 
