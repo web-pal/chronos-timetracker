@@ -25,6 +25,7 @@ import { issuesActions, types } from 'actions';
 import normalizePayload from 'normalize-util';
 
 import { throwError, infoLog, notify } from './ui';
+import { setToStorage, getFromStorage } from './storage';
 import { getAdditionalWorklogsForIssues } from './worklogs';
 
 import type {
@@ -293,15 +294,39 @@ export function* fetchIssueStatuses(): Generator<*, *, *> {
     let selectedProjectId = null;
     let issueTypes;
     let issueStatuses;
+    const lastFiltersSelected: IssueFilters | null = yield call(getFromStorage, 'lastFiltersSelected');
+
     if (selectedProjectType === 'project') {
       selectedProjectId = yield select(getSelectedProjectId);
       yield call(infoLog, `fetching issue statuses for project ${selectedProjectId}`);
       issueTypes = yield call(Api.fetchIssueTypes, selectedProjectId);
       issueStatuses = issueTypes[0].statuses;
+
+      if (lastFiltersSelected) {
+        const selectedTypes = issueTypes.reduce((results, type) => {
+          if (lastFiltersSelected.type.includes(type.id)) {
+            results.push(type.id);
+          }
+          return results;
+        }, []);
+        yield put(issuesActions.setIssuesFilter(selectedTypes, 'type'));
+      }
     } else {
-      yield call(infoLog, `fetching issue statuses for all projects`);
+      yield call(infoLog, 'fetching issue statuses for all projects');
       issueStatuses = yield call(Api.fetchIssueStatuses);
     }
+
+    if (lastFiltersSelected) {
+      const selectedStatuses = issueStatuses.reduce((results, status) => {
+        if (lastFiltersSelected.status.includes(status.id)) {
+          results.push(status.id);
+        }
+        return results;
+      }, []);
+      yield put(issuesActions.setIssuesFilter(selectedStatuses, 'status'));
+      yield put(issuesActions.setIssuesFilter(lastFiltersSelected.assignee, 'assignee'));
+    }
+
     yield call(infoLog, `got issue statuses for project ${selectedProjectId}`, issueStatuses);
     const normalizedData = normalizePayload(issueStatuses, 'issueStatuses');
     yield put(issuesActions.fillIssueStatuses(normalizedData));
@@ -332,6 +357,8 @@ export function* watchSidebarTabChange(): Generator<*, *, *> {
 function* handleIssueFiltersChange(): Generator<*, *, *> {
   yield call(delay, 500);
   yield put(issuesActions.fetchIssuesRequest({ startIndex: 0, stopIndex: 10, search: true }));
+  const filters: IssueFilters = yield select(getIssueFilters);
+  yield call(setToStorage, 'lastFiltersSelected', filters);
 }
 
 export function* watchFiltersChange(): Generator<*, *, *> {
