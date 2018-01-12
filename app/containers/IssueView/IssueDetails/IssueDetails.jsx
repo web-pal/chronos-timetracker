@@ -169,7 +169,7 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({ issue, epic }: Prop
           Description
         </strong>
         {issue.renderedFields
-          ?  <div
+          ? <div
             dangerouslySetInnerHTML={{
               __html: issue.renderedFields.description,
             }}

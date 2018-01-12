@@ -57,10 +57,10 @@ class EditWorklogModal extends Component<Props, State> {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.worklog) {
+    if (nextProps.worklog && !nextProps.fetching) {
       const { started, comment, timeSpent } = nextProps.worklog;
       this.setState({
-        date: moment(started).format(''),
+        date: moment(started).format('MM/DD/YYYY'),
         started: moment(started),
         timeSpent,
         comment,
@@ -68,8 +68,15 @@ class EditWorklogModal extends Component<Props, State> {
     }
   }
 
-  handleTimeChange = label => (value) => {
-    this.setState({ [label]: value });
+  handleDateChange = (date) => {
+    const started = moment(date);
+    started.set('hour', this.state.started.get('hour'));
+    started.set('minute', this.state.started.get('minute'));
+    this.setState({ date, started, calendarOpened: false });
+  }
+
+  handleTimeChange = (started) => {
+    this.setState({ started });
   }
 
   handleTotalSpentChange = (e) => {
@@ -119,6 +126,7 @@ class EditWorklogModal extends Component<Props, State> {
                     this.props.confirmEditWorklog({
                       ...worklog,
                       started: moment(started).utc().format().replace('Z', '.000+0000'),
+                      updated: moment().utc().format().replace('Z', '.000+0000'),
                       comment,
                       timeSpentSeconds: jts(timeSpent),
                       timeSpent,
@@ -192,7 +200,7 @@ class EditWorklogModal extends Component<Props, State> {
           {calendarOpened &&
             <CalendarContainer onClickOutside={() => this.setState({ calendarOpened: false })}>
               <Calendar
-                onUpdate={value => this.setState({ date: value, calendarOpened: false })}
+                onUpdate={this.handleDateChange}
               />
             </CalendarContainer>
           }
@@ -202,7 +210,7 @@ class EditWorklogModal extends Component<Props, State> {
             <InputLabel>Started</InputLabel>
             <TimePicker
               value={started}
-              onChange={this.handleTimeChange('started')}
+              onChange={this.handleTimeChange}
               className="TimePicker"
               popupClassName="TimePickerPopup"
               format="HH:mm"
