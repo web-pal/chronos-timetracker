@@ -3,6 +3,7 @@ import type { StatelessFunctionalComponent, Node } from 'react';
 
 import Tooltip from '@atlaskit/tooltip';
 import CommentIcon from '@atlaskit/icon/glyph/comment';
+import Button from '@atlaskit/button';
 import { Flex } from 'components';
 import {
   WorklogItemContainer,
@@ -13,13 +14,19 @@ import {
   IssueType,
 } from './styled';
 
-import type { Issue, SelectIssue, Worklog } from '../../../../types';
+import type {
+  Issue,
+  SelectIssue,
+  Worklog,
+  SetIssueViewTab,
+} from '../../../../types';
 
 type Props = {
   issue: Issue,
   worklog: Worklog,
   active: boolean,
   selectIssue: SelectIssue,
+  setIssueViewTab: SetIssueViewTab,
 }
 
 const WorklogItem: StatelessFunctionalComponent<Props> = ({
@@ -27,6 +34,7 @@ const WorklogItem: StatelessFunctionalComponent<Props> = ({
   issue,
   worklog,
   selectIssue,
+  setIssueViewTab,
 }: Props): Node =>
   <WorklogItemContainer
     isSelected={active}
@@ -47,6 +55,7 @@ const WorklogItem: StatelessFunctionalComponent<Props> = ({
             alt="type"
           />
         </Tooltip>
+        <IssueKey>{issue.key}</IssueKey>
         <IssueKey>{issue.key}</IssueKey>
         {/*
         <Tooltip
@@ -74,6 +83,9 @@ const WorklogItem: StatelessFunctionalComponent<Props> = ({
         }
       </IssueMeta>
     </Flex>
+    <Button onClick={() => setIssueViewTab('Worklogs')}>
+      show
+    </Button>
     <Time>{worklog.timeSpent}</Time>
   </WorklogItemContainer>;
 

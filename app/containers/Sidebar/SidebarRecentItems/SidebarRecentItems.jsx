@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import type { StatelessFunctionalComponent, Node } from 'react';
 import { Flex, RecentItemsPlaceholder } from 'components';
-import { issuesActions, worklogsActions } from 'actions';
+import { uiActions, issuesActions, worklogsActions } from 'actions';
 import {
   getRecentIssuesFetching,
   getSidebarType,
@@ -15,7 +15,13 @@ import {
 import TimestampItem from './SidebarTimestampItem';
 import WorklogItem from './WorklogItem/WorklogItem';
 
-import type { IssuesMap, SelectIssue, SelectWorklog, Id } from '../../../types';
+import type {
+  Id,
+  IssuesMap,
+  SelectIssue,
+  SelectWorklog,
+  SetIssueViewTab,
+} from '../../../types';
 
 import {
   RecentItemsContainer,
@@ -38,6 +44,7 @@ type Props = {
   sidebarType: string,
   selectIssue: SelectIssue,
   selectWorklog: SelectWorklog,
+  setIssueViewTab: SetIssueViewTab,
 }
 
 const daySorter = (a, b) => {
@@ -59,6 +66,7 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
   sidebarType,
   selectIssue,
   selectWorklog,
+  setIssueViewTab,
 }: Props): Node => (fetching ?
   <RecentItemsPlaceholder /> :
   <RecentItemsContainer style={{ display: sidebarType === 'recent' ? 'block' : 'none' }}>
@@ -81,6 +89,7 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
                   selectIssue(issue, worklog);
                   selectWorklog(worklog.id);
                 }}
+                setIssueViewTab={setIssueViewTab}
                 worklog={worklog}
               />)}
           </Flex>
@@ -99,7 +108,11 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ ...issuesActions, ...worklogsActions }, dispatch);
+  return bindActionCreators({
+    ...uiActions,
+    ...issuesActions,
+    ...worklogsActions,
+  }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SidebarRecentItems);
