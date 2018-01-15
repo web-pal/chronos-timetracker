@@ -1,5 +1,6 @@
 // @flow
 import type {
+  SetInitializeState, SetInitializeStateAction,
   SetAuthFormStep, SetAuthFormStepAction,
   SetSidebarType, SetSidebarTypeAction,
   SetIssueViewTab, SetIssueViewTabAction,
@@ -24,6 +25,13 @@ import type {
 } from '../types';
 
 import * as types from './actionTypes';
+
+export const setInitializeState: SetInitializeState = (
+  payload: boolean,
+): SetInitializeStateAction => ({
+  type: types.SET_INITIALIZE_PROCESS,
+  payload,
+});
 
 export const setAuthFormStep: SetAuthFormStep = (
   payload: AuthFormStep,

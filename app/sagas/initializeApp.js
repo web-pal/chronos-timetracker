@@ -1,11 +1,21 @@
-import { call, put } from 'redux-saga/effects';
-import { ipcRenderer } from 'electron';
-import { uiActions, profileActions } from 'actions';
+// @flow
+import {
+  call,
+  put,
+} from 'redux-saga/effects';
+import {
+  ipcRenderer,
+} from 'electron';
+import {
+  uiActions,
+  profileActions,
+} from 'actions';
 import { initialize } from 'redux-form';
 
 import { getFromStorage } from './storage';
 
 export default function* initializeApp(): Generator<*, void, *> {
+  yield put(uiActions.setInitializeState(true));
   const credentials = yield call(getFromStorage, 'jira_credentials');
   if (credentials) {
     const { host, username } = credentials;
@@ -24,6 +34,9 @@ export default function* initializeApp(): Generator<*, void, *> {
     } else if (host) {
       yield put(initialize('auth', { host }));
       yield put(uiActions.setAuthFormStep(2));
+      yield put(uiActions.setInitializeState(false));
     }
+  } else {
+    yield put(uiActions.setInitializeState(false));
   }
 }
