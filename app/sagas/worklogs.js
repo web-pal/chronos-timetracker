@@ -64,7 +64,12 @@ export function* uploadWorklog(options: UploadWorklogOptions): Generator<*, *, *
       keepedIdles,
     }:
     UploadWorklogOptions = options;
-    const started = moment().utc().format().replace('Z', '.000+0000');
+    const started = moment()
+      .subtract({ seconds: timeSpentSeconds })
+      .utc()
+      .format()
+      .replace('Z', '.000+0000');
+
     // if timeSpentSeconds is less than a minute JIRA wont upload it so cancel
     if (timeSpentSeconds < 60) {
       yield call(
