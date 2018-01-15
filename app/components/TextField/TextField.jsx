@@ -6,6 +6,8 @@ import { FieldBaseStateless } from '@atlaskit/field-base';
 export default class extends PureComponent {
   static defaultProps = {
     onChange: () => {},
+    onFocus: () => {},
+    onBlur: () => {},
   }
 
   state = {
