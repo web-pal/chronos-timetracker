@@ -192,7 +192,9 @@ export function* loginFlow(): Generator<*, void, *> {
         }
       }
       yield put(profileActions.setLoginFetching(false));
+      yield put(uiActions.setInitializeState(false));
     } catch (err) {
+      yield put(uiActions.setInitializeState(false));
       yield put(profileActions.setLoginFetching(false));
       yield call(throwError, err);
       const humanReadableError = new Error('Can not authenticate user. Please try again');
@@ -271,9 +273,11 @@ export function* loginOAuthFlow(): Generator<*, void, *> {
 
       yield put(profileActions.fillUserData(userData));
 
+      yield put(uiActions.setInitializeState(false));
       yield call(afterLogin);
     } catch (err) {
       yield put(profileActions.setLoginFetching(false));
+      yield put(uiActions.setInitializeState(false));
       yield call(throwError, err);
       const humanReadableError = new Error('OAuth failed for unknown reason.');
       yield call(loginError, humanReadableError);

@@ -6,6 +6,7 @@ const initialState: UiState = {
   authFormStep: 1,
   sidebarType: 'all',
   issueViewTab: 'Details',
+  initializeInProcess: false,
   updateCheckRunning: false,
   updateAvailable: null,
   updateFetching: false,
@@ -23,6 +24,11 @@ const initialState: UiState = {
 
 export default function ui(state: UiState = initialState, action: Action) {
   switch (action.type) {
+    case types.SET_INITIALIZE_PROCESS:
+      return {
+        ...state,
+        initializeInProcess: action.payload,
+      };
     case types.SET_AUTH_FORM_STEP:
       return {
         ...state,

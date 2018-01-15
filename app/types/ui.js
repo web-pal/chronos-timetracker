@@ -54,6 +54,13 @@ export type UiState = {|
 |};
 
 //
+export type SetInitializeStateAction =
+  {| type: typeof types.SET_INITIALIZE_PROCESS, +payload: boolean |};
+
+export type SetInitializeState = {
+  (payload: boolean): SetInitializeStateAction
+};
+//
 export type SetAuthFormStepAction =
   {| type: typeof types.SET_AUTH_FORM_STEP, +payload: AuthFormStep |};
 
