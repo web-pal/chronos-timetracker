@@ -8,13 +8,16 @@ import { cogIcon } from 'data/svg';
 import { Flex } from 'components';
 import { profileActions, uiActions, settingsActions } from 'actions';
 import { shell } from 'electron';
-import mixpanel from 'mixpanel-browser';
 import {
   getUserData,
   getHost,
   getUpdateAvailable,
   getUpdateFetching,
 } from 'selectors';
+
+import {
+  trackMixpanel,
+} from '../../utils/stat';
 
 import {
   HeaderContainer,
@@ -77,7 +80,7 @@ const Header: StatelessFunctionalComponent<Props> = ({
         <DropdownItemGroup>
           <DropdownItem
             onClick={() => {
-              mixpanel.track('Opened Settings');
+              trackMixpanel('Opened Settings');
               setSettingsModalOpen(true);
             }}
           >
@@ -104,7 +107,7 @@ const Header: StatelessFunctionalComponent<Props> = ({
           {updateAvailable && !updateFetching && [
             <DropdownUpdateItem
               onClick={() => {
-                mixpanel.track('Clicked "Install Update"', { upcomingVersion: updateAvailable });
+                trackMixpanel('Clicked "Install Update"', { upcomingVersion: updateAvailable });
                 setSettingsModalOpen(true);
                 setSettingsModalTab('Updates');
               }}

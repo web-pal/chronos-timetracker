@@ -16,8 +16,11 @@ import {
 } from 'selectors';
 import moment from 'moment';
 import { jts } from 'time-util';
-import mixpanel from 'mixpanel-browser';
 
+import {
+  trackMixpanel,
+  incrementMixpanel,
+} from '../utils/stat';
 import { getFromStorage, setToStorage } from './storage';
 import { throwError, notify, infoLog } from './ui';
 import type { Id, Worklog, DeleteWorklogRequestAction, EditWorklogRequestAction, Issue } from '../types';
@@ -101,8 +104,8 @@ export function* uploadWorklog(options: UploadWorklogOptions): Generator<*, *, *
       keepedIdles,
     };
     yield call(Api.chronosBackendUploadWorklog, backendUploadOptions);
-    mixpanel.track('Worklog uploaded (Automatic)', { timeSpentSeconds });
-    mixpanel.people.increment('Logged time(seconds)', timeSpentSeconds);
+    trackMixpanel('Worklog uploaded (Automatic)', { timeSpentSeconds });
+    incrementMixpanel('Logged time(seconds)', timeSpentSeconds);
     yield call(notify, '', 'Worklog is uploaded');
     yield call(
       infoLog,
@@ -217,8 +220,8 @@ export function* addManualWorklogFlow(): Generator<*, *, *> {
       const newWorklog = yield call(Api.addWorklog, jiraUploadOptions);
       yield put(worklogsActions.setEditWorklogFetching(false));
       yield put(uiActions.setWorklogModalOpen(false));
-      mixpanel.track('Worklog uploaded (Manual)', { timeSpentSeconds });
-      mixpanel.people.increment('Logged time(seconds)', timeSpentSeconds);
+      trackMixpanel('Worklog uploaded (Manual)', { timeSpentSeconds });
+      incrementMixpanel('Logged time(seconds)', timeSpentSeconds);
       yield call(delay, 1000);
       yield call(notify, '', 'Manual worklog succesfully added');
       const newIssue = {

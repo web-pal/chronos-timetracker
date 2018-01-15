@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
-import { FieldTextStateless } from '@atlaskit/field-text';
+import Input from '@atlaskit/input';
+import { FieldBaseStateless } from '@atlaskit/field-base';
 
 /* eslint-disable react/prop-types */
 export default class extends PureComponent {
@@ -28,12 +29,16 @@ export default class extends PureComponent {
 
   render() {
     return (
-      <FieldTextStateless
+      <FieldBaseStateless
         {...this.props}
-        value={this.state.value}
-        onChange={this.handleOnChange}
-        ref={(fieldRef) => { this.input = fieldRef; }}
-      />
+      >
+        <Input
+          isEditing
+          ref={(fieldRef) => { this.input = fieldRef; }}
+          onChange={this.handleOnChange}
+          value={this.state.value}
+        />
+      </FieldBaseStateless>
     );
   }
 }
