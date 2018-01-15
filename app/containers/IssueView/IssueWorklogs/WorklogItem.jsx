@@ -24,6 +24,7 @@ const isEdited = (worklog: Worklog) => (
 
 type Props = {
   style: any,
+  selected: boolean,
   worklog: Worklog,
   issueKey: string,
   deleteWorklogRequest: DeleteWorklogRequest,
@@ -32,12 +33,13 @@ type Props = {
 
 const WorklogItem: StatelessFunctionalComponent<Props> = ({
   style,
+  selected,
   worklog,
   issueKey,
   deleteWorklogRequest,
   editWorklogRequest,
 }: Props): Node => (
-  <WorklogContainer id={`worklog-${worklog.id}`} style={style}>
+  <WorklogContainer selected={selected} id={`worklog-${worklog.id}`} style={style}>
     <Flex row alignCenter style={{ padding: 10 }}>
       <UserAvatar src={worklog.author.avatarUrls['32x32']} />
       {worklog.author.displayName} logged

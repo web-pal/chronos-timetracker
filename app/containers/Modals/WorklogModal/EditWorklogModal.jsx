@@ -57,6 +57,12 @@ class EditWorklogModal extends Component<Props, State> {
   }
 
   componentWillReceiveProps(nextProps) {
+    if (nextProps.isOpen && !this.props.isOpen) {
+      setTimeout(() => {
+        if (this.comment) this.comment.focus();
+      }, 10);
+    }
+
     if (nextProps.worklog && !nextProps.fetching) {
       const { started, comment, timeSpent } = nextProps.worklog;
       this.setState({
@@ -131,6 +137,7 @@ class EditWorklogModal extends Component<Props, State> {
                       timeSpentSeconds: jts(timeSpent),
                       timeSpent,
                     });
+                    this.setState({ comment: '' });
                   }}
                   iconAfter={fetching ? <Spinner invertColor /> : null}
                 >
@@ -224,6 +231,7 @@ class EditWorklogModal extends Component<Props, State> {
             label="Worklog comment"
             value={comment}
             onChange={ev => this.setState({ comment: ev.target.value })}
+            ref={(c) => { this.comment = c; }}
           />
         </ModalContentContainer>
       </ModalDialog>

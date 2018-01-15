@@ -116,14 +116,6 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
     </Flex>
     <Flex row>
       <ButtonGroup>
-        {/*
-        <Button>
-          Comment
-        </Button>
-          <Button>
-            Add to favorites
-          </Button>
-        */}
         <Button onClick={() => setWorklogModalOpen(true)}>
           Log work
         </Button>

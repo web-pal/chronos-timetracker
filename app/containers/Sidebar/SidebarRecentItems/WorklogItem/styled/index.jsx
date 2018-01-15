@@ -9,8 +9,20 @@ export const WorklogItemContainer = styled.div`
   background: white;
   border-bottom: 1px solid #dfe1e6;
   cursor: pointer;
+
+  button {
+    opacity: 0;
+    align-self: center;
+    margin-left: auto;
+    margin-right: 10px;
+  }
+
   :hover {
     background-color: #EBECF0;
+
+    button {
+      opacity: 1;
+    }
   }
   ${props => props.isSelected && `
     background-color: #ebf2f9;

@@ -5,3 +5,10 @@ export const AppWrapper = styled.div`
   height: 100%;
   overflow: hidden;
 `;
+
+export const FullPageSpinner = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+`;

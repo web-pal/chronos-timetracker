@@ -51,6 +51,14 @@ class WorklogModal extends Component<Props, State> {
     jiraTimeError: null,
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.isOpen && !this.props.isOpen) {
+      setTimeout(() => {
+        if (this.comment) this.comment.focus();
+      }, 10);
+    }
+  }
+
   handleTimeChange = label => (value) => {
     this.setState({ [label]: value });
   }
@@ -104,6 +112,7 @@ class WorklogModal extends Component<Props, State> {
                       comment,
                       date,
                     });
+                    this.setState({ comment: '' });
                   }}
                   iconAfter={fetching ? <Spinner invertColor /> : null}
                 >
@@ -197,6 +206,7 @@ class WorklogModal extends Component<Props, State> {
             label="Worklog comment"
             value={comment}
             onChange={ev => this.setState({ comment: ev.target.value })}
+            ref={(c) => { this.comment = c; }}
           />
         </ModalContentContainer>
       </ModalDialog>

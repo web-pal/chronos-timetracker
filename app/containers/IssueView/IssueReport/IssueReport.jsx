@@ -48,11 +48,13 @@ const IssueReport: StatelessFunctionalComponent<Props> = ({
   selfKey,
   host,
 }: Props): Node => {
-  const loggedTotal = selectedIssue.fields.timespent || 0;
+  const timespent = selectedIssue.fields.timespent || 0;
   const remaining = selectedIssue.fields.timeestimate || 0;
-  const estimate = remaining - loggedTotal < 0 ? 0 : remaining - loggedTotal;
+  const estimate = remaining - timespent < 0 ? 0 : remaining - timespent;
 
   const { worklogs } = selectedIssue.fields.worklog;
+
+  const loggedTotal = worklogs.reduce((v, w) => v + w.timeSpentSeconds, 0);
 
   const yourWorklogs = worklogs.filter(w => w.author.key === selfKey);
 

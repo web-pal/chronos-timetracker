@@ -383,11 +383,6 @@ export function* issueSelectFlow({ payload, meta }: SelectIssueAction): Generato
     const worklogEl = document.querySelector(`#worklog-${meta.id}`);
     if (worklogEl) {
       worklogEl.scrollIntoView({ behavior: 'smooth' });
-      worklogEl.className += ' blink';
-      yield call(delay, 2000);
-      if (worklogEl) {
-        worklogEl.className = worklogEl.className.slice(0, -6);
-      }
     }
   }
 }

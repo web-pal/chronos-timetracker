@@ -107,6 +107,7 @@ export const Button = styled.div`
 export const WorklogContainer = styled.div`
   display: flex;
   flex-flow: column nowrap;
+  background-color: ${props => (props.selected ? '#f4f5f7' : 'transparent')};
   &:hover {
     background-color: #f4f5f7 !important;
   };
@@ -137,6 +138,6 @@ export const WorklogActions = styled.div`
 export const Edited = styled.span`
   margin-left: 5px;
   span {
-    color: #d41919;
+    color: #de350b;
   }
 `;
