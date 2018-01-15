@@ -137,6 +137,7 @@ class EditWorklogModal extends Component<Props, State> {
                       timeSpentSeconds: jts(timeSpent),
                       timeSpent,
                     });
+                    this.setState({ comment: '' });
                   }}
                   iconAfter={fetching ? <Spinner invertColor /> : null}
                 >

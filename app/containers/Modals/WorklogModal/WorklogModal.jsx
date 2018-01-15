@@ -112,6 +112,7 @@ class WorklogModal extends Component<Props, State> {
                       comment,
                       date,
                     });
+                    this.setState({ comment: '' });
                   }}
                   iconAfter={fetching ? <Spinner invertColor /> : null}
                 >
