@@ -4,16 +4,21 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import type { StatelessFunctionalComponent, Node } from 'react';
 import { Flex, AutosizableList as List } from 'components';
-import { getSelectedIssue, getWorklogListScrollIndex } from 'selectors';
 import { worklogsActions } from 'actions';
 import { noIssuesImage } from 'data/assets';
 import { H600 } from 'styles/typography';
+import {
+  getSelectedIssue,
+  getWorklogListScrollIndex,
+  getSelectedWorklogId,
+} from 'selectors';
 
 import WorklogItem from './WorklogItem';
 
-import type { Issue, DeleteWorklogRequest, EditWorklogRequest } from '../../../types';
+import type { Id, Issue, DeleteWorklogRequest, EditWorklogRequest } from '../../../types';
 
 type Props = {
+  selectedWorklogId: Id | null,
   selectedIssue: Issue,
   scrollIndex: number,
   deleteWorklogRequest: DeleteWorklogRequest,
@@ -21,6 +26,7 @@ type Props = {
 };
 
 const IssueWorklogs: StatelessFunctionalComponent<Props> = ({
+  selectedWorklogId,
   selectedIssue,
   scrollIndex,
   deleteWorklogRequest,
@@ -39,6 +45,7 @@ const IssueWorklogs: StatelessFunctionalComponent<Props> = ({
                 style={style}
                 key={key}
                 worklog={worklog}
+                selected={selectedWorklogId === worklog.id}
                 issueKey={selectedIssue.key}
                 deleteWorklogRequest={deleteWorklogRequest}
                 editWorklogRequest={editWorklogRequest}
@@ -65,6 +72,7 @@ const IssueWorklogs: StatelessFunctionalComponent<Props> = ({
 
 function mapStateToProps(state) {
   return {
+    selectedWorklogId: getSelectedWorklogId(state),
     selectedIssue: getSelectedIssue(state),
     scrollIndex: getWorklogListScrollIndex(state),
   };
