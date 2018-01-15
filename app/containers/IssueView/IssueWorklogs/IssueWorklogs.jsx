@@ -40,7 +40,10 @@ const IssueWorklogs: StatelessFunctionalComponent<Props> = ({
             rowCount: selectedIssue.fields.worklog.worklogs.length,
             rowHeight: 120,
             rowRenderer: ({ index, key, style }: { index: number, key: string, style: any }) => {
-              const worklog = selectedIssue.fields.worklog.worklogs[index];
+              const worklog = selectedIssue.fields.worklog.worklogs.sort(
+                (left, right) => left.id < right.id,
+              )[index];
+
               return <WorklogItem
                 style={style}
                 key={key}
