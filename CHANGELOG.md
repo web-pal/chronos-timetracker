@@ -1,3 +1,19 @@
+<a name="2.4.3"></a>
+## [2.4.3](https://github.com/web-pal/chronos-timetracker/compare/v2.4.2...v2.4.3) (2018-01-15)
+
+
+### Bug Fixes
+
+* **Browsing Issues:** show button on Recent worklogs ([#40](https://github.com/web-pal/chronos-timetracker/issues/40)) ([4ee4b5b](https://github.com/web-pal/chronos-timetracker/commit/4ee4b5b)), closes [#28](https://github.com/web-pal/chronos-timetracker/issues/28)
+* **Browsing Issues:** sort descending worklogs by date ([#42](https://github.com/web-pal/chronos-timetracker/issues/42)) ([2c512fb](https://github.com/web-pal/chronos-timetracker/commit/2c512fb)), closes [#25](https://github.com/web-pal/chronos-timetracker/issues/25)
+* **Issue Detail View:** constantly highlight selected worklog from recent worklogs ([#39](https://github.com/web-pal/chronos-timetracker/issues/39)) ([73a33c3](https://github.com/web-pal/chronos-timetracker/commit/73a33c3)), closes [#27](https://github.com/web-pal/chronos-timetracker/issues/27)
+* **Issue Detail View:** total logged not updated after loading worklog ([#37](https://github.com/web-pal/chronos-timetracker/issues/37)) ([eb66e86](https://github.com/web-pal/chronos-timetracker/commit/eb66e86)), closes [#14](https://github.com/web-pal/chronos-timetracker/issues/14)
+* **Tracking:** autofocus on worklog comment input ([#38](https://github.com/web-pal/chronos-timetracker/issues/38)) ([076554f](https://github.com/web-pal/chronos-timetracker/commit/076554f)), closes [#15](https://github.com/web-pal/chronos-timetracker/issues/15)
+* **Tracking:** clear worklog comment after log work action ([#41](https://github.com/web-pal/chronos-timetracker/issues/41)) ([17dfb29](https://github.com/web-pal/chronos-timetracker/commit/17dfb29)), closes [#17](https://github.com/web-pal/chronos-timetracker/issues/17)
+* **Tracking:** worklog start time is saved as if it had started when we hit the stop button. ([#36](https://github.com/web-pal/chronos-timetracker/issues/36)) ([a1ec27b](https://github.com/web-pal/chronos-timetracker/commit/a1ec27b)), closes [#35](https://github.com/web-pal/chronos-timetracker/issues/35)
+
+
+
 <a name="2.4.0"></a>
 # [2.4.0](https://github.com/web-pal/chronos-app-jira/compare/2.3.4...2.4.0) (2017-11-29)
 
