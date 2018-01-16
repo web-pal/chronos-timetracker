@@ -1,3 +1,13 @@
+<a name="2.4.4"></a>
+## [2.4.4](https://github.com/web-pal/chronos-timetracker/compare/v2.4.3...v2.4.4) (2018-01-16)
+
+
+### Bug Fixes
+
+* **Browsing Issues:** fix worklog scroll ([#45](https://github.com/web-pal/chronos-timetracker/issues/45)) ([a4d8bf9](https://github.com/web-pal/chronos-timetracker/commit/a4d8bf9))
+* **Authorization:** refactoring auth sagas
+
+
 <a name="2.4.3"></a>
 ## [2.4.3](https://github.com/web-pal/chronos-timetracker/compare/v2.4.2...v2.4.3) (2018-01-15)
 
