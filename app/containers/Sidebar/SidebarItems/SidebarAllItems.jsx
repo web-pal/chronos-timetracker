@@ -66,7 +66,7 @@ const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
       rowRenderer: ({ index, key, style }) => {
         const item: ?Issue = items[index];
         if (searching && fetching) {
-          return <IssueItemPlaceholder />;
+          return <IssueItemPlaceholder key={key} />;
         }
 
         return (
