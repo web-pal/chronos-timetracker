@@ -3,6 +3,7 @@ import {
   call,
   put,
   fork,
+  cancel,
 } from 'redux-saga/effects';
 import {
   ipcRenderer,
@@ -29,6 +30,10 @@ import {
 import {
   transformValidHost,
 } from './auth';
+import {
+  throwError,
+  infoLog,
+} from './ui';
 import jira from '../utils/jiraClient';
 
 import type {
@@ -57,11 +62,24 @@ function identifyInSentryAndMixpanel(host: URL, userData: User): void {
   }
 }
 
+function* initializeMixpanel(): Generator<*, void, *> {
+  if (process.env.DISABLE_MIXPANEL === '1') {
+    yield call(infoLog, 'mixpanel disabled with ENV var');
+    yield cancel();
+  }
+  if (!process.env.MIXPANEL_API_TOKEN) {
+    yield call(throwError, 'MIXPANEL_API_TOKEN not set!');
+    yield cancel();
+  }
+  yield call(mixpanel.init, process.env.MIXPANEL_API_TOKEN);
+}
+
 export function* initialConfigureApp({
   host,
 }): Generator<*, void, *> {
   const userData: User = yield call(Api.jiraProfile);
 
+  yield call(initializeMixpanel);
   yield call(identifyInSentryAndMixpanel, host, userData);
 
   let settings = yield call(getFromStorage, 'localDesktopSettings');

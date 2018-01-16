@@ -91,7 +91,7 @@ export function* basicAuthLoginForm(): Generator<*, void, *> {
           host: payload.host,
         },
       );
-      yield call(initialConfigureApp, { host });
+      yield call(initialConfigureApp, { host: host.hostname });
       yield put(authActions.setLoginFetching(false));
     } catch (err) {
       yield put(authActions.setLoginFetching(false));
