@@ -6,7 +6,6 @@ import merge from 'lodash.merge';
 import Raven from 'raven-js';
 import {
   getSelectedProject,
-  getSelectedBoard,
   getSelectedProjectId,
   getSelectedSprintId,
   getFieldIdByName,

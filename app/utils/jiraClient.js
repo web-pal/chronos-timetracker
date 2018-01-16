@@ -4,25 +4,37 @@ import JiraClient from 'jira-connector';
 class JiraClientWrapper {
   constructor() {
     this.client = null;
-    this.auth = this.auth.bind(this);
+    this.basicAuth = this.basicAuth.bind(this);
     this.oauth = this.oauth.bind(this);
   }
 
-  auth(host, username, password, port = '443', protocol = 'https') {
+  basicAuth({
+    host,
+    username,
+    password,
+    port,
+    protocol,
+    path_prefix,
+  }) {
     const client = new JiraClient({
       host,
+      path_prefix,
+      port,
+      protocol,
       basic_auth: {
         username,
         password,
       },
-      port,
-      protocol,
     });
     this.client = client;
   }
 
+
   oauth({ host, oauth }) {
-    const client = new JiraClient({ host, oauth });
+    const client = new JiraClient({
+      host,
+      oauth,
+    });
     this.client = client;
   }
 

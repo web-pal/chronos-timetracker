@@ -1,5 +1,7 @@
 import styled from 'styled-components2';
-// all form related styles are located in Form.jsx
+import {
+  Flex,
+} from 'components';
 
 export const Container = styled.div`
   display: flex;
@@ -176,4 +178,11 @@ export const BackButtonContainer = styled.div`
   button {
     font-size: 12px !important;
   }
+`;
+
+export const ContentStep = styled(Flex).attrs({
+  column: true,
+  alignCenter: true,
+})`
+  width: 100%;
 `;

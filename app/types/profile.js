@@ -112,14 +112,6 @@ export type AcceptOAuth = {
 }
 
 //
-export type CheckJWTRequestAction =
- {| type: typeof types.CHECK_JWT_REQUEST |} & Action;
-
-export type CheckJWTRequest = {
-  (): CheckJWTRequestAction
-};
-
-//
 export type LogoutRequestAction =
  {| type: typeof types.LOGOUT_REQUEST |} & Action;
 
@@ -180,7 +172,6 @@ export type ProfileAction =
   | LoginOAuthRequestAction
   | DenyOAuthAction
   | AcceptOAuthAction
-  | CheckJWTRequestAction
   | LogoutRequestAction
   | SetAuthorizedAction
   | ThrowLoginErrorAction

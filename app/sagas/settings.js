@@ -1,4 +1,9 @@
-import { call, take, put, select, fork } from 'redux-saga/effects';
+import {
+  call,
+  take,
+  put,
+  select,
+} from 'redux-saga/effects';
 import * as Api from 'api';
 import { remote } from 'electron';
 import Raven from 'raven-js';
@@ -6,7 +11,10 @@ import { types, settingsActions, uiActions } from 'actions';
 import { getLocalDesktopSettings } from 'selectors';
 import { infoLog } from './ui';
 
-import { getFromStorage, setToStorage } from './storage';
+import {
+  setToStorage,
+} from './storage';
+
 
 export function* getSettings() {
   try {
@@ -56,41 +64,4 @@ export function* watchLocalDesktopSettingsChange() {
     );
     yield call(setToStorage, 'localDesktopSettings', newLocalSettings);
   }
-}
-
-export function* localDesktopSettingsFlow() {
-  yield take(types.REQUEST_LOCAL_DESKTOP_SETTINGS);
-  yield call(
-    infoLog,
-    'local desktop settings requested',
-  );
-  let settings = yield call(getFromStorage, 'localDesktopSettings');
-  yield call(
-    infoLog,
-    'got local desktop settings from storage',
-    settings,
-  );
-  if (!settings || !Object.keys(settings).length) {
-    settings = {
-      showScreenshotPreview: true,
-      screenshotPreviewTime: 15,
-      nativeNotifications: true,
-      updateChannel: 'stable',
-      autoCheckForUpdates: true,
-    };
-    yield call(
-      infoLog,
-      'local desktop settings is NULL, setting them to defaults',
-      settings,
-    );
-    yield call(setToStorage, 'localDesktopSettings', settings);
-  }
-
-  // backwards compatibility
-  if (!settings.updateChannel) settings.updateChannel = 'stable';
-  if (!settings.autoCheckForUpdates) settings.autoCheckForUpdates = true;
-  //
-
-  yield put(settingsActions.fillLocalDesktopSettings(settings));
-  yield fork(watchLocalDesktopSettingsChange);
 }
