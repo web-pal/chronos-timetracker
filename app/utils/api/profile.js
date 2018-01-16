@@ -21,7 +21,13 @@ export function jiraAuth({
   password: string,
 }): Promise<any> {
   const port = host.port.length ? host.port : '443';
-  jira.auth(host.hostname, username, password, port, host.protocol);
+  jira.auth(
+    host.hostname,
+    username,
+    password,
+    port,
+    host.protocol,
+  );
   return jiraProfile();
 }
 

@@ -1,6 +1,10 @@
 // @flow
-import { eventChannel } from 'redux-saga';
-import { ipcRenderer } from 'electron';
+import {
+  eventChannel,
+} from 'redux-saga';
+import {
+  ipcRenderer,
+} from 'electron';
 import EventEmitter from 'events';
 
 type Handler = {

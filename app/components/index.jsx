@@ -13,3 +13,4 @@ export Img from './Img';
 export Calendar from './Calendar';
 export TextField from './TextField';
 export SingleSelect from './SingleSelect';
+export * as ReduxFormComponents from './ReduxFormComponents';

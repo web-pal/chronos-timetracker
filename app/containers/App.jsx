@@ -10,6 +10,7 @@ import type {
 } from 'react';
 
 import {
+  MaxHeight,
   AppWrapper,
   FullPageSpinner,
 } from 'styles';
@@ -29,12 +30,12 @@ const App: StatelessFunctionalComponent<Props> = (props: Props): Node => (
       <FullPageSpinner>
         <Spinner size="xlarge" />
       </FullPageSpinner> :
-      <div>
+      <MaxHeight>
         {props.isAuthorized ?
           <Main /> :
           <AuthForm />
         }
-      </div>
+      </MaxHeight>
     }
   </AppWrapper>
 );

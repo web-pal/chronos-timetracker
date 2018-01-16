@@ -6,7 +6,12 @@ import { bindActionCreators } from 'redux';
 import DropdownMenu, { DropdownItemGroup, DropdownItem } from '@atlaskit/dropdown-menu';
 import { cogIcon } from 'data/svg';
 import { Flex } from 'components';
-import { profileActions, uiActions, settingsActions } from 'actions';
+import {
+  profileActions,
+  authActions,
+  uiActions,
+  settingsActions,
+} from 'actions';
 import { shell } from 'electron';
 import {
   getUserData,
@@ -93,16 +98,6 @@ const Header: StatelessFunctionalComponent<Props> = ({
           >
             Support and feedback
           </DropdownItem>
-          {/*
-          <DropdownItem onClick={() => setSupportModalOpen(true)}>
-            Support and feedback
-          </DropdownItem>
-          */}
-          {/* TODO: use link to the landing when it's there
-            <DropdownItem onClick={() => setAboutModalOpen(true)}>
-              About
-            </DropdownItem>
-          */}
           <DropdownSeparator />
           {updateAvailable && !updateFetching && [
             <DropdownUpdateItem
@@ -134,7 +129,12 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ ...profileActions, ...uiActions, ...settingsActions }, dispatch);
+  return bindActionCreators({
+    ...profileActions,
+    ...authActions,
+    ...uiActions,
+    ...settingsActions,
+  }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Header);

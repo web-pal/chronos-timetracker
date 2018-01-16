@@ -1,18 +1,37 @@
 // @flow
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { reduxForm, formValueSelector } from 'redux-form';
-import { ipcRenderer } from 'electron';
-import storage from 'electron-json-storage';
-import { Flex } from 'components';
-import { logoShadowed } from 'data/assets';
-import { profileActions, uiActions } from 'actions';
+import React from 'react';
+import {
+  connect,
+} from 'react-redux';
+import {
+  bindActionCreators,
+} from 'redux';
+import {
+  reduxForm,
+  formValueSelector,
+  FormProps,
+} from 'redux-form';
+
+import type {
+  Node,
+  StatelessFunctionalComponent,
+} from 'react';
+
+import {
+  Flex,
+} from 'components';
+import {
+  logoShadowed,
+} from 'data/assets';
+import {
+  profileActions,
+  authActions,
+  uiActions,
+} from 'actions';
 import {
   getAuthFormStep,
   getLoginError,
   getLoginFetching,
-  getIsPaidUser,
 } from 'selectors';
 import type {
   LoginRequest,
@@ -20,7 +39,6 @@ import type {
   DenyOAuth,
   AcceptOAuth,
   ThrowLoginError,
-  CheckJWTRequest,
   SetAuthFormStep,
 } from '../../types';
 
@@ -45,7 +63,6 @@ type Props = {
   denyOAuth: DenyOAuth,
   acceptOAuth: AcceptOAuth,
   throwLoginError: ThrowLoginError,
-  checkJWTRequest: CheckJWTRequest,
   setAuthFormStep: SetAuthFormStep,
   isPaidUser: boolean,
 
@@ -54,94 +71,67 @@ type Props = {
   loginError: string,
   fetching: boolean,
   handleSubmit: any,
-}
-// } & FormProps
+} & FormProps
 
-class AuthForm extends Component<Props> {
-  static defaultProps = {
-    host: '',
-  }
-
-  componentDidMount() {
-    storage.get('desktop_tracker_jwt', (err, token) => {
-      if (!err && token && Object.keys(token).length) {
-        this.props.checkJWTRequest();
-      }
-    });
-    ipcRenderer.on('oauth-accepted', this.onOauthAccepted);
-    ipcRenderer.on('oauth-denied', this.onOauthDenied);
-  }
-
-  componentWillUnmount() {
-    ipcRenderer.removeListener('oauth-accepted', this.onOauthAccepted);
-    ipcRenderer.removeListener('oauth-denied', this.onOauthDenied);
-  }
-
-  onOauthAccepted = (_, code) => {
-    this.props.acceptOAuth(code);
-  }
-
-  onOauthDenied = () => {
-    this.props.denyOAuth();
-  }
-
-  oAuth = () => {
-    if (this.props.host !== null && this.props.host.length) {
-      this.props.loginOAuthRequest(`${this.props.host}`);
-    } else {
-      this.props.throwLoginError('You need to fill JIRA host first');
-    }
-  }
-
-  render() {
-    const {
-      handleSubmit,
-      step,
-      setAuthFormStep,
-      loginError,
-      fetching,
-      isPaidUser,
-    } = this.props;
-
-    return (
-      <Container>
-        <Logo src={logoShadowed} alt="Chronos" />
-        <Flex column alignCenter>
-          <LoginInfo>Log in to your account</LoginInfo>
-          <ContentOuter>
-            <TeamStep
-              onContinue={() => setAuthFormStep(2)}
-              isActiveStep={step === 1}
-            />
-            <EmailStep
-              onContinue={handleSubmit(this.props.loginRequest)}
-              onJiraClick={this.oAuth}
-              loginError={loginError}
-              isActiveStep={step === 2}
-              onBack={() => setAuthFormStep(1)}
-              loginRequestInProcess={fetching}
-              isPaidUser={isPaidUser}
-            />
-          </ContentOuter>
-        </Flex>
-        <Hint>Can not log in?</Hint>
-      </Container>
-    );
-  }
-}
+const AuthForm: StatelessFunctionalComponent<Props> = ({
+  handleSubmit,
+  loginRequest,
+  loginOAuthRequest,
+  throwLoginError,
+  host,
+  step,
+  setAuthFormStep,
+  loginError,
+  fetching,
+  isPaidUser,
+}: Props): Node =>
+  <Container>
+    <Logo src={logoShadowed} alt="Chronos" />
+    <Flex column alignCenter>
+      <LoginInfo>Log in to your account</LoginInfo>
+      <ContentOuter>
+        <TeamStep
+          isActiveStep={step === 1}
+          onContinue={() => setAuthFormStep(2)}
+          loginError={loginError}
+        />
+        <EmailStep
+          isActiveStep={step === 2}
+          onContinue={handleSubmit(loginRequest)}
+          loginError={loginError}
+          onBack={() => setAuthFormStep(1)}
+          onJiraClick={() => {
+            if (host !== null && host.length) {
+              loginOAuthRequest(host);
+            } else {
+              throwLoginError('You need to fill JIRA host first');
+            }
+          }}
+          loginRequestInProcess={fetching}
+          isPaidUser={isPaidUser}
+        />
+      </ContentOuter>
+    </Flex>
+    <Hint>Can not log in?</Hint>
+  </Container>;
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ ...profileActions, ...uiActions }, dispatch);
+  return bindActionCreators({
+    ...profileActions,
+    ...authActions,
+    ...uiActions,
+  }, dispatch);
 }
 
+const selector = formValueSelector('auth');
 function mapStateToProps(state) {
-  const selector = formValueSelector('auth');
   return {
     host: selector(state, 'host'),
     step: getAuthFormStep(state),
     loginError: getLoginError(state),
     fetching: getLoginFetching(state),
-    isPaidUser: getIsPaidUser(state),
+    // Temporary block OAuth
+    isPaidUser: false,
   };
 }
 
