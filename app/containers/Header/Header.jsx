@@ -70,7 +70,7 @@ const Header: StatelessFunctionalComponent<Props> = ({
       <ProfilePicture src={userData.avatarUrls['48x48']} alt="" />
       <ProfileInfo>
         <Name>{userData.displayName}</Name>
-        <Team>{host.hostname}</Team>
+        <Team>{host}</Team>
       </ProfileInfo>
     </Flex>
     <Flex row style={{ position: 'relative' }}>
