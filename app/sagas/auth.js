@@ -177,21 +177,26 @@ export function* oAuthLoginForm(): Generator<*, void, *> {
 export function* logoutFlow(): Generator<*, *, *> {
   while (true) {
     yield take(types.LOGOUT_REQUEST);
-    const { getGlobal } = remote;
-    const { running, uploading } = getGlobal('sharedObj');
+    try {
+      const { getGlobal } = remote;
+      const { running, uploading } = getGlobal('sharedObj');
 
-    if (running) {
-      // eslint-disable-next-line no-alert
-      window.alert('Tracking in progress, save worklog before logout!');
-    }
-    if (uploading) {
-      // eslint-disable-next-line no-alert
-      window.alert('Currently app in process of saving worklog, wait few seconds please');
-    }
-    if (!running && !uploading) {
-      yield call(removeFromStorage, 'desktop_tracker_jwt');
-      yield call(removeFromStorage, 'jira_credentials');
-      yield put(clearAllReducers());
+      if (running) {
+        // eslint-disable-next-line no-alert
+        window.alert('Tracking in progress, save worklog before logout!');
+      }
+      if (uploading) {
+        // eslint-disable-next-line no-alert
+        window.alert('Currently app in process of saving worklog, wait few seconds please');
+      }
+      if (!running && !uploading) {
+        yield call(removeFromStorage, 'desktop_tracker_jwt');
+        yield call(removeFromStorage, 'jira_credentials');
+        yield put(clearAllReducers());
+      }
+    } catch (err) {
+      Raven.captureException(err);
+      console.log(err);
     }
   }
 }

@@ -1,11 +1,15 @@
 // @flow
 import React from 'react';
-import { ThemeProvider } from 'styled-components2';
+import {
+  ThemeProvider,
+} from 'styled-components2';
 import type {
   StatelessFunctionalComponent,
   Node,
 } from 'react';
-import { Flex } from 'components';
+import {
+  Flex,
+} from 'components';
 
 import {
   AlertModal,

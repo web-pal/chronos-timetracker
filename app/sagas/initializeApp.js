@@ -3,7 +3,6 @@ import {
   call,
   put,
   fork,
-  cancel,
 } from 'redux-saga/effects';
 import {
   ipcRenderer,
@@ -65,13 +64,13 @@ function identifyInSentryAndMixpanel(host: URL, userData: User): void {
 function* initializeMixpanel(): Generator<*, void, *> {
   if (process.env.DISABLE_MIXPANEL === '1') {
     yield call(infoLog, 'mixpanel disabled with ENV var');
-    yield cancel();
   }
   if (!process.env.MIXPANEL_API_TOKEN) {
     yield call(throwError, 'MIXPANEL_API_TOKEN not set!');
-    yield cancel();
   }
-  yield call(mixpanel.init, process.env.MIXPANEL_API_TOKEN);
+  if (process.env.DISABLE_MIXPANEL !== '1' && process.env.MIXPANEL_API_TOKEN) {
+    yield call(mixpanel.init, process.env.MIXPANEL_API_TOKEN);
+  }
 }
 
 export function* initialConfigureApp({
@@ -191,8 +190,9 @@ export function* initializeApp(): Generator<*, void, *> {
       yield call(loginFunc, authData);
       yield call(initialConfigureApp, { host: authData.host });
     }
-  } catch (e) {
-    console.log(e);
+  } catch (err) {
+    Raven.captureException(err);
+    console.log(err);
   }
   yield put(uiActions.setInitializeState(false));
 }
