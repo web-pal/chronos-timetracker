@@ -6,6 +6,10 @@ export const AppWrapper = styled.div`
   overflow: hidden;
 `;
 
+export const MaxHeight = styled.div`
+  height: 100%;
+`;
+
 export const FullPageSpinner = styled.div`
   display: flex;
   justify-content: center;
