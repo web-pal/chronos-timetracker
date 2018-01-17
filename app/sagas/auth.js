@@ -92,6 +92,7 @@ export function* basicAuthLoginForm(): Generator<*, void, *> {
         },
       );
       yield call(initialConfigureApp, { host: host.hostname });
+      yield call((): void => { ipcRenderer.sendSync('store-credentials', payload); });
       yield put(authActions.setLoginFetching(false));
     } catch (err) {
       yield put(authActions.setLoginFetching(false));
