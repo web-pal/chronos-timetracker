@@ -1,3 +1,16 @@
+<a name="2.4.6"></a>
+## [2.4.6](https://github.com/web-pal/chronos-timetracker/compare/v2.4.4...v2.4.6) (2018-01-18)
+
+
+### Bug Fixes
+
+* dev initMixpanel ([a0f58cb](https://github.com/web-pal/chronos-timetracker/commit/a0f58cb))
+* mixpanel init ([9713921](https://github.com/web-pal/chronos-timetracker/commit/9713921))
+* store-credentials ([b1735c7](https://github.com/web-pal/chronos-timetracker/commit/b1735c7))
+* **Authorization:** media for renderedFields ([3fae957](https://github.com/web-pal/chronos-timetracker/commit/3fae957)), closes [#21](https://github.com/web-pal/chronos-timetracker/issues/21)
+
+
+
 <a name="2.4.4"></a>
 ## [2.4.4](https://github.com/web-pal/chronos-timetracker/compare/v2.4.3...v2.4.4) (2018-01-16)
 
