@@ -136,7 +136,10 @@ function* getInitializeAppData(): Generator<*, void, *> {
     basicAuthCredentials.path_prefix = host.pathname;
     const passwordManagerCredentials = ipcRenderer.sendSync(
       'get-credentials',
-      basicAuthCredentials.username,
+      {
+        username: basicAuthCredentials.username,
+        host: host.hostname,
+      },
     );
     basicAuthCredentials.password = passwordManagerCredentials.password;
   }
