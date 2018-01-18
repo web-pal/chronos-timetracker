@@ -2,7 +2,16 @@
 import path from 'path';
 import keytar from 'keytar';
 import storage from 'electron-json-storage';
-import { app, Tray, Menu, MenuItem, ipcMain, BrowserWindow, screen } from 'electron';
+import {
+  app,
+  Tray,
+  Menu,
+  MenuItem,
+  ipcMain,
+  BrowserWindow,
+  screen,
+  session,
+} from 'electron';
 import notifier from 'node-notifier';
 import fs from 'fs';
 import MenuBuilder from './menu';
@@ -244,7 +253,7 @@ ipcMain.on('store-credentials', (event, credentials) => {
   event.returnValue = true; // eslint-disable-line no-param-reassign
 });
 
-ipcMain.on('get-credentials', (event, username) => {
+ipcMain.on('get-credentials', (event, { username, host }) => {
   keytar.getPassword('Chronos', username)
     .then(
       (password) => {
@@ -253,6 +262,21 @@ ipcMain.on('get-credentials', (event, username) => {
           password,
         };
         event.returnValue = credentials; // eslint-disable-line no-param-reassign
+        const filter = {
+          urls: [
+            '*://atlassian.net',
+            `*//${host}`,
+          ],
+        };
+        // Basic auth for jira links(media in renderedFields)
+        session.defaultSession.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
+          details.requestHeaders['Authorization'] = // eslint-disable-line
+            `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
+          callback({
+            cancel: false,
+            requestHeaders: details.requestHeaders,
+          });
+        });
       },
     );
 });
