@@ -19,7 +19,7 @@ let updateAvailableChannel;
 let updateNotAvailableChannel;
 let updateDownloadedChannel;
 
-autoUpdater.autoDownload = false;
+autoUpdater.autoDownload = true;
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
 
@@ -80,7 +80,7 @@ function* watchUpdateDownloaded(): Generator<*, *, *> {
     yield put(uiActions.setUpdateFetching(false));
     const { getGlobal } = remote;
     yield call(delay, 500);
-    if (window.confirm('App updated, restart now?')) {
+    if (window.confirm('New version is available. Do you like to install it now?')) {
       const { running, uploading } = getGlobal('sharedObj');
       if (uploading) {
         window.alert('Currently app in process of saving worklog, wait few seconds and restart app');

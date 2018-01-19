@@ -53,7 +53,6 @@ const UpdateSettings: StatelessFunctionalComponent<Props> = ({
                   appearance="primary"
                   onClick={installUpdateRequest}
                   iconAfter={updateFetching ? <Spinner invertColor /> : false}
-                  isDisabled={process.platform === 'linux'}
                 >
                   {updateFetching
                     ? 'Updating'
@@ -84,17 +83,6 @@ const UpdateSettings: StatelessFunctionalComponent<Props> = ({
             </Button>
           }
         </ButtonGroup>
-        {updateAvailable && process.platform === 'linux' &&
-          <H100 style={{
-              color: '#FFAB00',
-              fontWeight: 300,
-              fontSize: 10,
-              marginTop: 5,
-            }}
-          >
-            Sorry, linux auto-updating is not available now, please download release manually
-          </H100>
-        }
       </Flex>
       <Flex column>
         <H100 style={{ padding: '12px 0 6px 0' }}>
