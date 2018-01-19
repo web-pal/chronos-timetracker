@@ -52,7 +52,7 @@ electron-log@^2.2.9:
   version "2.2.14"
   resolved "https://registry.yarnpkg.com/electron-log/-/electron-log-2.2.14.tgz#2123319ccb8d70b0db07f0eda57d5823cb42b4b0"
 
-electron-updater@^2.18.2:
+electron-updater@^2.19.1:
   version "2.19.1"
   resolved "https://registry.yarnpkg.com/electron-updater/-/electron-updater-2.19.1.tgz#2265136b7ef15f7cb06e4032eaaf64382f642437"
   dependencies:

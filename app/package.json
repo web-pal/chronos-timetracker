@@ -17,7 +17,7 @@
   "dependencies": {
     "@paulcbetts/system-idle-time": "github:paulcbetts/node-system-idle-time",
     "electron-log": "^2.2.9",
-    "electron-updater": "^2.18.2",
+    "electron-updater": "^2.19.1",
     "keytar": "^4.0.5",
     "node-notifier": "^5.1.2"
   },
