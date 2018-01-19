@@ -1,3 +1,19 @@
+<a name="2.4.7"></a>
+## [2.4.7](https://github.com/web-pal/chronos-timetracker/compare/v2.4.6...v2.4.7) (2018-01-19)
+
+
+### Bug Fixes
+
+* **Authorization:** jira browser auth in first login ([0fae182](https://github.com/web-pal/chronos-timetracker/commit/0fae182))
+* turn on mixpanel ([94c4ada](https://github.com/web-pal/chronos-timetracker/commit/94c4ada))
+
+
+### Features
+
+* linux auto-updates ([cd47fd1](https://github.com/web-pal/chronos-timetracker/commit/cd47fd1))
+
+
+
 <a name="2.4.6"></a>
 ## [2.4.6](https://github.com/web-pal/chronos-timetracker/compare/v2.4.4...v2.4.6) (2018-01-18)
 
