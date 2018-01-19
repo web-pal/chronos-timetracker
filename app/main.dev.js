@@ -258,8 +258,8 @@ function authJiraBrowserRequests({
     authJiraBrowserRequestsCallbackIsSet = true;
     const filter = {
       urls: [
-        '*://atlassian.net',
-        `*//${host}`,
+        '*://atlassian.net/*',
+        `*://${host}/*`,
       ],
     };
     // Basic auth for jira links(media in renderedFields)
