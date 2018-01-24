@@ -31,6 +31,8 @@ export default class AkSingleSelect extends PureComponent {
     droplistShouldFitContainer: PropTypes.bool,
     /** Sets whether the field should be selectable. If it is, the field will be
     a text box, which will filter the items. */
+    isLoading: PropTypes.bool,
+    loadingMessage: PropTypes.string,
     hasAutocomplete: PropTypes.bool,
     /** id property to be passed down to the html select component. */
     id: PropTypes.string,
@@ -132,6 +134,8 @@ export default class AkSingleSelect extends PureComponent {
         droplistShouldFitContainer={this.props.droplistShouldFitContainer}
         filterValue={this.state.filterValue}
         hasAutocomplete={this.props.hasAutocomplete}
+        isLoading={this.props.isLoading}
+        loadingMessage={this.props.loadingMessage}
         id={this.props.id}
         isDisabled={this.props.isDisabled}
         isFirstChild={this.props.isFirstChild}

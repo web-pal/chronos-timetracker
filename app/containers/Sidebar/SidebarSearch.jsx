@@ -11,6 +11,8 @@ import {
   getFiltersApplied,
 } from 'selectors';
 
+import { refresh } from 'data/svg';
+
 import {
   SearchBar,
   SearchIcon,
@@ -64,20 +66,22 @@ const SidebarSearch: StatelessFunctionalComponent<Props> = ({
     />
     <SearchOptions>
       <RefreshIcon
-        label="Refresh"
-        size="medium"
+        alt="Refresh"
+        src={refresh}
         isFetching={fetching}
         onClick={() => {
           clearIssues();
           fetchIssuesRequest();
         }}
       />
-      <FilterIcon
-        label="Filter"
-        size="medium"
-        primaryColor={isSidebarFiltersOpen ? '#0052CC' : '#333333'}
-        onClick={() => setSidebarFiltersOpen(!isSidebarFiltersOpen)}
-      />
+      <span className="pointer">
+        <FilterIcon
+          label="Filter"
+          size="medium"
+          primaryColor={isSidebarFiltersOpen ? '#0052CC' : '#333333'}
+          onClick={() => setSidebarFiltersOpen(!isSidebarFiltersOpen)}
+        />
+      </span>
       {filtersApplied &&
         <FiltersAppliedBadge />
       }

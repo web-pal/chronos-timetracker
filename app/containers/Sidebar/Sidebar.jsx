@@ -1,10 +1,25 @@
 // @flow
 import React from 'react';
-import type { StatelessFunctionalComponent, Node } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { uiActions } from 'actions';
-import { getSidebarType, getSelectedProjectId, getSidebarFiltersOpen } from 'selectors';
+import {
+  connect,
+} from 'react-redux';
+import {
+  bindActionCreators,
+} from 'redux';
+
+import type {
+  StatelessFunctionalComponent,
+  Node,
+} from 'react';
+
+import {
+  uiActions,
+} from 'actions';
+import {
+  getSidebarType,
+  getSelectedProjectId,
+  getSidebarFiltersOpen,
+} from 'selectors';
 
 import ProjectPicker from './ProjectPicker';
 import SidebarHeader from './SidebarHeader';
@@ -12,9 +27,18 @@ import SidebarSearch from './SidebarSearch';
 import SidebarFilters from './SidebarFilters/SidebarFilters';
 import SidebarItems from './SidebarItems/SidebarItems';
 
-import { SidebarNothingSelected, SidebarWrapper, SidebarContainer } from './styled';
+import {
+  SidebarNothingSelected,
+  SidebarContainer,
+  SidebarList,
+} from './styled';
 
-import type { SetSidebarType, SidebarType, Id } from '../../types';
+import type {
+  SetSidebarType,
+  SidebarType,
+  Id,
+} from '../../types';
+
 
 type Props = {
   sidebarType: SidebarType,
@@ -29,13 +53,13 @@ const Sidebar: StatelessFunctionalComponent<Props> = ({
   selectedProjectId,
   sidebarFiltersOpen,
 }: Props): Node => (
-  <SidebarWrapper>
+  <SidebarContainer>
     <ProjectPicker />
     <SidebarHeader
       sidebarType={sidebarType}
       setSidebarType={setSidebarType}
     />
-    <SidebarContainer>
+    <SidebarList>
       {sidebarType === 'all' &&
         <SidebarSearch />
       }
@@ -48,8 +72,8 @@ const Sidebar: StatelessFunctionalComponent<Props> = ({
           <span>Select project from dropdown above</span>
         </SidebarNothingSelected>
       }
-    </SidebarContainer>
-  </SidebarWrapper>
+    </SidebarList>
+  </SidebarContainer>
 );
 
 function mapStateToProps(state) {

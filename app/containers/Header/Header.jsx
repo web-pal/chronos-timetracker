@@ -1,40 +1,56 @@
 // @flow
 import React from 'react';
-import type { StatelessFunctionalComponent, Node } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import DropdownMenu, { DropdownItemGroup, DropdownItem } from '@atlaskit/dropdown-menu';
-import { cogIcon } from 'data/svg';
-import { Flex } from 'components';
+import {
+  connect,
+} from 'react-redux';
+import {
+  bindActionCreators,
+} from 'redux';
+import DropdownMenu, {
+  DropdownItemGroup,
+  DropdownItem,
+} from '@atlaskit/dropdown-menu';
+import {
+  shell,
+} from 'electron';
+
+import type {
+  StatelessFunctionalComponent,
+  Node,
+} from 'react';
+
 import {
   profileActions,
   authActions,
   uiActions,
   settingsActions,
 } from 'actions';
-import { shell } from 'electron';
 import {
   getUserData,
   getHost,
   getUpdateAvailable,
   getUpdateFetching,
 } from 'selectors';
-
 import {
-  trackMixpanel,
-} from '../../utils/stat';
+  cogIcon,
+  refreshWhite,
+} from 'data/svg';
+import config from 'config';
 
 import {
   HeaderContainer,
-  Name,
+  ProfileContainer,
+  IconsContainer,
   ProfileInfo,
   SettingsIcon,
   ProfilePicture,
-  Team,
+  ProfileName,
+  ProfileTeam,
   DropdownSeparator,
   UpdateAvailableBadge,
   DropdownLogoutItem,
   DropdownUpdateItem,
+  RefreshIcon,
 } from './styled';
 
 import type {
@@ -44,6 +60,7 @@ import type {
   SetSettingsModalOpen,
   SetSettingsModalTab,
 } from '../../types';
+
 
 type Props = {
   userData: User,
@@ -66,43 +83,52 @@ const Header: StatelessFunctionalComponent<Props> = ({
   setSettingsModalTab,
 }: Props): Node =>
   <HeaderContainer className="webkit-drag">
-    <Flex row alignCenter>
-      <ProfilePicture src={userData.avatarUrls['48x48']} alt="" />
+    <ProfileContainer>
+      <ProfilePicture
+        src={userData.avatarUrls['48x48']}
+        alt="User avatar"
+      />
       <ProfileInfo>
-        <Name>{userData.displayName}</Name>
-        <Team>{host}</Team>
+        <ProfileName>
+          {userData.displayName}
+        </ProfileName>
+        <ProfileTeam>
+          {host}
+        </ProfileTeam>
       </ProfileInfo>
-    </Flex>
-    <Flex row style={{ position: 'relative' }}>
-      {updateAvailable &&
-        <UpdateAvailableBadge />
-      }
+    </ProfileContainer>
+
+    <IconsContainer>
+      <RefreshIcon
+        src={refreshWhite}
+        alt="Refresh"
+      />
+      {updateAvailable && <UpdateAvailableBadge />}
       <DropdownMenu
-        trigger={<SettingsIcon src={cogIcon} alt="" />}
         triggerType="default"
         position="bottom right"
+        trigger={
+          <SettingsIcon
+            src={cogIcon}
+            alt="Settings"
+          />
+        }
       >
         <DropdownItemGroup>
-          <DropdownItem
-            onClick={() => {
-              trackMixpanel('Opened Settings');
-              setSettingsModalOpen(true);
-            }}
-          >
+          <DropdownItem onClick={() => setSettingsModalOpen(true)}>
             Settings
           </DropdownItem>
-          <DropdownItem
-            onClick={() =>
-              shell.openExternal('https://web-pal.atlassian.net/servicedesk/customer/portal/2')
-            }
-          >
+          <DropdownItem onClick={() => shell.openExternal(config.supportLink)}>
             Support and feedback
           </DropdownItem>
+          <DropdownItem onClick={() => shell.openExternal(config.githubLink)}>
+            Github
+          </DropdownItem>
           <DropdownSeparator />
+
           {updateAvailable && !updateFetching && [
             <DropdownUpdateItem
               onClick={() => {
-                trackMixpanel('Clicked "Install Update"', { upcomingVersion: updateAvailable });
                 setSettingsModalOpen(true);
                 setSettingsModalTab('Updates');
               }}
@@ -111,13 +137,15 @@ const Header: StatelessFunctionalComponent<Props> = ({
             </DropdownUpdateItem>,
             <DropdownSeparator />,
           ]}
+
           <DropdownLogoutItem onClick={logoutRequest}>
             Logout
           </DropdownLogoutItem>
         </DropdownItemGroup>
       </DropdownMenu>
-    </Flex>
+    </IconsContainer>
   </HeaderContainer>;
+
 
 function mapStateToProps(state) {
   return {

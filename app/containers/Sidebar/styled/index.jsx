@@ -1,7 +1,6 @@
 import styled from 'styled-components2';
 import FilterIconAK from '@atlaskit/icon/glyph/filter';
 import SearchIconAK from '@atlaskit/icon/glyph/search';
-import RefreshIconAK from '@atlaskit/icon/glyph/refresh';
 
 export const SearchBar = styled.div`
   display: flex;
@@ -19,7 +18,7 @@ export const SearchIcon = styled(SearchIconAK)`
   height: 18px;
 `;
 
-export const RefreshIcon = styled(RefreshIconAK)`
+export const RefreshIcon = styled.img`
   @keyframes rotating {
     from {
       transform: rotate(0deg);
@@ -30,6 +29,8 @@ export const RefreshIcon = styled(RefreshIconAK)`
   }
 
   height: 16px;
+  margin-bottom: 2px;
+  margin-right: 4px;
   cursor: pointer;
   transition: transform .3s ease-in;
   :hover {
@@ -112,7 +113,7 @@ export const SidebarNothingSelected = styled.span`
   margin-top: 25px;
 `;
 
-export const SidebarWrapper = styled.div`
+export const SidebarContainer = styled.div`
   display: flex;
   flex-flow: column nowrap;
   height: 100%;
@@ -120,7 +121,7 @@ export const SidebarWrapper = styled.div`
   background: #fff;
 `;
 
-export const SidebarContainer = styled.div`
+export const SidebarList = styled.div`
   display: flex;
   flex-flow: column nowrap;
   word-break: normal;
