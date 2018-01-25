@@ -1,5 +1,6 @@
 import * as types from './actionTypes';
 import type {
+  FetchRecentIssuesRequest, FetchRecentIssuesRequestAction,
   FetchIssuesRequest, FetchIssuesRequestAction,
   FillIssues, FillIssuesAction,
   FillRecentIssueIds, FillRecentIssueIdsAction,
@@ -11,6 +12,7 @@ import type {
   ClearIssues, ClearIssuesAction,
   SetIssuesFetching, SetIssuesFetchingAction,
   SetRecentIssuesFetching, SetRecentIssuesFetchingAction,
+  SetRefetchIssuesIndicator, SetRefetchIssuesIndicatorAction,
   SetIssuesTotalCount, SetIssuesTotalCountAction,
   SelectIssue, SelectIssueAction,
   SetTrackingIssue, SetTrackingIssueAction,
@@ -38,12 +40,23 @@ export const fetchIssuesRequest: FetchIssuesRequest = (
   payload: {
     startIndex: number,
     stopIndex: number,
+    resolve: () => void,
     search: boolean,
-  } = { startIndex: 0, stopIndex: 10, search: false },
+  } = {
+    startIndex: 0,
+    stopIndex: 10,
+    resolve: null,
+    search: false,
+  },
 ): FetchIssuesRequestAction => ({
   type: types.FETCH_ISSUES_REQUEST,
   payload,
 });
+
+export const fetchRecentIssuesRequest: FetchRecentIssuesRequest =
+  (): FetchRecentIssuesRequestAction => ({
+    type: types.FETCH_RECENT_ISSUES_REQUEST,
+  });
 
 export const fillIssues: FillIssues = (
   payload: { ids: Array<Id>, map: IssuesMap },
@@ -116,6 +129,13 @@ export const setIssuesTotalCount: SetIssuesTotalCount = (
   payload: number,
 ): SetIssuesTotalCountAction => ({
   type: types.SET_ISSUES_TOTAL_COUNT,
+  payload,
+});
+
+export const setRefetchIssuesIndicator: SetRefetchIssuesIndicator = (
+  payload: boolean,
+): SetRefetchIssuesIndicatorAction => ({
+  type: types.SET_REFETCH_ISSUES_INDICATOR,
   payload,
 });
 

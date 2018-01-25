@@ -16,68 +16,64 @@ import {
   uiActions,
 } from 'actions';
 import {
+  getProjectsFetching,
   getSidebarType,
   getSelectedProjectId,
   getSidebarFiltersOpen,
 } from 'selectors';
 
 import ProjectPicker from './ProjectPicker';
-import SidebarHeader from './SidebarHeader';
-import SidebarSearch from './SidebarSearch';
-import SidebarFilters from './SidebarFilters/SidebarFilters';
-import SidebarItems from './SidebarItems/SidebarItems';
+import SidebarIssues from './SidebarIssues';
+import SidebarRecentWorklogs from './SidebarRecentWorklogs';
 
 import {
-  SidebarNothingSelected,
   SidebarContainer,
-  SidebarList,
+  TabContainer,
+  ListContainer,
+  Tab,
 } from './styled';
 
 import type {
   SetSidebarType,
   SidebarType,
-  Id,
 } from '../../types';
 
 
 type Props = {
   sidebarType: SidebarType,
   setSidebarType: SetSidebarType,
-  selectedProjectId: Id | null,
-  sidebarFiltersOpen: boolean,
 };
 
 const Sidebar: StatelessFunctionalComponent<Props> = ({
   sidebarType,
   setSidebarType,
-  selectedProjectId,
-  sidebarFiltersOpen,
 }: Props): Node => (
   <SidebarContainer>
     <ProjectPicker />
-    <SidebarHeader
-      sidebarType={sidebarType}
-      setSidebarType={setSidebarType}
-    />
-    <SidebarList>
-      {sidebarType === 'all' &&
-        <SidebarSearch />
-      }
-      {sidebarFiltersOpen &&
-        <SidebarFilters />
-      }
-      {selectedProjectId ?
-        <SidebarItems /> :
-        <SidebarNothingSelected>
-          <span>Select project from dropdown above</span>
-        </SidebarNothingSelected>
-      }
-    </SidebarList>
+    <TabContainer>
+      <Tab
+        active={sidebarType === 'recent'}
+        onClick={() => setSidebarType('recent')}
+      >
+        Recent worklogs
+      </Tab>
+      <Tab
+        active={sidebarType === 'all'}
+        onClick={() => setSidebarType('all')}
+      >
+        Issues
+      </Tab>
+    </TabContainer>
+    <ListContainer sidebarType={sidebarType}>
+      <SidebarRecentWorklogs />
+      <SidebarIssues />
+    </ListContainer>
   </SidebarContainer>
 );
 
 function mapStateToProps(state) {
   return {
+    projectsFetching: getProjectsFetching(state),
     sidebarType: getSidebarType(state),
     selectedProjectId: getSelectedProjectId(state),
     sidebarFiltersOpen: getSidebarFiltersOpen(state),

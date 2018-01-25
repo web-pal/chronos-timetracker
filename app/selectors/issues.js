@@ -35,6 +35,9 @@ export const getAllIssues = createSelector(
   (ids, map) => ids.map(id => map[id]),
 );
 
+export const getIssuesIndexedIds =
+  ({ issues }: { issues: IssuesState }): {[number]: Id} => issues.indexedIds;
+
 export const getIssueTypesIds =
   ({ issues }: { issues: IssuesState }): Array<Id> => issues.issueTypesIds;
 
@@ -61,12 +64,16 @@ export const getIssueStatuses = createSelector(
 );
 
 export const getSidebarIssues = createSelector(
-  [getAllIssues, getFoundIssueIds, getIssuesMap],
-  (allItems, foundIds, map) => {
+  [getIssuesIndexedIds, getFoundIssueIds, getIssuesMap],
+  (indexedIds, foundIds, map) => {
     if (foundIds.length > 0) {
       return foundIds.map(id => map[id]);
     }
-    return allItems;
+    return Object.keys(indexedIds).reduce((acc, index) => {
+      const id = indexedIds[index].toString();
+      acc[index] = map[id];
+      return acc;
+    }, {});
   },
 );
 

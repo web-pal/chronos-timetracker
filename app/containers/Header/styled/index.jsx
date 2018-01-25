@@ -47,15 +47,28 @@ export const ProfileInfo = styled.div`
 `;
 
 export const RefreshIcon = styled.img`
-  height: 22px;
+  @keyframes rotating {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  height: 20px;
   cursor: pointer;
-  transition: transform .5s ease-in-out;
+  // transition: transform .5s ease-in-out;
+  transition: transform .3s ease-in;
   -webkit-app-region: drag;
   user-select: none;
+  margin-top: 1px;
   margin-right: 8px;
   :hover {
-    transform: rotate(180deg);
+    transform: rotate(270deg);
   }
+  ${props => (props.isFetching ? `
+    animation: rotating 0.8s linear infinite;
+  ` : '')}
 `;
 
 export const SettingsIcon = styled.img`

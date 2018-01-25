@@ -2,6 +2,7 @@
 import type {
   FillUserData, FillUserDataAction,
   SetHost, SetHostAction,
+  SetProtocol, SetProtocolAction,
   SetIsPaidUser, SetIsPaidUserAction,
   User,
 } from '../types';
@@ -12,6 +13,13 @@ export const setHost: SetHost = (
   payload: URL,
 ): SetHostAction => ({
   type: types.SET_HOST,
+  payload,
+});
+
+export const setProtocol: SetProtocol = (
+  payload: string,
+): SetProtocolAction => ({
+  type: types.SET_PROTOCOL,
   payload,
 });
 

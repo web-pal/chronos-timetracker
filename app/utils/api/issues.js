@@ -78,6 +78,14 @@ export function fetchIssue(issueId: string): Promise<*> {
   });
 }
 
+export function fetchIssueByKey(issueKey: string): Promise<*> {
+  return jira.client.issue.getIssue({
+    issueKey,
+    fields: requiredFields,
+  });
+}
+
+
 export function fetchRecentIssues({
   projectId,
   projectType,

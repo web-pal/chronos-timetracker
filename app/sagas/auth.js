@@ -70,6 +70,7 @@ export function* basicAuthLoginForm(): Generator<*, void, *> {
     try {
       const { payload }: LoginRequestAction = yield take(types.LOGIN_REQUEST);
       const host = yield call(transformValidHost, payload.host);
+      const protocol = host.protocol.slice(0, -1);
 
       yield put(authActions.setLoginFetching(true));
       yield call(clearLoginError);
@@ -78,7 +79,7 @@ export function* basicAuthLoginForm(): Generator<*, void, *> {
         {
           ...payload,
           host: host.hostname,
-          protocol: host.protocol.slice(0, -1),
+          protocol,
           port: host.port,
           path_prefix: host.pathname,
         },
@@ -91,7 +92,7 @@ export function* basicAuthLoginForm(): Generator<*, void, *> {
           host: payload.host,
         },
       );
-      yield call(initialConfigureApp, { host: host.hostname });
+      yield call(initialConfigureApp, { host: host.hostname, protocol });
       yield call((): void => { ipcRenderer.sendSync('store-credentials', payload); });
       yield put(authActions.setLoginFetching(false));
     } catch (err) {

@@ -44,10 +44,8 @@ import type {
 
 import { validate } from './validation';
 
-import {
-  EmailStep,
-  TeamStep,
-} from './Steps';
+import EmailStep from './EmailStep';
+import TeamStep from './TeamStep';
 
 import {
   Hint,

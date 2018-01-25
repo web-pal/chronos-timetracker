@@ -1,21 +1,50 @@
 // @flow
-import { combineReducers } from 'redux';
+import {
+  combineReducers,
+} from 'redux';
+import * as R from 'ramda';
+
 import union from 'lodash.union';
 import merge from 'lodash.merge';
 import filter from 'lodash.filter';
-import { types } from 'actions';
+import {
+  types,
+} from 'actions';
+import type {
+  Id,
+  IssuesMap,
+  IssuesMeta,
+  IssueTypesMap,
+  IssueStatusesMap,
+} from '../types';
 
-import type { Id, IssuesMap, IssuesMeta, IssueTypesMap, IssueStatusesMap } from '../types';
 
 function allItems(state: Array<Id> = [], action): Array<Id> {
   switch (action.type) {
     case types.FILL_ISSUES:
       return action.payload.ids;
     case types.ADD_ISSUES:
-      return union(
+      return [
+        ...action.payload.ids,
+        ...state,
+      ];
+    case types.CLEAR_ISSUES:
+    case types.___CLEAR_ALL_REDUCERS___:
+      return [];
+    default:
+      return state;
+  }
+}
+
+function allIndexedIds(state: { [number]: Id } = {}, action): Array<Id> {
+  switch (action.type) {
+    case types.FILL_ISSUES:
+      return action.payload.indexedIds;
+    case types.ADD_ISSUES:
+      return action.payload.indexedIds ? R.mergeDeepRight(
         state,
-        action.payload.ids,
-      );
+        action.payload.indexedIds,
+      ) : state;
     case types.CLEAR_ISSUES:
     case types.___CLEAR_ALL_REDUCERS___:
       return [];
@@ -197,6 +226,7 @@ const initialMeta: IssuesMeta = {
   fetching: false,
   recentFetching: false,
   searching: false,
+  refetchIssuesIndicator: false,
   totalCount: 0,
   lastStopIndex: 0,
   selectedIssueId: null,
@@ -223,6 +253,11 @@ function meta(state: IssuesMeta = initialMeta, action) {
       return {
         ...state,
         searching: action.payload.search,
+      };
+    case types.SET_REFETCH_ISSUES_INDICATOR:
+      return {
+        ...state,
+        refetchIssuesIndicator: action.payload,
       };
     case types.SET_ISSUES_FETCHING:
       return {
@@ -304,6 +339,7 @@ function meta(state: IssuesMeta = initialMeta, action) {
 export default combineReducers({
   byId: itemsById,
   allIds: allItems,
+  indexedIds: allIndexedIds,
   issueTypesIds,
   issueTypesById,
   issueStatusesIds,

@@ -152,6 +152,14 @@ export type SetHost = {
 };
 
 //
+export type SetProtocolAction =
+ {| type: typeof types.SET_PROTOCOL, payload: string |} & Action;
+
+export type SetProtocol = {
+  (payload: string): SetProtocolAction
+};
+
+//
 export type SetLoginFetchingAction =
  {| type: typeof types.SET_LOGIN_FETCHING, payload: boolean |} & Action;
 

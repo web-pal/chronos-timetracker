@@ -24,12 +24,14 @@ import {
   authActions,
   uiActions,
   settingsActions,
+  issuesActions,
 } from 'actions';
 import {
   getUserData,
   getHost,
   getUpdateAvailable,
   getUpdateFetching,
+  getIssuesFetching,
 } from 'selectors';
 import {
   cogIcon,
@@ -59,6 +61,9 @@ import type {
   UpdateInfo,
   SetSettingsModalOpen,
   SetSettingsModalTab,
+  ClearIssues,
+  SetRefetchIssuesIndicator,
+  FetchRecentIssuesRequest,
 } from '../../types';
 
 
@@ -67,6 +72,11 @@ type Props = {
   host: URL,
   updateAvailable: UpdateInfo,
   updateFetching: boolean,
+  issuesFetching: boolean,
+
+  clearIssues: ClearIssues,
+  fetchRecentIssuesRequest: FetchRecentIssuesRequest,
+  setRefetchIssuesIndicator: SetRefetchIssuesIndicator,
 
   logoutRequest: LogoutRequest,
   setSettingsModalOpen: SetSettingsModalOpen,
@@ -78,9 +88,13 @@ const Header: StatelessFunctionalComponent<Props> = ({
   host,
   updateAvailable,
   updateFetching,
+  issuesFetching,
   logoutRequest,
   setSettingsModalOpen,
   setSettingsModalTab,
+  clearIssues,
+  fetchRecentIssuesRequest,
+  setRefetchIssuesIndicator,
 }: Props): Node =>
   <HeaderContainer className="webkit-drag">
     <ProfileContainer>
@@ -101,6 +115,13 @@ const Header: StatelessFunctionalComponent<Props> = ({
     <IconsContainer>
       <RefreshIcon
         src={refreshWhite}
+        onClick={() => {
+          if (!issuesFetching) {
+            clearIssues();
+            setRefetchIssuesIndicator(true);
+            fetchRecentIssuesRequest();
+          }
+        }}
         alt="Refresh"
       />
       {updateAvailable && <UpdateAvailableBadge />}
@@ -152,6 +173,7 @@ function mapStateToProps(state) {
     userData: getUserData(state),
     host: getHost(state),
     updateAvailable: getUpdateAvailable(state),
+    issuesFetching: getIssuesFetching(state),
     updateFetching: getUpdateFetching(state),
   };
 }
@@ -162,6 +184,7 @@ function mapDispatchToProps(dispatch) {
     ...authActions,
     ...uiActions,
     ...settingsActions,
+    ...issuesActions,
   }, dispatch);
 }
 

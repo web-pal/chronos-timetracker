@@ -24,6 +24,7 @@ export const TimestampPlaceholder = AnimatedPlaceholder.extend`
 
 export const RecentItems = styled.div`
   height: 100%;
+  flex: 1;
   background: white;
   z-index: 1;
   overflow-y: overlay;

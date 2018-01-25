@@ -14,6 +14,7 @@ import * as Api from 'api';
 import {
   uiActions,
   profileActions,
+  projectsActions,
   authActions,
   settingsActions,
 } from 'actions';
@@ -75,6 +76,7 @@ function* initializeMixpanel(): Generator<*, void, *> {
 
 export function* initialConfigureApp({
   host,
+  protocol,
 }): Generator<*, void, *> {
   const userData: User = yield call(Api.jiraProfile);
 
@@ -103,11 +105,13 @@ export function* initialConfigureApp({
 
   yield put(settingsActions.fillLocalDesktopSettings(settings));
   yield put(profileActions.setHost(host));
+  yield put(profileActions.setProtocol(protocol));
   yield put(profileActions.fillUserData(userData));
   yield put(authActions.setAuthorized(true));
 
   yield fork(fetchIssueFields);
   yield fork(fetchEpics);
+  yield put(projectsActions.fetchProjectsRequest());
 
   /*
   const isPaidChronosUser = yield select(getIsPaidUser);
@@ -191,7 +195,7 @@ export function* initializeApp(): Generator<*, void, *> {
     if (tryLogin) {
       const loginFunc = authType === 'OAuth' ? jira.oauth : jira.basicAuth;
       yield call(loginFunc, authData);
-      yield call(initialConfigureApp, { host: authData.host });
+      yield call(initialConfigureApp, { host: authData.host, protocol: authData.protocol });
     }
   } catch (err) {
     Raven.captureException(err);
