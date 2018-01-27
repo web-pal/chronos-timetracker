@@ -5,6 +5,7 @@ import type { ProfileState, Action } from '../types';
 const initialState: ProfileState = {
   authorized: false,
   host: null,
+  protocol: null,
   userData: null,
   loginError: '',
   loginFetching: false,
@@ -27,6 +28,11 @@ function profile(state: ProfileState = initialState, action: Action) {
       return {
         ...state,
         host: action.payload,
+      };
+    case types.SET_PROTOCOL:
+      return {
+        ...state,
+        protocol: action.payload,
       };
     case types.THROW_LOGIN_ERROR:
       return {

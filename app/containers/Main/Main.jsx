@@ -7,9 +7,6 @@ import type {
   StatelessFunctionalComponent,
   Node,
 } from 'react';
-import {
-  Flex,
-} from 'components';
 
 import {
   AlertModal,
@@ -22,28 +19,34 @@ import Header from '../Header';
 import Sidebar from '../Sidebar';
 import IssueView from '../IssueView';
 import FlagsContainer from '../FlagsContainer';
+import {
+  MainContainer,
+  LeftContainer,
+} from './styled';
 
 
-const theme = { primary: '#0052CC' };
+const theme = {
+  primary: '#0052CC',
+};
 
 type Props = {};
 
 const Main: StatelessFunctionalComponent<Props> = (): Node =>
   <ThemeProvider theme={theme}>
-    <Flex row style={{ height: '100%' }}>
-      <FlagsContainer />
+    <MainContainer>
+      <LeftContainer>
+        <Header />
+        <Sidebar />
+      </LeftContainer>
+      <IssueView />
 
+      <FlagsContainer />
       <AlertModal />
       <SettingsModal />
       <WorklogModal />
       <EditWorklogModal />
       <ConfirmDeleteWorklogModal />
-      <Flex column style={{ flex: '0 0 435px' }}>
-        <Header />
-        <Sidebar />
-      </Flex>
-      <IssueView />
-    </Flex>
+    </MainContainer>
   </ThemeProvider>;
 
 export default Main;

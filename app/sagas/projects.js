@@ -59,7 +59,6 @@ export function* fetchProjects(): Generator<*, *, *> {
     const lastProjectSelectedType: ProjectType | null = yield call(getFromStorage, 'lastProjectSelectedType');
     if (lastProjectSelected) {
       yield put(projectsActions.selectProject(lastProjectSelected, lastProjectSelectedType || 'project'));
-      yield put(issuesActions.fetchIssuesRequest());
     }
     yield put(projectsActions.setProjectsFetching(false));
   } catch (err) {

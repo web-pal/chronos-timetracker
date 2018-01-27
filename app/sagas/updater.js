@@ -6,9 +6,9 @@ import { remote, ipcRenderer } from 'electron';
 import { uiActions, timerActions, types } from 'actions';
 import Raven from 'raven-js';
 import { getLocalDesktopSettings } from 'selectors';
+import config from 'config';
 
 import { throwError, infoLog } from './ui';
-import { checkUpdates } from '../utils/config';
 import createIpcChannel from './ipc';
 
 const { autoUpdater } = remote.require('electron-updater');
@@ -133,7 +133,7 @@ export function* initializeUpdater(): Generator<*, *, *> {
     updateDownloadedChannel = yield call(createIpcChannel, 'update-downloaded', autoUpdater);
     yield fork(watchUpdateDownloaded);
 
-    if (checkUpdates) {
+    if (config.checkUpdates) {
       const checkEvery = 10 * 60 * 1000;
       yield call(
         infoLog,

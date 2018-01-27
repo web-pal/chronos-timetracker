@@ -1,5 +1,6 @@
 // @flow
 export const FETCH_ISSUES_REQUEST: 'issues/FETCH_REQUEST' = 'issues/FETCH_REQUEST';
+export const FETCH_RECENT_ISSUES_REQUEST: 'issues/FETCH_RECENT_REQUEST' = 'issues/FETCH_RECENT_REQUEST';
 export const FILL_ISSUES: 'issues/FILL' = 'issues/FILL';
 export const FILL_RECENT_ISSUE_IDS: 'issues/FILL_RECENT_IDS' = 'issues/FILL_RECENT_IDS';
 export const FILL_FOUND_ISSUE_IDS: 'issues/FILL_FOUND_ISSUE_IDS' = 'issues/FILL_FOUND_ISSUE_IDS';
@@ -11,6 +12,7 @@ export const ADD_ISSUES: 'issues/ADD' = 'issues/ADD';
 export const CLEAR_ISSUES: 'issues/CLEAR' = 'issues/CLEAR';
 export const SET_ISSUES_FETCHING: 'issues/SET_FETCHING' = 'issues/SET_FETCHING';
 export const SET_RECENT_ISSUES_FETCHING: 'issues/SET_RECENT_FETCHING' = 'issues/SET_RECENT_FETCHING';
+export const SET_REFETCH_ISSUES_INDICATOR: 'issues/SET_REFETCH_ISSUES_INDICATOR' = 'issues/SET_REFETCH_ISSUES_INDICATOR';
 export const SET_ISSUES_TOTAL_COUNT: 'issues/SET_TOTAL_COUNT' = 'issues/SET_TOTAL_COUNT';
 export const SELECT_ISSUE: 'issues/SELECT' = 'issues/SELECT';
 export const SET_TRACKING_ISSUE: 'issues/SET_TRACKING' = 'issues/SET_TRACKING';

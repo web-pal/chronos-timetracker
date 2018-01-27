@@ -80,12 +80,37 @@ export const getSelectedProjectOption = createSelector(
   [getSelectedProject, getSelectedBoard],
   (project, board) => {
     if (project) {
-      return ({ value: project.id, content: project.name, meta: { project } });
+      return ({
+        value: project.id,
+        content: project.name,
+        meta: {
+          project,
+        },
+      });
     }
     if (board) {
-      return ({ value: board.id, content: board.name, meta: { board } });
+      return ({
+        value: board.id,
+        content: board.name,
+        meta: {
+          board,
+        },
+      });
     }
     return null;
+  },
+);
+
+export const getCurrentProjectId = createSelector(
+  [getSelectedProjectOption, getSelectedProjectType],
+  (option, projectType) => {
+    if (!option) {
+      return null;
+    }
+    if (projectType === 'project') {
+      return option.value;
+    }
+    return option.meta.board.location.projectId.toString();
   },
 );
 

@@ -207,6 +207,7 @@ export default merge.smart(baseConfig, {
       path.join(__dirname, 'app/utils'),
       path.join(__dirname, 'app/selectors'),
       path.join(__dirname, 'app/styles'),
+      path.join(__dirname, 'app/config'),
       'node_modules',
     ],
     // We need it because of atlaskit styled-components version

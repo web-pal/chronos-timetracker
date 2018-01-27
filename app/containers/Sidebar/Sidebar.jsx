@@ -1,59 +1,79 @@
 // @flow
 import React from 'react';
-import type { StatelessFunctionalComponent, Node } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { uiActions } from 'actions';
-import { getSidebarType, getSelectedProjectId, getSidebarFiltersOpen } from 'selectors';
+import {
+  connect,
+} from 'react-redux';
+import {
+  bindActionCreators,
+} from 'redux';
+
+import type {
+  StatelessFunctionalComponent,
+  Node,
+} from 'react';
+
+import {
+  uiActions,
+} from 'actions';
+import {
+  getProjectsFetching,
+  getSidebarType,
+  getSelectedProjectId,
+  getSidebarFiltersOpen,
+} from 'selectors';
 
 import ProjectPicker from './ProjectPicker';
-import SidebarHeader from './SidebarHeader';
-import SidebarSearch from './SidebarSearch';
-import SidebarFilters from './SidebarFilters/SidebarFilters';
-import SidebarItems from './SidebarItems/SidebarItems';
+import SidebarIssues from './SidebarIssues';
+import SidebarRecentWorklogs from './SidebarRecentWorklogs';
 
-import { SidebarNothingSelected, SidebarWrapper, SidebarContainer } from './styled';
+import {
+  SidebarContainer,
+  TabContainer,
+  ListContainer,
+  Tab,
+} from './styled';
 
-import type { SetSidebarType, SidebarType, Id } from '../../types';
+import type {
+  SetSidebarType,
+  SidebarType,
+} from '../../types';
+
 
 type Props = {
   sidebarType: SidebarType,
   setSidebarType: SetSidebarType,
-  selectedProjectId: Id | null,
-  sidebarFiltersOpen: boolean,
 };
 
 const Sidebar: StatelessFunctionalComponent<Props> = ({
   sidebarType,
   setSidebarType,
-  selectedProjectId,
-  sidebarFiltersOpen,
 }: Props): Node => (
-  <SidebarWrapper>
+  <SidebarContainer>
     <ProjectPicker />
-    <SidebarHeader
-      sidebarType={sidebarType}
-      setSidebarType={setSidebarType}
-    />
-    <SidebarContainer>
-      {sidebarType === 'all' &&
-        <SidebarSearch />
-      }
-      {sidebarFiltersOpen &&
-        <SidebarFilters />
-      }
-      {selectedProjectId ?
-        <SidebarItems /> :
-        <SidebarNothingSelected>
-          <span>Select project from dropdown above</span>
-        </SidebarNothingSelected>
-      }
-    </SidebarContainer>
-  </SidebarWrapper>
+    <TabContainer>
+      <Tab
+        active={sidebarType === 'recent'}
+        onClick={() => setSidebarType('recent')}
+      >
+        Recent worklogs
+      </Tab>
+      <Tab
+        active={sidebarType === 'all'}
+        onClick={() => setSidebarType('all')}
+      >
+        Issues
+      </Tab>
+    </TabContainer>
+    <ListContainer sidebarType={sidebarType}>
+      <SidebarRecentWorklogs />
+      <SidebarIssues />
+    </ListContainer>
+  </SidebarContainer>
 );
 
 function mapStateToProps(state) {
   return {
+    projectsFetching: getProjectsFetching(state),
     sidebarType: getSidebarType(state),
     selectedProjectId: getSelectedProjectId(state),
     sidebarFiltersOpen: getSidebarFiltersOpen(state),

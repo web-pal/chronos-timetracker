@@ -188,6 +188,16 @@ export type FetchIssuesRequest = {
 }
 
 //
+export type FetchRecentIssuesRequestAction =
+  {|
+    type: typeof types.FETCH_RECENT_ISSUES_REQUEST,
+  |}
+
+export type FetchRecentIssuesRequest = {
+  (): FetchRecentIssuesRequestAction
+}
+
+//
 export type FillIssuesAction =
   {| type: typeof types.FILL_ISSUES, +payload: { ids: Array<Id>, map: IssuesMap }|}
 
@@ -265,6 +275,14 @@ export type SetRecentIssuesFetchingAction =
 
 export type SetRecentIssuesFetching = {
   (payload: boolean): SetRecentIssuesFetchingAction
+}
+
+//
+export type SetRefetchIssuesIndicatorAction =
+  {| type: typeof types.SET_REFETCH_ISSUES_INDICATOR, +payload: boolean |}
+
+export type SetRefetchIssuesIndicator = {
+  (payload: boolean): SetRefetchIssuesIndicatorAction
 }
 
 //
@@ -427,8 +445,10 @@ export type IssuesAction =
   | AddIssuesAction
   | ClearIssuesAction
   | SetIssuesFetchingAction
+  | SetRefetchIssuesIndicatorAction
   | SetIssuesTotalCountAction
   | SelectIssueAction
   | SetTrackingIssueAction
   | SetIssuesSearchValueAction
   | SetIssuesFilterAction;
+

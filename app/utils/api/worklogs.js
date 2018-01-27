@@ -1,5 +1,5 @@
 // @flow
-import { apiUrl } from '../config';
+import config from 'config';
 
 import jira from '../jiraClient';
 import { getHeaders } from './helper';
@@ -27,7 +27,7 @@ export function fetchWorklogs(issues: Array<Issue>): Promise<*> {
 }
 
 export async function fetchChronosBackendWorklogs(ids: Array<Id>): Promise<*> {
-  return fetch(`${apiUrl}/api/tracker/worklogs?worklogIds=${ids.join(',')}`, {
+  return fetch(`${config.apiUrl}/api/tracker/worklogs?worklogIds=${ids.join(',')}`, {
     method: 'GET',
     headers: await getHeaders(),
   }).then(res => res.json());
@@ -47,7 +47,7 @@ export function jiraUploadWorklog(opts: jiraUploadOptions): Promise<*> {
 }
 
 export async function chronosBackendUploadWorklog(worklog: any): Promise<*> {
-  return fetch(`${apiUrl}/api/tracker/worklog`, {
+  return fetch(`${config.apiUrl}/api/tracker/worklog`, {
     method: 'POST',
     headers: await getHeaders(),
     body: JSON.stringify(worklog),
@@ -58,7 +58,7 @@ export async function chronosBackendUpdateWorklogType({
   worklogType,
   worklogId,
 }: { worklogType: string, worklogId: string }): Promise<*> {
-  const url = `${apiUrl}/api/tracker/updateWorklogType`;
+  const url = `${config.apiUrl}/api/tracker/updateWorklogType`;
   const options = {
     method: 'POST',
     headers: await getHeaders(),
@@ -69,7 +69,7 @@ export async function chronosBackendUpdateWorklogType({
 
 
 export async function signUploadUrlForS3Bucket(fileName: string): Promise<*> {
-  const url = `${apiUrl}/desktop-tracker/sign-bucket-url`;
+  const url = `${config.apiUrl}/desktop-tracker/sign-bucket-url`;
   const options = {
     method: 'POST',
     headers: await getHeaders(),
@@ -98,7 +98,7 @@ export function uploadScreenshotOnS3Bucket({
 }
 
 export async function fetchWorklogTypes(): Promise<*> {
-  const url = `${apiUrl}/api/tracker/settings/worklogTypes`;
+  const url = `${config.apiUrl}/api/tracker/settings/worklogTypes`;
   return fetch(url, { headers: await getHeaders() }).then(res => res.json());
 }
 

@@ -36,12 +36,14 @@ export default function* rootSaga(): Generator<*, void, *> {
 
     // issues
     fork(issueSagas.watchFetchIssuesRequest),
+    fork(issueSagas.watchFetchRecentIssuesRequest),
     fork(issueSagas.watchSidebarTabChange),
     fork(issueSagas.watchFiltersChange),
     fork(issueSagas.watchIssueSelect),
     fork(issueSagas.transitionIssueFlow),
     fork(issueSagas.assignIssueFlow),
     fork(issueSagas.addIssueCommentFlow),
+    fork(issueSagas.createIpcNewIssueListener),
 
     // timer
     fork(timerSagas.watchStartTimer),

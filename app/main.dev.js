@@ -259,6 +259,9 @@ function authJiraBrowserRequests({
     const filter = {
       urls: [
         '*://atlassian.net/*',
+        '*://atlassian.com/*',
+        '*://atlassian.io/*',
+        '*://cloudfront.net/*',
         `*://${host}/*`,
       ],
     };
@@ -350,6 +353,52 @@ ipcMain.on('select-issue', (event, issueKey) => {
   tray.setContextMenu(menu);
 });
 
+ipcMain.on('open-create-issue-window', (event, url) => {
+  let createIssueWindow = new BrowserWindow({
+    parent: mainWindow,
+    modal: true,
+    useContentSize: true,
+    closable: true,
+    center: true,
+    title: 'Chronos',
+    webPreferences: {
+      nodeIntegration: false,
+      devTools: true,
+    },
+  });
+  createIssueWindow.loadURL(url);
+  createIssueWindow.once('ready-to-show', () => {
+    if (createIssueWindow) {
+      createIssueWindow.show();
+    }
+  });
+
+  createIssueWindow.webContents.on('dom-ready', () => {
+    createIssueWindow.webContents.executeJavaScript(`
+      var sidebar = document.getElementById('navigation-app');
+      var cancel = document.getElementById('issue-create-cancel');
+      if (sidebar) {
+        sidebar.parentNode.removeChild(sidebar);
+      }
+      if (cancel) {
+        cancel.addEventListener('click', function (event) {
+          window.close();
+        });
+      }
+    `);
+  });
+  createIssueWindow.webContents.on('did-get-redirect-request', (ev, fromUrl, newUrl) => {
+    if (fromUrl.includes('CreateIssueDetails.jspa')) {
+      const issueKey = newUrl.split('/').pop();
+      mainWindow.webContents.send('newIssue', issueKey);
+      createIssueWindow.close();
+    }
+  });
+  createIssueWindow.on('close', () => {
+    createIssueWindow = null;
+  }, false);
+});
+
 ipcMain.on('oauth-response', (event, text) => {
   if (mainWindow && authWindow) {
     try {
@@ -368,7 +417,6 @@ ipcMain.on('oauth-denied', () => {
     authWindow.close();
   }
 });
-
 
 ipcMain.on('open-oauth-url', (event, url) => {
   authWindow = new BrowserWindow({

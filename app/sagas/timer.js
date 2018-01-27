@@ -20,7 +20,7 @@ import {
 } from 'selectors';
 import Raven from 'raven-js';
 import { uiActions, timerActions, issuesActions, worklogsActions, types } from 'actions';
-import { idleTimeThreshold } from 'config';
+import config from 'config';
 import { randomPeriods, calculateActivity } from 'timer-helper';
 
 import createIpcChannel from './ipc';
@@ -85,14 +85,14 @@ function* idleCheck() {
     const idleTime = system.getIdleTime();
     const idleState = yield select(getTimerIdleState);
     const currentTime = yield select(getTimerTime);
-    if (idleState && idleTime < idleTimeThreshold * 1000) {
+    if (idleState && idleTime < config.idleTimeThreshold * 1000) {
       yield put(timerActions.setIdleState(false));
       remote.getGlobal('sharedObj').idleTime = prevIdleTime;
       remote.getGlobal('sharedObj').idleDetails =
         { from: currentTime - (Math.ceil(prevIdleTime / 1000)), to: currentTime };
       ipcRenderer.send('show-idle-popup');
     }
-    if (!idleState && idleTime >= idleTimeThreshold * 1000) {
+    if (!idleState && idleTime >= config.idleTimeThreshold * 1000) {
       yield put(timerActions.setIdleState(true));
     }
     if ((prevIdleTime >= 5 * 1000) && prevIdleTime > idleTime) {

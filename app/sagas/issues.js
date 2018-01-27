@@ -26,6 +26,7 @@ import normalizePayload from 'normalize-util';
 import { throwError, infoLog, notify } from './ui';
 import { setToStorage, getFromStorage } from './storage';
 import { getAdditionalWorklogsForIssues } from './worklogs';
+import createIpcChannel from './ipc';
 
 import type {
   FetchIssuesRequestAction,
@@ -81,7 +82,12 @@ function* buildJQLQuery(): Generator<*, string, *> {
 }
 
 export function* fetchIssues({
-  payload: { startIndex, stopIndex, search },
+  payload: {
+    startIndex,
+    stopIndex,
+    resolve,
+    search,
+  },
 }: FetchIssuesRequestAction): Generator<*, *, *> {
   try {
     yield call(
@@ -138,7 +144,14 @@ export function* fetchIssues({
       yield put(issuesActions.selectIssue(normalizedIssues.map[selectedIssueId]));
     }
     yield put(issuesActions.setIssuesTotalCount(response.total));
-    yield put(issuesActions.addIssues(normalizedIssues));
+    yield put(issuesActions.addIssues({
+      ...normalizedIssues,
+      indexedIds:
+        normalizedIssues.ids.reduce((acc, id, index) => {
+          acc[startIndex + index] = id;
+          return acc;
+        }, {}),
+    }));
     if (search) {
       yield put(issuesActions.fillFoundIssueIds(normalizedIssues.ids));
     } else {
@@ -146,6 +159,9 @@ export function* fetchIssues({
       if (foundIssueIds.length !== 0) {
         yield put(issuesActions.addFoundIssueIds(normalizedIssues.ids));
       }
+    }
+    if (resolve) {
+      resolve();
     }
     yield put(issuesActions.setIssuesFetching(false));
   } catch (err) {
@@ -227,6 +243,10 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
     yield call(throwError, err);
     Raven.captureException(err);
   }
+}
+
+export function* watchFetchRecentIssuesRequest(): Generator<*, *, *> {
+  yield takeEvery(types.FETCH_RECENT_ISSUES_REQUEST, fetchRecentIssues);
 }
 
 export function* getIssueComments(): Generator<*, void, *> {
@@ -518,4 +538,37 @@ export function* addIssueCommentFlow(): Generator<*, void, *> {
     yield call(throwError, err);
     Raven.captureException(err);
   }
+}
+
+function getNewIssueChannelListener(channel) {
+  return function* listenNewIssue() {
+    while (true) {
+      const { payload } = yield take(channel);
+      try {
+        const issueKey = payload[0];
+        const issue = yield call(Api.fetchIssueByKey, issueKey);
+        const totalCountIssues = yield select(state => state.issues.meta.totalCount);
+        yield put(issuesActions.addIssues({
+          map: {
+            [issue.id]: issue,
+          },
+          ids: [issue.id],
+        }));
+        yield put(issuesActions.setIssuesTotalCount(totalCountIssues + 1));
+        yield put(issuesActions.selectIssue(issue));
+        yield call(
+          notify,
+          '',
+          `${issue.key} was created`,
+        );
+      } catch (err) {
+        Raven.captureException(err);
+      }
+    }
+  };
+}
+
+export function* createIpcNewIssueListener(): void {
+  const newIssueChannel = yield call(createIpcChannel, 'newIssue');
+  yield fork(getNewIssueChannelListener(newIssueChannel));
 }
