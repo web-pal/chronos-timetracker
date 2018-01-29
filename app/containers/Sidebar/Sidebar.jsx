@@ -22,7 +22,7 @@ import {
   getSidebarFiltersOpen,
 } from 'selectors';
 
-import ProjectPicker from './ProjectPicker';
+import IssuesSourcePicker from './IssuesSourcePicker';
 import SidebarIssues from './SidebarIssues';
 import SidebarRecentWorklogs from './SidebarRecentWorklogs';
 
@@ -49,7 +49,7 @@ const Sidebar: StatelessFunctionalComponent<Props> = ({
   setSidebarType,
 }: Props): Node => (
   <SidebarContainer>
-    <ProjectPicker />
+    <IssuesSourcePicker />
     <TabContainer>
       <Tab
         active={sidebarType === 'recent'}

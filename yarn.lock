@@ -7616,6 +7616,20 @@ redux-logger@3.0.6:
   dependencies:
     deep-diff "^0.3.5"
 
+redux-resource-action-creators@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/redux-resource-action-creators/-/redux-resource-action-creators-1.0.0.tgz#246de687473a5818f2c008690a9fc9638c61f7a2"
+  dependencies:
+    redux-resource "^2.0.0"
+
+redux-resource-plugins@2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/redux-resource-plugins/-/redux-resource-plugins-2.1.0.tgz#e5ccc778d9db6d8fc2deef523da7090f8d4c9e8a"
+
+redux-resource@2.4.0, redux-resource@^2.0.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/redux-resource/-/redux-resource-2.4.0.tgz#9d132e2921f1ae77d8794d7c87fe16f47d237a08"
+
 redux-saga@0.16.0:
   version "0.16.0"
   resolved "https://registry.yarnpkg.com/redux-saga/-/redux-saga-0.16.0.tgz#0a231db0a1489301dd980f6f2f88d8ced418f724"

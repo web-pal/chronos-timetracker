@@ -4,19 +4,24 @@ import storage from 'electron-json-storage';
 import { getHost } from 'selectors';
 
 type StorageKeys =
-  'lastProjectSelected'
-  | 'lastProjectSelectedType'
+  'issuesSourceId'
+  | 'issuesSourceType'
+  | 'issuesSprintId'
   | 'localDesktopSettings'
   | 'desktop_tracker_jwt';
 
-const prefixedKeys: Array<StorageKeys> = ['lastProjectSelected', 'lastProjectSelectedType'];
+const prefixedKeys: Array<StorageKeys> = [
+  'issuesSourceId',
+  'issuesSourceType',
+  'issuesSprintId',
+];
 
 export const storageGetPromise = (key: string): Promise<mixed> => new Promise((resolve) => {
   storage.get(key, (err, data) => {
     if (err) {
       throw new Error(`Error getting from storage: ${err}`);
     }
-    if (Object.keys(data).length === 0) {
+    if (!data || (typeof data === 'object' && Object.keys(data).length === 0)) {
       resolve(null);
     } else {
       resolve(data);
@@ -51,7 +56,7 @@ export function* getFromStorage(key: string): Generator<*, mixed, *> {
   const data = yield call(
     storageGetPromise,
     // $FlowFixMe: array methods buggy with Enums
-    prefixedKeys.includes(key) ? `${host.hostname}_${key}` : key,
+    prefixedKeys.includes(key) ? `${host}_${key}` : key,
   );
   return data;
 }
@@ -64,7 +69,7 @@ export function* setToStorage(key: string, data: *): Generator<*, Promise<void>,
   }
   return storageSetPromise(
     // $FlowFixMe: array methods buggy with Enums
-    prefixedKeys.includes(key) ? `${host.hostname}_${key}` : key,
+    prefixedKeys.includes(key) ? `${host}_${key}` : key,
     data,
   );
 }
@@ -77,6 +82,6 @@ export function* removeFromStorage(key: string): Generator<*, Promise<void>, *> 
   }
   return storageRemovePromise(
     // $FlowFixMe: array methods buggy with Enums
-    prefixedKeys.includes(key) ? `${host.hostname}_${key}` : key,
+    prefixedKeys.includes(key) ? `${host}_${key}` : key,
   );
 }

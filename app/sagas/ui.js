@@ -1,12 +1,33 @@
 // @flow
-/* eslint-disable no-console */
-import { take, put, call, fork, select } from 'redux-saga/effects';
+import {
+  take,
+  takeEvery,
+  put,
+  call,
+  fork,
+} from 'redux-saga/effects';
+import Raven from 'raven-js';
 import moment from 'moment';
-import { uiActions, timerActions, issuesActions, types } from 'actions';
-import { getSelectedIssue } from 'selectors';
-import type { LogLevel, LogLevels, FlagType, FlagAction } from '../types';
 
-import createIpcChannel from './ipc';
+import {
+  uiActions,
+  resourcesActions,
+  sprintsActions,
+  types,
+} from 'actions';
+
+import type {
+  LogLevel,
+  LogLevels,
+  FlagType,
+  FlagAction,
+} from '../types';
+
+import {
+  setToStorage,
+} from './storage';
+import config from '../config';
+
 
 const LOG_LEVELS: LogLevels = {
   info: 'info',
@@ -23,6 +44,29 @@ const LOG_STYLE: { [LogLevel]: string } = {
   error: 'color: white; background: red;',
   warn: 'color: white; background: orange;',
 };
+
+export function* infoLog(...argw: any): Generator<*, void, *> {
+  if (config.infoLog) {
+    const level: LogLevel = LOG_LEVELS.info;
+    yield call(
+      console.groupCollapsed,
+      `%c log %c ${level} %c ${argw[0]} %c @ ${moment().format('hh:mm:ss')}`,
+      mutedText,
+      LOG_STYLE[level],
+      'color: black;',
+      mutedText,
+    );
+    yield call(console[level], ...argw);
+    yield call(console.groupEnd);
+  }
+}
+
+export function* throwError(err: mixed): Generator<*, void, *> {
+  yield call(console.error, err);
+  Raven.captureException(err);
+  // TODO
+  // yield call(notify, 'unexpected error in runtime', 'Error in runtime', 'normal', 'errorIcon');
+}
 
 export function* notify(
   message: string = '',
@@ -41,26 +85,6 @@ export function* notify(
   yield put(uiActions.addFlag(newFlag));
 }
 
-export function* infoLog(...argw: any): Generator<*, void, *> {
-  const level: LogLevel = LOG_LEVELS.info;
-  yield call(
-    console.groupCollapsed,
-    `%c log %c ${level} %c ${argw[0]} %c @ ${moment().format('hh:mm:ss')}`,
-    mutedText,
-    LOG_STYLE[level],
-    'color: black;',
-    mutedText,
-  );
-  yield call(console[level], ...argw);
-  yield call(console.groupEnd);
-}
-
-export function* throwError(err: mixed): Generator<*, void, *> {
-  yield call(console.error, err);
-  // TODO
-  // yield call(notify, 'unexpected error in runtime', 'Error in runtime', 'normal', 'errorIcon');
-}
-
 export function* watchSidebarTypeChange(): Generator<*, *, *> {
   while (true) {
     yield take(types.SET_SIDEBAR_TYPE);
@@ -68,38 +92,45 @@ export function* watchSidebarTypeChange(): Generator<*, *, *> {
   }
 }
 
-let trayStartListener;
-let trayStopListener;
-let traySettingsListener;
-
-function* watchTrayStart(): Generator<*, *, *> {
-  while (true) {
-    yield take(trayStartListener);
-    const selectedIssue = yield select(getSelectedIssue);
-    yield put(issuesActions.setTrackingIssue(selectedIssue));
-    yield put(timerActions.startTimer());
+function* onUiChange({
+  payload: {
+    key,
+    value,
+  },
+}): Generator<*, *, *> {
+  try {
+    if (key === 'issuesSourceType') {
+      yield call(setToStorage, key, value);
+      if (value === 'scrum') {
+        yield put(sprintsActions.fetchSprintsRequest());
+      }
+    }
+    if (['issuesSourceId', 'issuesSprintId'].includes(key)) {
+      yield call(setToStorage, key, value);
+      if (value) {
+        yield put(resourcesActions.clearResourceList({
+          resourceName: 'issues',
+          list: 'filterIssues',
+        }));
+        yield put(resourcesActions.setResourceMeta({
+          resourceName: 'issues',
+          meta: {
+            filterIssuesTotalCount: 10,
+          },
+        }));
+        yield put(resourcesActions.setResourceMeta({
+          resourceName: 'issues',
+          meta: {
+            refetchFilterIssuesMarker: true,
+          },
+        }));
+      }
+    }
+  } catch (err) {
+    yield call(throwError, err);
   }
 }
 
-function* watchTrayStop(): Generator<*, *, *> {
-  while (true) {
-    yield take(trayStopListener);
-    yield put(timerActions.stopTimerRequest());
-  }
-}
-
-function* watchTraySettings(): Generator<*, *, *> {
-  while (true) {
-    yield take(traySettingsListener);
-    yield put(uiActions.setSettingsModalOpen(true));
-  }
-}
-
-export function* initializeTrayMenuListeners(): Generator<*, *, *> {
-  trayStartListener = yield call(createIpcChannel, 'tray-start-click');
-  yield fork(watchTrayStart);
-  trayStopListener = yield call(createIpcChannel, 'tray-stop-click');
-  yield fork(watchTrayStop);
-  traySettingsListener = yield call(createIpcChannel, 'tray-settings-click');
-  yield fork(watchTraySettings);
+export function* watchUiStateChange(): Generator<*, *, *> {
+  yield takeEvery(types.SET_UI_STATE, onUiChange);
 }

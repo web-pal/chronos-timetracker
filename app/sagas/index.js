@@ -8,10 +8,12 @@ import * as authSagas from './auth';
 import * as settingsSagas from './settings';
 import * as projectSagas from './projects';
 import * as issueSagas from './issues';
+import * as sprintsSagas from './sprints';
 import * as timerSagas from './timer';
 import * as worklogsSagas from './worklogs';
 import * as updaterSagas from './updater';
 import * as uiSagas from './ui';
+import * as traySagas from './tray';
 
 import {
   initializeApp,
@@ -31,7 +33,6 @@ export default function* rootSaga(): Generator<*, void, *> {
 
     // projects
     fork(projectSagas.watchFetchProjectsRequest),
-    fork(projectSagas.watchFetchSprintsRequest),
     fork(projectSagas.watchProjectSelection),
 
     // issues
@@ -44,6 +45,9 @@ export default function* rootSaga(): Generator<*, void, *> {
     fork(issueSagas.assignIssueFlow),
     fork(issueSagas.addIssueCommentFlow),
     fork(issueSagas.createIpcNewIssueListener),
+
+    // sprints
+    fork(sprintsSagas.watchFetchSprintsRequest),
 
     // timer
     fork(timerSagas.watchStartTimer),
@@ -62,8 +66,11 @@ export default function* rootSaga(): Generator<*, void, *> {
     fork(updaterSagas.checkForUpdatesFlow),
     fork(updaterSagas.initializeUpdater),
 
+    // tray
+    fork(traySagas.createIpcTrayListeners),
+
     // ui
+    fork(uiSagas.watchUiStateChange),
     fork(uiSagas.watchSidebarTypeChange),
-    fork(uiSagas.initializeTrayMenuListeners),
   ]);
 }

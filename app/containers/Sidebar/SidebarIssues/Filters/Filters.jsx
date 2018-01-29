@@ -23,12 +23,14 @@ import {
   uiActions,
 } from 'actions';
 import {
+  getResourceMeta,
   getIssueTypes,
   getUserData,
   getIssueStatuses,
   getIssueFilters,
   getIssuesTotalCount,
   getIssuesFetching,
+  getFilterOptions,
 } from 'selectors';
 import {
   H200,
@@ -43,7 +45,6 @@ import {
   IssuesFoundText,
 } from './styled';
 import FilterOption from './FilterOption';
-import getCriteriaFilters from './getCriteriaFilters';
 
 import type {
   SetIssuesFilter,
@@ -56,10 +57,7 @@ import type {
 
 type Props = {
   setIssuesFilter: SetIssuesFilter,
-  issueTypes: Array<IssueType>,
-  issueStatuses: Array<IssueStatus>,
   filters: IssueFilters,
-  selfKey: string,
   issuesCount: number,
   fetching: boolean,
   setSidebarFiltersOpen: SetSidebarFiltersOpen
@@ -67,46 +65,46 @@ type Props = {
 
 const SidebarFilters: StatelessFunctionalComponent<Props> = ({
   setIssuesFilter,
-  issueTypes,
-  issueStatuses,
   filters,
-  selfKey,
   issuesCount,
   fetching,
   setSidebarFiltersOpen,
+  options,
 }: Props): Node => (
   <FiltersContainer>
+    {console.log(options)}
     <FilterItems>
-      {getCriteriaFilters({ issueTypes, issueStatuses, selfKey }).map(criteria =>
-        <FilterItem key={criteria.name}>
+      {options.map(type =>
+        <FilterItem key={type.key}>
           <H200 style={{ padding: '10px 0 4px 10px', display: 'block' }}>
-            {criteria.name}
+            {type.name}
           </H200>
           <FilterOptions>
-            {criteria.options.map(option => (
+            {type.options.map(option => (
               <FilterOption
                 key={option.id}
                 option={option}
-                isChecked={filters[criteria.key].includes(option.id)}
+                isChecked={false}
                 onChange={(value, checked) => {
                   let newFilters;
-                  if (criteria.key === 'assignee') {
+                  if (option.key === 'assignee') {
                     newFilters = [];
                   } else {
-                    newFilters = filters[criteria.key];
+                    newFilters = filters[option.key];
                   }
                   if (!checked) {
                     newFilters.push(value);
                   } else {
                     pull(newFilters, value);
                   }
-                  setIssuesFilter(newFilters, criteria.key);
+                  setIssuesFilter(newFilters, option.key);
                 }}
-                showIcons={criteria.showIcons}
+                showIcons={type.showIcons}
               />
             ))}
           </FilterOptions>
-        </FilterItem>)}
+        </FilterItem>)
+      }
     </FilterItems>
     <FilterActionsContainer>
       <IssuesFoundText>
@@ -136,11 +134,12 @@ const SidebarFilters: StatelessFunctionalComponent<Props> = ({
 
 function mapStateToProps(state) {
   return {
-    issueTypes: getIssueTypes(state),
-    issueStatuses: getIssueStatuses(state),
+    options: getFilterOptions(state),
     filters: getIssueFilters(state),
-    selfKey: getUserData(state).key,
-    issuesCount: getIssuesTotalCount(state),
+    issuesCount: getResourceMeta(
+      'issues',
+      'filterIssuesTotalCount',
+    )(state),
     fetching: getIssuesFetching(state),
   };
 }

@@ -16,6 +16,9 @@ import {
   withHandlers,
   lifecycle,
 } from 'recompose';
+import {
+  getStatus as getResourceStatus,
+} from 'redux-resource';
 
 import type {
   StatelessFunctionalComponent,
@@ -23,19 +26,19 @@ import type {
 } from 'react';
 
 import {
-  getSidebarIssues,
-  getProjectsFetching,
-  getIssuesFetching,
-  getIssuesTotalCount,
+  getSidebarIssues2,
   getSelectedIssueId,
   getTrackingIssueId,
   getSidebarFiltersOpen,
+  getResourceMeta,
+  getUiState,
 } from 'selectors';
 import {
   IssueItemPlaceholder,
 } from 'components';
 import {
   issuesActions,
+  resourcesActions,
 } from 'actions';
 import type {
   IssuesMap,
@@ -73,7 +76,7 @@ const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
   issues,
   issuesFetching,
   projectsFetching,
-  sidebarFiltersOpen,
+  sidebarFiltersIsOpen,
   totalCount,
   selectedIssueId,
   trackingIssueId,
@@ -85,7 +88,7 @@ const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
 }: Props): Node =>
   <ListContainer>
     <IssuesHeader />
-    {sidebarFiltersOpen &&
+    {sidebarFiltersIsOpen &&
       <Filters />
     }
     <InfiniteLoader
@@ -152,24 +155,37 @@ const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
   </ListContainer>;
 
 function mapStateToProps(state) {
-  const projectsFetching = getProjectsFetching(state);
-  const issuesFetching = getIssuesFetching(state);
-  const totalCount = getIssuesTotalCount(state);
+  const projectsFetching = getResourceStatus(
+    state,
+    'projects.requests.allProjects.status',
+  ).pending;
+  const issuesFetching = getResourceStatus(
+    state,
+    'issues.requests.filterIssues.status',
+  ).pending;
+  const totalCount = getResourceMeta(
+    'issues',
+    'filterIssuesTotalCount',
+  )(state);
   return {
-    issues: getSidebarIssues(state),
+    issues: getSidebarIssues2(state),
     projectsFetching,
     issuesFetching,
     totalCount,
     selectedIssueId: getSelectedIssueId(state),
     trackingIssueId: getTrackingIssueId(state),
-    refetchIssuesIndicator: state.issues.meta.refetchIssuesIndicator,
-    sidebarFiltersOpen: getSidebarFiltersOpen(state),
+    refetchFilterIssuesMarker: getResourceMeta(
+      'issues',
+      'refetchFilterIssuesMarker',
+    )(state),
+    sidebarFiltersIsOpen: getUiState('sidebarFiltersIsOpen')(state),
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     ...issuesActions,
+    ...resourcesActions,
   }, dispatch);
 }
 
@@ -200,8 +216,13 @@ export default compose(
   }),
   lifecycle({
     componentWillReceiveProps(nextProps) {
-      if (nextProps.refetchIssuesIndicator && !this.props.refetchIssuesIndicator) {
-        this.props.setRefetchIssuesIndicator(false);
+      if (nextProps.refetchFilterIssuesMarker && !this.props.refetchFilterIssuesMarker) {
+        this.props.setResourceMeta({
+          resourceName: 'issues',
+          meta: {
+            refetchFilterIssuesMarker: false,
+          },
+        });
         this.props.resetLoadMoreRowsCache();
         setTimeout(() => {
           if (this.props.tellInfiniteLoaderToLoadRows) {

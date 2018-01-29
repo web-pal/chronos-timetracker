@@ -6,6 +6,9 @@ import {
 import {
   bindActionCreators,
 } from 'redux';
+import {
+  getStatus as getResourceStatus,
+} from 'redux-resource';
 
 import type {
   StatelessFunctionalComponent,
@@ -17,21 +20,24 @@ import {
 } from 'components';
 
 import {
-  getSelectedProjectOption,
+  getIssuesSourceOptions,
   getSelectedSprintOption,
   getProjectsOptions,
   getProjectsFetching,
   getSprintsFetching,
   getSprintsOptions,
   getSelectedProjectType,
+  getIssuesSourceSelectedOption,
+  getUiState,
 } from 'selectors';
 
 import {
   projectsActions,
+  uiActions,
 } from 'actions';
 
 import {
-  ProjectPickerContainer,
+  IssuesSourceContainer,
 } from './styled';
 
 import type {
@@ -44,73 +50,89 @@ import type {
 type Props = {
   options: Array<SelectOption>,
   sprintsOptions: Array<SelectOption>,
-  selectedProjectOption: SelectOption,
+  selectedOption: SelectOption,
   selectedSprintOption: SelectOption,
   selectSprint: SelectSprint,
   selectProject: SelectProject,
   projectsFetching: boolean,
   sprintsFetching: boolean,
-  projectType: string,
+  selectedSourceType: string,
 };
 
-const ProjectPicker: StatelessFunctionalComponent<Props> = ({
+const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
   options,
+  selectedOption,
   sprintsOptions,
-  selectedProjectOption,
   selectedSprintOption,
   selectSprint,
   selectProject,
   projectsFetching,
   sprintsFetching,
-  projectType,
+  selectedSourceType,
+  setUiState,
 }: Props): Node =>
-  <ProjectPickerContainer>
+  <IssuesSourceContainer>
     <SingleSelect
       items={options}
       hasAutocomplete
-      selectedItem={selectedProjectOption}
-      defaultSelected={selectedProjectOption || undefined}
-      placeholder="Select Project"
+      selectedItem={selectedOption}
+      defaultSelected={selectedOption || undefined}
+      placeholder="Select project or board"
       onSelected={({ item }) => {
         const type = item.meta.board ? item.meta.board.type : 'project';
-        selectProject(String(item.value), type);
+        setUiState('issuesSprintId', null);
+        setUiState('issuesSourceId', item.value);
+        setUiState('issuesSourceType', type);
       }}
       isLoading={projectsFetching}
-      loadingMessage="Fetching Projects..."
+      loadingMessage="Fetching projects..."
       shouldFitContainer
       noMatchesFound="Nothing found"
     />
-    { (projectType === 'scrum') &&
+    { (selectedSourceType === 'scrum') &&
       <SingleSelect
         items={sprintsOptions}
         hasAutocomplete
         selectedItem={selectedSprintOption}
+        defaultSelected={selectedSprintOption || undefined}
         placeholder="Select sprint"
         onSelected={({ item }) => {
-          selectSprint(item.value);
+          setUiState('issuesSprintId', item.value);
         }}
         isLoading={sprintsFetching}
-        loadingMessage="Fetching Sprints..."
+        loadingMessage="Fetching sprints..."
         shouldFitContainer
         noMatchesFound="Nothing found"
       />
     }
-  </ProjectPickerContainer>;
+  </IssuesSourceContainer>;
 
 function mapStateToProps(state) {
   return {
-    options: getProjectsOptions(state),
+    options: getIssuesSourceOptions(state),
+    selectedOption: getIssuesSourceSelectedOption(state),
+    selectedSourceType: getUiState('issuesSourceType')(state),
+
     sprintsOptions: getSprintsOptions(state),
-    selectedProjectOption: getSelectedProjectOption(state),
     selectedSprintOption: getSelectedSprintOption(state),
-    projectsFetching: getProjectsFetching(state),
-    sprintsFetching: getSprintsFetching(state),
-    projectType: getSelectedProjectType(state),
+    projectsFetching: getResourceStatus(
+      state,
+      'projects.requests.allProjects.status',
+      true,
+    ).pending,
+    sprintsFetching: getResourceStatus(
+      state,
+      'sprints.requests.allSprints.status',
+      true,
+    ).pending,
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(projectsActions, dispatch);
+  return bindActionCreators({
+    ...projectsActions,
+    ...uiActions,
+  }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ProjectPicker);
+export default connect(mapStateToProps, mapDispatchToProps)(IssuesSourcePicker);

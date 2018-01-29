@@ -188,7 +188,10 @@ export function* getAdditionalWorklogsForIssues(
       }
       return issue;
     });
-    return issues.reduce((map, issue) => ({ ...map, [issue.id]: issue }), {});
+    return {
+      additionalIssuesArr: issues,
+      additionalIssuesMap: issues.reduce((map, issue) => ({ ...map, [issue.id]: issue }), {}),
+    };
   } catch (err) {
     yield call(throwError, err);
     Raven.captureException(err);

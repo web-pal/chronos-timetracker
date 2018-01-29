@@ -3,6 +3,7 @@ import { createLogger } from 'redux-logger';
 import createSagaMiddleware, { END } from 'redux-saga';
 
 import rootReducer from '../reducers';
+import config from '../config';
 
 const logger = createLogger({
   level: 'info',
@@ -16,8 +17,12 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 export default function configureStore(initialState) {
   const sagaMiddleware = createSagaMiddleware();
+  const middlewares = [
+    sagaMiddleware,
+    config.reduxLogger && logger,
+  ].filter(Boolean);
   const enhancer = composeEnhancers(
-    applyMiddleware(sagaMiddleware, logger),
+    applyMiddleware(...middlewares),
   );
   const store = createStore(
     rootReducer,

@@ -6,11 +6,21 @@ const initialState: UiState = {
   authFormStep: 1,
   sidebarType: 'all',
   issueViewTab: 'Details',
+  issuesFilters: {
+    type: [],
+    status: [],
+    assignee: [],
+  },
+
+  issuesSourceType: null,
+  issuesSourceId: null,
+  issuesSprintId: null,
+  sidebarFiltersIsOpen: false,
+
   initializeInProcess: false,
   updateCheckRunning: false,
   updateAvailable: null,
   updateFetching: false,
-  sidebarFiltersOpen: false,
   settingsModalOpen: false,
   supportModalOpen: false,
   aboutModalOpen: false,
@@ -24,6 +34,11 @@ const initialState: UiState = {
 
 export default function ui(state: UiState = initialState, action: Action) {
   switch (action.type) {
+    case types.SET_UI_STATE:
+      return {
+        ...state,
+        [action.payload.key]: action.payload.value,
+      };
     case types.SET_INITIALIZE_PROCESS:
       return {
         ...state,
@@ -59,10 +74,13 @@ export default function ui(state: UiState = initialState, action: Action) {
         ...state,
         updateFetching: action.payload,
       };
-    case types.SET_SIDEBAR_FILTERS_OPEN:
+    case types.SET_ISSUES_FILTER:
       return {
         ...state,
-        sidebarFiltersOpen: action.payload,
+        issuesFilters: {
+          ...state.issuesFilters,
+          [action.meta.filterName]: action.payload,
+        },
       };
     case types.SET_SETTINGS_MODAL_OPEN:
       return {

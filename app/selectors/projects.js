@@ -1,6 +1,9 @@
 // @flow
 import { createSelector } from 'reselect';
 import type { ProjectsState, ProjectsMap, SprintsMap, BoardsMap, Id } from '../types';
+import {
+  getResourceMappedList,
+} from './resources';
 
 export const getProjectsIds =
   ({ projects } : { projects: ProjectsState }): Array<Id> => projects.allIds;
@@ -119,15 +122,12 @@ export const getSelectedSprint = createSelector(
   (id, map) => (id ? map[id] : null),
 );
 
-export const getSelectedSprintOption = createSelector(
-  [getSelectedSprint],
-  sprint => (
-    sprint ? ({ value: sprint.id, content: sprint.name, meta: { sprint } }) : null
-  ),
-);
 
 export const getProjectsOptions = createSelector(
-  [getProjects, getBoards],
+  [
+    getResourceMappedList('projects', 'allProjects'),
+    getResourceMappedList('boards', 'allBoards'),
+  ],
   (projects, boards) => [
     {
       heading: 'Projects',
@@ -140,13 +140,4 @@ export const getProjectsOptions = createSelector(
         ({ value: board.id, content: board.name, meta: { board } })),
     },
   ],
-);
-
-export const getSprintsOptions = createSelector(
-  [getSprints],
-  sprints => [{
-    heading: 'Sprints',
-    items: sprints.map(sprint =>
-      ({ value: sprint.id, content: sprint.name, meta: { sprint } })),
-  }],
 );

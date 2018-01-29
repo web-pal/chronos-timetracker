@@ -24,6 +24,7 @@ import {
   getSidebarFiltersOpen,
   getIssuesSearchValue,
   getFiltersApplied,
+  getUiState,
 } from 'selectors';
 
 import {
@@ -46,7 +47,7 @@ type Props = {
   protocol: string,
   currentProjectId: string,
   searchValue: string,
-  isSidebarFiltersOpen: boolean,
+  sidebarFiltersIsOpen: boolean,
   setSidebarFiltersOpen: SetSidebarFiltersOpen,
   setIssuesSearchValue: SetIssuesSearchValue,
   filtersApplied: boolean,
@@ -54,9 +55,10 @@ type Props = {
 
 const IssuesHeader: StatelessFunctionalComponent<Props> = ({
   searchValue,
-  isSidebarFiltersOpen,
+  sidebarFiltersIsOpen,
   setSidebarFiltersOpen,
   setIssuesSearchValue,
+  setUiState,
   filtersApplied,
   currentProjectId,
   host,
@@ -90,8 +92,10 @@ const IssuesHeader: StatelessFunctionalComponent<Props> = ({
         <FilterIcon
           label="Filter"
           size="medium"
-          primaryColor={isSidebarFiltersOpen ? '#0052CC' : '#333333'}
-          onClick={() => setSidebarFiltersOpen(!isSidebarFiltersOpen)}
+          primaryColor={sidebarFiltersIsOpen ? '#0052CC' : '#333333'}
+          onClick={() => {
+            setUiState('sidebarFiltersIsOpen', !sidebarFiltersIsOpen);
+          }}
         />
       </span>
       {filtersApplied &&
@@ -106,8 +110,9 @@ function mapStateToProps(state) {
     protocol: state.profile.protocol,
     currentProjectId: getCurrentProjectId(state),
     searchValue: getIssuesSearchValue(state),
-    isSidebarFiltersOpen: getSidebarFiltersOpen(state),
-    filtersApplied: getFiltersApplied(state),
+    sidebarFiltersIsOpen: getUiState('sidebarFiltersIsOpen')(state),
+    // filtersApplied: getFiltersApplied(state),
+    filtersApplied: false,
   };
 }
 

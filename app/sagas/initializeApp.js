@@ -17,6 +17,7 @@ import {
   projectsActions,
   authActions,
   settingsActions,
+  resourcesActions,
 } from 'actions';
 
 import {
@@ -28,6 +29,12 @@ import {
   fetchEpics,
 } from './issues';
 import {
+  fetchProjects,
+} from './projects';
+import {
+  fetchBoards,
+} from './boards';
+import {
   transformValidHost,
 } from './auth';
 import {
@@ -37,7 +44,9 @@ import {
 import jira from '../utils/jiraClient';
 
 import type {
+  Id,
   User,
+  ProjectType,
 } from '../types';
 
 
@@ -80,8 +89,13 @@ export function* initialConfigureApp({
 }): Generator<*, void, *> {
   const userData: User = yield call(Api.jiraProfile);
 
+  yield put(profileActions.setHost(host));
   yield call(initializeMixpanel);
   yield call(identifyInSentryAndMixpanel, host, userData);
+
+  const issuesSourceId: Id | null = yield call(getFromStorage, 'issuesSourceId');
+  const issuesSourceType: ProjectType | null = yield call(getFromStorage, 'issuesSourceType');
+  const issuesSprintId: string | null = yield call(getFromStorage, 'issuesSprintId');
 
   let settings = yield call(getFromStorage, 'localDesktopSettings');
   if (!settings || !Object.keys(settings).length) {
@@ -99,20 +113,26 @@ export function* initialConfigureApp({
     );
   }
 
-  // backwards compatibility
-  if (!settings.updateChannel) settings.updateChannel = 'stable';
-  if (!settings.autoCheckForUpdates) settings.autoCheckForUpdates = true;
+  yield fork(fetchProjects);
+  yield fork(fetchBoards);
+
+  yield put(uiActions.setUiState('issuesSourceId', issuesSourceId));
+  yield put(uiActions.setUiState('issuesSprintId', issuesSprintId));
+  yield put(uiActions.setUiState('issuesSourceType', issuesSourceType));
 
   yield put(settingsActions.fillLocalDesktopSettings(settings));
-  yield put(profileActions.setHost(host));
   yield put(profileActions.setProtocol(protocol));
   yield put(profileActions.fillUserData(userData));
   yield put(authActions.setAuthorized(true));
 
   yield fork(fetchIssueFields);
   yield fork(fetchEpics);
-  yield put(projectsActions.fetchProjectsRequest());
-
+  yield put(resourcesActions.setResourceMeta({
+    resourceName: 'issues',
+    meta: {
+      refetchFilterIssuesMarker: false,
+    },
+  }));
   /*
   const isPaidChronosUser = yield select(getIsPaidUser);
 

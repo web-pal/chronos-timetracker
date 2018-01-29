@@ -6,6 +6,9 @@ import {
 import {
   bindActionCreators,
 } from 'redux';
+import {
+  getStatus as getResourceStatus,
+} from 'redux-resource';
 
 import type {
   StatelessFunctionalComponent,
@@ -22,11 +25,13 @@ import {
   worklogsActions,
 } from 'actions';
 import {
+  getRecentIssues,
   getRecentIssuesFetching,
   getRecentIssuesTotalCount,
   getProjectsFetching,
   getRecentItems,
   getSelectedWorklogId,
+  getResourceMappedList,
 } from 'selectors';
 
 import TimestampItem from './TimestampItem';
@@ -57,57 +62,42 @@ moment.locale('en', {
 
 
 type Props = {
-  items: IssuesMap,
+  recentIssues: any,
   selectedWorklogId: Id | null,
-  fetching: boolean,
-  totalCount: number,
+  issuesFetching: boolean,
   projectsFetching: boolean,
   selectIssue: SelectIssue,
   selectWorklog: SelectWorklog,
   setIssueViewTab: SetIssueViewTab,
 }
 
-const daySorter = (a, b) => {
-  if (moment(a).isAfter(moment(b))) return -1;
-  if (moment(a).isBefore(moment(b))) return 1;
-  return 0;
-};
-
-const worklogSorter = (a, b) => {
-  if (moment(a.created).isAfter(moment(b.created))) return -1;
-  if (moment(a.created).isBefore(moment(b.created))) return 1;
-  return 0;
-};
-
 const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
-  items,
+  recentIssues,
   selectedWorklogId,
-  fetching,
-  totalCount,
+  issuesFetching,
   projectsFetching,
   selectIssue,
   selectWorklog,
   setIssueViewTab,
 }: Props): Node => (
-  (fetching || projectsFetching) ?
+  (issuesFetching || projectsFetching) ?
     <RecentItemsPlaceholder /> :
     <ListContainer>
-      {(!fetching && totalCount === 0) &&
+      {recentIssues.length === 0 &&
         <NoWorklogs />
       }
-      {Object.keys(items).sort(daySorter).map((key) => {
-        const item = items[key].sort(worklogSorter);
-
+      {Object.keys(recentIssues).map((day) => {
+        const worklogs = recentIssues[day];
         return (
-          <ItemContainer key={key}>
+          <ItemContainer key={day}>
             <TimestampItem
-              date={moment(key)}
-              worklogs={item}
+              date={moment(day)}
+              worklogs={worklogs}
             />
             <Flex column>
-              {item.map(worklog =>
+              {worklogs.map(worklog =>
                 <WorklogItem
-                  key={`${key}_${worklog.id}`}
+                  key={`${day}_${worklog.id}`}
                   issue={worklog.issue}
                   active={selectedWorklogId === worklog.id}
                   selectIssue={(issue) => {
@@ -126,11 +116,14 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
 
 function mapStateToProps(state) {
   return {
-    items: getRecentItems(state),
+    recentIssues: getRecentIssues(state),
     selectedWorklogId: getSelectedWorklogId(state),
-    fetching: getRecentIssuesFetching(state),
+    issuesFetching: getResourceStatus(
+      state,
+      'issues.requests.recentIssues.status',
+      true,
+    ).pending,
     projectsFetching: getProjectsFetching(state),
-    totalCount: getRecentIssuesTotalCount(state),
   };
 }
 

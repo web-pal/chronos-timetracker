@@ -52,12 +52,11 @@ export function fetchIssues({
   stopIndex,
   jql,
   epicLinkFieldId,
-  projectId,
-  projectType,
+  boardId,
 }: fetchIssuesParams): Promise<*> {
-  const api = projectType === 'project'
-    ? opts => jira.client.search.search(opts)
-    : opts => jira.client.board.getIssuesForBoard({ ...opts, boardId: projectId });
+  const api = boardId ?
+    opts => jira.client.board.getIssuesForBoard({ ...opts, boardId }) :
+    opts => jira.client.search.search(opts);
   let newRequiredFields = requiredFields;
   if (epicLinkFieldId) {
     newRequiredFields = [...requiredFields, epicLinkFieldId];

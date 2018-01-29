@@ -26,6 +26,14 @@ import type {
 
 import * as types from './actionTypes';
 
+export const setUiState = (key, value) => ({
+  type: types.SET_UI_STATE,
+  payload: {
+    key,
+    value,
+  },
+});
+
 export const setInitializeState: SetInitializeState = (
   payload: boolean,
 ): SetInitializeStateAction => ({

@@ -10,8 +10,11 @@ export * as projectsActions from './projects';
 export * as issuesActions from './issues';
 export * as timerActions from './timer';
 export * as worklogsActions from './worklogs';
+export * as sprintsActions from './sprints';
+export * as resourcesActions from './resources';
 
 export * as types from './actionTypes/';
+export * as actionTypes from './actionTypes';
 
 // eslint-disable-next-line import/prefer-default-export
 export const clearAllReducers: ClearAllReducers = (): ClearAllReducersAction => ({

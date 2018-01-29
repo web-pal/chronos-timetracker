@@ -8,6 +8,7 @@ const config = {
   idleTimeThreshold: 10, // seconds of inactivity considering user is idle
   checkUpdates: false,
   infoLog: false,
+  reduxLogger: true,
 };
 
 export default config;

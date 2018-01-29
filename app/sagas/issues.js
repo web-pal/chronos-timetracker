@@ -1,5 +1,21 @@
 // @flow
-import { delay } from 'redux-saga'; import { call, take, select, put, fork, takeEvery, takeLatest } from 'redux-saga/effects';
+import {
+  delay,
+} from 'redux-saga';
+import {
+  call,
+  take,
+  select,
+  put,
+  fork,
+  takeEvery,
+  takeLatest,
+} from 'redux-saga/effects';
+import {
+  normalize,
+  schema,
+} from 'normalizr';
+import createActionCreators from 'redux-resource-action-creators';
 import { ipcRenderer } from 'electron';
 import * as Api from 'api';
 import merge from 'lodash.merge';
@@ -15,12 +31,20 @@ import {
   getComments,
   getFoundIssueIds,
   getIssueFilters,
+  getIssuesFilters,
   getSelectedIssueId,
   getSelectedIssue,
   getIssueViewTab,
   getSelectedProjectType,
+  getResourceIds,
+  getResourceMap,
+  getUiState,
 } from 'selectors';
-import { issuesActions, types } from 'actions';
+import {
+  issuesActions,
+  resourcesActions,
+  types,
+} from 'actions';
 import normalizePayload from 'normalize-util';
 
 import { throwError, infoLog, notify } from './ui';
@@ -59,26 +83,99 @@ function mapSearchValue(searchValue: string, projectKey: string): string {
   return `summary ~ "${searchValue}"`;
 }
 
-function* buildJQLQuery(): Generator<*, string, *> {
-  const filters: IssueFilters = yield select(getIssueFilters);
-  const typeFilters = filters.type;
-  const statusFilters = filters.status;
-  const assigneeFilter = filters.assignee[0];
-  const selectedProject: Project | null = yield select(getSelectedProject);
-  const projectId: string | null = yield select(getSelectedProjectId);
-  const projectType: string | null = yield select(getSelectedProjectType);
-  const searchValue: string = yield select(getIssuesSearchValue);
-  const sprintId: Id = yield select(getSelectedSprintId);
-  const projectKey: string | null = selectedProject && selectedProject.key;
+function buildJQLQuery({
+  projectId,
+  sprintId,
+  worklogAuthor,
+  additionalJQL,
+}) {
   const jql = [
-    (projectType === 'project' && projectId ? `project = ${projectId}` : ''),
-    ((projectType === 'scrum') && sprintId ? `sprint = ${sprintId}` : ''),
-    (searchValue && projectKey ? mapSearchValue(searchValue, projectKey) : ''),
-    (typeFilters.length ? `issueType in (${typeFilters.join(',')})` : ''),
-    (statusFilters.length ? `status in (${statusFilters.join(',')})` : ''),
-    (assigneeFilter ? mapAssignee(assigneeFilter) : ''),
+    (projectId && `project = ${projectId}`),
+    (sprintId && `sprint = ${sprintId}`),
+    (worklogAuthor && `worklogAuthor = ${worklogAuthor}`),
+    (additionalJQL && additionalJQL),
   ].filter(f => !!f).join(' AND ');
   return jql;
+}
+
+function* fetchAdditionalWorklogsForIssues(issues) {
+  const incompleteIssues = issues.filter(issue => issue.fields.worklog.total > 20);
+  if (incompleteIssues.length) {
+    yield call(
+      infoLog,
+      'found issues lacking worklogs',
+      incompleteIssues,
+    );
+    const {
+      additionalIssuesArr,
+    } = yield call(getAdditionalWorklogsForIssues, incompleteIssues);
+    yield call(
+      infoLog,
+      'getAdditionalWorklogsForIssues response:',
+      additionalIssuesArr,
+    );
+
+    const withAdditionalWorklogs = [
+      ...issues,
+      ...additionalIssuesArr,
+    ];
+    yield call(
+      infoLog,
+      'filled issues with lacking worklogs: ',
+      withAdditionalWorklogs,
+    );
+    return withAdditionalWorklogs;
+  }
+  return issues;
+}
+
+export function* fetchProjectIssuesStatuses(): Generator<*, *, *> {
+  const actions = createActionCreators('read', {
+    resourceName: 'issuesTypes',
+    request: 'issuesTypes',
+    list: 'issuesTypes',
+    mergeListIds: false,
+  });
+  try {
+    const issuesSourceId: string | null = yield select(getUiState('issuesSourceId'));
+    const issuesSourceType: string | null = yield select(getUiState('issuesSourceType'));
+    const issuesSprintId: string | null = yield select(getUiState('issuesSprintId'));
+
+    let projectId = issuesSourceId;
+    if (issuesSourceId && issuesSourceType === 'kanban') {
+      const boards = yield select(getResourceMap('boards'));
+      const board = boards[issuesSourceId];
+      if (board) {
+        projectId = board.location.projectId; // eslint-disable-line
+      }
+    }
+    if (issuesSprintId && issuesSourceType === 'scrum') {
+      const sprints = yield select(getResourceMap('sprints'));
+      const sprint = sprints[issuesSprintId];
+      if (sprint) {
+        const boards = yield select(getResourceMap('boards'));
+        const board = boards[sprint.originBoardId];
+        if (board) {
+          projectId = board.location.projectId; // eslint-disable-line
+        }
+      }
+    }
+    if (projectId) {
+      yield put(actions.pending());
+      const statuses = yield call(Api.fetchProjectStatuses, projectId);
+      const statusesSchema = new schema.Entity('issuesStatuses');
+      const typesSchema = new schema.Entity('issuesTypes', {
+        statuses: [statusesSchema],
+      });
+      const normalizedData = normalize(statuses, [typesSchema]);
+      yield put(actions.succeeded({
+        resources: normalizedData.result,
+        includedResources: normalizedData.entities,
+      }));
+    }
+  } catch (err) {
+    yield call(throwError, err);
+  }
 }
 
 export function* fetchIssues({
@@ -89,69 +186,69 @@ export function* fetchIssues({
     search,
   },
 }: FetchIssuesRequestAction): Generator<*, *, *> {
+  const actions = createActionCreators('read', {
+    resourceName: 'issues',
+    request: 'filterIssues',
+    list: 'filterIssues',
+    startIndex,
+    indexedList: true,
+    mergeListIds: true,
+  });
   try {
     yield call(
       infoLog,
       'started fetchIssues',
     );
-    yield put(issuesActions.setIssuesFetching(true));
+    yield put(actions.pending());
     if (search) {
       yield put(issuesActions.setIssuesTotalCount(0));
       yield put(issuesActions.clearFoundIssueIds());
     }
+
+    const issuesSourceId: string | null = yield select(getUiState('issuesSourceId'));
+    const issuesSourceType: string | null = yield select(getUiState('issuesSourceType'));
+    const issuesSprintId: string | null = yield select(getUiState('issuesSprintId'));
+
     const epicLinkFieldId: string | null = yield select(getFieldIdByName, 'Epic Link');
-    const selectedProjectId: string | null = yield select(getSelectedProjectId);
-    const selectedProjectType: string | null = yield select(getSelectedProjectType);
-    const jql: string = yield call(buildJQLQuery);
-    const opts = {
-      startIndex,
-      stopIndex,
-      jql,
-      epicLinkFieldId,
-      projectId: selectedProjectId,
-      projectType: selectedProjectType || 'project',
-    };
-    const response = yield call(Api.fetchIssues, opts);
+    const jql: string = buildJQLQuery({
+      projectId: issuesSourceType === 'project' ? issuesSourceId : null,
+      sprintId: issuesSourceType === 'scrum' ? issuesSprintId : null,
+    });
+
+    const response = jql.length ?
+      yield call(
+        Api.fetchIssues,
+        {
+          startIndex,
+          stopIndex,
+          jql,
+          boardId: issuesSourceType !== 'project' ? issuesSourceId : null,
+          epicLinkFieldId,
+        },
+      ) :
+      {
+        total: 0,
+        issues: [],
+      };
     yield call(
       infoLog,
       'fetchIssues response',
       response,
     );
-    const incompleteIssues = response.issues.filter(issue => issue.fields.worklog.total > 20);
-    const normalizedIssues = yield call(normalizePayload, response.issues, 'issues');
-    if (incompleteIssues.length) {
-      yield call(
-        infoLog,
-        'found issues lacking worklogs',
-        incompleteIssues,
-      );
-      const additionalIssues = yield call(getAdditionalWorklogsForIssues, incompleteIssues);
-      yield call(
-        infoLog,
-        'getAdditionalWorklogsForIssues response:',
-        additionalIssues,
-      );
-
-      merge(normalizedIssues.map, additionalIssues);
-      yield call(
-        infoLog,
-        'filled issues with lacking worklogs: ',
-        normalizedIssues.map,
-      );
-    }
-    const selectedIssueId = yield select(getSelectedIssueId);
-    if (normalizedIssues.ids.includes(selectedIssueId)) {
-      yield put(issuesActions.selectIssue(normalizedIssues.map[selectedIssueId]));
-    }
-    yield put(issuesActions.setIssuesTotalCount(response.total));
-    yield put(issuesActions.addIssues({
-      ...normalizedIssues,
-      indexedIds:
-        normalizedIssues.ids.reduce((acc, id, index) => {
-          acc[startIndex + index] = id;
-          return acc;
-        }, {}),
+    const issues = yield call(
+      fetchAdditionalWorklogsForIssues,
+      response.issues,
+    );
+    yield put(resourcesActions.setResourceMeta({
+      resourceName: 'issues',
+      meta: {
+        filterIssuesTotalCount: response.total,
+      },
     }));
+    yield put(actions.succeeded({
+      resources: issues,
+    }));
+    /*
     if (search) {
       yield put(issuesActions.fillFoundIssueIds(normalizedIssues.ids));
     } else {
@@ -160,14 +257,24 @@ export function* fetchIssues({
         yield put(issuesActions.addFoundIssueIds(normalizedIssues.ids));
       }
     }
+    */
     if (resolve) {
       resolve();
     }
-    yield put(issuesActions.setIssuesFetching(false));
   } catch (err) {
-    yield put(issuesActions.setIssuesFetching(false));
+    yield put(resourcesActions.setResourceMeta({
+      resourceName: 'issues',
+      meta: {
+        filterIssuesTotalCount: 0,
+      },
+    }));
+    yield put(actions.succeeded({
+      resources: [],
+    }));
     yield call(throwError, err);
     Raven.captureException(err);
+  } finally {
+    yield fork(fetchProjectIssuesStatuses);
   }
 }
 
@@ -176,70 +283,66 @@ export function* watchFetchIssuesRequest(): Generator<*, *, *> {
 }
 
 export function* fetchRecentIssues(): Generator<*, *, *> {
+  const actions = createActionCreators('read', {
+    resourceName: 'issues',
+    request: 'recentIssues',
+    list: 'recentIssues',
+  });
   try {
     yield call(
       infoLog,
       'started fetchRecentIssues',
     );
-    yield put(issuesActions.setRecentIssuesFetching(true));
-    const selectedProjectId: string | null = yield select(getSelectedProjectId);
-    const selectedProjectType: string | null = yield select(getSelectedProjectType);
-    const selectedSprintId: Id = yield select(getSelectedSprintId);
-    const self: User = yield select(getUserData);
-    const opts = {
-      projectId: selectedProjectId,
-      projectType: selectedProjectType || 'project',
-      sprintId: selectedSprintId,
-      worklogAuthor: self.key,
-    };
-    const response = yield call(Api.fetchRecentIssues, opts);
+    yield put(actions.pending());
+
+    const issuesSourceId: string | null = yield select(getUiState('issuesSourceId'));
+    const issuesSourceType: string | null = yield select(getUiState('issuesSourceType'));
+    const issuesSprintId: string | null = yield select(getUiState('issuesSprintId'));
+
+    const epicLinkFieldId: string | null = yield select(getFieldIdByName, 'Epic Link');
+    const profile: User = yield select(getUserData);
+    const jql: string = buildJQLQuery({
+      projectId: issuesSourceType === 'project' ? issuesSourceId : null,
+      sprintId: issuesSourceType === 'scrum' ? issuesSprintId : null,
+      worklogAuthor: profile.key,
+      additionalJQL: 'timespent > 0 AND worklogDate >= "-4w"',
+    });
+
+    const response = (
+      (issuesSprintId && issuesSourceId) ||
+      (!issuesSprintId && issuesSourceId) ||
+      jql.length
+    ) ?
+      yield call(
+        Api.fetchIssues,
+        {
+          startIndex: 0,
+          stopIndex: 1000,
+          jql,
+          boardId: issuesSourceType !== 'project' ? issuesSourceId : null,
+          epicLinkFieldId,
+        },
+      ) :
+      {
+        total: 0,
+        issues: [],
+      };
     yield call(
       infoLog,
-      'fetchRecentIssues response:',
+      'fetchRecentIssues response',
       response,
     );
-    const { issues } = response;
-
-    const incompleteIssues = issues.filter(issue => issue.fields.worklog.total > 20);
-    const normalizedIssues = yield call(normalizePayload, issues, 'issues');
-    if (incompleteIssues.length) {
-      yield call(
-        infoLog,
-        'found issues lacking worklogs',
-        incompleteIssues,
-      );
-      const additionalIssues = yield call(getAdditionalWorklogsForIssues, incompleteIssues);
-      yield call(
-        infoLog,
-        'getAdditionalWorklogsForIssues response:',
-        additionalIssues,
-      );
-
-      merge(normalizedIssues.map, additionalIssues);
-      yield call(
-        infoLog,
-        'filled issues with lacking worklogs: ',
-        normalizedIssues.map,
-      );
-    }
-    yield put(issuesActions.addIssues(normalizedIssues));
-    yield put(issuesActions.fillRecentIssueIds(normalizedIssues.ids));
-    /* TODO
-    if (showWorklogTypes) {
-      const recentWorkLogsIds = yield select(
-        state => state.worklogs.meta.recentWorkLogsIds.toArray(),
-      );
-      const worklogsFromChronosBackend
-        = yield call(fetchChronosBackendWorklogs, recentWorkLogsIds);
-      yield put({
-        type: types.MERGE_WORKLOGS_TYPES,
-        payload: worklogsFromChronosBackend.filter(w => w.worklogType),
-      });
-    }
-    */
-    yield put(issuesActions.setRecentIssuesFetching(false));
+    const issues = yield call(
+      fetchAdditionalWorklogsForIssues,
+      response.issues,
+    );
+    yield put(actions.succeeded({
+      resources: issues,
+    }));
   } catch (err) {
-    yield put(issuesActions.setRecentIssuesFetching(false));
+    yield put(actions.succeeded({
+      resources: [],
+    }));
     yield call(throwError, err);
     Raven.captureException(err);
   }
@@ -307,6 +410,7 @@ export function* fetchIssueTypes(): Generator<*, *, *> {
   }
 }
 
+
 export function* fetchIssueStatuses(): Generator<*, *, *> {
   try {
     const selectedProjectType = yield select(getSelectedProjectType);
@@ -358,7 +462,9 @@ export function* fetchIssueStatuses(): Generator<*, *, *> {
 function* onSidebarTabChange({ payload }: { payload: string }): Generator<*, *, *> {
   try {
     const tab: string = payload;
-    const recentIssueIds: Array<Id> = yield select(getRecentIssueIds);
+    const recentIssueIds: Array<Id> = yield select(
+      getResourceIds('issues', 'recentIssues'),
+    );
     if (tab === 'recent' && recentIssueIds.length === 0) {
       yield fork(fetchRecentIssues);
     }
@@ -376,7 +482,7 @@ export function* watchSidebarTabChange(): Generator<*, *, *> {
 function* handleIssueFiltersChange(): Generator<*, *, *> {
   yield call(delay, 500);
   yield put(issuesActions.fetchIssuesRequest({ startIndex: 0, stopIndex: 10, search: true }));
-  const filters: IssueFilters = yield select(getIssueFilters);
+  const filters: IssueFilters = yield select(getIssuesFilters);
   yield call(setToStorage, 'lastFiltersSelected', filters);
 }
 

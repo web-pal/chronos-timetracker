@@ -1,7 +1,18 @@
 // @flow
-import { createSelector } from 'reselect';
-import type { WorklogsState, Worklog, Id } from '../types';
-import { getSelectedIssue } from './issues';
+import {
+  createSelector,
+} from 'reselect';
+
+import type {
+  WorklogsState,
+  Worklog,
+  Id,
+} from '../types';
+
+import {
+  getSelectedIssue,
+} from './issues';
+
 
 export const getWorklogComment =
   ({ worklogs }: { worklogs: WorklogsState }): string => worklogs.meta.worklogComment;

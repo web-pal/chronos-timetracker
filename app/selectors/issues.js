@@ -85,34 +85,6 @@ export const getRecentIssuesTotalCount = createSelector(
   ids => ids.length,
 );
 
-export const getRecentIssues = createSelector(
-  [getRecentIssueIds, getIssuesMap],
-  (ids, map) => ids.map(id => map[id]),
-);
-
-export const getRecentItems = createSelector(
-  [getRecentIssues, getIssuesMap, getUserData],
-  (map, iMap, self) => {
-    const selfKey = self ? self.key : '';
-    const recentWorklogs =
-      map
-        .reduce(
-          (worklogs, value) => worklogs.concat(value.fields.worklog.worklogs),
-          [],
-        ).map(w => ({ ...w, issue: iMap[w.issueId] }));
-    const recentWorklogsFiltered =
-      filter(
-        recentWorklogs,
-        w =>
-          moment(w.started).isSameOrAfter(moment().subtract(4, 'weeks')) &&
-          w.author.key === selfKey,
-      );
-    const grouped =
-      groupBy(recentWorklogsFiltered, value => moment(value.started).startOf('day').format());
-    return grouped;
-  },
-);
-
 export const getIssuesFetching =
   ({ issues }: { issues: IssuesState }): boolean => issues.meta.fetching;
 

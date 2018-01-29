@@ -19,12 +19,17 @@ import type {
   Node,
 } from 'react';
 
+
+import {
+  getStatus as getResourceStatus,
+} from 'redux-resource';
 import {
   profileActions,
   authActions,
   uiActions,
   settingsActions,
   issuesActions,
+  resourcesActions,
 } from 'actions';
 import {
   getUserData,
@@ -95,6 +100,8 @@ const Header: StatelessFunctionalComponent<Props> = ({
   clearIssues,
   fetchRecentIssuesRequest,
   setRefetchIssuesIndicator,
+  clearResourceList,
+  setResourceMeta,
 }: Props): Node =>
   <HeaderContainer className="webkit-drag">
     <ProfileContainer>
@@ -117,8 +124,16 @@ const Header: StatelessFunctionalComponent<Props> = ({
         src={refreshWhite}
         onClick={() => {
           if (!issuesFetching) {
-            clearIssues();
-            setRefetchIssuesIndicator(true);
+            clearResourceList({
+              resourceName: 'issues',
+              list: 'filterIssues',
+            });
+            setResourceMeta({
+              resourceName: 'issues',
+              meta: {
+                refetchFilterIssuesMarker: true,
+              },
+            });
             fetchRecentIssuesRequest();
           }
         }}
@@ -173,7 +188,10 @@ function mapStateToProps(state) {
     userData: getUserData(state),
     host: getHost(state),
     updateAvailable: getUpdateAvailable(state),
-    issuesFetching: getIssuesFetching(state),
+    issuesFetching: getResourceStatus(
+      state,
+      'issues.requests.filterIssues.status',
+    ).pending,
     updateFetching: getUpdateFetching(state),
   };
 }
@@ -185,6 +203,7 @@ function mapDispatchToProps(dispatch) {
     ...uiActions,
     ...settingsActions,
     ...issuesActions,
+    ...resourcesActions,
   }, dispatch);
 }
 
