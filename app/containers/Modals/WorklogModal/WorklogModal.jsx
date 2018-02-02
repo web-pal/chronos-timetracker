@@ -54,9 +54,19 @@ class WorklogModal extends Component<Props, State> {
   componentWillReceiveProps(nextProps) {
     if (nextProps.isOpen && !this.props.isOpen) {
       setTimeout(() => {
+        this.totalSpent = '';
+        this.setState({ totalSpent: '' });
+        this.setDateAndTimeToNow();
         if (this.comment) this.comment.focus();
       }, 10);
     }
+  }
+  setDateAndTimeToNow = (e) => {
+    const newTime = moment();
+    const newDate = moment().format('MM/DD/YYYY');
+    console.log(newTime);
+    this.setState({ startTime: newTime });
+    this.setState({ date: newDate });
   }
 
   handleTimeChange = label => (value) => {
@@ -98,6 +108,9 @@ class WorklogModal extends Component<Props, State> {
           <ModalFooter>
             <Flex row style={{ justifyContent: 'flex-end', width: '100%' }}>
               <ButtonGroup>
+                <Button appearance="primary" onClick={this.setDateAndTimeToNow}>
+                  Now
+                </Button>
                 <Button
                   appearance="primary"
                   disabled={fetching}
