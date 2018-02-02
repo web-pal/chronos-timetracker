@@ -13,15 +13,16 @@ const initialState: ProfileState = {
   userData: null,
 };
 
-function profile(state: ProfileState = initialState, action: Action) {
+function profile(
+  state: ProfileState = initialState,
+  action: Action,
+) {
   switch (action.type) {
     case actionTypes.FILL_USER_DATA:
       return {
         ...state,
         userData: action.payload,
       };
-    case actionTypes.___CLEAR_ALL_REDUCERS___:
-      return initialState;
     default:
       return state;
   }

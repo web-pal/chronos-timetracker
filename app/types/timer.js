@@ -46,3 +46,14 @@ export type TimerAction =
     type: typeof actionTypes.DISMISS_IDLE_TIME,
     payload: number,
   |};
+
+export type TimerState = {|
+  time: number,
+  running: boolean,
+  idleState: boolean,
+  lastScreenshotTime: number,
+  idles: Array<any>,
+  keepedIdles: Array<any>,
+  screenshotPeriods: Array<any>,
+  screenshots: Array<any>,
+|};

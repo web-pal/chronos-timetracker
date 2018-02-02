@@ -16,3 +16,14 @@ export type SettingsAction =
     type: typeof actionTypes.SET_SETTINGS_MODAL_TAB,
     tabName: string,
   |};
+
+export type SettingsState = {|
+  dispersion: string,
+  interval: string,
+  screenshotsPeriod: number,
+  screenshotsQuantity: number,
+  screenshotsEnabled: boolean,
+  modalTab: 'General' | 'Notifications' | 'Updates',
+  screenshotsEnabledUsers: Array<any>,
+  localDesktopSettings: any,
+|}

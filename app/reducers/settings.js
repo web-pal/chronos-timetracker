@@ -1,34 +1,39 @@
 // @flow
-import { types } from 'actions';
+import {
+  actionTypes,
+} from 'actions';
 import type {
   SettingsState,
   Action,
-} from '../types';
+} from 'types';
 
 const initialState: SettingsState = {
   dispersion: '0',
   interval: '600',
   screenshotsPeriod: 600,
   screenshotsQuantity: 1,
-  screenshotsEnabled: '',
+  screenshotsEnabled: false,
   modalTab: 'General',
   screenshotsEnabledUsers: [],
   localDesktopSettings: {},
 };
 
-export default function settings(state: SettingsState = initialState, action: Action) {
+export default function settings(
+  state: SettingsState = initialState,
+  action: Action,
+) {
   switch (action.type) {
-    case types.FILL_LOCAL_DESKTOP_SETTINGS:
+    case actionTypes.FILL_LOCAL_DESKTOP_SETTINGS:
       return {
         ...state,
         localDesktopSettings: action.payload,
       };
-    case types.SET_SETTINGS_MODAL_TAB:
+    case actionTypes.SET_SETTINGS_MODAL_TAB:
       return {
         ...state,
         modalTab: action.tabName,
       };
-    case types.SET_LOCAL_DESKTOP_SETTING:
+    case actionTypes.SET_LOCAL_DESKTOP_SETTING:
       return {
         ...state,
         localDesktopSettings: {
@@ -36,8 +41,6 @@ export default function settings(state: SettingsState = initialState, action: Ac
           [action.settingName]: action.value,
         },
       };
-    case types.___CLEAR_ALL_REDUCERS___:
-      return initialState;
     default:
       return state;
   }

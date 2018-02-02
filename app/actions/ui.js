@@ -1,5 +1,6 @@
 // @flow
 import type {
+  Id,
   UiAction,
 } from 'types';
 
@@ -45,7 +46,7 @@ export const addFlag = (
 });
 
 export const deleteFlag = (
-  id: number,
+  id: Id,
 ): UiAction => ({
   type: actionTypes.DELETE_FLAG,
   id,

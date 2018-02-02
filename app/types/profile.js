@@ -7,3 +7,7 @@ export type ProfileAction =
     type: typeof actionTypes.FILL_USER_DATA,
     payload: any,
   |};
+
+export type ProfileState = {|
+  userData: any,
+|};

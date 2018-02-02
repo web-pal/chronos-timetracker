@@ -1,6 +1,12 @@
 // @flow
-import { types } from 'actions';
-import type { TimerState } from '../types';
+import {
+  actionTypes,
+} from 'actions';
+import type {
+  Action,
+  TimerState,
+} from 'types';
+
 
 const initialState: TimerState = {
   time: 0,
@@ -13,43 +19,45 @@ const initialState: TimerState = {
   screenshots: [],
 };
 
-export default function timer(state: TimerState = initialState, action: any) {
+export default function timer(
+  state: TimerState = initialState,
+  action: Action,
+) {
   switch (action.type) {
-    case types.TICK:
+    case actionTypes.TICK:
       return {
         ...state,
         time: state.time + 1,
       };
-    case types.START_TIMER:
+    case actionTypes.START_TIMER:
       return {
         ...state,
         running: true,
       };
-    case types.SET_IDLE_STATE:
+    case actionTypes.SET_IDLE_STATE:
       return {
         ...state,
         idleState: action.payload,
       };
-    case types.SET_LAST_SCREENSHOT_TIME:
+    case actionTypes.SET_LAST_SCREENSHOT_TIME:
       return {
         ...state,
         lastScreenshotTime: action.payload,
       };
-    case types.ADD_SCREENSHOT:
+    case actionTypes.ADD_SCREENSHOT:
       return {
         ...state,
         screenshots: [
           ...state.screenshots,
-          action.payload,
         ],
-        lastScreenshotTime: action.meta,
+        lastScreenshotTime: action.screenshotTime,
       };
-    case types.SET_SCREENSHOT_PERIODS:
+    case actionTypes.SET_SCREENSHOT_PERIODS:
       return {
         ...state,
         screenshotPeriods: action.payload,
       };
-    case types.ADD_IDLE_TIME:
+    case actionTypes.ADD_IDLE_TIME:
       return {
         ...state,
         idles: [
@@ -57,13 +65,12 @@ export default function timer(state: TimerState = initialState, action: any) {
           action.payload,
         ],
       };
-    case types.DISMISS_IDLE_TIME:
+    case actionTypes.DISMISS_IDLE_TIME:
       return {
         ...state,
         time: state.time - action.payload,
       };
-    case types.RESET_TIMER:
-    case types.___CLEAR_ALL_REDUCERS___:
+    case actionTypes.RESET_TIMER:
       return initialState;
     default:
       return state;

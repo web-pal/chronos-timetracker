@@ -1,11 +1,11 @@
 // @flow
 import {
-  types,
+  actionTypes,
 } from 'actions';
 import type {
   Action,
   UiState,
-} from '../types';
+} from 'types';
 
 
 const initialState: UiState = {
@@ -60,14 +60,17 @@ const initialState: UiState = {
   flags: [],
 };
 
-export default function ui(state: UiState = initialState, action: Action) {
+export default function ui(
+  state: UiState = initialState,
+  action: Action,
+) {
   switch (action.type) {
-    case types.SET_UI_STATE:
+    case actionTypes.SET_UI_STATE:
       return {
         ...state,
         [action.payload.key]: action.payload.value,
       };
-    case types.SET_MODAL_STATE:
+    case actionTypes.SET_MODAL_STATE:
       return {
         ...state,
         modalState: {
@@ -75,42 +78,7 @@ export default function ui(state: UiState = initialState, action: Action) {
           [action.payload.modalName]: action.payload.state,
         },
       };
-    case types.SET_INITIALIZE_PROCESS:
-      return {
-        ...state,
-        initializeInProcess: action.payload,
-      };
-    case types.SET_AUTH_FORM_STEP:
-      return {
-        ...state,
-        authFormStep: action.payload,
-      };
-    case types.SET_SIDEBAR_TYPE:
-      return {
-        ...state,
-        sidebarType: action.payload,
-      };
-    case types.SET_ISSUE_VIEW_TAB:
-      return {
-        ...state,
-        issueViewTab: action.payload,
-      };
-    case types.SET_UPDATE_CHECK_RUNNING:
-      return {
-        ...state,
-        updateCheckRunning: action.payload,
-      };
-    case types.SET_UPDATE_AVAILABLE:
-      return {
-        ...state,
-        updateAvailable: action.payload,
-      };
-    case types.SET_UPDATE_FETCHING:
-      return {
-        ...state,
-        updateFetching: action.payload,
-      };
-    case types.SET_ISSUES_FILTER:
+    case actionTypes.SET_ISSUES_FILTER:
       return {
         ...state,
         issuesFilters: {
@@ -118,58 +86,18 @@ export default function ui(state: UiState = initialState, action: Action) {
           [action.filterType]: action.value,
         },
       };
-    case types.SET_SETTINGS_MODAL_OPEN:
-      return {
-        ...state,
-        settingsModalOpen: action.payload,
-      };
-    case types.SET_SUPPORT_MODAL_OPEN:
-      return {
-        ...state,
-        supportModalOpen: action.payload,
-      };
-    case types.SET_ABOUT_MODAL_OPEN:
-      return {
-        ...state,
-        aboutModalOpen: action.payload,
-      };
-    case types.SET_ALERT_MODAL_OPEN:
-      return {
-        ...state,
-        alertModalOpen: action.payload,
-      };
-    case types.SET_CONFIRM_DELETE_WORKLOG_MODAL_OPEN:
-      return {
-        ...state,
-        confirmDeleteWorklogModalOpen: action.payload,
-      };
-    case types.SET_WORKLOG_MODAL_OPEN:
-      return {
-        ...state,
-        worklogModalOpen: action.payload,
-      };
-    case types.SET_EDIT_WORKLOG_MODAL_OPEN:
-      return {
-        ...state,
-        editWorklogModalOpen: action.payload,
-      };
-    case types.ADD_FLAG:
+    case actionTypes.ADD_FLAG:
       return {
         ...state,
         flags: [action.payload, ...state.flags],
       };
-    case types.DELETE_FLAG:
+    case actionTypes.DELETE_FLAG: {
+      const { id } = action;
       return {
         ...state,
-        flags: state.flags.filter(f => f.id !== action.id),
+        flags: state.flags.filter(f => f.id !== id),
       };
-    case types.___CLEAR_ALL_REDUCERS___:
-      return initialState;
-    case types.SET_SCREENSHOTS_ALLOWED:
-      return {
-        ...state,
-        screenshotsAllowed: action.payload,
-      };
+    }
     default:
       return state;
   }
