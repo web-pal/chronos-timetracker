@@ -550,6 +550,7 @@ function getNewIssueChannelListener(channel) {
         yield put(actions.pending());
         const issueKey = payload[0];
         const issue = yield call(Api.fetchIssueByKey, issueKey);
+        issue.fields.worklogs = [];
         yield put(actions.succeeded({
           resources: [issue],
         }));

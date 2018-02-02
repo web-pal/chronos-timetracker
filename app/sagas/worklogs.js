@@ -171,7 +171,7 @@ export function* saveWorklog({
       resourceName: 'issues',
       list: 'recentIssues',
     }));
-    yield call(fetchRecentIssues);
+    yield fork(fetchRecentIssues);
     yield fork(scrollToIndexRequest, {
       issueId,
       worklogId: worklog.id,
