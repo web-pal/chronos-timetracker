@@ -46,10 +46,10 @@ type Props = {
 
 class EmailStep extends Component<Props> {
   // Need it because of animation between steps
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps: Props) {
     if (!this.props.isActiveStep && nextProps.isActiveStep) {
       setTimeout(() => {
-        if (this.usernameInput && this.usernameInput.getRenderedComponent()) {
+        if (this.usernameInput && this.usernameInput.getRenderedComponent) {
           try {
             this.usernameInput.getRenderedComponent().input.focus();
           } catch (err) {
@@ -59,6 +59,7 @@ class EmailStep extends Component<Props> {
       }, 500);
     }
   }
+  usernameInput: any;
 
   render() {
     const {

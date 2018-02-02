@@ -36,7 +36,6 @@ import {
   getHost,
   getUpdateAvailable,
   getUpdateFetching,
-  getIssuesFetching,
 } from 'selectors';
 import {
   cogIcon,
@@ -66,8 +65,6 @@ import type {
   UpdateInfo,
   SetSettingsModalOpen,
   SetSettingsModalTab,
-  ClearIssues,
-  SetRefetchIssuesIndicator,
   FetchRecentIssuesRequest,
 } from '../../types';
 
@@ -79,9 +76,7 @@ type Props = {
   updateFetching: boolean,
   issuesFetching: boolean,
 
-  clearIssues: ClearIssues,
   fetchRecentIssuesRequest: FetchRecentIssuesRequest,
-  setRefetchIssuesIndicator: SetRefetchIssuesIndicator,
 
   logoutRequest: LogoutRequest,
   setSettingsModalOpen: SetSettingsModalOpen,
@@ -97,11 +92,10 @@ const Header: StatelessFunctionalComponent<Props> = ({
   logoutRequest,
   setSettingsModalOpen,
   setSettingsModalTab,
-  clearIssues,
-  fetchRecentIssuesRequest,
-  setRefetchIssuesIndicator,
+  setModalState,
   clearResourceList,
   setResourceMeta,
+  refetchIssuesRequest,
 }: Props): Node =>
   <HeaderContainer className="webkit-drag">
     <ProfileContainer>
@@ -124,17 +118,7 @@ const Header: StatelessFunctionalComponent<Props> = ({
         src={refreshWhite}
         onClick={() => {
           if (!issuesFetching) {
-            clearResourceList({
-              resourceName: 'issues',
-              list: 'filterIssues',
-            });
-            setResourceMeta({
-              resourceName: 'issues',
-              meta: {
-                refetchFilterIssuesMarker: true,
-              },
-            });
-            fetchRecentIssuesRequest();
+            refetchIssuesRequest();
           }
         }}
         alt="Refresh"
@@ -151,7 +135,7 @@ const Header: StatelessFunctionalComponent<Props> = ({
         }
       >
         <DropdownItemGroup>
-          <DropdownItem onClick={() => setSettingsModalOpen(true)}>
+          <DropdownItem onClick={() => setModalState('settings', true)}>
             Settings
           </DropdownItem>
           <DropdownItem onClick={() => shell.openExternal(config.supportLink)}>
@@ -165,7 +149,7 @@ const Header: StatelessFunctionalComponent<Props> = ({
           {updateAvailable && !updateFetching && [
             <DropdownUpdateItem
               onClick={() => {
-                setSettingsModalOpen(true);
+                setModalState('settings', true);
                 setSettingsModalTab('Updates');
               }}
             >

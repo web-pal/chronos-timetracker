@@ -92,11 +92,16 @@ export const addManualWorklogRequest: AddManualWorklogRequest = (
   payload,
 });
 
+export const saveWorklogRequest = (payload) => ({
+  type: types.SAVE_WORKLOG_REQUEST,
+  payload,
+});
+
 export const deleteWorklogRequest: DeleteWorklogRequest = (
-  payload: Worklog,
+  worklogId: string,
 ): DeleteWorklogRequestAction => ({
   type: types.DELETE_WORKLOG_REQUEST,
-  payload,
+  worklogId,
 });
 
 export const editWorklogRequest: EditWorklogRequest = (

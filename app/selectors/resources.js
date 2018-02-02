@@ -1,6 +1,8 @@
+// @flow
 import {
   createSelector,
 } from 'reselect';
+
 
 export const getResourceIds = (resourceName, listName) =>
   state => state[resourceName].lists[listName];
@@ -23,7 +25,12 @@ export const getResourceMappedList = (resourceName, listName) => {
         getResourceIds(resourceName, listName),
         getResourceMap(resourceName),
       ],
-      (ids, map) => ids.map(id => map[id]),
+      (ids = [], map) => ids.map(id => map[id]),
     );
   return resourceSelectors[`${resourceName}${listName}`];
 };
+
+export const getResourceItemBydId =
+  (resourceName: string, id) =>
+    state =>
+      state[resourceName].resources[id] || null;

@@ -8,6 +8,7 @@ import * as authSagas from './auth';
 import * as settingsSagas from './settings';
 import * as projectSagas from './projects';
 import * as issueSagas from './issues';
+import * as commentsSagas from './comments';
 import * as sprintsSagas from './sprints';
 import * as timerSagas from './timer';
 import * as worklogsSagas from './worklogs';
@@ -32,19 +33,18 @@ export default function* rootSaga(): Generator<*, void, *> {
     fork(authSagas.logoutFlow),
 
     // projects
-    fork(projectSagas.watchFetchProjectsRequest),
-    fork(projectSagas.watchProjectSelection),
+    fork(projectSagas.watchFetchProjectStatusesRequest),
 
     // issues
     fork(issueSagas.watchFetchIssuesRequest),
     fork(issueSagas.watchFetchRecentIssuesRequest),
-    fork(issueSagas.watchSidebarTabChange),
-    fork(issueSagas.watchFiltersChange),
-    fork(issueSagas.watchIssueSelect),
-    fork(issueSagas.transitionIssueFlow),
-    fork(issueSagas.assignIssueFlow),
-    fork(issueSagas.addIssueCommentFlow),
+    fork(issueSagas.watchReFetchIssuesRequest),
+    fork(issueSagas.watchTransitionIssueRequest),
+    fork(issueSagas.watchAssignIssueRequest),
     fork(issueSagas.createIpcNewIssueListener),
+
+    // issuesComments
+    fork(commentsSagas.watchIssueCommentRequest),
 
     // sprints
     fork(sprintsSagas.watchFetchSprintsRequest),
@@ -57,9 +57,8 @@ export default function* rootSaga(): Generator<*, void, *> {
     fork(settingsSagas.watchLocalDesktopSettingsChange),
 
     // worklogs
-    fork(worklogsSagas.addManualWorklogFlow),
+    fork(worklogsSagas.watchSaveWorklogRequest),
     fork(worklogsSagas.watchDeleteWorklogRequest),
-    fork(worklogsSagas.watchEditWorklogRequest),
 
     // updater
     fork(updaterSagas.watchInstallUpdateRequest),
@@ -71,6 +70,6 @@ export default function* rootSaga(): Generator<*, void, *> {
 
     // ui
     fork(uiSagas.watchUiStateChange),
-    fork(uiSagas.watchSidebarTypeChange),
+    fork(uiSagas.watchScrollToIndexRequest),
   ]);
 }

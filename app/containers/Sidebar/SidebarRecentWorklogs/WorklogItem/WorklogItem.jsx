@@ -41,7 +41,7 @@ const WorklogItem: StatelessFunctionalComponent<Props> = ({
   issue,
   worklog,
   selectIssue,
-  setIssueViewTab,
+  onClickShow,
 }: Props): Node =>
   <WorklogItemContainer
     isSelected={active}
@@ -78,7 +78,7 @@ const WorklogItem: StatelessFunctionalComponent<Props> = ({
         }
       </IssueMeta>
     </Flex>
-    <Button onClick={() => setIssueViewTab('Worklogs')}>
+    <Button onClick={() => onClickShow(issue)}>
       show
     </Button>
     <Time>{worklog.timeSpent}</Time>

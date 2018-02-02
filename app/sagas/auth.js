@@ -14,13 +14,13 @@ import Raven from 'raven-js';
 
 import * as Api from 'api';
 import {
-  types,
+  actionTypes,
   authActions,
+  uiActions,
   clearAllReducers,
 } from 'actions';
 
 import type {
-  ErrorObj,
   LoginRequestAction,
   LoginOAuthRequestAction,
 } from '../types';
@@ -56,24 +56,15 @@ export function transformValidHost(host: string): URL {
   }
 }
 
-function* loginError(error: ErrorObj): Generator<*, void, *> {
-  const errorMessage: string = error.message || 'Unknown error';
-  yield put(authActions.throwLoginError(errorMessage));
-}
-
-function* clearLoginError(): Generator<*, void, *> {
-  yield put(authActions.throwLoginError(''));
-}
-
 export function* basicAuthLoginForm(): Generator<*, void, *> {
   while (true) {
     try {
-      const { payload }: LoginRequestAction = yield take(types.LOGIN_REQUEST);
+      const { payload }: LoginRequestAction = yield take(actionTypes.LOGIN_REQUEST);
       const host = yield call(transformValidHost, payload.host);
       const protocol = host.protocol.slice(0, -1);
 
-      yield put(authActions.setLoginFetching(true));
-      yield call(clearLoginError);
+      yield put(uiActions.setUiState('loginRequestInProcess', true));
+      yield put(uiActions.setUiState('loginError', null));
       yield call(
         jira.basicAuth,
         {
@@ -92,7 +83,13 @@ export function* basicAuthLoginForm(): Generator<*, void, *> {
           host: payload.host,
         },
       );
-      yield call(initialConfigureApp, { host: host.hostname, protocol });
+      yield call(
+        initialConfigureApp,
+        {
+          host: host.hostname,
+          protocol,
+        },
+      );
       yield call(
         (): void => {
           ipcRenderer.sendSync(
@@ -104,30 +101,35 @@ export function* basicAuthLoginForm(): Generator<*, void, *> {
           );
         },
       );
-      yield put(authActions.setLoginFetching(false));
+      yield put(uiActions.setUiState('loginRequestInProcess', false));
     } catch (err) {
-      yield put(authActions.setLoginFetching(false));
-      const humanReadableError = new Error('Can not authenticate user. Please try again');
-      yield call(loginError, humanReadableError);
-      Raven.captureException(err);
+      yield put(uiActions.setUiState('loginRequestInProcess', false));
+      yield put(uiActions.setUiState(
+        'loginError',
+        'Can not authenticate user. Please try again',
+      ));
     }
   }
 }
 
-export function* oAuthLoginForm(): Generator<*, void, *> {
+export function* oAuthLoginForm(): Generator<*, *, *> {
   while (true) {
     try {
-      const { payload }: LoginOAuthRequestAction = yield take(types.LOGIN_OAUTH_REQUEST);
-      yield put(authActions.setLoginFetching(true));
+      const { host }: LoginOAuthRequestAction = yield take(actionTypes.LOGIN_OAUTH_REQUEST);
+      yield put(uiActions.setUiState('loginRequestInProcess', true));
 
-      const host = yield call(transformValidHost, payload);
-      const oAuthData = yield call(Api.getDataForOAuth, host.hostname);
+      const { hostname } = yield call(transformValidHost, host);
+      const oAuthData = yield call(Api.getDataForOAuth, hostname);
 
-      const { token, url, ...rest } = yield call(
+      const {
+        token,
+        url,
+        ...rest
+      } = yield call(
         Api.getOAuthUrl,
         {
           oauth: oAuthData,
-          host: host.hostname,
+          host: hostname,
         },
       );
 
@@ -135,8 +137,8 @@ export function* oAuthLoginForm(): Generator<*, void, *> {
       ipcRenderer.send('open-oauth-url', url);
 
       const { code, denied } = yield race({
-        code: take(types.ACCEPT_OAUTH),
-        denied: take(types.DENY_OAUTH),
+        code: take(actionTypes.ACCEPT_OAUTH),
+        denied: take(actionTypes.DENY_OAUTH),
       });
 
       if (denied) {
@@ -145,7 +147,7 @@ export function* oAuthLoginForm(): Generator<*, void, *> {
 
       // if not denied get oAuth Token
       const accessToken = yield call(Api.getOAuthToken, {
-        host: host.hostname,
+        host: hostname,
         oauth: {
           token,
           token_secret: rest.tokenSecret,
@@ -158,14 +160,14 @@ export function* oAuthLoginForm(): Generator<*, void, *> {
       const data = yield call(
         Api.chronosBackendOAuth,
         {
-          baseUrl: host.hostname,
+          baseUrl: hostname,
           token: accessToken,
           token_secret: rest.tokenSecret,
         },
       );
 
       yield call(jira.oauth, {
-        host: host.hostname,
+        host: hostname,
         oauth: {
           token: accessToken,
           token_secret: rest.tokenSecret,
@@ -174,13 +176,14 @@ export function* oAuthLoginForm(): Generator<*, void, *> {
         },
       });
       yield call(setToStorage, 'desktop_tracker_jwt', data.token);
-      yield call(initialConfigureApp, { host });
-      yield put(authActions.setLoginFetching(false));
+      yield call(initialConfigureApp, { host: hostname, protocol: 'https' });
+      yield put(uiActions.setUiState('loginRequestInProcess', false));
     } catch (err) {
-      yield put(authActions.setLoginFetching(false));
-      const humanReadableError = new Error('Can not authenticate user. Please try again');
-      yield call(loginError, humanReadableError);
-      Raven.captureException(err);
+      yield put(uiActions.setUiState('loginRequestInProcess', false));
+      yield put(uiActions.setUiState(
+        'loginError',
+        'Can not authenticate user. Please try again',
+      ));
     }
   }
 }
@@ -188,7 +191,7 @@ export function* oAuthLoginForm(): Generator<*, void, *> {
 
 export function* logoutFlow(): Generator<*, *, *> {
   while (true) {
-    yield take(types.LOGOUT_REQUEST);
+    yield take(actionTypes.LOGOUT_REQUEST);
     try {
       const { getGlobal } = remote;
       const { running, uploading } = getGlobal('sharedObj');
@@ -215,18 +218,14 @@ export function* logoutFlow(): Generator<*, *, *> {
 
 function getOauthChannelListener(channel, type) {
   if (type === 'accepted') {
-    return function* listenOauthAccepted() {
+    return function* listenOauthAccepted(): Generator<*, *, *> {
       while (true) {
         const ev = yield take(channel);
-        try {
-          yield put(authActions.acceptOAuth(ev.payload[0]));
-        } catch (err) {
-          console.log(err);
-        }
+        yield put(authActions.acceptOAuth(ev.payload[0]));
       }
     };
   }
-  return function* listenOauthDenied() {
+  return function* listenOauthDenied(): Generator<*, *, *> {
     while (true) {
       yield take(channel);
       yield put(authActions.denyOAuth());
@@ -234,7 +233,7 @@ function getOauthChannelListener(channel, type) {
   };
 }
 
-export function* createIpcAuthListeners(): void {
+export function* createIpcAuthListeners(): Generator<*, *, *> {
   const oAuthAcceptedChannel = yield call(createIpcChannel, 'oauth-accepted');
   const oAuthDeniedChannel = yield call(createIpcChannel, 'oauth-denied');
 

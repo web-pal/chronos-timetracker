@@ -1,26 +1,61 @@
 // @flow
-import { types } from 'actions';
-import type { Action, UiState } from '../types';
+import {
+  types,
+} from 'actions';
+import type {
+  Action,
+  UiState,
+} from '../types';
+
 
 const initialState: UiState = {
+  initializeInProcess: false,
+  authorized: false,
   authFormStep: 1,
+  loginError: null,
+  loginRequestInProcess: false,
+  host: null,
+  protocol: null,
+  isPaidUser: false,
+
+  updateCheckRunning: false,
+  updateFetching: false,
+  updateAvailable: null,
+
   sidebarType: 'all',
   issueViewTab: 'Details',
+  issueViewWorklogsScrollToIndex: 0,
+  issuesSearch: '',
   issuesFilters: {
     type: [],
     status: [],
     assignee: [],
   },
 
+  selectedWorklogId: null,
+  deleteWorklogId: null,
+  editWorklogId: null,
+  worklogFormIssueId: null,
+
+  selectedIssueId: null,
   issuesSourceType: null,
   issuesSourceId: null,
   issuesSprintId: null,
-  sidebarFiltersIsOpen: false,
 
-  initializeInProcess: false,
-  updateCheckRunning: false,
-  updateAvailable: null,
-  updateFetching: false,
+  screenshotsAllowed: false,
+  sidebarFiltersIsOpen: false,
+  filterStatusesIsFetched: false,
+  commentAdding: false,
+
+  modalState: {
+    settings: false,
+    support: false,
+    about: false,
+    alert: false,
+    worklog: false,
+    confirmDeleteWorklog: false,
+    editWorklog: false,
+  },
   settingsModalOpen: false,
   supportModalOpen: false,
   aboutModalOpen: false,
@@ -28,8 +63,8 @@ const initialState: UiState = {
   confirmDeleteWorklogModalOpen: false,
   worklogModalOpen: false,
   editWorklogModalOpen: false,
+
   flags: [],
-  screenshotsAllowed: false,
 };
 
 export default function ui(state: UiState = initialState, action: Action) {
@@ -38,6 +73,14 @@ export default function ui(state: UiState = initialState, action: Action) {
       return {
         ...state,
         [action.payload.key]: action.payload.value,
+      };
+    case types.SET_MODAL_STATE:
+      return {
+        ...state,
+        modalState: {
+          ...state.modalState,
+          [action.payload.modalName]: action.payload.state,
+        },
       };
     case types.SET_INITIALIZE_PROCESS:
       return {
@@ -79,7 +122,7 @@ export default function ui(state: UiState = initialState, action: Action) {
         ...state,
         issuesFilters: {
           ...state.issuesFilters,
-          [action.meta.filterName]: action.payload,
+          [action.filterType]: action.value,
         },
       };
     case types.SET_SETTINGS_MODAL_OPEN:
@@ -117,18 +160,15 @@ export default function ui(state: UiState = initialState, action: Action) {
         ...state,
         editWorklogModalOpen: action.payload,
       };
-    case types.REMOVE_FLAG:
-      return {
-        ...state,
-        flags: state.flags.slice(1),
-      };
     case types.ADD_FLAG:
       return {
         ...state,
-        flags: [...state.flags, {
-          ...action.payload,
-          id: state.flags.length,
-        }],
+        flags: [action.payload, ...state.flags],
+      };
+    case types.DELETE_FLAG:
+      return {
+        ...state,
+        flags: state.flags.filter(f => f.id !== action.id),
       };
     case types.___CLEAR_ALL_REDUCERS___:
       return initialState;

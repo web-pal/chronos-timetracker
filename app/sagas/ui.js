@@ -1,20 +1,27 @@
 // @flow
 import {
-  take,
+  delay,
+} from 'redux-saga';
+import {
   takeEvery,
   put,
   call,
   fork,
+  select,
 } from 'redux-saga/effects';
 import Raven from 'raven-js';
 import moment from 'moment';
 
 import {
   uiActions,
-  resourcesActions,
+  issuesActions,
   sprintsActions,
   types,
 } from 'actions';
+import {
+  getResourceIds,
+  getIssueWorklogs,
+} from 'selectors';
 
 import type {
   LogLevel,
@@ -26,6 +33,9 @@ import type {
 import {
   setToStorage,
 } from './storage';
+import {
+  issueSelectFlow,
+} from './issues';
 import config from '../config';
 
 
@@ -68,6 +78,20 @@ export function* throwError(err: mixed): Generator<*, void, *> {
   // yield call(notify, 'unexpected error in runtime', 'Error in runtime', 'normal', 'errorIcon');
 }
 
+
+/* eslint-disable */
+function uuidv4() {
+  return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  )
+}
+/* eslint-enable */
+
+function* autoDeleteFlag(id) {
+  yield call(delay, 5 * 1000);
+  yield put(uiActions.deleteFlag(id));
+}
+
 export function* notify(
   message: string = '',
   title: string = '',
@@ -76,6 +100,7 @@ export function* notify(
   icon: string = 'bellIcon',
 ): Generator<*, void, *> {
   const newFlag: FlagType = {
+    id: uuidv4(),
     title,
     actions,
     appearance: level,
@@ -83,13 +108,17 @@ export function* notify(
     icon,
   };
   yield put(uiActions.addFlag(newFlag));
+  yield fork(autoDeleteFlag, newFlag.id);
 }
 
-export function* watchSidebarTypeChange(): Generator<*, *, *> {
-  while (true) {
-    yield take(types.SET_SIDEBAR_TYPE);
-    yield put(uiActions.setSidebarFiltersOpen(false));
+function* onSidebarChange(sidebarType) {
+  if (sidebarType === 'recent') {
+    const recentIssues = yield select(getResourceIds('issues', 'recentIssues'));
+    if (!recentIssues.length) {
+      yield put(issuesActions.fetchRecentIssuesRequest());
+    }
   }
+  yield put(uiActions.setUiState('sidebarFiltersIsOpen', false));
 }
 
 function* onUiChange({
@@ -107,25 +136,28 @@ function* onUiChange({
     }
     if (['issuesSourceId', 'issuesSprintId'].includes(key)) {
       yield call(setToStorage, key, value);
-      if (value) {
-        yield put(resourcesActions.clearResourceList({
-          resourceName: 'issues',
-          list: 'filterIssues',
-        }));
-        yield put(resourcesActions.setResourceMeta({
-          resourceName: 'issues',
-          meta: {
-            filterIssuesTotalCount: 10,
-          },
-        }));
-        yield put(resourcesActions.setResourceMeta({
-          resourceName: 'issues',
-          meta: {
-            refetchFilterIssuesMarker: true,
-          },
-        }));
-      }
     }
+    if (key === 'selectedIssueId') {
+      yield fork(issueSelectFlow, value);
+    }
+    if (key === 'sidebarType') {
+      yield fork(onSidebarChange, value);
+    }
+  } catch (err) {
+    yield call(throwError, err);
+  }
+}
+
+export function* scrollToIndexRequest({
+  worklogId,
+  issueId,
+}): Generator<*, *, *> {
+  try {
+    const worklogs = yield select(getIssueWorklogs(issueId));
+    yield put(uiActions.setUiState(
+      'issueViewWorklogsScrollToIndex',
+      worklogs.findIndex(w => worklogId === w.id),
+    ));
   } catch (err) {
     yield call(throwError, err);
   }
@@ -133,4 +165,11 @@ function* onUiChange({
 
 export function* watchUiStateChange(): Generator<*, *, *> {
   yield takeEvery(types.SET_UI_STATE, onUiChange);
+}
+
+export function* watchScrollToIndexRequest(): Generator<*, *, *> {
+  yield takeEvery(
+    types.ISSUE_WORKLOGS_SCROLL_TO_INDEX_REQUEST,
+    scrollToIndexRequest,
+  );
 }

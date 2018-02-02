@@ -6,7 +6,7 @@
   "main": "./main.prod.js",
   "scripts": {
     "rebuild-electron": "npm rebuild --runtime=electron --target=1.7.5 --disturl=https://atom.io/download/atom-shell -—abi=57",
-    "postinstall": "npm run rebuild-electron && ./replaceNotifier.sh"
+    "postinstall": "npm run rebuild-electron && ./scripts/replaceNotifier.sh"
   },
   "author": {
     "name": "Webpal",

@@ -17,13 +17,11 @@ import type {
 
 import {
   issuesActions,
+  projectsActions,
   uiActions,
 } from 'actions';
 import {
   getCurrentProjectId,
-  getSidebarFiltersOpen,
-  getIssuesSearchValue,
-  getFiltersApplied,
   getUiState,
 } from 'selectors';
 
@@ -56,13 +54,14 @@ type Props = {
 const IssuesHeader: StatelessFunctionalComponent<Props> = ({
   searchValue,
   sidebarFiltersIsOpen,
-  setSidebarFiltersOpen,
-  setIssuesSearchValue,
   setUiState,
   filtersApplied,
   currentProjectId,
+  fetchProjectStatusesRequest,
+  filterStatusesIsFetched,
   host,
   protocol,
+  refetchIssuesRequest,
 }: Props): Node =>
   <SearchBar>
     <SearchIcon
@@ -74,7 +73,8 @@ const IssuesHeader: StatelessFunctionalComponent<Props> = ({
       type="text"
       value={searchValue}
       onChange={(ev) => {
-        setIssuesSearchValue(ev.target.value);
+        setUiState('issuesSearch', ev.target.value);
+        refetchIssuesRequest(true);
       }}
     />
     <SearchOptions>
@@ -94,25 +94,29 @@ const IssuesHeader: StatelessFunctionalComponent<Props> = ({
           size="medium"
           primaryColor={sidebarFiltersIsOpen ? '#0052CC' : '#333333'}
           onClick={() => {
+            if (!filterStatusesIsFetched) {
+              fetchProjectStatusesRequest();
+            }
             setUiState('sidebarFiltersIsOpen', !sidebarFiltersIsOpen);
           }}
         />
       </span>
-      {filtersApplied &&
+      {(filtersApplied !== 0) &&
         <FiltersAppliedBadge />
       }
     </SearchOptions>
   </SearchBar>;
 
 function mapStateToProps(state) {
+  const filters = getUiState('issuesFilters')(state);
   return {
-    host: state.profile.host,
-    protocol: state.profile.protocol,
+    host: getUiState('host')(state),
+    protocol: getUiState('protocol')(state),
     currentProjectId: getCurrentProjectId(state),
-    searchValue: getIssuesSearchValue(state),
+    searchValue: getUiState('issuesSearch')(state),
     sidebarFiltersIsOpen: getUiState('sidebarFiltersIsOpen')(state),
-    // filtersApplied: getFiltersApplied(state),
-    filtersApplied: false,
+    filterStatusesIsFetched: getUiState('filterStatusesIsFetched')(state),
+    filtersApplied: filters.type.length || filters.status.length || filters.assignee.length,
   };
 }
 
@@ -120,6 +124,7 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     ...uiActions,
     ...issuesActions,
+    ...projectsActions,
   }, dispatch);
 }
 

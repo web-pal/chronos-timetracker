@@ -31,10 +31,10 @@ type Props = {
 
 class TeamStep extends Component<Props> {
   // Need it because of animation between steps
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps: Props) {
     if (!this.props.isActiveStep && nextProps.isActiveStep) {
       setTimeout(() => {
-        if (this.hostInput && this.hostInput.getRenderedComponent()) {
+        if (this.hostInput && this.hostInput.getRenderedComponent) {
           try {
             this.hostInput.getRenderedComponent().input.focus();
           } catch (err) {
@@ -44,6 +44,7 @@ class TeamStep extends Component<Props> {
       }, 500);
     }
   }
+  hostInput: any;
 
   render() {
     const {

@@ -16,10 +16,8 @@ import {
   uiActions,
 } from 'actions';
 import {
-  getProjectsFetching,
-  getSidebarType,
   getSelectedProjectId,
-  getSidebarFiltersOpen,
+  getUiState,
 } from 'selectors';
 
 import IssuesSourcePicker from './IssuesSourcePicker';
@@ -46,20 +44,20 @@ type Props = {
 
 const Sidebar: StatelessFunctionalComponent<Props> = ({
   sidebarType,
-  setSidebarType,
+  setUiState,
 }: Props): Node => (
   <SidebarContainer>
     <IssuesSourcePicker />
     <TabContainer>
       <Tab
         active={sidebarType === 'recent'}
-        onClick={() => setSidebarType('recent')}
+        onClick={() => setUiState('sidebarType', 'recent')}
       >
         Recent worklogs
       </Tab>
       <Tab
         active={sidebarType === 'all'}
-        onClick={() => setSidebarType('all')}
+        onClick={() => setUiState('sidebarType', 'all')}
       >
         Issues
       </Tab>
@@ -73,15 +71,15 @@ const Sidebar: StatelessFunctionalComponent<Props> = ({
 
 function mapStateToProps(state) {
   return {
-    projectsFetching: getProjectsFetching(state),
-    sidebarType: getSidebarType(state),
+    sidebarType: getUiState('sidebarType')(state),
     selectedProjectId: getSelectedProjectId(state),
-    sidebarFiltersOpen: getSidebarFiltersOpen(state),
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(uiActions, dispatch);
+  return bindActionCreators({
+    ...uiActions,
+  }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Sidebar);

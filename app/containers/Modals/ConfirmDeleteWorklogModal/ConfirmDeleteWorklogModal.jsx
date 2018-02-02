@@ -1,13 +1,33 @@
 // @flow
 import React from 'react';
-import type { StatelessFunctionalComponent, Node } from 'react';
-import ModalDialog from '@atlaskit/modal-dialog';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { uiActions } from 'actions';
-import { getConfirmDeleteWorklogModalOpen } from 'selectors';
+import {
+  connect,
+} from 'react-redux';
+import {
+  bindActionCreators,
+} from 'redux';
 
-import type { SetConfirmDeleteWorklogModalOpen, ConfirmDeleteWorklog } from '../../../types';
+import type {
+  StatelessFunctionalComponent,
+  Node,
+} from 'react';
+
+import {
+  uiActions,
+  worklogsActions,
+} from 'actions';
+import {
+  getConfirmDeleteWorklogModalOpen,
+  getUiState,
+  getModalState,
+} from 'selectors';
+import ModalDialog from '@atlaskit/modal-dialog';
+
+import type {
+  SetConfirmDeleteWorklogModalOpen,
+  ConfirmDeleteWorklog,
+} from '../../../types';
+
 
 type Props = {
   isOpen: boolean,
@@ -17,24 +37,27 @@ type Props = {
 
 const ConfirmDeleteWorklogModal: StatelessFunctionalComponent<Props> = ({
   isOpen,
+  worklogId,
   setConfirmDeleteWorklogModalOpen,
   confirmDeleteWorklog,
+  setModalState,
+  deleteWorklogRequest,
 }: Props): Node => isOpen && (
   <ModalDialog
-    onClose={() => setConfirmDeleteWorklogModalOpen(false)}
+    onClose={() => setModalState('confirmDeleteWorklog', false)}
     appearance="danger"
     heading="Delete worklog"
     actions={[
       {
         text: 'Delete',
         onClick: () => {
-          confirmDeleteWorklog();
-          setConfirmDeleteWorklogModalOpen(false);
+          deleteWorklogRequest(worklogId);
+          setModalState('confirmDeleteWorklog', false);
         },
       },
       {
         text: 'Close',
-        onClick: () => setConfirmDeleteWorklogModalOpen(false),
+        onClick: () => setModalState('confirmDeleteWorklog', false),
       },
     ]}
   >
@@ -46,12 +69,16 @@ const ConfirmDeleteWorklogModal: StatelessFunctionalComponent<Props> = ({
 
 function mapStateToProps(state) {
   return {
-    isOpen: getConfirmDeleteWorklogModalOpen(state),
+    isOpen: getModalState('confirmDeleteWorklog')(state),
+    worklogId: getUiState('deleteWorklogId')(state),
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ ...uiActions }, dispatch);
+  return bindActionCreators({
+    ...uiActions,
+    ...worklogsActions,
+  }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ConfirmDeleteWorklogModal);

@@ -9,65 +9,78 @@ import {
   put,
   fork,
   takeEvery,
-  takeLatest,
+  cancel,
 } from 'redux-saga/effects';
-import {
-  normalize,
-  schema,
-} from 'normalizr';
-import createActionCreators from 'redux-resource-action-creators';
-import { ipcRenderer } from 'electron';
-import * as Api from 'api';
-import merge from 'lodash.merge';
 import Raven from 'raven-js';
+import createActionCreators from 'redux-resource-action-creators';
+
+import * as Api from 'api';
+
 import {
-  getSelectedProject,
-  getSelectedProjectId,
-  getSelectedSprintId,
   getFieldIdByName,
   getUserData,
-  getRecentIssueIds,
-  getIssuesSearchValue,
-  getComments,
-  getFoundIssueIds,
-  getIssueFilters,
-  getIssuesFilters,
-  getSelectedIssueId,
-  getSelectedIssue,
-  getIssueViewTab,
-  getSelectedProjectType,
-  getResourceIds,
   getResourceMap,
   getUiState,
+  getSidebarType,
+  getCurrentProjectId,
+  getResourceItemBydId,
 } from 'selectors';
 import {
   issuesActions,
+  uiActions,
   resourcesActions,
   types,
 } from 'actions';
-import normalizePayload from 'normalize-util';
 
-import { throwError, infoLog, notify } from './ui';
-import { setToStorage, getFromStorage } from './storage';
-import { getAdditionalWorklogsForIssues } from './worklogs';
+import {
+  throwError,
+  infoLog,
+  notify,
+} from './ui';
+import {
+  getAdditionalWorklogsForIssues,
+} from './worklogs';
+import {
+  getIssueComments,
+} from './comments';
 import createIpcChannel from './ipc';
 
 import type {
   FetchIssuesRequestAction,
-  Project,
-  Id,
   User,
-  IssueFilters,
-  SelectIssueAction,
-  Issue,
-  CommentRequestAction,
 } from '../types';
+
 
 const JQL_RESTRICTED_CHARS_REGEX = /[+.,;?|*/%^$#@[\]]/;
 
 export function transformFilterValue(value: string): string {
   return JQL_RESTRICTED_CHARS_REGEX.test(value) ? `"${value}"` : String(value);
 }
+
+/* eslint-disable */
+const normalizeIssues = issues =>
+  issues.reduce((acc, issue) => {
+    acc.entities.worklogs =
+      issue.fields.worklog.worklogs.reduce(
+        (wacc, worklog) => {
+          wacc[worklog.id] = worklog;
+          return wacc;
+        },
+        acc.entities.worklogs,
+      )
+    issue.fields.worklogs = issue.fields.worklog.worklogs.map(w => w.id);
+    delete issue.fields.worklog;
+    acc.entities.issues[issue.id] = issue;
+    acc.result.push(issue.id);
+    return acc;
+  }, {
+    entities: {
+      issues: {},
+      worklogs: {},
+    },
+    result: [],
+  });
+/* eslint-enable */
 
 function mapAssignee(assigneeId: string) {
   return assigneeId === 'unassigned' ? 'assignee is EMPTY' : 'assignee = currentUser()';
@@ -84,15 +97,43 @@ function mapSearchValue(searchValue: string, projectKey: string): string {
 }
 
 function buildJQLQuery({
+  issuesFilters = {
+    type: [],
+    status: [],
+    assignee: [],
+  },
+  searchValue = '',
+  projectKey,
   projectId,
   sprintId,
   worklogAuthor,
   additionalJQL,
+}: {
+  issuesFilters?: {
+    type: Array<string>,
+    status: Array<string>,
+    assignee: Array<string>,
+  },
+  searchValue?: string,
+  projectKey?: string | null,
+  projectId?: number | string | null,
+  sprintId?: number | string | null,
+  worklogAuthor?: string | null,
+  additionalJQL?: string | null,
 }) {
+  const {
+    type,
+    status,
+    assignee,
+  } = issuesFilters;
   const jql = [
     (projectId && `project = ${projectId}`),
     (sprintId && `sprint = ${sprintId}`),
     (worklogAuthor && `worklogAuthor = ${worklogAuthor}`),
+    (type.length && `issueType in (${type.join(',')})`),
+    (status.length && `status in (${type.join(',')})`),
+    (assignee.length && mapAssignee(assignee[0])),
+    ((searchValue.length && projectKey) && mapSearchValue(searchValue, projectKey)),
     (additionalJQL && additionalJQL),
   ].filter(f => !!f).join(' AND ');
   return jql;
@@ -129,61 +170,11 @@ function* fetchAdditionalWorklogsForIssues(issues) {
   return issues;
 }
 
-export function* fetchProjectIssuesStatuses(): Generator<*, *, *> {
-  const actions = createActionCreators('read', {
-    resourceName: 'issuesTypes',
-    request: 'issuesTypes',
-    list: 'issuesTypes',
-    mergeListIds: false,
-  });
-  try {
-    const issuesSourceId: string | null = yield select(getUiState('issuesSourceId'));
-    const issuesSourceType: string | null = yield select(getUiState('issuesSourceType'));
-    const issuesSprintId: string | null = yield select(getUiState('issuesSprintId'));
-
-    let projectId = issuesSourceId;
-    if (issuesSourceId && issuesSourceType === 'kanban') {
-      const boards = yield select(getResourceMap('boards'));
-      const board = boards[issuesSourceId];
-      if (board) {
-        projectId = board.location.projectId; // eslint-disable-line
-      }
-    }
-    if (issuesSprintId && issuesSourceType === 'scrum') {
-      const sprints = yield select(getResourceMap('sprints'));
-      const sprint = sprints[issuesSprintId];
-      if (sprint) {
-        const boards = yield select(getResourceMap('boards'));
-        const board = boards[sprint.originBoardId];
-        if (board) {
-          projectId = board.location.projectId; // eslint-disable-line
-        }
-      }
-    }
-    if (projectId) {
-      yield put(actions.pending());
-      const statuses = yield call(Api.fetchProjectStatuses, projectId);
-      const statusesSchema = new schema.Entity('issuesStatuses');
-      const typesSchema = new schema.Entity('issuesTypes', {
-        statuses: [statusesSchema],
-      });
-      const normalizedData = normalize(statuses, [typesSchema]);
-      yield put(actions.succeeded({
-        resources: normalizedData.result,
-        includedResources: normalizedData.entities,
-      }));
-    }
-  } catch (err) {
-    yield call(throwError, err);
-  }
-}
-
 export function* fetchIssues({
   payload: {
     startIndex,
     stopIndex,
     resolve,
-    search,
   },
 }: FetchIssuesRequestAction): Generator<*, *, *> {
   const actions = createActionCreators('read', {
@@ -200,17 +191,23 @@ export function* fetchIssues({
       'started fetchIssues',
     );
     yield put(actions.pending());
-    if (search) {
-      yield put(issuesActions.setIssuesTotalCount(0));
-      yield put(issuesActions.clearFoundIssueIds());
-    }
 
     const issuesSourceId: string | null = yield select(getUiState('issuesSourceId'));
     const issuesSourceType: string | null = yield select(getUiState('issuesSourceType'));
     const issuesSprintId: string | null = yield select(getUiState('issuesSprintId'));
+    const searchValue: string = yield select(getUiState('issuesSearch'));
+    const issuesFilters = yield select(getUiState('issuesFilters'));
+    const projectId = yield select(getCurrentProjectId);
 
-    const epicLinkFieldId: string | null = yield select(getFieldIdByName, 'Epic Link');
+    const projectsMap = yield select(getResourceMap('projects'));
+    const project = projectsMap[projectId];
+    const projectKey = project ? project.key : null;
+
+    const epicLinkFieldId: string | null = yield select(getFieldIdByName('Epic Link'));
     const jql: string = buildJQLQuery({
+      issuesFilters,
+      projectKey,
+      searchValue,
       projectId: issuesSourceType === 'project' ? issuesSourceId : null,
       sprintId: issuesSourceType === 'scrum' ? issuesSprintId : null,
     });
@@ -223,7 +220,7 @@ export function* fetchIssues({
           stopIndex,
           jql,
           boardId: issuesSourceType !== 'project' ? issuesSourceId : null,
-          epicLinkFieldId,
+          additionalFields: epicLinkFieldId ? [epicLinkFieldId] : [],
         },
       ) :
       {
@@ -245,19 +242,11 @@ export function* fetchIssues({
         filterIssuesTotalCount: response.total,
       },
     }));
+    const normalizedIssues = normalizeIssues(issues);
     yield put(actions.succeeded({
-      resources: issues,
+      resources: normalizedIssues.result,
+      includedResources: normalizedIssues.entities,
     }));
-    /*
-    if (search) {
-      yield put(issuesActions.fillFoundIssueIds(normalizedIssues.ids));
-    } else {
-      const foundIssueIds = yield select(getFoundIssueIds);
-      if (foundIssueIds.length !== 0) {
-        yield put(issuesActions.addFoundIssueIds(normalizedIssues.ids));
-      }
-    }
-    */
     if (resolve) {
       resolve();
     }
@@ -273,13 +262,7 @@ export function* fetchIssues({
     }));
     yield call(throwError, err);
     Raven.captureException(err);
-  } finally {
-    yield fork(fetchProjectIssuesStatuses);
   }
-}
-
-export function* watchFetchIssuesRequest(): Generator<*, *, *> {
-  yield takeEvery(types.FETCH_ISSUES_REQUEST, fetchIssues);
 }
 
 export function* fetchRecentIssues(): Generator<*, *, *> {
@@ -299,7 +282,8 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
     const issuesSourceType: string | null = yield select(getUiState('issuesSourceType'));
     const issuesSprintId: string | null = yield select(getUiState('issuesSprintId'));
 
-    const epicLinkFieldId: string | null = yield select(getFieldIdByName, 'Epic Link');
+    const epicLinkFieldId: string | null = yield select(getFieldIdByName('Epic Link'));
+
     const profile: User = yield select(getUserData);
     const jql: string = buildJQLQuery({
       projectId: issuesSourceType === 'project' ? issuesSourceId : null,
@@ -320,7 +304,7 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
           stopIndex: 1000,
           jql,
           boardId: issuesSourceType !== 'project' ? issuesSourceId : null,
-          epicLinkFieldId,
+          additionalFields: epicLinkFieldId ? [epicLinkFieldId] : [],
         },
       ) :
       {
@@ -336,8 +320,10 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
       fetchAdditionalWorklogsForIssues,
       response.issues,
     );
+    const normalizedIssues = normalizeIssues(issues);
     yield put(actions.succeeded({
-      resources: issues,
+      resources: normalizedIssues.result,
+      includedResources: normalizedIssues.entities,
     }));
   } catch (err) {
     yield put(actions.succeeded({
@@ -348,196 +334,103 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
   }
 }
 
-export function* watchFetchRecentIssuesRequest(): Generator<*, *, *> {
-  yield takeEvery(types.FETCH_RECENT_ISSUES_REQUEST, fetchRecentIssues);
-}
-
-export function* getIssueComments(): Generator<*, void, *> {
+export function* refetchIssues(debouncing: boolean): Generator<*, void, *> {
   try {
-    const selectedIssue: Issue = yield select(getSelectedIssue);
-    yield put(issuesActions.setCommentsFetching(true));
-    const issueId: Id = selectedIssue.id;
-    yield call(infoLog, `fetching comments for issue ${issueId}`);
-    const { comments } = yield call(Api.fetchIssueComments, issueId);
-    yield call(infoLog, `got comments for issue ${issueId}`, comments);
-    yield put(issuesActions.fillComments(comments));
-    yield put(issuesActions.setCommentsFetching(false));
+    if (debouncing) {
+      yield call(delay, 500);
+    }
+    yield put(resourcesActions.clearResourceList({
+      resourceName: 'issues',
+      list: 'filterIssues',
+    }));
+    yield put(resourcesActions.setResourceMeta({
+      resourceName: 'issues',
+      meta: {
+        filterIssuesTotalCount: 10,
+      },
+    }));
+    yield put(resourcesActions.setResourceMeta({
+      resourceName: 'issues',
+      meta: {
+        refetchFilterIssuesMarker: true,
+      },
+    }));
+
+    const sidebarType = yield select(getSidebarType);
+    if (sidebarType === 'recent') {
+      yield put(resourcesActions.clearResourceList({
+        resourceName: 'issues',
+        list: 'recentIssues',
+      }));
+      yield call(fetchRecentIssues);
+    }
   } catch (err) {
-    yield put(issuesActions.setCommentsFetching(false));
     yield call(throwError, err);
-    Raven.captureException(err);
   }
 }
 
-function* getIssueTransitions(issueId: string): Generator<*, void, *> {
+export function* getIssueTransitions(issueId: string | number): Generator<*, void, *> {
+  const actions = createActionCreators('read', {
+    resourceName: 'issuesStatuses',
+    request: 'issueTransitions',
+    list: 'issueTransitions',
+    mergeListIds: false,
+  });
   try {
-    yield put(issuesActions.setAvailableTransitionsFetching(true));
+    yield put(actions.pending());
     yield call(
       infoLog,
       `getting available issue transitions for ${issueId}`,
     );
     const { transitions } = yield call(Api.getIssueTransitions, issueId);
+    yield put(actions.succeeded({
+      resources: transitions,
+    }));
     yield call(
       infoLog,
       `got issue ${issueId} available transitions`,
       transitions,
     );
-    yield put(issuesActions.fillAvailableTransitions(transitions));
-    yield put(issuesActions.setAvailableTransitionsFetching(false));
-  } catch (err) {
-    yield put(issuesActions.setAvailableTransitionsFetching(false));
-    yield call(throwError, err);
-    Raven.captureException(err);
-  }
-}
-
-export function* fetchIssueTypes(): Generator<*, *, *> {
-  try {
-    const selectedProjectType = yield select(getSelectedProjectType);
-    let selectedProjectId = null;
-    if (selectedProjectType === 'project') {
-      selectedProjectId = yield select(getSelectedProjectId);
-    }
-    yield call(infoLog, `fetching issue types for project ${selectedProjectId}`);
-    const metadata = yield call(Api.getIssuesMetadata, selectedProjectId);
-    const issueTypes = metadata.projects[0].issuetypes;
-    yield call(infoLog, `got issue types for project ${selectedProjectId}`, issueTypes);
-    const normalizedData = normalizePayload(issueTypes, 'issueTypes');
-    yield put(issuesActions.fillIssueTypes(normalizedData));
   } catch (err) {
     yield call(throwError, err);
     Raven.captureException(err);
   }
 }
 
-
-export function* fetchIssueStatuses(): Generator<*, *, *> {
+export function* transitionIssue({
+  issueId,
+  transitionId,
+}): Generator<*, void, *> {
+  const issuesA = createActionCreators('update', {
+    resourceName: 'issues',
+    request: 'updateIssue',
+  });
   try {
-    const selectedProjectType = yield select(getSelectedProjectType);
-    let selectedProjectId = null;
-    let issueTypes;
-    let issueStatuses;
-    const lastFiltersSelected: IssueFilters | null = yield call(getFromStorage, 'lastFiltersSelected');
-
-    if (selectedProjectType === 'project') {
-      selectedProjectId = yield select(getSelectedProjectId);
-      yield call(infoLog, `fetching issue statuses for project ${selectedProjectId}`);
-      issueTypes = yield call(Api.fetchIssueTypes, selectedProjectId);
-      issueStatuses = issueTypes[0].statuses;
-
-      if (lastFiltersSelected) {
-        const selectedTypes = issueTypes.reduce((results, type) => {
-          if (lastFiltersSelected.type.includes(type.id)) {
-            results.push(type.id);
-          }
-          return results;
-        }, []);
-        yield put(issuesActions.setIssuesFilter(selectedTypes, 'type'));
-      }
-    } else {
-      yield call(infoLog, 'fetching issue statuses for all projects');
-      issueStatuses = yield call(Api.fetchIssueStatuses);
-    }
-
-    if (lastFiltersSelected) {
-      const selectedStatuses = issueStatuses.reduce((results, status) => {
-        if (lastFiltersSelected.status.includes(status.id)) {
-          results.push(status.id);
-        }
-        return results;
-      }, []);
-      yield put(issuesActions.setIssuesFilter(selectedStatuses, 'status'));
-      yield put(issuesActions.setIssuesFilter(lastFiltersSelected.assignee, 'assignee'));
-    }
-
-    yield call(infoLog, `got issue statuses for project ${selectedProjectId}`, issueStatuses);
-    const normalizedData = normalizePayload(issueStatuses, 'issueStatuses');
-    yield put(issuesActions.fillIssueStatuses(normalizedData));
-  } catch (err) {
-    yield call(throwError, err);
-    Raven.captureException(err);
-  }
-}
-
-function* onSidebarTabChange({ payload }: { payload: string }): Generator<*, *, *> {
-  try {
-    const tab: string = payload;
-    const recentIssueIds: Array<Id> = yield select(
-      getResourceIds('issues', 'recentIssues'),
+    yield put(issuesA.pending());
+    yield call(
+      Api.transitionIssue,
+      issueId,
+      transitionId,
     );
-    if (tab === 'recent' && recentIssueIds.length === 0) {
-      yield fork(fetchRecentIssues);
-    }
-  } catch (err) {
-    yield call(throwError, err);
-    Raven.captureException(err);
-  }
-}
+    const issue = yield select(getResourceItemBydId('issues', issueId));
+    const transition = yield select(getResourceItemBydId('issuesStatuses', transitionId));
 
-export function* watchSidebarTabChange(): Generator<*, *, *> {
-  yield takeEvery(types.SET_SIDEBAR_TYPE, onSidebarTabChange);
-}
-
-
-function* handleIssueFiltersChange(): Generator<*, *, *> {
-  yield call(delay, 500);
-  yield put(issuesActions.fetchIssuesRequest({ startIndex: 0, stopIndex: 10, search: true }));
-  const filters: IssueFilters = yield select(getIssuesFilters);
-  yield call(setToStorage, 'lastFiltersSelected', filters);
-}
-
-export function* watchFiltersChange(): Generator<*, *, *> {
-  yield takeLatest(
-    [types.SET_ISSUES_SEARCH_VALUE, types.SET_ISSUES_FILTER],
-    handleIssueFiltersChange,
-  );
-}
-
-export function* issueSelectFlow({ payload, meta }: SelectIssueAction): Generator<*, *, *> {
-  const issueViewTab = yield select(getIssueViewTab);
-  if (payload) {
-    yield fork(getIssueTransitions, payload.id);
-    yield fork(getIssueComments, payload.id);
-    if (payload) {
-      const issueKey = payload.key;
-      ipcRenderer.send('select-issue', issueKey);
-    }
-  }
-  if (meta && issueViewTab === 'Worklogs') {
-    yield call(delay, 500);
-    const worklogEl = document.querySelector(`#worklog-${meta.id}`);
-    if (worklogEl) {
-      worklogEl.scrollIntoView({ behavior: 'smooth' });
-    }
-  }
-}
-
-export function* watchIssueSelect(): Generator<*, void, *> {
-  yield takeEvery(types.SELECT_ISSUE, issueSelectFlow);
-}
-
-export function* transitionIssueFlow(): Generator<*, void, *> {
-  try {
-    while (true) {
-      const { payload, meta } = yield take(types.TRANSITION_ISSUE_REQUEST);
-      const issue = meta;
-      const transition = payload;
-      yield call(Api.transitionIssue, issue.id, transition.id);
-      yield put(issuesActions.setIssueStatus(transition.to, issue));
-      const newIssue = {
+    yield put(issuesA.succeeded({
+      resources: [{
         ...issue,
         fields: {
           ...issue.fields,
           status: transition.to,
         },
-      };
-      yield put(issuesActions.selectIssue(newIssue));
-      yield call(
-        notify,
-        '',
-        `Moved issue ${issue.key} to ${transition.to.name}`,
-      );
-    }
+      }],
+    }));
+    yield fork(getIssueTransitions, issueId);
+
+    yield call(
+      notify,
+      '',
+      `Moved issue ${issue.key} to ${transition.to.name}`,
+    );
   } catch (err) {
     yield call(
       notify,
@@ -545,40 +438,52 @@ export function* transitionIssueFlow(): Generator<*, void, *> {
       'Issue transition failed. Probably no permission',
     );
     yield call(throwError, err);
-    Raven.captureException(err);
   }
 }
 
-export function* assignIssueFlow(): Generator<*, void, *> {
+export function* issueSelectFlow(issueId: string | number): Generator<*, *, *> {
+  yield fork(getIssueTransitions, issueId);
+  yield fork(getIssueComments, issueId);
+}
+
+export function* assignIssue({
+  issueId,
+}): Generator<*, void, *> {
+  const issuesA = createActionCreators('update', {
+    resourceName: 'issues',
+    request: 'updateIssue',
+  });
   try {
-    while (true) {
-      const { payload } = yield take(types.ASSIGN_ISSUE_REQEST);
-      const issue = payload;
-      const userData = yield select(getUserData);
-      yield call(
-        infoLog,
-        `assigning issue ${issue.key} to self (${userData.key})`,
-      );
-      yield call(Api.assignIssue, { issueKey: issue.key, assignee: userData.key });
-      yield call(
-        infoLog,
-        `succesfully assigned issue ${issue.key} to self (${userData.key})`,
-      );
-      yield put(issuesActions.setIssueAssignee(userData, issue));
-      const newIssue = {
+    yield put(issuesA.pending());
+
+    const issue = yield select(getResourceItemBydId('issues', issueId));
+    const userData = yield select(getUserData);
+
+    yield call(
+      infoLog,
+      `assigning issue ${issue.key} to self (${userData.key})`,
+    );
+    yield call(Api.assignIssue, { issueKey: issue.key, assignee: userData.key });
+    yield call(
+      infoLog,
+      `succesfully assigned issue ${issue.key} to self (${userData.key})`,
+    );
+
+    yield put(issuesA.succeeded({
+      resources: [{
         ...issue,
         fields: {
           ...issue.fields,
           assignee: userData,
         },
-      };
-      yield put(issuesActions.selectIssue(newIssue));
-      yield call(
-        notify,
-        '',
-        `${issue.key} is assigned to you`,
-      );
-    }
+      }],
+    }));
+
+    yield call(
+      notify,
+      '',
+      `${issue.key} is assigned to you`,
+    );
   } catch (err) {
     yield call(
       notify,
@@ -591,11 +496,20 @@ export function* assignIssueFlow(): Generator<*, void, *> {
 }
 
 export function* fetchIssueFields(): Generator<*, void, *> {
+  const actions = createActionCreators('read', {
+    resourceName: 'issuesFields',
+    request: 'issuesFields',
+    list: 'allFields',
+    mergeListIds: true,
+  });
   try {
+    yield put(actions.pending());
     yield call(infoLog, 'fetching issue fields');
-    const issueFields = yield call(Api.fetchIssueFields);
-    yield call(infoLog, 'got issue fields', issueFields);
-    yield put(issuesActions.fillIssueFields(issueFields));
+    const issuesFields = yield call(Api.fetchIssueFields);
+    yield put(actions.succeeded({
+      resources: issuesFields,
+    }));
+    yield call(infoLog, 'got issue fields', issuesFields);
   } catch (err) {
     yield call(throwError, err);
     Raven.captureException(err);
@@ -603,65 +517,47 @@ export function* fetchIssueFields(): Generator<*, void, *> {
 }
 
 export function* fetchEpics(): Generator<*, void, *> {
+  const actions = createActionCreators('read', {
+    resourceName: 'issues',
+    request: 'epicIssues',
+    list: 'epicIssues',
+    mergeListIds: true,
+  });
   try {
+    yield put(actions.pending());
     yield call(infoLog, 'fetching epics');
     const { issues } = yield call(Api.fetchEpics);
+    yield put(actions.succeeded({
+      resources: issues,
+    }));
     yield call(infoLog, 'got epics', issues);
-    const normalizedEpics = yield call(normalizePayload, issues, 'epics');
-    yield put(issuesActions.fillEpics(normalizedEpics));
   } catch (err) {
     yield call(throwError, err);
     Raven.captureException(err);
   }
 }
 
-
-export function* addIssueCommentFlow(): Generator<*, void, *> {
-  try {
-    while (true) {
-      const { payload, meta }: CommentRequestAction = yield take(types.COMMENT_REQUEST);
-      yield call(infoLog, 'adding comment', payload, meta);
-      yield put(issuesActions.setCommentsAdding(true));
-      const opts = {
-        issueId: meta.id,
-        comment: {
-          body: payload,
-        },
-      };
-      const newComment = yield call(Api.addComment, opts);
-      yield call(infoLog, 'comment added', newComment);
-      const comments = yield select(getComments);
-      const newComments = [
-        ...comments,
-        newComment,
-      ];
-      yield put(issuesActions.fillComments(newComments));
-      yield put(issuesActions.setCommentsAdding(false));
-    }
-  } catch (err) {
-    yield put(issuesActions.setCommentsAdding(false));
-    yield call(notify, '', 'failed to add comment');
-    yield call(throwError, err);
-    Raven.captureException(err);
-  }
-}
 
 function getNewIssueChannelListener(channel) {
   return function* listenNewIssue() {
     while (true) {
       const { payload } = yield take(channel);
+      const actions = createActionCreators('create', {
+        resourceName: 'issues',
+        request: 'createIssue',
+      });
       try {
+        yield put(actions.pending());
         const issueKey = payload[0];
         const issue = yield call(Api.fetchIssueByKey, issueKey);
-        const totalCountIssues = yield select(state => state.issues.meta.totalCount);
-        yield put(issuesActions.addIssues({
-          map: {
-            [issue.id]: issue,
-          },
-          ids: [issue.id],
+        yield put(actions.succeeded({
+          resources: [issue],
         }));
-        yield put(issuesActions.setIssuesTotalCount(totalCountIssues + 1));
-        yield put(issuesActions.selectIssue(issue));
+        yield put(uiActions.setUiState(
+          'selectedIssueId',
+          issue.id,
+        ));
+        yield fork(refetchIssues, false);
         yield call(
           notify,
           '',
@@ -677,4 +573,34 @@ function getNewIssueChannelListener(channel) {
 export function* createIpcNewIssueListener(): void {
   const newIssueChannel = yield call(createIpcChannel, 'newIssue');
   yield fork(getNewIssueChannelListener(newIssueChannel));
+}
+
+export function* watchFetchIssuesRequest(): Generator<*, *, *> {
+  yield takeEvery(types.FETCH_ISSUES_REQUEST, fetchIssues);
+}
+
+export function* watchFetchRecentIssuesRequest(): Generator<*, *, *> {
+  yield takeEvery(types.FETCH_RECENT_ISSUES_REQUEST, fetchRecentIssues);
+}
+
+export function* watchTransitionIssueRequest(): Generator<*, *, *> {
+  yield takeEvery(types.TRANSITION_ISSUE_REQUEST, transitionIssue);
+}
+
+export function* watchAssignIssueRequest(): Generator<*, *, *> {
+  yield takeEvery(types.ASSIGN_ISSUE_REQUEST, assignIssue);
+}
+
+export function* watchReFetchIssuesRequest(): Generator<*, *, *> {
+  let task;
+  while (true) {
+    const { debouncing } = yield take(types.REFETCH_ISSUES_REQUEST);
+    if (debouncing && task) {
+      yield cancel(task);
+    }
+    if (task) {
+      yield cancel(task);
+    }
+    task = yield fork(refetchIssues, debouncing);
+  }
 }

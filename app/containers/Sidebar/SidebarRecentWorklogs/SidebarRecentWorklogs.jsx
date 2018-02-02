@@ -26,12 +26,7 @@ import {
 } from 'actions';
 import {
   getRecentIssues,
-  getRecentIssuesFetching,
-  getRecentIssuesTotalCount,
-  getProjectsFetching,
-  getRecentItems,
-  getSelectedWorklogId,
-  getResourceMappedList,
+  getUiState,
 } from 'selectors';
 
 import TimestampItem from './TimestampItem';
@@ -40,10 +35,8 @@ import NoWorklogs from './NoWorklogs';
 
 import type {
   Id,
-  IssuesMap,
   SelectIssue,
   SelectWorklog,
-  SetIssueViewTab,
 } from '../../../types';
 
 import {
@@ -68,7 +61,6 @@ type Props = {
   projectsFetching: boolean,
   selectIssue: SelectIssue,
   selectWorklog: SelectWorklog,
-  setIssueViewTab: SetIssueViewTab,
 }
 
 const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
@@ -76,14 +68,12 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
   selectedWorklogId,
   issuesFetching,
   projectsFetching,
-  selectIssue,
-  selectWorklog,
-  setIssueViewTab,
+  dispatch,
 }: Props): Node => (
   (issuesFetching || projectsFetching) ?
     <RecentItemsPlaceholder /> :
     <ListContainer>
-      {recentIssues.length === 0 &&
+      {Object.keys(recentIssues).length === 0 &&
         <NoWorklogs />
       }
       {Object.keys(recentIssues).map((day) => {
@@ -101,10 +91,21 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
                   issue={worklog.issue}
                   active={selectedWorklogId === worklog.id}
                   selectIssue={(issue) => {
-                    selectIssue(issue, worklog);
-                    selectWorklog(worklog.id);
+                    dispatch(uiActions.setUiState('selectedIssueId', issue.id));
+                    dispatch(uiActions.setUiState('selectedWorklogId', worklog.id));
                   }}
-                  setIssueViewTab={setIssueViewTab}
+                  onClickShow={
+                    (issue) => {
+                      dispatch(uiActions.setUiState(
+                        'issueViewTab',
+                        'Worklogs',
+                      ));
+                      dispatch(uiActions.issueWorklogsScrollToIndexRequest(
+                        worklog.id,
+                        issue.id,
+                      ));
+                    }
+                  }
                   worklog={worklog}
                 />)}
             </Flex>
@@ -117,13 +118,17 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
 function mapStateToProps(state) {
   return {
     recentIssues: getRecentIssues(state),
-    selectedWorklogId: getSelectedWorklogId(state),
+    selectedWorklogId: getUiState('selectedWorklogId')(state),
     issuesFetching: getResourceStatus(
       state,
       'issues.requests.recentIssues.status',
       true,
     ).pending,
-    projectsFetching: getProjectsFetching(state),
+    projectsFetching: getResourceStatus(
+      state,
+      'projects.requests.allProjects.status',
+      true,
+    ).pending,
   };
 }
 
@@ -132,6 +137,7 @@ function mapDispatchToProps(dispatch) {
     ...uiActions,
     ...issuesActions,
     ...worklogsActions,
+    dispatch,
   }, dispatch);
 }
 

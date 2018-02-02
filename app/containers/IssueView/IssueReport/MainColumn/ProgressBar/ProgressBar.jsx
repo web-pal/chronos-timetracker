@@ -1,11 +1,21 @@
 // @flow
 import React from 'react';
-import { stj } from 'time-util';
-import type { StatelessFunctionalComponent, Node } from 'react';
 
-import { ProgressBarContainer } from './styled';
+import type {
+  StatelessFunctionalComponent,
+  Node,
+} from 'react';
+
+import {
+  stj,
+} from 'time-util';
+
+import {
+  ProgressBarContainer,
+} from './styled';
 
 import ProgressBarFill from './ProgressBarFill';
+
 
 type Props = {
   remaining: number,

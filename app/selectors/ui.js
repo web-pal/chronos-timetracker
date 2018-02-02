@@ -22,6 +22,7 @@ import {
 
 
 export const getUiState = key => ({ ui }) => ui[key];
+export const getModalState = key => ({ ui }) => ui.modalState[key];
 
 export const getAuthFormStep =
   ({ ui }: { ui: UiState }): AuthFormStep => ui.authFormStep;
@@ -184,7 +185,7 @@ export const getSelectedSprintOption = createSelector(
 export const getFilterOptions = createSelector(
   [
     getResourceMappedList('issuesTypes', 'issuesTypes'),
-    getResourceMap('issuesStatuses'),
+    getResourceMappedList('issuesStatuses', 'issuesStatuses'),
     getSelfKey,
   ],
   (
@@ -200,9 +201,7 @@ export const getFilterOptions = createSelector(
     }, {
       name: 'Status',
       key: 'status',
-      options:
-        Object.keys(issuesStatuses)
-          .map(id => issuesStatuses[id]),
+      options: issuesStatuses,
       showIcons: true,
     }, {
       name: 'Assignee',

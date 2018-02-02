@@ -38,34 +38,30 @@ export function fetchEpics(): Promise<*> {
   return jira.client.search.search({ jql, maxResults: 1000, startAt: 0 });
 }
 
-type fetchIssuesParams = {
-  startIndex: number,
-  stopIndex: number,
-  jql: string,
-  epicLinkFieldId?: string | null,
-  projectId: string,
-  projectType: string,
-};
-
 export function fetchIssues({
   startIndex,
   stopIndex,
   jql,
-  epicLinkFieldId,
+  additionalFields = [],
   boardId,
-}: fetchIssuesParams): Promise<*> {
+}: {
+  startIndex: number,
+  stopIndex: number,
+  jql: string,
+  additionalFields: Array<string>,
+  boardId?: number | string | null,
+}): Promise<*> {
   const api = boardId ?
     opts => jira.client.board.getIssuesForBoard({ ...opts, boardId }) :
     opts => jira.client.search.search(opts);
-  let newRequiredFields = requiredFields;
-  if (epicLinkFieldId) {
-    newRequiredFields = [...requiredFields, epicLinkFieldId];
-  }
   return api({
     jql,
     maxResults: (stopIndex - startIndex) + 1,
     startAt: startIndex,
-    fields: newRequiredFields,
+    fields: [
+      ...requiredFields,
+      ...additionalFields,
+    ],
     expand: ['renderedFields'],
   });
 }
@@ -144,7 +140,7 @@ export function addComment({
 export function getIssuesMetadata(projectId: Id | null): Promise<*> {
   const opts = {};
   if (projectId) {
-    opts.projectIds = [projectId];
+    opts.projectIds = projectId;
   }
   return jira.client.issue.getCreateMetadata(opts);
 }

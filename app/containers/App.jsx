@@ -11,7 +11,7 @@ import type {
 
 import Spinner from '@atlaskit/spinner';
 import {
-  getAuthorized,
+  getUiState,
 } from 'selectors';
 import {
   MaxHeight,
@@ -20,10 +20,6 @@ import {
 } from 'styles';
 import AuthForm from './AuthForm';
 import Main from './Main';
-
-import type {
-  State,
-} from '../types';
 
 
 type Props = {
@@ -47,10 +43,10 @@ const App: StatelessFunctionalComponent<Props> = (props: Props): Node => (
   </AppWrapper>
 );
 
-function mapStateToProps(state: State): Props {
+function mapStateToProps(state): Props {
   return {
-    isAuthorized: getAuthorized(state),
-    initializeInProcess: state.ui.initializeInProcess,
+    isAuthorized: getUiState('authorized')(state),
+    initializeInProcess: getUiState('initializeInProcess')(state),
   };
 }
 

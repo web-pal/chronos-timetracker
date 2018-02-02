@@ -11,6 +11,7 @@ type Handler = {
   (ev: Event): void;
 };
 
+
 export default function createIpcChannel(
   channel: string,
   listener: EventEmitter | any = ipcRenderer,

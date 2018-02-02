@@ -1,15 +1,36 @@
 // @flow
 import React from 'react';
 import moment from 'moment';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import type { StatelessFunctionalComponent, Node } from 'react';
-import Spinner from '@atlaskit/spinner';
-import { Flex } from 'components';
-import { getSelectedIssue, getSelfKey, getHost } from 'selectors';
-import { openURLInBrowser } from 'external-open-util';
 
-import type { Issue } from '../../../types';
+import {
+  connect,
+} from 'react-redux';
+import {
+  bindActionCreators,
+} from 'redux';
+
+import type {
+  StatelessFunctionalComponent,
+  Node,
+} from 'react';
+
+import Spinner from '@atlaskit/spinner';
+import {
+  Flex,
+} from 'components';
+import {
+  getSelectedIssue,
+  getSelectedIssueReport,
+  getSelfKey,
+  getUiState,
+} from 'selectors';
+import {
+  openURLInBrowser,
+} from 'external-open-util';
+
+import type {
+  Issue,
+} from '../../../types';
 
 import {
   ReportTabContainer,
@@ -37,51 +58,15 @@ import StatisticsColumn from './MetaColumn/StatisticsColumn/StatisticsColumn';
 
 import BackgroundShapes from './BackgroundShapes';
 
+
 type Props = {
-  selectedIssue: Issue,
-  selfKey: string,
   host: URL,
 };
 
 const IssueReport: StatelessFunctionalComponent<Props> = ({
-  selectedIssue,
-  selfKey,
+  report,
   host,
 }: Props): Node => {
-  const timespent = selectedIssue.fields.timespent || 0;
-  const remaining = selectedIssue.fields.timeestimate || 0;
-  const estimate = remaining - timespent < 0 ? 0 : remaining - timespent;
-
-  const { worklogs } = selectedIssue.fields.worklog;
-
-  const loggedTotal = worklogs.reduce((v, w) => v + w.timeSpentSeconds, 0);
-
-  const yourWorklogs = worklogs.filter(w => w.author.key === selfKey);
-
-  const youLoggedTotal = yourWorklogs.reduce((v, w) => v + w.timeSpentSeconds, 0);
-
-  const yourWorklogsToday = yourWorklogs.filter(w => moment(w.updated).isSameOrAfter(moment().startOf('day')));
-
-  const youLoggedToday = yourWorklogsToday.reduce((v, w) => v + w.timeSpentSeconds, 0);
-
-  const isLoading = false;
-  if (isLoading) {
-    return (
-      <Flex
-        column
-        alignCenter
-        style={{
-          flexGrow: 1,
-          justifyContent: 'center',
-          backgroundColor: '#0052CC',
-          margin: '-20px -20px auto -20px',
-        }}
-      >
-        <Spinner size="xlarge" invertColor />
-      </Flex>
-    );
-  }
-
   return (
     <Flex column style={{ flexGrow: 1 }}>
       <BackgroundShapes />
@@ -90,12 +75,12 @@ const IssueReport: StatelessFunctionalComponent<Props> = ({
         <MainColumn>
           <Flex column style={{ width: '100%' }}>
             <StatisticsRow
-              estimate={estimate}
-              remaining={remaining}
+              estimate={report.estimate}
+              remaining={report.remaining}
             />
             <ProgressBar
-              loggedTotal={loggedTotal}
-              remaining={remaining}
+              loggedTotal={report.loggedTotal}
+              remaining={report.remaining}
             />
           </Flex>
 
@@ -104,7 +89,7 @@ const IssueReport: StatelessFunctionalComponent<Props> = ({
               View reports and calculate salaries in Chronos Timesheets
             </Heading>
             <CTAButton
-              onClick={openURLInBrowser(`${host.origin}/plugins/servlet/ac/jira-chronos/api-page-jira`)}
+              onClick={openURLInBrowser(`http://${host}/plugins/servlet/ac/jira-chronos/api-page-jira`)}
             >
               Open plugin
             </CTAButton>
@@ -120,9 +105,9 @@ const IssueReport: StatelessFunctionalComponent<Props> = ({
 
         <MetaColumn>
           <StatisticsColumn
-            youLoggedToday={youLoggedToday}
-            youLoggedTotal={youLoggedTotal}
-            loggedTotal={loggedTotal}
+            youLoggedToday={report.youLoggedToday}
+            youLoggedTotal={report.youLoggedTotal}
+            loggedTotal={report.loggedTotal}
           />
 
           {/* CLOCK */}
@@ -174,9 +159,8 @@ const IssueReport: StatelessFunctionalComponent<Props> = ({
 
 function mapStateToProps(state) {
   return {
-    selectedIssue: getSelectedIssue(state),
-    selfKey: getSelfKey(state),
-    host: getHost(state),
+    report: getSelectedIssueReport(state),
+    host: getUiState('host')(state),
   };
 }
 

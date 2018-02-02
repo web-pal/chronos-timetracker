@@ -16,7 +16,6 @@ import profile from './profile';
 import ui from './ui';
 import settings from './settings';
 import timer from './timer';
-import worklogs from './worklogs';
 
 import indexedListPlugin from './resourcesPlugins/indexedListPlugin';
 import clearListPlugin from './resourcesPlugins/clearListPlugin';
@@ -28,10 +27,16 @@ const rootReducer = combineReducers({
   ui,
   settings,
   timer,
-  worklogs,
   form: formReducer,
+  issuesComments: resourceReducer('issuesComments'),
+  issuesFields: resourceReducer('issuesFields', {
+    initialState: {
+      lists: {
+        allFields: [],
+      },
+    },
+  }),
   issuesTypes: resourceReducer('issuesTypes', {
-    plugins: [includedResources],
     initialState: {
       lists: {
         issuesTypes: [],
@@ -39,7 +44,12 @@ const rootReducer = combineReducers({
     },
   }),
   issuesStatuses: resourceReducer('issuesStatuses', {
-    plugins: [includedResources],
+    initialState: {
+      lists: {
+        issuesStatuses: [],
+        issueTransitions: [],
+      },
+    },
   }),
   sprints: resourceReducer('sprints', {
     initialState: {
@@ -62,15 +72,24 @@ const rootReducer = combineReducers({
       },
     },
   }),
+  worklogs: resourceReducer('worklogs', {
+    plugins: [includedResources],
+  }),
   issues: resourceReducer('issues', {
-    plugins: [indexedListPlugin, clearListPlugin, metaPlugin],
+    plugins: [
+      includedResources,
+      indexedListPlugin,
+      clearListPlugin,
+      metaPlugin,
+    ],
     initialState: {
       meta: {
         refetchFilterIssuesMarker: false,
-        filterIssuesTotalCount: 0,
+        filterIssuesTotalCount: 10,
       },
       lists: {
         recentIssues: [],
+        epicIssues: [],
         filterIssuesIndexed: {},
       },
     },

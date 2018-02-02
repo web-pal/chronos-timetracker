@@ -16,6 +16,7 @@ import {
   getUpdateCheckRunning,
   getUpdateAvailable,
   getUpdateFetching,
+  getModalState,
 } from 'selectors';
 
 
@@ -134,7 +135,7 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
 
 function mapStateToProps(state) {
   return {
-    isOpen: getSettingsModalOpen(state),
+    isOpen: getModalState('settings')(state),
     settings: getLocalDesktopSettings(state),
     tab: getSettingsModalTab(state),
     updateCheckRunning: getUpdateCheckRunning(state),

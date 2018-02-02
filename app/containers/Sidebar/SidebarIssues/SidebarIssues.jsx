@@ -27,9 +27,6 @@ import type {
 
 import {
   getSidebarIssues2,
-  getSelectedIssueId,
-  getTrackingIssueId,
-  getSidebarFiltersOpen,
   getResourceMeta,
   getUiState,
 } from 'selectors';
@@ -38,6 +35,7 @@ import {
 } from 'components';
 import {
   issuesActions,
+  uiActions,
   resourcesActions,
 } from 'actions';
 import type {
@@ -61,7 +59,7 @@ type Props = {
   issues: IssuesMap,
   issuesFetching: boolean,
   projectsFetching: boolean,
-  sidebarFiltersOpen: boolean,
+  sidebarFiltersIsOpen: boolean,
   totalCount: number,
   selectedIssueId: Id | null,
   trackingIssueId: Id | null,
@@ -81,10 +79,10 @@ const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
   selectedIssueId,
   trackingIssueId,
   fetchIssuesRequest,
-  selectIssue,
   saveLastRenderedIndex,
   saveOnRowsRenderedFunction,
   registerInfiniteNode,
+  setUiState,
 }: Props): Node =>
   <ListContainer>
     <IssuesHeader />
@@ -139,7 +137,10 @@ const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
                           issue={item}
                           active={selectedIssueId === item.id}
                           tracking={trackingIssueId === item.id}
-                          selectIssue={selectIssue}
+                          selectIssue={(issue) => {
+                            setUiState('selectedIssueId', issue.id);
+                            setUiState('selectedWorklogId', null);
+                          }}
                         /> :
                         <IssueItemPlaceholder />
                       }
@@ -172,8 +173,8 @@ function mapStateToProps(state) {
     projectsFetching,
     issuesFetching,
     totalCount,
-    selectedIssueId: getSelectedIssueId(state),
-    trackingIssueId: getTrackingIssueId(state),
+    selectedIssueId: getUiState('selectedIssueId')(state),
+    trackingIssueId: getUiState('trackingIssueId')(state),
     refetchFilterIssuesMarker: getResourceMeta(
       'issues',
       'refetchFilterIssuesMarker',
@@ -186,6 +187,7 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     ...issuesActions,
     ...resourcesActions,
+    ...uiActions,
   }, dispatch);
 }
 

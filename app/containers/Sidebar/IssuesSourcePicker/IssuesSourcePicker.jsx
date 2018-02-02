@@ -22,17 +22,15 @@ import {
 import {
   getIssuesSourceOptions,
   getSelectedSprintOption,
-  getProjectsOptions,
-  getProjectsFetching,
-  getSprintsFetching,
   getSprintsOptions,
-  getSelectedProjectType,
   getIssuesSourceSelectedOption,
   getUiState,
 } from 'selectors';
 
 import {
   projectsActions,
+  issuesActions,
+  sprintsActions,
   uiActions,
 } from 'actions';
 
@@ -43,7 +41,6 @@ import {
 import type {
   SelectOption,
   SelectSprint,
-  SelectProject,
 } from '../../../types';
 
 
@@ -52,8 +49,6 @@ type Props = {
   sprintsOptions: Array<SelectOption>,
   selectedOption: SelectOption,
   selectedSprintOption: SelectOption,
-  selectSprint: SelectSprint,
-  selectProject: SelectProject,
   projectsFetching: boolean,
   sprintsFetching: boolean,
   selectedSourceType: string,
@@ -64,12 +59,12 @@ const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
   selectedOption,
   sprintsOptions,
   selectedSprintOption,
-  selectSprint,
-  selectProject,
   projectsFetching,
   sprintsFetching,
   selectedSourceType,
   setUiState,
+  refetchIssuesRequest,
+  fetchSprintsRequest,
 }: Props): Node =>
   <IssuesSourceContainer>
     <SingleSelect
@@ -83,6 +78,12 @@ const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
         setUiState('issuesSprintId', null);
         setUiState('issuesSourceId', item.value);
         setUiState('issuesSourceType', type);
+        if (type === 'scrum') {
+          fetchSprintsRequest();
+        } else if (item.value) {
+          setUiState('filterStatusesIsFetched', false);
+          refetchIssuesRequest();
+        }
       }}
       isLoading={projectsFetching}
       loadingMessage="Fetching projects..."
@@ -98,6 +99,7 @@ const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
         placeholder="Select sprint"
         onSelected={({ item }) => {
           setUiState('issuesSprintId', item.value);
+          refetchIssuesRequest();
         }}
         isLoading={sprintsFetching}
         loadingMessage="Fetching sprints..."
@@ -132,6 +134,8 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     ...projectsActions,
     ...uiActions,
+    ...issuesActions,
+    ...sprintsActions,
   }, dispatch);
 }
 

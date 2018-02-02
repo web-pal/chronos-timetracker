@@ -27,7 +27,7 @@ const indexedListPlugin = () =>
         [indexedListName]: {
           ...prevIndexed,
           ...action.resources.reduce((acc, resource, index) => {
-            acc[startIndex + index] = resource.id;
+            acc[startIndex + index] = resource.id ? resource.id : resource;
             return acc;
           }, {}),
         },

@@ -14,8 +14,6 @@ import * as Api from 'api';
 import {
   uiActions,
   profileActions,
-  projectsActions,
-  authActions,
   settingsActions,
   resourcesActions,
 } from 'actions';
@@ -50,19 +48,19 @@ import type {
 } from '../types';
 
 
-function identifyInSentryAndMixpanel(host: URL, userData: User): void {
+function identifyInSentryAndMixpanel(host: string, userData: User): void {
   if (process.env.DISABLE_MIXPANEL !== '1') {
-    mixpanel.identify((`${host.origin} - ${userData.emailAddress}`));
+    mixpanel.identify((`${host} - ${userData.emailAddress}`));
     mixpanel.people.set({
-      host: host.origin,
+      host,
       locale: userData.locale,
       $timezone: userData.timeZone,
       $name: userData.displayName,
       $email: userData.emailAddress,
-      $distinct_id: `${host.origin} - ${userData.emailAddress}`,
+      $distinct_id: `${host} - ${userData.emailAddress}`,
     });
     Raven.setUserContext({
-      host: host.origin,
+      host,
       locale: userData.locale,
       timeZone: userData.timeZone,
       name: userData.displayName,
@@ -71,7 +69,7 @@ function identifyInSentryAndMixpanel(host: URL, userData: User): void {
   }
 }
 
-function* initializeMixpanel(): Generator<*, void, *> {
+function* initializeMixpanel(): Generator<*, *, *> {
   if (process.env.DISABLE_MIXPANEL === '1') {
     yield call(infoLog, 'mixpanel disabled with ENV var');
   }
@@ -86,10 +84,14 @@ function* initializeMixpanel(): Generator<*, void, *> {
 export function* initialConfigureApp({
   host,
   protocol,
-}): Generator<*, void, *> {
+}: {
+  host: string,
+  protocol: string,
+}): Generator<*, *, *> {
   const userData: User = yield call(Api.jiraProfile);
 
-  yield put(profileActions.setHost(host));
+  yield put(profileActions.fillUserData(userData));
+  yield put(uiActions.setUiState('host', host));
   yield call(initializeMixpanel);
   yield call(identifyInSentryAndMixpanel, host, userData);
 
@@ -113,6 +115,8 @@ export function* initialConfigureApp({
     );
   }
 
+  yield call(fetchIssueFields);
+  yield fork(fetchEpics);
   yield fork(fetchProjects);
   yield fork(fetchBoards);
 
@@ -121,12 +125,9 @@ export function* initialConfigureApp({
   yield put(uiActions.setUiState('issuesSourceType', issuesSourceType));
 
   yield put(settingsActions.fillLocalDesktopSettings(settings));
-  yield put(profileActions.setProtocol(protocol));
-  yield put(profileActions.fillUserData(userData));
-  yield put(authActions.setAuthorized(true));
+  yield put(uiActions.setUiState('protocol', protocol));
+  yield put(uiActions.setUiState('authorized', true));
 
-  yield fork(fetchIssueFields);
-  yield fork(fetchEpics);
   yield put(resourcesActions.setResourceMeta({
     resourceName: 'issues',
     meta: {
@@ -143,7 +144,7 @@ export function* initialConfigureApp({
   */
 }
 
-function* getInitializeAppData(): Generator<*, void, *> {
+function* getInitializeAppData(): Generator<*, *, *> {
   const basicAuthCredentials = yield call(
     getFromStorage,
     'jira_credentials',
@@ -204,8 +205,8 @@ function* getInitializeAppData(): Generator<*, void, *> {
   };
 }
 
-export function* initializeApp(): Generator<*, void, *> {
-  yield put(uiActions.setInitializeState(true));
+export function* initializeApp(): Generator<*, *, *> {
+  yield put(uiActions.setUiState('initializeInProcess', true));
   try {
     const {
       tryLogin,
@@ -215,11 +216,16 @@ export function* initializeApp(): Generator<*, void, *> {
     if (tryLogin) {
       const loginFunc = authType === 'OAuth' ? jira.oauth : jira.basicAuth;
       yield call(loginFunc, authData);
-      yield call(initialConfigureApp, { host: authData.host, protocol: authData.protocol });
+      yield call(
+        initialConfigureApp,
+        {
+          host: authData.host,
+          protocol: authData.protocol,
+        },
+      );
     }
   } catch (err) {
-    Raven.captureException(err);
     console.log(err);
   }
-  yield put(uiActions.setInitializeState(false));
+  yield put(uiActions.setUiState('initializeInProcess', false));
 }

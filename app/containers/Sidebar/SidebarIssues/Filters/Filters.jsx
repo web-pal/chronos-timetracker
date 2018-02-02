@@ -1,12 +1,14 @@
 // @flow
 import React from 'react';
-import pull from 'lodash.pull';
 import {
   connect,
 } from 'react-redux';
 import {
   bindActionCreators,
 } from 'redux';
+import {
+  getStatus as getResourceStatus,
+} from 'redux-resource';
 
 import type {
   StatelessFunctionalComponent,
@@ -24,32 +26,27 @@ import {
 } from 'actions';
 import {
   getResourceMeta,
-  getIssueTypes,
-  getUserData,
-  getIssueStatuses,
-  getIssueFilters,
-  getIssuesTotalCount,
-  getIssuesFetching,
   getFilterOptions,
+  getUiState,
 } from 'selectors';
 import {
-  H200,
-} from 'styles/typography';
+  FullPageSpinner,
+} from 'styles';
 
 import {
   FiltersContainer,
+  FilterName,
   FilterItems,
   FilterItem,
   FilterOptions,
   FilterActionsContainer,
+  IssuesFoundContainer,
   IssuesFoundText,
 } from './styled';
 import FilterOption from './FilterOption';
 
 import type {
   SetIssuesFilter,
-  IssueType,
-  IssueStatus,
   IssueFilters,
   SetSidebarFiltersOpen,
 } from '../../../../types';
@@ -64,66 +61,82 @@ type Props = {
 };
 
 const SidebarFilters: StatelessFunctionalComponent<Props> = ({
-  setIssuesFilter,
+  setUiState,
+  setIssuesFilters,
   filters,
   issuesCount,
-  fetching,
-  setSidebarFiltersOpen,
+  issuesFetching,
   options,
+  optionsFetching,
+  refetchIssuesRequest,
 }: Props): Node => (
   <FiltersContainer>
-    {console.log(options)}
-    <FilterItems>
-      {options.map(type =>
-        <FilterItem key={type.key}>
-          <H200 style={{ padding: '10px 0 4px 10px', display: 'block' }}>
-            {type.name}
-          </H200>
-          <FilterOptions>
-            {type.options.map(option => (
-              <FilterOption
-                key={option.id}
-                option={option}
-                isChecked={false}
-                onChange={(value, checked) => {
-                  let newFilters;
-                  if (option.key === 'assignee') {
-                    newFilters = [];
-                  } else {
-                    newFilters = filters[option.key];
-                  }
-                  if (!checked) {
-                    newFilters.push(value);
-                  } else {
-                    pull(newFilters, value);
-                  }
-                  setIssuesFilter(newFilters, option.key);
-                }}
-                showIcons={type.showIcons}
-              />
-            ))}
-          </FilterOptions>
-        </FilterItem>)
-      }
-    </FilterItems>
+    {optionsFetching ?
+      <FullPageSpinner>
+        <Spinner size="xlarge" />
+      </FullPageSpinner> :
+      <FilterItems>
+        {options.map(type =>
+          <FilterItem key={type.key}>
+            <FilterName>
+              {type.name}
+            </FilterName>
+            <FilterOptions>
+              {type.options.map(option => (
+                <FilterOption
+                  key={option.id}
+                  option={option}
+                  isChecked={filters[type.key].includes(option.id)}
+                  onChange={(value, checked) => {
+                    if (type.key === 'assignee') {
+                      setIssuesFilters(
+                        type.key,
+                        [!checked && value].filter(Boolean),
+                      );
+                    } else {
+                      setIssuesFilters(
+                        type.key,
+                        !checked ?
+                          [...filters[type.key], value] :
+                          filters[type.key].filter(f => f !== value),
+                      );
+                    }
+                    refetchIssuesRequest(true);
+                  }}
+                  showIcons={type.showIcons}
+                />
+              ))}
+            </FilterOptions>
+          </FilterItem>)
+        }
+      </FilterItems>
+    }
     <FilterActionsContainer>
-      <IssuesFoundText>
-        <span style={{ marginRight: 3 }}>Issues found:</span>
-        {fetching ? <Spinner size="small" /> : <span>{issuesCount}</span>}
-      </IssuesFoundText>
+      <IssuesFoundContainer>
+        <IssuesFoundText>
+          Issues found:
+        </IssuesFoundText>
+        {issuesFetching ?
+          <Spinner size="small" /> :
+          <span>{issuesCount}</span>
+        }
+      </IssuesFoundContainer>
       <ButtonGroup>
         <Button
           onClick={() => {
-            setIssuesFilter([], 'assignee');
-            setIssuesFilter([], 'status');
-            setIssuesFilter([], 'type');
+            setIssuesFilters('assignee', []);
+            setIssuesFilters('status', []);
+            setIssuesFilters('type', []);
+            refetchIssuesRequest();
           }}
         >
           Clear filters
         </Button>
         <Button
           appearance="primary"
-          onClick={() => setSidebarFiltersOpen(false)}
+          onClick={() => {
+            setUiState('sidebarFiltersIsOpen', false);
+          }}
         >
           Close
         </Button>
@@ -135,17 +148,27 @@ const SidebarFilters: StatelessFunctionalComponent<Props> = ({
 function mapStateToProps(state) {
   return {
     options: getFilterOptions(state),
-    filters: getIssueFilters(state),
+    optionsFetching: getResourceStatus(
+      state,
+      'issuesTypes.requests.issuesTypes.status',
+    ).pending,
+    filters: getUiState('issuesFilters')(state),
     issuesCount: getResourceMeta(
       'issues',
       'filterIssuesTotalCount',
     )(state),
-    fetching: getIssuesFetching(state),
+    issuesFetching: getResourceStatus(
+      state,
+      'issues.requests.filterIssues.status',
+    ).pending,
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ ...uiActions, ...issuesActions }, dispatch);
+  return bindActionCreators({
+    ...uiActions,
+    ...issuesActions,
+  }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SidebarFilters);

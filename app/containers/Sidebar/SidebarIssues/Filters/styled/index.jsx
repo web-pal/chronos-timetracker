@@ -1,4 +1,8 @@
 import styled from 'styled-components2';
+import {
+  H200,
+} from 'styles/typography';
+
 
 export const FiltersContainer = styled.div`
   position: absolute;
@@ -8,6 +12,11 @@ export const FiltersContainer = styled.div`
   top: 39px;
   width: 435px;
   overflow-y: hidden;
+`;
+
+export const FilterName = styled(H200)`
+  display: block;
+  padding: 10px 0 4px 10px;
 `;
 
 export const FilterItems = styled.div`
@@ -65,11 +74,15 @@ export const FilterActionsContainer = styled.div`
   border-top: 1px solid rgb(225, 228, 233);
 `;
 
-export const IssuesFoundText = styled.div`
+export const IssuesFoundContainer = styled.div`
   height: 23px;
   display: flex;
   align-items: center;
   font-size: 11px;
   font-weight: 500;
   color: #5e6c84;
+`;
+
+export const IssuesFoundText = styled.span`
+  margin-right: 3px;
 `;

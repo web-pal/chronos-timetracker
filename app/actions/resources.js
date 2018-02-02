@@ -1,11 +1,18 @@
 // @flow
+import type {
+  ResourcesAction,
+} from '../types/resources';
+
 import * as actionTypes from './actionTypes/resources';
 
 
 export const clearResourceList = ({
   list,
   resourceName,
-}) => ({
+}: {|
+  list: string,
+  resourceName: string,
+|}): ResourcesAction => ({
   type: actionTypes.CLEAR_RESOURCES_LIST,
   list,
   resourceName,
@@ -14,7 +21,10 @@ export const clearResourceList = ({
 export const setResourceMeta = ({
   meta,
   resourceName,
-}) => ({
+}: {|
+  meta: any,
+  resourceName: string,
+|}): ResourcesAction => ({
   type: actionTypes.SET_RESOURCES_META,
   meta,
   resourceName,

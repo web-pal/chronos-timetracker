@@ -3,6 +3,7 @@ import React from 'react';
 import {
   ThemeProvider,
 } from 'styled-components2';
+
 import type {
   StatelessFunctionalComponent,
   Node,
@@ -12,7 +13,6 @@ import {
   AlertModal,
   SettingsModal,
   WorklogModal,
-  EditWorklogModal,
   ConfirmDeleteWorklogModal,
 } from '../Modals';
 import Header from '../Header';
@@ -44,7 +44,6 @@ const Main: StatelessFunctionalComponent<Props> = (): Node =>
       <AlertModal />
       <SettingsModal />
       <WorklogModal />
-      <EditWorklogModal />
       <ConfirmDeleteWorklogModal />
     </MainContainer>
   </ThemeProvider>;
