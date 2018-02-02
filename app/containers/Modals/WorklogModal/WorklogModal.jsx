@@ -169,15 +169,6 @@ class WorklogModal extends Component<Props, State> {
                   Now
                 </Button>
                 <Button
-                  appearance="subtle"
-                  onClick={() => {
-                    setModalState('worklog', false);
-                    setUiState('editWorklogId', null);
-                  }}
-                  >
-                  Cancel
-                </Button>
-                <Button
                   appearance="primary"
                   disabled={saveInProcess}
                   onClick={() => {
