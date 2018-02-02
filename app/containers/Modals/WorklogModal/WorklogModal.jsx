@@ -105,6 +105,12 @@ class WorklogModal extends Component<Props, State> {
       });
     }
   }
+  setDateAndTimeToNow = (e) => {
+    const newTime = moment();
+    const newDate = moment().format('MM/DD/YYYY');
+    this.setState({ startTime: newTime });
+    this.setState({ date: newDate });
+  }
 
   setDateAndTimeToNow = (e) => {
     const newTime = moment();
