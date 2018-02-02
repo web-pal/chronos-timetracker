@@ -8,9 +8,3 @@ declare module "react-hot-loader" {
     children: React$Element<any>
   }> {}
 }
-
-declare var module : {
-  hot : {
-    accept(path:string, callback:() => void): void;
-  };
-};

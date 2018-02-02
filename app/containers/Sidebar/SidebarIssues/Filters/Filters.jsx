@@ -1,12 +1,14 @@
 // @flow
 import React from 'react';
-import pull from 'lodash.pull';
 import {
   connect,
 } from 'react-redux';
 import {
   bindActionCreators,
 } from 'redux';
+import {
+  getStatus as getResourceStatus,
+} from 'redux-resource';
 
 import type {
   StatelessFunctionalComponent,
@@ -23,32 +25,28 @@ import {
   uiActions,
 } from 'actions';
 import {
-  getIssueTypes,
-  getUserData,
-  getIssueStatuses,
-  getIssueFilters,
-  getIssuesTotalCount,
-  getIssuesFetching,
+  getResourceMeta,
+  getFilterOptions,
+  getUiState,
 } from 'selectors';
 import {
-  H200,
-} from 'styles/typography';
+  FullPageSpinner,
+} from 'styles';
 
 import {
   FiltersContainer,
+  FilterName,
   FilterItems,
   FilterItem,
   FilterOptions,
   FilterActionsContainer,
+  IssuesFoundContainer,
   IssuesFoundText,
 } from './styled';
 import FilterOption from './FilterOption';
-import getCriteriaFilters from './getCriteriaFilters';
 
 import type {
   SetIssuesFilter,
-  IssueType,
-  IssueStatus,
   IssueFilters,
   SetSidebarFiltersOpen,
 } from '../../../../types';
@@ -56,76 +54,89 @@ import type {
 
 type Props = {
   setIssuesFilter: SetIssuesFilter,
-  issueTypes: Array<IssueType>,
-  issueStatuses: Array<IssueStatus>,
   filters: IssueFilters,
-  selfKey: string,
   issuesCount: number,
   fetching: boolean,
   setSidebarFiltersOpen: SetSidebarFiltersOpen
 };
 
 const SidebarFilters: StatelessFunctionalComponent<Props> = ({
-  setIssuesFilter,
-  issueTypes,
-  issueStatuses,
+  setUiState,
+  setIssuesFilters,
   filters,
-  selfKey,
   issuesCount,
-  fetching,
-  setSidebarFiltersOpen,
+  issuesFetching,
+  options,
+  optionsFetching,
+  refetchIssuesRequest,
 }: Props): Node => (
   <FiltersContainer>
-    <FilterItems>
-      {getCriteriaFilters({ issueTypes, issueStatuses, selfKey }).map(criteria =>
-        <FilterItem key={criteria.name}>
-          <H200 style={{ padding: '10px 0 4px 10px', display: 'block' }}>
-            {criteria.name}
-          </H200>
-          <FilterOptions>
-            {criteria.options.map(option => (
-              <FilterOption
-                key={option.id}
-                option={option}
-                isChecked={filters[criteria.key].includes(option.id)}
-                onChange={(value, checked) => {
-                  let newFilters;
-                  if (criteria.key === 'assignee') {
-                    newFilters = [];
-                  } else {
-                    newFilters = filters[criteria.key];
-                  }
-                  if (!checked) {
-                    newFilters.push(value);
-                  } else {
-                    pull(newFilters, value);
-                  }
-                  setIssuesFilter(newFilters, criteria.key);
-                }}
-                showIcons={criteria.showIcons}
-              />
-            ))}
-          </FilterOptions>
-        </FilterItem>)}
-    </FilterItems>
+    {optionsFetching ?
+      <FullPageSpinner>
+        <Spinner size="xlarge" />
+      </FullPageSpinner> :
+      <FilterItems>
+        {options.map(type =>
+          <FilterItem key={type.key}>
+            <FilterName>
+              {type.name}
+            </FilterName>
+            <FilterOptions>
+              {type.options.map(option => (
+                <FilterOption
+                  key={option.id}
+                  option={option}
+                  isChecked={filters[type.key].includes(option.id)}
+                  onChange={(value, checked) => {
+                    if (type.key === 'assignee') {
+                      setIssuesFilters(
+                        type.key,
+                        [!checked && value].filter(Boolean),
+                      );
+                    } else {
+                      setIssuesFilters(
+                        type.key,
+                        !checked ?
+                          [...filters[type.key], value] :
+                          filters[type.key].filter(f => f !== value),
+                      );
+                    }
+                    refetchIssuesRequest(true);
+                  }}
+                  showIcons={type.showIcons}
+                />
+              ))}
+            </FilterOptions>
+          </FilterItem>)
+        }
+      </FilterItems>
+    }
     <FilterActionsContainer>
-      <IssuesFoundText>
-        <span style={{ marginRight: 3 }}>Issues found:</span>
-        {fetching ? <Spinner size="small" /> : <span>{issuesCount}</span>}
-      </IssuesFoundText>
+      <IssuesFoundContainer>
+        <IssuesFoundText>
+          Issues found:
+        </IssuesFoundText>
+        {issuesFetching ?
+          <Spinner size="small" /> :
+          <span>{issuesCount}</span>
+        }
+      </IssuesFoundContainer>
       <ButtonGroup>
         <Button
           onClick={() => {
-            setIssuesFilter([], 'assignee');
-            setIssuesFilter([], 'status');
-            setIssuesFilter([], 'type');
+            setIssuesFilters('assignee', []);
+            setIssuesFilters('status', []);
+            setIssuesFilters('type', []);
+            refetchIssuesRequest();
           }}
         >
           Clear filters
         </Button>
         <Button
           appearance="primary"
-          onClick={() => setSidebarFiltersOpen(false)}
+          onClick={() => {
+            setUiState('sidebarFiltersIsOpen', false);
+          }}
         >
           Close
         </Button>
@@ -136,17 +147,28 @@ const SidebarFilters: StatelessFunctionalComponent<Props> = ({
 
 function mapStateToProps(state) {
   return {
-    issueTypes: getIssueTypes(state),
-    issueStatuses: getIssueStatuses(state),
-    filters: getIssueFilters(state),
-    selfKey: getUserData(state).key,
-    issuesCount: getIssuesTotalCount(state),
-    fetching: getIssuesFetching(state),
+    options: getFilterOptions(state),
+    optionsFetching: getResourceStatus(
+      state,
+      'issuesTypes.requests.issuesTypes.status',
+    ).pending,
+    filters: getUiState('issuesFilters')(state),
+    issuesCount: getResourceMeta(
+      'issues',
+      'filterIssuesTotalCount',
+    )(state),
+    issuesFetching: getResourceStatus(
+      state,
+      'issues.requests.filterIssues.status',
+    ).pending,
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ ...uiActions, ...issuesActions }, dispatch);
+  return bindActionCreators({
+    ...uiActions,
+    ...issuesActions,
+  }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SidebarFilters);

@@ -5,6 +5,9 @@ import groupBy from 'lodash.groupby';
 import filter from 'lodash.filter';
 
 import { getUserData } from './profile';
+import {
+  getSelectedIssue
+} from './issues2';
 
 import type {
   IssuesState,
@@ -85,34 +88,6 @@ export const getRecentIssuesTotalCount = createSelector(
   ids => ids.length,
 );
 
-export const getRecentIssues = createSelector(
-  [getRecentIssueIds, getIssuesMap],
-  (ids, map) => ids.map(id => map[id]),
-);
-
-export const getRecentItems = createSelector(
-  [getRecentIssues, getIssuesMap, getUserData],
-  (map, iMap, self) => {
-    const selfKey = self ? self.key : '';
-    const recentWorklogs =
-      map
-        .reduce(
-          (worklogs, value) => worklogs.concat(value.fields.worklog.worklogs),
-          [],
-        ).map(w => ({ ...w, issue: iMap[w.issueId] }));
-    const recentWorklogsFiltered =
-      filter(
-        recentWorklogs,
-        w =>
-          moment(w.started).isSameOrAfter(moment().subtract(4, 'weeks')) &&
-          w.author.key === selfKey,
-      );
-    const grouped =
-      groupBy(recentWorklogsFiltered, value => moment(value.started).startOf('day').format());
-    return grouped;
-  },
-);
-
 export const getIssuesFetching =
   ({ issues }: { issues: IssuesState }): boolean => issues.meta.fetching;
 
@@ -130,17 +105,8 @@ export const getIssuesTotalCount =
 export const getSelectedIssueId =
   ({ issues }: { issues: IssuesState }): Id | null => issues.meta.selectedIssueId;
 
-export const getTrackingIssueId =
-  ({ issues }: { issues: IssuesState }): Id | null => issues.meta.trackingIssueId;
-
 export const getIssuesSearchValue =
   ({ issues }: { issues: IssuesState }): string => issues.meta.searchValue;
-
-export const getSelectedIssue =
-  ({ issues }: { issues: IssuesState }): Issue | null => issues.meta.selectedIssue;
-
-export const getTrackingIssue =
-  ({ issues }: { issues: IssuesState }): Issue | null => issues.meta.trackingIssue;
 
 export const getIssueFilters =
   ({ issues }: { issues: IssuesState }): IssueFilters => issues.meta.filters;
@@ -149,9 +115,6 @@ export const getFiltersApplied = createSelector(
   [getIssueFilters],
   filters => (!!filters.type.length || !!filters.status.length || !!filters.assignee.length),
 );
-
-export const getAvailableTransitions =
-  ({ issues }: { issues: IssuesState }): Array<IssueTransition> => issues.meta.availableTransitions;
 
 export const getAvailableTransitionsFetching =
   ({ issues }: { issues: IssuesState }): boolean => issues.meta.availableTransitionsFetching;
@@ -164,38 +127,3 @@ export const getCommentsFetching =
 
 export const getCommentsAdding =
   ({ issues }: { issues: IssuesState }): boolean => issues.meta.commentsAdding;
-
-export const getFieldIdByName =
-  ({ issues }: { issues: IssuesState }, fieldName: string): string | null => {
-    const { fields } = issues.meta;
-    if (fields) {
-      const found = fields.find(f => f.name === fieldName);
-      if (found) {
-        return found.id;
-      }
-      return null;
-    }
-    return null;
-  };
-
-export const getIssueEpic = createSelector(
-  [
-    getSelectedIssue,
-    getEpicsMap,
-    state => getFieldIdByName(state, 'Epic Link'),
-    state => getFieldIdByName(state, 'Epic Name'),
-    state => getFieldIdByName(state, 'Epic Color'),
-  ],
-  (issue, map, epicLinkFieldId, epicNameFieldId, epicColorFieldId) => {
-    if (Object.keys(map).length && issue) {
-      const epic = map[issue.fields[epicLinkFieldId]];
-      if (epic) {
-        epic.fields.epicColor = epic.fields[epicColorFieldId];
-        epic.fields.epicName = epic.fields[epicNameFieldId];
-        return epic;
-      }
-      return null;
-    }
-    return null;
-  },
-);

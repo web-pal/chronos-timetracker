@@ -22,7 +22,7 @@ export function randomPeriods(
 
 type Params = {
   currentIdleList: Array<number>,
-  timeSpentSeconds: number,
+  timeSpentInSeconds: number,
   screenshotsPeriod: number,
   firstPeriodInMinute: number,
   secondsToMinutesGrid: number,
@@ -30,7 +30,7 @@ type Params = {
 
 export function calculateActivity({
   currentIdleList,
-  timeSpentSeconds,
+  timeSpentInSeconds,
   screenshotsPeriod,
   firstPeriodInMinute,
   secondsToMinutesGrid,
@@ -47,7 +47,7 @@ export function calculateActivity({
   const lastPeriodsIdleSec: Array<any> = currentIdleList.slice(firstPeriodInMinute);
   const activityArray =
     [...Array(Math.ceil(
-      (timeSpentSeconds - firstPeriodTotalTimeSec) / screenshotsPeriod,
+      (timeSpentInSeconds - firstPeriodTotalTimeSec) / screenshotsPeriod,
     )).keys()].map((period) => {
       const thisIdleList: Array<any> = lastPeriodsIdleSec
         .slice(

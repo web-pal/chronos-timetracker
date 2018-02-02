@@ -1,18 +1,43 @@
 // @flow
 import React from 'react';
-import type { StatelessFunctionalComponent, Node } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { getTimerTime, getTrackingIssue, getScreenshotsAllowed } from 'selectors';
-import { issuesActions, timerActions } from 'actions';
-import { Flex } from 'components';
-import { CSSTransitionGroup } from 'react-transition-group';
 import moment from 'moment';
+import {
+  connect,
+} from 'react-redux';
+import {
+  bindActionCreators,
+} from 'redux';
+
+import type {
+  StatelessFunctionalComponent,
+  Node,
+} from 'react';
+
+import {
+  getTimerTime,
+  getTrackingIssue,
+  getScreenshotsAllowed,
+} from 'selectors';
+import {
+  issuesActions,
+  timerActions,
+  uiActions,
+} from 'actions';
+import {
+  Flex,
+} from 'components';
+import {
+  CSSTransitionGroup,
+} from 'react-transition-group';
 import CameraIcon from '@atlaskit/icon/glyph/camera';
 import Tooltip from '@atlaskit/tooltip';
 
 import WorklogEditDialog from './WorklogEditDialog';
-import type { Issue, SelectIssue, StopTimerRequest } from '../../../types';
+import type {
+  Issue,
+  SelectIssue,
+  StopTimerRequest,
+} from '../../../types';
 import {
   IssueName,
   Dot,
@@ -47,8 +72,8 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
   screenshotUploading,
   screenshotsAllowed,
   trackingIssue,
-  selectIssue,
   stopTimerRequest,
+  setUiState,
 }: Props): Node => (
   <CSSTransitionGroup
     transitionName="tracking-bar"
@@ -74,7 +99,7 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
       <Flex row alignCenter>
         <IssueName
           onClick={() => {
-            selectIssue(trackingIssue);
+            setUiState('selectedIssueId', trackingIssue.id);
             // jumpToTrackingIssue();
           }}
         >
@@ -116,7 +141,11 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ ...issuesActions, ...timerActions }, dispatch);
+  return bindActionCreators({
+    ...issuesActions,
+    ...timerActions,
+    ...uiActions,
+  }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(TrackingBar);

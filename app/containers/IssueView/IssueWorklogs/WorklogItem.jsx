@@ -1,15 +1,29 @@
 // @flow
 import React from 'react';
 import moment from 'moment';
-import type { StatelessFunctionalComponent, Node } from 'react';
-import { Flex } from 'components';
-import { openWorklogInBrowser } from 'external-open-util';
+
+import type {
+  StatelessFunctionalComponent,
+  Node,
+} from 'react';
+
+import {
+  Flex,
+} from 'components';
+import {
+  openWorklogInBrowser,
+} from 'external-open-util';
+
 import Tooltip from '@atlaskit/tooltip';
 import EditFilledIcon from '@atlaskit/icon/glyph/edit-filled';
 import LinkIcon from '@atlaskit/icon/glyph/link';
 import TrashIcon from '@atlaskit/icon/glyph/trash';
 
-import type { Worklog, DeleteWorklogRequest, EditWorklogRequest } from '../../../types';
+import type {
+  Worklog,
+  DeleteWorklogRequest,
+  EditWorklogRequest,
+} from '../../../types';
 
 import {
   WorklogContainer,
@@ -21,6 +35,7 @@ import {
 const isEdited = (worklog: Worklog) => (
   moment(worklog.created).format('D/M/H/m') !== moment(worklog.updated).format('D/M/H/m')
 );
+
 
 type Props = {
   style: any,
@@ -36,6 +51,8 @@ const WorklogItem: StatelessFunctionalComponent<Props> = ({
   selected,
   worklog,
   issueKey,
+  onDeleteWorklog,
+  onEditWorklog,
   deleteWorklogRequest,
   editWorklogRequest,
 }: Props): Node => (
@@ -58,7 +75,7 @@ const WorklogItem: StatelessFunctionalComponent<Props> = ({
         </Tooltip>
         <Tooltip description="Edit worklog" position="left">
           <EditFilledIcon
-            onClick={() => editWorklogRequest(worklog)}
+            onClick={() => onEditWorklog()}
             label="Edit"
             size="small"
             primaryColor="#707070"
@@ -66,7 +83,7 @@ const WorklogItem: StatelessFunctionalComponent<Props> = ({
         </Tooltip>
         <Tooltip description="Delete worklog" position="left">
           <TrashIcon
-            onClick={() => deleteWorklogRequest(worklog)}
+            onClick={() => onDeleteWorklog()}
             label="Delete"
             size="small"
             primaryColor="#707070"

@@ -1,11 +1,25 @@
 // @flow
 import React from 'react';
-import { stj } from 'time-util';
-import type { StatelessFunctionalComponent, Node } from 'react';
-import { Flex } from 'components';
 
-import { StatisticsItem } from './styled';
-import { MetaItemName, MetaItemValue } from '../../styled';
+import type {
+  StatelessFunctionalComponent,
+  Node,
+} from 'react';
+import {
+  stj,
+} from 'time-util';
+
+import {
+  Flex,
+} from 'components';
+import {
+  StatisticsItem,
+} from './styled';
+import {
+  MetaItemName,
+  MetaItemValue,
+} from '../../styled';
+
 
 type Props = {
   estimate: any,

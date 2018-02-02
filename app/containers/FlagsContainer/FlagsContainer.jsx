@@ -1,10 +1,29 @@
 // @flow
 import React from 'react';
-import type { StatelessFunctionalComponent, Node } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { uiActions } from 'actions';
-import { AutoDismissFlag as Flag, FlagGroup } from '@atlaskit/flag';
+import {
+  connect,
+} from 'react-redux';
+import {
+  bindActionCreators,
+} from 'redux';
+
+import type {
+  StatelessFunctionalComponent,
+  Node,
+} from 'react';
+
+import {
+  uiActions,
+} from 'actions';
+import {
+  getUiState,
+} from 'selectors';
+
+import {
+  AutoDismissFlag as Flag,
+  FlagGroup,
+} from '@atlaskit/flag';
+
 import EditorWarningIcon from '@atlaskit/icon/glyph/editor/warning';
 import NotificationAllIcon from '@atlaskit/icon/glyph/notification-all';
 
@@ -12,6 +31,7 @@ import type {
   FlagsArray,
   RemoveFlag,
 } from '../../types';
+
 
 type Props = {
   flags: FlagsArray,
@@ -26,16 +46,16 @@ function getIcon(iconName) {
 
 const FlagsContainer: StatelessFunctionalComponent<Props> = ({
   flags,
-  removeFlag,
+  deleteFlag,
 }: Props): Node => (
-  <FlagGroup onDismissed={removeFlag}>
+  <FlagGroup
+    onDismissed={id => deleteFlag(id)}
+  >
     {flags.map(flag => (
       <Flag
         key={flag.id}
         {...flag}
         icon={getIcon(flag.icon)}
-        onDismissed={() => {}}
-        isDismissAllowed
       />
     ))}
   </FlagGroup>
@@ -43,7 +63,7 @@ const FlagsContainer: StatelessFunctionalComponent<Props> = ({
 
 function mapStateToProps(state) {
   return {
-    flags: state.ui.flags,
+    flags: getUiState('flags')(state),
   };
 }
 

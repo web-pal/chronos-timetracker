@@ -1,6 +1,13 @@
 // @flow
 import { createSelector } from 'reselect';
 import type { ProjectsState, ProjectsMap, SprintsMap, BoardsMap, Id } from '../types';
+import {
+  getResourceMap,
+  getResourceMappedList,
+} from './resources';
+import {
+  getUiState,
+} from './ui';
 
 export const getProjectsIds =
   ({ projects } : { projects: ProjectsState }): Array<Id> => projects.allIds;
@@ -102,15 +109,37 @@ export const getSelectedProjectOption = createSelector(
 );
 
 export const getCurrentProjectId = createSelector(
-  [getSelectedProjectOption, getSelectedProjectType],
-  (option, projectType) => {
-    if (!option) {
-      return null;
+  [
+    getUiState('issuesSourceId'),
+    getUiState('issuesSourceType'),
+    getUiState('issuesSprintId'),
+    getResourceMap('boards'),
+    getResourceMap('sprints'),
+  ],
+  (
+    issuesSourceId,
+    issuesSourceType,
+    issuesSprintId,
+    boardsMap,
+    sprintsMap,
+  ) => {
+    let projectId = issuesSourceId;
+    if (issuesSourceId && issuesSourceType === 'kanban') {
+      const board = boardsMap[issuesSourceId];
+      if (board) {
+        projectId = board.location.projectId; // eslint-disable-line
+      }
     }
-    if (projectType === 'project') {
-      return option.value;
+    if (issuesSprintId && issuesSourceType === 'scrum') {
+      const sprint = sprintsMap[issuesSprintId];
+      if (sprint) {
+        const board = sprintsMap[sprint.originBoardId];
+        if (board) {
+          projectId = board.location.projectId; // eslint-disable-line
+        }
+      }
     }
-    return option.meta.board.location.projectId.toString();
+    return projectId;
   },
 );
 
@@ -119,15 +148,12 @@ export const getSelectedSprint = createSelector(
   (id, map) => (id ? map[id] : null),
 );
 
-export const getSelectedSprintOption = createSelector(
-  [getSelectedSprint],
-  sprint => (
-    sprint ? ({ value: sprint.id, content: sprint.name, meta: { sprint } }) : null
-  ),
-);
 
 export const getProjectsOptions = createSelector(
-  [getProjects, getBoards],
+  [
+    getResourceMappedList('projects', 'allProjects'),
+    getResourceMappedList('boards', 'allBoards'),
+  ],
   (projects, boards) => [
     {
       heading: 'Projects',
@@ -140,13 +166,4 @@ export const getProjectsOptions = createSelector(
         ({ value: board.id, content: board.name, meta: { board } })),
     },
   ],
-);
-
-export const getSprintsOptions = createSelector(
-  [getSprints],
-  sprints => [{
-    heading: 'Sprints',
-    items: sprints.map(sprint =>
-      ({ value: sprint.id, content: sprint.name, meta: { sprint } })),
-  }],
 );

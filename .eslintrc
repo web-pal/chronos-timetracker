@@ -15,6 +15,7 @@
     "function-paren-newline": ["error", "consistent"],
     "jsx-a11y/no-static-element-interactions": "off",
     "jsx-a11y/click-events-have-key-events": "off",
+    "flowtype-errors/show-errors": 2,
     "no-console": "off",
     "no-underscore-dangle": ["error", { "allow": ["___CLEAR_ALL_REDUCERS___"] }]
   },
@@ -30,5 +31,8 @@
         "config": "../webpack.config.eslint.js"
       }
     }
-  }
+  },
+  "plugins": [
+    "flowtype-errors"
+  ]
 }

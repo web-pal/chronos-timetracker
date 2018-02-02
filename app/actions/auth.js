@@ -1,66 +1,34 @@
 // @flow
 import type {
-  LoginRequest, LoginRequestAction,
-  LoginOAuthRequest, LoginOAuthRequestAction,
-  DenyOAuth, DenyOAuthAction,
-  AcceptOAuth, AcceptOAuthAction,
-  LogoutRequest, LogoutRequestAction,
-  SetAuthorized, SetAuthorizedAction,
-  ThrowLoginError, ThrowLoginErrorAction,
-  SetLoginFetching, SetLoginFetchingAction,
-  LoginError, AuthFormData,
-} from '../types';
+  AuthAction,
+} from '../types/auth';
 
-import * as types from './actionTypes/';
+import * as actionTypes from './actionTypes';
 
-export const loginRequest: LoginRequest = (
-  payload: AuthFormData,
-): LoginRequestAction => ({
-  type: types.LOGIN_REQUEST,
-  payload,
-});
 
-export const loginOAuthRequest: LoginOAuthRequest = (
+export const loginRequest = (payload : {|
   host: string,
-  meta?: { accessToken?: string, tokenSecret?: string },
-): LoginOAuthRequestAction => ({
-  type: types.LOGIN_OAUTH_REQUEST,
-  payload: host,
-  meta,
-});
-
-export const denyOAuth: DenyOAuth = (): DenyOAuthAction => ({
-  type: types.DENY_OAUTH,
-});
-
-export const acceptOAuth: AcceptOAuth = (
-  payload: string,
-): AcceptOAuthAction => ({
-  type: types.ACCEPT_OAUTH,
+  username: string,
+  password: string,
+|}): AuthAction => ({
+  type: actionTypes.LOGIN_REQUEST,
   payload,
 });
 
-export const logoutRequest: LogoutRequest = (): LogoutRequestAction => ({
-  type: types.LOGOUT_REQUEST,
+export const loginOAuthRequest = (host: string): AuthAction => ({
+  type: actionTypes.LOGIN_OAUTH_REQUEST,
+  host,
 });
 
-export const setAuthorized: SetAuthorized = (
-  payload: boolean,
-): SetAuthorizedAction => ({
-  type: types.SET_AUTHORIZED,
-  payload,
+export const logoutRequest = (): AuthAction => ({
+  type: actionTypes.LOGOUT_REQUEST,
 });
 
-export const throwLoginError: ThrowLoginError = (
-  payload: LoginError,
-): ThrowLoginErrorAction => ({
-  type: types.THROW_LOGIN_ERROR,
-  payload,
+export const acceptOAuth = (code: string): AuthAction => ({
+  type: actionTypes.ACCEPT_OAUTH,
+  code,
 });
 
-export const setLoginFetching: SetLoginFetching = (
-  payload: boolean,
-): SetLoginFetchingAction => ({
-  type: types.SET_LOGIN_FETCHING,
-  payload,
+export const denyOAuth = (): AuthAction => ({
+  type: actionTypes.DENY_OAUTH,
 });

@@ -1,8 +1,22 @@
-import { call, take, fork, select, put, takeEvery, cancel } from 'redux-saga/effects';
-import { eventChannel } from 'redux-saga';
+import {
+  call,
+  take,
+  fork,
+  select,
+  put,
+  takeEvery,
+  cancel,
+} from 'redux-saga/effects';
+import {
+  eventChannel,
+} from 'redux-saga';
+import {
+  remote,
+  ipcRenderer,
+} from 'electron';
+
 import moment from 'moment';
 import NanoTimer from 'nanotimer';
-import { remote, ipcRenderer } from 'electron';
 import {
   getUserData,
   getTimerTime,
@@ -11,27 +25,40 @@ import {
   getScreenshots,
   getScreenshotPeriods,
   getTimerIdleState,
-  getSelectedIssue,
-  getTrackingIssueId,
   getWorklogComment,
   getLocalDesktopSettings,
   getKeepedIdles,
   getIdles,
+  getUiState,
 } from 'selectors';
 import Raven from 'raven-js';
-import { uiActions, timerActions, issuesActions, worklogsActions, types } from 'actions';
+import {
+  uiActions,
+  timerActions,
+  worklogsActions,
+  types,
+} from 'actions';
 import config from 'config';
-import { randomPeriods, calculateActivity } from 'timer-helper';
+import {
+  randomPeriods,
+  calculateActivity,
+} from 'timer-helper';
 
 import createIpcChannel from './ipc';
-import { throwError, infoLog } from './ui';
-import { uploadWorklog } from './worklogs';
+import {
+  throwError,
+  infoLog,
+} from './ui';
+import {
+  uploadWorklog,
+} from './worklogs';
 import {
   uploadScreenshot,
   rejectScreenshot,
   takeScreenshot,
   cleanExcessScreenshotPeriods,
 } from './screenshots';
+
 
 const system = remote.require('@paulcbetts/system-idle-time');
 
@@ -54,7 +81,7 @@ function* isScreenshotsAllowed() {
     const cond3 = screenshotsEnabled === 'excludingUsers' &&
       !screenshotsEnabledUsers.includes(key);
     const screenshotsAllowed = cond1 || cond2 || cond3;
-    yield put(uiActions.setScreenshotsAllowed(screenshotsAllowed));
+    yield put(uiActions.setUiState('screenshotsAllowed', screenshotsAllowed));
     return screenshotsAllowed;
   } catch (err) {
     yield call(throwError, err);
@@ -186,9 +213,7 @@ export function* runTimer(channel) {
   const secondsToMinutesGrid = 60 - currentSeconds;
   // second remaining to end of current Idle-minute period
   const minutes = moment().format('mm');
-  // 33
   const minutePeriod = screenshotsPeriod / 60;
-  // 10
   const periodNumber = Math.floor(minutes / minutePeriod) + 1;
   const periodRange = (periodNumber * minutePeriod) - minutes;
   nextPeriod = (periodRange * 60) - currentSeconds;
@@ -203,18 +228,17 @@ function* stopTimer(channel, timerInstance) {
     yield call(ipcRenderer.send, 'stop-timer');
     channel.close();
     yield cancel(timerInstance);
-    const trackingIssueId = yield select(getTrackingIssueId);
-    const time = yield select(getTimerTime);
+    const issueId = yield select(getUiState('trackingIssueId'));
+    const timeSpentInSeconds = yield select(getTimerTime);
     const comment = yield select(getWorklogComment);
     const screenshots = yield select(getScreenshots);
     const keepedIdles = yield select(getKeepedIdles);
     const idles = yield select(getIdles);
     const { screenshotsPeriod } = yield select(getScreenshotsSettings);
-    // TODO
     const worklogType = null;
     const activity = calculateActivity({
       currentIdleList: idles.map(idle => idle.to - idle.from),
-      timeSpentSeconds: time,
+      timeSpentInSeconds,
       screenshotsPeriod,
       firstPeriodInMinute: 1,
       secondsToMinutesGrid: 1,
@@ -223,9 +247,9 @@ function* stopTimer(channel, timerInstance) {
     yield put(timerActions.resetTimer());
     yield put(worklogsActions.setTemporaryWorklogId(null));
     yield call(uploadWorklog, {
-      issueId: trackingIssueId,
-      timeSpentSeconds: time,
+      issueId,
       comment,
+      timeSpentInSeconds,
       screenshotsPeriod,
       worklogType,
       screenshots,
@@ -240,8 +264,8 @@ function* stopTimer(channel, timerInstance) {
 
 export function* timerFlow(): Generator<*, *, *> {
   try {
-    const selectedIssue = yield select(getSelectedIssue);
-    yield put(issuesActions.setTrackingIssue(selectedIssue));
+    const selectedIssueId = yield select(getUiState('selectedIssueId'));
+    yield put(uiActions.setUiState('trackingIssueId', selectedIssueId));
     const tempId = Math.random().toString(36).substr(2, 9);
     yield put(worklogsActions.setTemporaryWorklogId(tempId));
     ipcRenderer.send('start-timer');
@@ -251,8 +275,8 @@ export function* timerFlow(): Generator<*, *, *> {
       yield take(types.STOP_TIMER_REQUEST);
       const time = yield select(getTimerTime);
       if (time < 60) {
-        yield put(uiActions.setAlertModalOpen(true));
-        const { type } = yield take([types.SET_ALERT_MODAL_OPEN, types.STOP_TIMER]);
+        yield put(uiActions.setModalState('alert', true));
+        const { type } = yield take([types.CONTINUE_TIMER, types.STOP_TIMER]);
         if (type === types.STOP_TIMER) {
           yield call(stopTimer, channel, timerInstance);
           yield cancel();

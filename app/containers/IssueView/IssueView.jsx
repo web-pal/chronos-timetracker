@@ -1,20 +1,47 @@
 // @flow
 import React from 'react';
-import type { StatelessFunctionalComponent, Node, Element } from 'react';
-import { connect } from 'react-redux';
-import { getSelectedIssueId, getIssueViewTab, getTimerRunning } from 'selectors';
-import { IssueViewPlaceholder } from 'components';
+import {
+  connect,
+} from 'react-redux';
+import {
+  bindActionCreators,
+} from 'redux';
 
-import { IssueViewContainer, IssueContainer, IssueViewTabContainer } from './styled';
-import IssueViewHeader from '../IssueView/IssueViewHeader';
-import IssueViewTabs from './IssueViewTabs';
-import type { Id, TabLabel } from '../../types';
+import type {
+  StatelessFunctionalComponent,
+  Node,
+  Element,
+} from 'react';
+
+import {
+  getUiState,
+  getTimerRunning,
+} from 'selectors';
+import {
+  IssueViewPlaceholder,
+} from 'components';
+import {
+  uiActions,
+} from 'actions';
+
+import {
+  IssueViewContainer,
+  IssueContainer,
+  IssueViewTabContainer,
+} from './styled';
+
+import type {
+  Id,
+  TabLabel,
+} from '../../types';
 
 import IssueDetails from './IssueDetails';
 import IssueComments from './IssueComments';
 import IssueWorklogs from './IssueWorklogs';
 import IssueReport from './IssueReport';
 import TrackingBar from './TrackingBar';
+import IssueViewHeader from '../IssueView/IssueViewHeader';
+import IssueViewTabs from './IssueViewTabs';
 
 type Props = {
   selectedIssueId: Id | null,
@@ -27,17 +54,18 @@ export type Tab = {
   content: Element<typeof IssueDetails | typeof IssueComments | typeof IssueWorklogs>
 };
 
-const tabs: { [TabLabel]: Tab } = {
-  Details: { label: 'Details', content: <IssueDetails /> },
-  Comments: { label: 'Comments', content: <IssueComments /> },
-  Worklogs: { label: 'Worklogs', content: <IssueWorklogs /> },
-  Report: { label: 'Report', content: <IssueReport /> },
-};
+const tabs = [
+  'Details',
+  'Comments',
+  'Worklogs',
+  'Report',
+];
 
 const IssueView: StatelessFunctionalComponent<Props> = ({
   selectedIssueId,
   currentTab,
   timerRunning,
+  setUiState,
 }: Props): Node => (selectedIssueId
   ? (
     <IssueViewContainer column>
@@ -46,9 +74,26 @@ const IssueView: StatelessFunctionalComponent<Props> = ({
       }
       <IssueContainer>
         <IssueViewHeader />
-        <IssueViewTabs tabs={tabs} />
+        <IssueViewTabs
+          currentTab={currentTab}
+          setUiState={setUiState}
+          tabs={tabs}
+        />
         <IssueViewTabContainer>
-          {tabs[currentTab].content}
+          {(() => {
+            switch (currentTab) {
+              case 'Details':
+                return <IssueDetails />;
+              case 'Comments':
+                return <IssueComments />;
+              case 'Worklogs':
+                return <IssueWorklogs />;
+              case 'Reports':
+                return <IssueWorklogs />;
+              default:
+                return <IssueReport />;
+            }
+          })()}
         </IssueViewTabContainer>
       </IssueContainer>
     </IssueViewContainer>
@@ -57,10 +102,16 @@ const IssueView: StatelessFunctionalComponent<Props> = ({
 
 function mapStateToProps(state) {
   return {
-    selectedIssueId: getSelectedIssueId(state),
-    currentTab: getIssueViewTab(state),
+    selectedIssueId: getUiState('selectedIssueId')(state),
+    currentTab: getUiState('issueViewTab')(state),
     timerRunning: getTimerRunning(state),
   };
 }
 
-export default connect(mapStateToProps, () => ({}))(IssueView);
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({
+    ...uiActions,
+  }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(IssueView);

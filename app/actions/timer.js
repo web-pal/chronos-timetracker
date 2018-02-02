@@ -18,6 +18,9 @@ import type {
 export const tick: Tick = (): TickAction => ({ type: types.TICK });
 export const startTimer: StartTimer = (): StartTimerAction => ({ type: types.START_TIMER });
 export const stopTimer: StopTimer = (): StopTimerAction => ({ type: types.STOP_TIMER });
+export const continueTimer = () => ({
+  type: types.CONTINUE_TIMER,
+});
 export const stopTimerRequest: StopTimerRequest = (): StopTimerRequestAction => ({
   type: types.STOP_TIMER_REQUEST,
 });

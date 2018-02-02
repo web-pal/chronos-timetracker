@@ -26,7 +26,7 @@ export default class extends PureComponent {
   }
 
   focus = () => {
-    this.input.focus();
+    this.input.inputRef.focus();
   }
 
   render() {

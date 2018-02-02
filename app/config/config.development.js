@@ -5,9 +5,10 @@ const config = {
   supportLink: 'https://web-pal.atlassian.net/servicedesk/customer/portal/2',
   githubLink: 'https://github.com/web-pal/chronos-timetracker',
 
-  idleTimeThreshold: 10, // seconds of inactivity considering user is idle
+  idleTimeThreshold: 100, // seconds of inactivity considering user is idle
   checkUpdates: false,
   infoLog: false,
+  reduxLogger: true,
 };
 
 export default config;

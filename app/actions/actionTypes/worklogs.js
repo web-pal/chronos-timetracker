@@ -1,5 +1,7 @@
 // @flow
 
+export const SAVE_WORKLOG_REQUEST = 'worklogs/SAVE_WORKLOG_REQUEST';
+
 export const FILL_WORKLOGS: 'worklogs/FILL' = 'worklogs/FILL';
 export const ADD_WORKLOGS: 'worklogs/ADD' = 'worklogs/ADD';
 export const CLEAR_WORKLOGS: 'worklogs/CLEAR' = 'worklogs/CLEAR';

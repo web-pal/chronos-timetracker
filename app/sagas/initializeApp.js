@@ -14,9 +14,8 @@ import * as Api from 'api';
 import {
   uiActions,
   profileActions,
-  projectsActions,
-  authActions,
   settingsActions,
+  resourcesActions,
 } from 'actions';
 
 import {
@@ -28,6 +27,12 @@ import {
   fetchEpics,
 } from './issues';
 import {
+  fetchProjects,
+} from './projects';
+import {
+  fetchBoards,
+} from './boards';
+import {
   transformValidHost,
 } from './auth';
 import {
@@ -37,23 +42,25 @@ import {
 import jira from '../utils/jiraClient';
 
 import type {
+  Id,
   User,
+  ProjectType,
 } from '../types';
 
 
-function identifyInSentryAndMixpanel(host: URL, userData: User): void {
+function identifyInSentryAndMixpanel(host: string, userData: User): void {
   if (process.env.DISABLE_MIXPANEL !== '1') {
-    mixpanel.identify((`${host.origin} - ${userData.emailAddress}`));
+    mixpanel.identify((`${host} - ${userData.emailAddress}`));
     mixpanel.people.set({
-      host: host.origin,
+      host,
       locale: userData.locale,
       $timezone: userData.timeZone,
       $name: userData.displayName,
       $email: userData.emailAddress,
-      $distinct_id: `${host.origin} - ${userData.emailAddress}`,
+      $distinct_id: `${host} - ${userData.emailAddress}`,
     });
     Raven.setUserContext({
-      host: host.origin,
+      host,
       locale: userData.locale,
       timeZone: userData.timeZone,
       name: userData.displayName,
@@ -62,7 +69,7 @@ function identifyInSentryAndMixpanel(host: URL, userData: User): void {
   }
 }
 
-function* initializeMixpanel(): Generator<*, void, *> {
+function* initializeMixpanel(): Generator<*, *, *> {
   if (process.env.DISABLE_MIXPANEL === '1') {
     yield call(infoLog, 'mixpanel disabled with ENV var');
   }
@@ -77,11 +84,20 @@ function* initializeMixpanel(): Generator<*, void, *> {
 export function* initialConfigureApp({
   host,
   protocol,
-}): Generator<*, void, *> {
+}: {
+  host: string,
+  protocol: string,
+}): Generator<*, *, *> {
   const userData: User = yield call(Api.jiraProfile);
 
+  yield put(profileActions.fillUserData(userData));
+  yield put(uiActions.setUiState('host', host));
   yield call(initializeMixpanel);
   yield call(identifyInSentryAndMixpanel, host, userData);
+
+  const issuesSourceId: Id | null = yield call(getFromStorage, 'issuesSourceId');
+  const issuesSourceType: ProjectType | null = yield call(getFromStorage, 'issuesSourceType');
+  const issuesSprintId: string | null = yield call(getFromStorage, 'issuesSprintId');
 
   let settings = yield call(getFromStorage, 'localDesktopSettings');
   if (!settings || !Object.keys(settings).length) {
@@ -99,20 +115,25 @@ export function* initialConfigureApp({
     );
   }
 
-  // backwards compatibility
-  if (!settings.updateChannel) settings.updateChannel = 'stable';
-  if (!settings.autoCheckForUpdates) settings.autoCheckForUpdates = true;
+  yield call(fetchIssueFields);
+  yield fork(fetchEpics);
+  yield fork(fetchProjects);
+  yield fork(fetchBoards);
+
+  yield put(uiActions.setUiState('issuesSourceId', issuesSourceId));
+  yield put(uiActions.setUiState('issuesSprintId', issuesSprintId));
+  yield put(uiActions.setUiState('issuesSourceType', issuesSourceType));
 
   yield put(settingsActions.fillLocalDesktopSettings(settings));
-  yield put(profileActions.setHost(host));
-  yield put(profileActions.setProtocol(protocol));
-  yield put(profileActions.fillUserData(userData));
-  yield put(authActions.setAuthorized(true));
+  yield put(uiActions.setUiState('protocol', protocol));
+  yield put(uiActions.setUiState('authorized', true));
 
-  yield fork(fetchIssueFields);
-  yield fork(fetchEpics);
-  yield put(projectsActions.fetchProjectsRequest());
-
+  yield put(resourcesActions.setResourceMeta({
+    resourceName: 'issues',
+    meta: {
+      refetchFilterIssuesMarker: false,
+    },
+  }));
   /*
   const isPaidChronosUser = yield select(getIsPaidUser);
 
@@ -123,7 +144,7 @@ export function* initialConfigureApp({
   */
 }
 
-function* getInitializeAppData(): Generator<*, void, *> {
+function* getInitializeAppData(): Generator<*, *, *> {
   const basicAuthCredentials = yield call(
     getFromStorage,
     'jira_credentials',
@@ -184,8 +205,8 @@ function* getInitializeAppData(): Generator<*, void, *> {
   };
 }
 
-export function* initializeApp(): Generator<*, void, *> {
-  yield put(uiActions.setInitializeState(true));
+export function* initializeApp(): Generator<*, *, *> {
+  yield put(uiActions.setUiState('initializeInProcess', true));
   try {
     const {
       tryLogin,
@@ -195,11 +216,16 @@ export function* initializeApp(): Generator<*, void, *> {
     if (tryLogin) {
       const loginFunc = authType === 'OAuth' ? jira.oauth : jira.basicAuth;
       yield call(loginFunc, authData);
-      yield call(initialConfigureApp, { host: authData.host, protocol: authData.protocol });
+      yield call(
+        initialConfigureApp,
+        {
+          host: authData.host,
+          protocol: authData.protocol,
+        },
+      );
     }
   } catch (err) {
-    Raven.captureException(err);
     console.log(err);
   }
-  yield put(uiActions.setInitializeState(false));
+  yield put(uiActions.setUiState('initializeInProcess', false));
 }

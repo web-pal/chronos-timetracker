@@ -8,7 +8,9 @@ import { bindActionCreators } from 'redux';
 import { danger } from 'data/svg';
 import { Flex } from 'components';
 import { uiActions, timerActions } from 'actions';
-import { getAlertModalOpen } from 'selectors';
+import {
+  getModalState,
+} from 'selectors';
 
 import { DangerIcon, ModalContentContainer } from './styled';
 import type { SetAlertModalOpen, StopTimer } from '../../../types';
@@ -21,11 +23,13 @@ type Props = {
 
 const AlertModal: StatelessFunctionalComponent<Props> = ({
   isOpen,
+  setModalState,
   setAlertModalOpen,
+  continueTimer,
   stopTimer,
 }: Props): Node => isOpen && (
   <ModalDialog
-    onClose={() => setAlertModalOpen(false)}
+    onClose={() => setModalState('alert', false)}
     footer={() => (
       <ModalFooter>
         <Flex row style={{ justifyContent: 'flex-end', width: '100%' }}>
@@ -37,12 +41,18 @@ const AlertModal: StatelessFunctionalComponent<Props> = ({
                 // see sagas/timer:144-149
                 stopTimer();
                 //
-                setAlertModalOpen(false);
+                setModalState('alert', false);
               }}
             >
               Stop timer
             </Button>
-            <Button appearance="default" onClick={() => setAlertModalOpen(false)}>
+            <Button
+              appearance="default"
+              onClick={() => {
+                continueTimer();
+                setModalState('alert', false);
+              }}
+            >
               Continue tracking
             </Button>
           </ButtonGroup>
@@ -69,7 +79,7 @@ const AlertModal: StatelessFunctionalComponent<Props> = ({
 
 function mapStateToProps(state) {
   return {
-    isOpen: getAlertModalOpen(state),
+    isOpen: getModalState('alert')(state),
   };
 }
 
