@@ -111,8 +111,8 @@ export function deleteWorklog({
   worklogId,
   adjustEstimate,
 }: {
-  issueId: string,
-  worklogId: string,
+  issueId: Id,
+  worklogId: Id,
   adjustEstimate: string,
 }): Promise<*> {
   return jira.client.issue.deleteWorkLog({ issueId, worklogId, adjustEstimate });

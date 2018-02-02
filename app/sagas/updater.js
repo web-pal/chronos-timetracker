@@ -1,17 +1,38 @@
 // @flow
-/* eslint-disable no-alert */
-import { call, fork, take, put, select } from 'redux-saga/effects';
-import { delay } from 'redux-saga';
-import { remote, ipcRenderer } from 'electron';
-import { uiActions, timerActions, types } from 'actions';
-import Raven from 'raven-js';
-import { getLocalDesktopSettings } from 'selectors';
-import config from 'config';
+import {
+  delay,
+} from 'redux-saga';
+import {
+  call,
+  fork,
+  take,
+  put,
+  select,
+} from 'redux-saga/effects';
+import {
+  remote,
+  ipcRenderer,
+} from 'electron';
 
-import { throwError, infoLog } from './ui';
+import config from 'config';
+import {
+  actionTypes,
+  uiActions,
+  timerActions,
+} from 'actions';
+import {
+  getLocalDesktopSettings,
+} from 'selectors';
+
+import {
+  throwError,
+  infoLog,
+} from './ui';
 import createIpcChannel from './ipc';
 
-const { autoUpdater } = remote.require('electron-updater');
+const {
+  autoUpdater,
+} = remote.require('electron-updater');
 const log = remote.require('electron-log');
 
 let checkingForUpdatesChannel;
@@ -25,12 +46,12 @@ autoUpdater.logger.transports.file.level = 'info';
 
 export function* watchInstallUpdateRequest(): Generator<*, *, *> {
   while (true) {
-    yield take(types.INSTALL_UPDATE_REQUEST);
+    yield take(actionTypes.INSTALL_UPDATE_REQUEST);
     yield call(
       infoLog,
       'downloading update...',
     );
-    yield put(uiActions.setUpdateFetching(true));
+    yield put(uiActions.setUiState('updateFetching', true));
     yield call(autoUpdater.downloadUpdate);
   }
 }
@@ -38,7 +59,7 @@ export function* watchInstallUpdateRequest(): Generator<*, *, *> {
 function* watchCheckingForUpdates(): Generator<*, *, *> {
   while (true) {
     yield take(checkingForUpdatesChannel);
-    yield put(uiActions.setUpdateCheckRunning(true));
+    yield put(uiActions.setUiState('updateCheckRunning', true));
   }
 }
 
@@ -51,9 +72,9 @@ function* watchUpdateAvailable(): Generator<*, *, *> {
       'update is availible',
       meta,
     );
-    yield put(uiActions.setUpdateCheckRunning(false));
+    yield put(uiActions.setUiState('updateCheckRunning', false));
     const newVersion = ev.version;
-    yield put(uiActions.setUpdateAvailable(newVersion));
+    yield put(uiActions.setUiState('updateAvailable', newVersion));
   }
 }
 
@@ -65,7 +86,7 @@ function* watchUpdateNotAvailable(): Generator<*, *, *> {
       'update is not availible',
       meta,
     );
-    yield put(uiActions.setUpdateCheckRunning(false));
+    yield put(uiActions.setUiState('updateCheckRunning', false));
   }
 }
 
@@ -77,7 +98,7 @@ function* watchUpdateDownloaded(): Generator<*, *, *> {
       'update downloaded!',
       meta,
     );
-    yield put(uiActions.setUpdateFetching(false));
+    yield put(uiActions.setUiState('updateFetching', false));
     const { getGlobal } = remote;
     yield call(delay, 500);
     if (window.confirm('New version is available. Do you like to install it now?')) {
@@ -101,7 +122,7 @@ function* watchUpdateDownloaded(): Generator<*, *, *> {
 export function* checkForUpdatesFlow(): Generator<*, *, *> {
   try {
     while (true) {
-      yield take(types.CHECK_FOR_UPDATES_REQUEST);
+      yield take(actionTypes.CHECK_FOR_UPDATES_REQUEST);
       const { updateChannel } = yield select(getLocalDesktopSettings);
       yield call(
         infoLog,
@@ -118,7 +139,6 @@ export function* checkForUpdatesFlow(): Generator<*, *, *> {
     }
   } catch (err) {
     yield call(throwError, err);
-    Raven.captureException(err);
   }
 }
 
@@ -146,6 +166,5 @@ export function* initializeUpdater(): Generator<*, *, *> {
     }
   } catch (err) {
     yield call(throwError, err);
-    Raven.captureException(err);
   }
 }

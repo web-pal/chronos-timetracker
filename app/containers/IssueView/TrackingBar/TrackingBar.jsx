@@ -32,7 +32,6 @@ import {
 import CameraIcon from '@atlaskit/icon/glyph/camera';
 import Tooltip from '@atlaskit/tooltip';
 
-import WorklogEditDialog from './WorklogEditDialog';
 import type {
   Issue,
   SelectIssue,
@@ -84,7 +83,6 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
   >
     <Container>
       <Flex row alignCenter>
-        <WorklogEditDialog />
         {screenshotsAllowed &&
           <div style={{ marginLeft: 10 }}>
             <Tooltip

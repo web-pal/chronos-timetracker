@@ -1,7 +1,10 @@
 // @flow
-import jira from '../jiraClient';
 
-import type { Id } from '../../types';
+import type {
+  Id,
+} from 'types';
+
+import jira from '../jiraClient';
 
 const requiredFields: Array<string> = [
   'issuetype',
@@ -22,11 +25,11 @@ const requiredFields: Array<string> = [
   'components',
 ];
 
-export function getIssueTransitions(issueId: string): Promise<*> {
+export function getIssueTransitions(issueId: Id): Promise<*> {
   return jira.client.issue.getTransitions({ issueId });
 }
 
-export function transitionIssue(issueId: string, transitionId: string): Promise<*> {
+export function transitionIssue(issueId: Id, transitionId: Id): Promise<*> {
   return jira.client.issue.transitionIssue({
     issueId,
     transition: transitionId,
@@ -121,7 +124,7 @@ export function fetchIssueFields(): Promise<*> {
   return jira.client.field.getAllFields();
 }
 
-export function fetchIssueComments(issueId: string): Promise<*> {
+export function fetchIssueComments(issueId: Id): Promise<*> {
   return jira.client.issue.getComments({ issueId });
 }
 
@@ -129,7 +132,7 @@ export function addComment({
   issueId,
   comment,
 }: {
-  issueId: string,
+  issueId: Id,
   comment: {
     body: string,
   }

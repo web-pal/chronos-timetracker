@@ -11,6 +11,11 @@ import Raven from 'raven-js';
 import mixpanel from 'mixpanel-browser';
 
 import * as Api from 'api';
+
+import type {
+  Id,
+} from 'types';
+
 import {
   uiActions,
   profileActions,
@@ -39,16 +44,11 @@ import {
   throwError,
   infoLog,
 } from './ui';
+
 import jira from '../utils/jiraClient';
 
-import type {
-  Id,
-  User,
-  ProjectType,
-} from '../types';
 
-
-function identifyInSentryAndMixpanel(host: string, userData: User): void {
+function identifyInSentryAndMixpanel(host: string, userData: any): void {
   if (process.env.DISABLE_MIXPANEL !== '1') {
     mixpanel.identify((`${host} - ${userData.emailAddress}`));
     mixpanel.people.set({
@@ -88,7 +88,7 @@ export function* initialConfigureApp({
   host: string,
   protocol: string,
 }): Generator<*, *, *> {
-  const userData: User = yield call(Api.jiraProfile);
+  const userData = yield call(Api.jiraProfile);
 
   yield put(profileActions.fillUserData(userData));
   yield put(uiActions.setUiState('host', host));
@@ -96,8 +96,8 @@ export function* initialConfigureApp({
   yield call(identifyInSentryAndMixpanel, host, userData);
 
   const issuesSourceId: Id | null = yield call(getFromStorage, 'issuesSourceId');
-  const issuesSourceType: ProjectType | null = yield call(getFromStorage, 'issuesSourceType');
-  const issuesSprintId: string | null = yield call(getFromStorage, 'issuesSprintId');
+  const issuesSourceType = yield call(getFromStorage, 'issuesSourceType');
+  const issuesSprintId: Id | null = yield call(getFromStorage, 'issuesSprintId');
 
   let settings = yield call(getFromStorage, 'localDesktopSettings');
   if (!settings || !Object.keys(settings).length) {

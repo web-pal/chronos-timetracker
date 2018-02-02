@@ -1,41 +1,33 @@
 // @flow
 import {
-  delay,
-} from 'redux-saga';
-import {
   call,
-  take,
   select,
   put,
   cancel,
   takeEvery,
-  race,
   fork,
 } from 'redux-saga/effects';
+import moment from 'moment';
 import createActionCreators from 'redux-resource-action-creators';
-import Raven from 'raven-js';
 import * as Api from 'api';
-import filter from 'lodash.filter';
-import pull from 'lodash.pull';
+
+import type {
+  Id,
+} from 'types';
+
+import {
+  jts,
+} from 'time-util';
+
 import {
   types,
-  worklogsActions,
   uiActions,
-  issuesActions,
   resourcesActions,
 } from 'actions';
 import {
-  getUserData,
-  getSelectedIssue,
-  getRecentIssueIds,
-  getIssuesMap,
-  getTrackingIssue,
-  getSelectedIssueId,
   getResourceMap,
-  getIssueWorklogs,
 } from 'selectors';
-import moment from 'moment';
-import { jts } from 'time-util';
+
 
 import {
   trackMixpanel,
@@ -54,7 +46,6 @@ import {
   infoLog,
   scrollToIndexRequest,
 } from './ui';
-import type { Id, Worklog, DeleteWorklogRequestAction, EditWorklogRequestAction, Issue } from '../types';
 
 export function* saveWorklogAsOffline(worklog: any): Generator<*, *, *> {
   let offlineWorklogs = yield call(getFromStorage, 'offlineWorklogs');
@@ -67,13 +58,13 @@ export function* saveWorklogAsOffline(worklog: any): Generator<*, *, *> {
 
 
 export function* getAdditionalWorklogsForIssues(
-  incompleteIssues: Array<Issue>,
+  incompleteIssues: Array<any>,
 ): Generator<*, *, *> {
   try {
     yield call(infoLog, 'getting additional worklogs for issues', incompleteIssues);
     const worklogs = yield call(Api.fetchWorklogs, incompleteIssues);
     const issues = incompleteIssues.map((issue) => {
-      const additionalWorklogs = filter(worklogs, w => w.issueId === issue.id);
+      const additionalWorklogs = worklogs.filter(w => w.issueId === issue.id);
       if (additionalWorklogs.length) {
         return {
           ...issue,
@@ -94,7 +85,6 @@ export function* getAdditionalWorklogsForIssues(
     };
   } catch (err) {
     yield call(throwError, err);
-    Raven.captureException(err);
     return incompleteIssues;
   }
 }
@@ -108,6 +98,8 @@ export function* saveWorklog({
     timeSpent,
     timeSpentInSeconds,
   },
+}: {
+  payload: any,
 }): Generator<*, *, *> {
   const worklogsA = createActionCreators(worklogId ? 'update' : 'create', {
     resourceName: 'worklogs',
@@ -191,9 +183,10 @@ export function* saveWorklog({
   } catch (err) {
     yield call(throwError, err);
   }
+  return null;
 }
 
-export function* uploadWorklog(options): Generator<*, *, *> {
+export function* uploadWorklog(options: any): Generator<*, *, *> {
   try {
     yield call(
       infoLog,
@@ -257,14 +250,13 @@ export function* uploadWorklog(options): Generator<*, *, *> {
     */
     yield call(notify, '', 'Failed to upload worklog');
     yield call(throwError, err);
-    Raven.captureException(err);
   }
 }
 
 export function* deleteWorklog({
   worklogId,
 }: {
-  worklogId: number | string,
+  worklogId: Id,
 }): Generator<*, void, *> {
   const worklogsA = createActionCreators('delete', {
     resourceName: 'worklogs',

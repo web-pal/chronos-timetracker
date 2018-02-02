@@ -3,21 +3,18 @@ import {
   put,
   call,
 } from 'redux-saga/effects';
-import Raven from 'raven-js';
+
 import createActionCreators from 'redux-resource-action-creators';
 import {
   openURLInBrowser,
 } from 'external-open-util';
 
 import * as Api from 'api';
+
 import {
   throwError,
   notify,
 } from './ui';
-
-import type {
-  FlagAction,
-} from '../types';
 
 
 export function* fetchBoards(): Generator<*, void, *> {
@@ -37,7 +34,7 @@ export function* fetchBoards(): Generator<*, void, *> {
     if (JSON.parse(err).statusCode === 403) {
       const helpUrl =
         'https://web-pal.atlassian.net/wiki/spaces/CHRONOS/pages/173899778/Problem+with+loading+boards';
-      const flagActions: Array<FlagAction> = [
+      const flagActions = [
         {
           content: 'How to resolve this?',
           onClick: openURLInBrowser(helpUrl),
@@ -45,7 +42,7 @@ export function* fetchBoards(): Generator<*, void, *> {
       ];
       yield call(notify, '', 'Can not load boards', flagActions);
     } else {
-      Raven.captureException(err);
+      console.log(err);
     }
   }
 }

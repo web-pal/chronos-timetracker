@@ -1,22 +1,33 @@
+// @flow
 import {
   call,
   take,
   put,
   select,
 } from 'redux-saga/effects';
-import * as Api from 'api';
-import { remote } from 'electron';
-import Raven from 'raven-js';
-import { types, settingsActions, uiActions } from 'actions';
-import { getLocalDesktopSettings } from 'selectors';
-import { infoLog } from './ui';
+import {
+  remote,
+} from 'electron';
 
+import * as Api from 'api';
+
+import {
+  actionTypes,
+  uiActions,
+} from 'actions';
+import {
+  getLocalDesktopSettings,
+} from 'selectors';
+
+import {
+  infoLog,
+} from './ui';
 import {
   setToStorage,
 } from './storage';
 
 
-export function* getSettings() {
+export function* getSettings(): Generator<*, *, *> {
   try {
     yield call(
       infoLog,
@@ -30,13 +41,13 @@ export function* getSettings() {
     );
     // yield put(settingsActions.fillSettings(payload));
   } catch (err) {
-    Raven.captureException(err);
+    console.log(err);
   }
 }
 
-export function* watchLocalDesktopSettingsChange() {
+export function* watchLocalDesktopSettingsChange(): Generator<*, *, *> {
   while (true) {
-    const { payload, meta } = yield take(types.SET_LOCAL_DESKTOP_SETTING);
+    const { payload, meta } = yield take(actionTypes.SET_LOCAL_DESKTOP_SETTING);
     yield call(
       infoLog,
       'set local desktop setting request',

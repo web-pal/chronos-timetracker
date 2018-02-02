@@ -16,6 +16,10 @@ import createActionCreators from 'redux-resource-action-creators';
 
 import * as Api from 'api';
 
+import type {
+  Id,
+} from 'types';
+
 import {
   getFieldIdByName,
   getUserData,
@@ -26,10 +30,9 @@ import {
   getResourceItemBydId,
 } from 'selectors';
 import {
-  issuesActions,
   uiActions,
   resourcesActions,
-  types,
+  actionTypes,
 } from 'actions';
 
 import {
@@ -44,11 +47,6 @@ import {
   getIssueComments,
 } from './comments';
 import createIpcChannel from './ipc';
-
-import type {
-  FetchIssuesRequestAction,
-  User,
-} from '../types';
 
 
 const JQL_RESTRICTED_CHARS_REGEX = /[+.,;?|*/%^$#@[\]]/;
@@ -176,7 +174,13 @@ export function* fetchIssues({
     stopIndex,
     resolve,
   },
-}: FetchIssuesRequestAction): Generator<*, *, *> {
+}: {
+  payload: {
+    startIndex: number,
+    stopIndex: number,
+    resolve: null | () => void,
+  },
+}): Generator<*, *, *> {
   const actions = createActionCreators('read', {
     resourceName: 'issues',
     request: 'filterIssues',
@@ -284,7 +288,7 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
 
     const epicLinkFieldId: string | null = yield select(getFieldIdByName('Epic Link'));
 
-    const profile: User = yield select(getUserData);
+    const profile = yield select(getUserData);
     const jql: string = buildJQLQuery({
       projectId: issuesSourceType === 'project' ? issuesSourceId : null,
       sprintId: issuesSourceType === 'scrum' ? issuesSprintId : null,
@@ -400,6 +404,9 @@ export function* getIssueTransitions(issueId: string | number): Generator<*, voi
 export function* transitionIssue({
   issueId,
   transitionId,
+}: {
+  issueId: Id,
+  transitionId: Id,
 }): Generator<*, void, *> {
   const issuesA = createActionCreators('update', {
     resourceName: 'issues',
@@ -448,6 +455,8 @@ export function* issueSelectFlow(issueId: string | number): Generator<*, *, *> {
 
 export function* assignIssue({
   issueId,
+}: {
+  issueId: Id,
 }): Generator<*, void, *> {
   const issuesA = createActionCreators('update', {
     resourceName: 'issues',
@@ -571,31 +580,31 @@ function getNewIssueChannelListener(channel) {
   };
 }
 
-export function* createIpcNewIssueListener(): void {
+export function* createIpcNewIssueListener(): Generator<*, *, *> {
   const newIssueChannel = yield call(createIpcChannel, 'newIssue');
   yield fork(getNewIssueChannelListener(newIssueChannel));
 }
 
 export function* watchFetchIssuesRequest(): Generator<*, *, *> {
-  yield takeEvery(types.FETCH_ISSUES_REQUEST, fetchIssues);
+  yield takeEvery(actionTypes.FETCH_ISSUES_REQUEST, fetchIssues);
 }
 
 export function* watchFetchRecentIssuesRequest(): Generator<*, *, *> {
-  yield takeEvery(types.FETCH_RECENT_ISSUES_REQUEST, fetchRecentIssues);
+  yield takeEvery(actionTypes.FETCH_RECENT_ISSUES_REQUEST, fetchRecentIssues);
 }
 
 export function* watchTransitionIssueRequest(): Generator<*, *, *> {
-  yield takeEvery(types.TRANSITION_ISSUE_REQUEST, transitionIssue);
+  yield takeEvery(actionTypes.TRANSITION_ISSUE_REQUEST, transitionIssue);
 }
 
 export function* watchAssignIssueRequest(): Generator<*, *, *> {
-  yield takeEvery(types.ASSIGN_ISSUE_REQUEST, assignIssue);
+  yield takeEvery(actionTypes.ASSIGN_ISSUE_REQUEST, assignIssue);
 }
 
 export function* watchReFetchIssuesRequest(): Generator<*, *, *> {
   let task;
   while (true) {
-    const { debouncing } = yield take(types.REFETCH_ISSUES_REQUEST);
+    const { debouncing } = yield take(actionTypes.REFETCH_ISSUES_REQUEST);
     if (debouncing && task) {
       yield cancel(task);
     }

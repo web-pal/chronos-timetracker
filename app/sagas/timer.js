@@ -1,3 +1,4 @@
+// @flow
 import {
   call,
   take,
@@ -14,9 +15,20 @@ import {
   remote,
   ipcRenderer,
 } from 'electron';
-
 import moment from 'moment';
 import NanoTimer from 'nanotimer';
+
+import config from 'config';
+import {
+  randomPeriods,
+  calculateActivity,
+} from 'timer-helper';
+
+import {
+  actionTypes,
+  uiActions,
+  timerActions,
+} from 'actions';
 import {
   getUserData,
   getTimerTime,
@@ -31,20 +43,7 @@ import {
   getIdles,
   getUiState,
 } from 'selectors';
-import Raven from 'raven-js';
-import {
-  uiActions,
-  timerActions,
-  worklogsActions,
-  types,
-} from 'actions';
-import config from 'config';
-import {
-  randomPeriods,
-  calculateActivity,
-} from 'timer-helper';
 
-import createIpcChannel from './ipc';
 import {
   throwError,
   infoLog,
@@ -58,6 +57,7 @@ import {
   takeScreenshot,
   cleanExcessScreenshotPeriods,
 } from './screenshots';
+import createIpcChannel from './ipc';
 
 
 const system = remote.require('@paulcbetts/system-idle-time');
@@ -85,7 +85,6 @@ function* isScreenshotsAllowed() {
     return screenshotsAllowed;
   } catch (err) {
     yield call(throwError, err);
-    Raven.captureException(err);
     return false;
   }
 }
@@ -128,7 +127,6 @@ function* idleCheck() {
     prevIdleTime = idleTime;
   } catch (err) {
     yield call(throwError, err);
-    Raven.captureException(err);
   }
 }
 
@@ -155,7 +153,6 @@ function* screenshotsCheck() {
     }
   } catch (err) {
     yield call(throwError, err);
-    Raven.captureException(err);
   }
 }
 
@@ -176,7 +173,6 @@ function* activityCheck(secondsToMinutesGrid) {
     }
   } catch (err) {
     yield call(throwError, err);
-    Raven.captureException(err);
   }
 }
 
@@ -201,18 +197,21 @@ function* timerStep(screenshotsAllowed, secondsToMinutesGrid) {
     yield call(setTimeToTray);
   } catch (err) {
     yield call(throwError, err);
-    Raven.captureException(err);
   }
 }
 
 
-export function* runTimer(channel) {
-  const { screenshotsPeriod, screenshotsQuantity } = yield select(getScreenshotsSettings);
+export function* runTimer(channel: any): Generator<*, *, *> {
+  const {
+    screenshotsPeriod,
+    screenshotsQuantity,
+  } = yield select(getScreenshotsSettings);
+
   const screenshotsAllowed = yield call(isScreenshotsAllowed);
-  const currentSeconds = moment().format('ss');
+  const currentSeconds = parseInt(moment().format('ss'), 10);
   const secondsToMinutesGrid = 60 - currentSeconds;
   // second remaining to end of current Idle-minute period
-  const minutes = moment().format('mm');
+  const minutes = parseInt(moment().format('mm'), 10);
   const minutePeriod = screenshotsPeriod / 60;
   const periodNumber = Math.floor(minutes / minutePeriod) + 1;
   const periodRange = (periodNumber * minutePeriod) - minutes;
@@ -245,7 +244,7 @@ function* stopTimer(channel, timerInstance) {
     });
     //
     yield put(timerActions.resetTimer());
-    yield put(worklogsActions.setTemporaryWorklogId(null));
+    // yield put(worklogsActions.setTemporaryWorklogId(null));
     yield call(uploadWorklog, {
       issueId,
       comment,
@@ -258,7 +257,6 @@ function* stopTimer(channel, timerInstance) {
     });
   } catch (err) {
     yield call(throwError, err);
-    Raven.captureException(err);
   }
 }
 
@@ -266,18 +264,18 @@ export function* timerFlow(): Generator<*, *, *> {
   try {
     const selectedIssueId = yield select(getUiState('selectedIssueId'));
     yield put(uiActions.setUiState('trackingIssueId', selectedIssueId));
-    const tempId = Math.random().toString(36).substr(2, 9);
-    yield put(worklogsActions.setTemporaryWorklogId(tempId));
+    // const tempId = Math.random().toString(36).substr(2, 9);
+    // yield put(worklogsActions.setTemporaryWorklogId(tempId));
     ipcRenderer.send('start-timer');
     const channel = yield call(timerChannel);
     const timerInstance = yield fork(runTimer, channel);
     while (true) {
-      yield take(types.STOP_TIMER_REQUEST);
+      yield take(actionTypes.STOP_TIMER_REQUEST);
       const time = yield select(getTimerTime);
       if (time < 60) {
         yield put(uiActions.setModalState('alert', true));
-        const { type } = yield take([types.CONTINUE_TIMER, types.STOP_TIMER]);
-        if (type === types.STOP_TIMER) {
+        const { type } = yield take([actionTypes.CONTINUE_TIMER, actionTypes.STOP_TIMER]);
+        if (type === actionTypes.STOP_TIMER) {
           yield call(stopTimer, channel, timerInstance);
           yield cancel();
         }
@@ -288,12 +286,11 @@ export function* timerFlow(): Generator<*, *, *> {
     }
   } catch (err) {
     yield call(throwError, err);
-    Raven.captureException(err);
   }
 }
 
-export function* watchStartTimer() {
-  yield takeEvery(types.START_TIMER, timerFlow);
+export function* watchStartTimer(): Generator<*, *, *> {
+  yield takeEvery(actionTypes.START_TIMER, timerFlow);
 }
 
 
@@ -341,7 +338,7 @@ let rejectScreenshotChannel;
 let keepIdleTimeChannel;
 let dismissIdleTimeChannel;
 
-export function* watchAcceptScreenshot() {
+export function* watchAcceptScreenshot(): Generator<*, *, *> {
   while (true) {
     const ev = yield take(acceptScreenshotChannel);
     yield call(
@@ -368,7 +365,7 @@ export function* watchAcceptScreenshot() {
   }
 }
 
-export function* watchRejectScreenshot() {
+export function* watchRejectScreenshot(): Generator<*, *, *> {
   while (true) {
     const ev = yield take(rejectScreenshotChannel);
     yield call(
@@ -386,7 +383,7 @@ export function* watchRejectScreenshot() {
   }
 }
 
-export function* watchKeepIdleTime() {
+export function* watchKeepIdleTime(): Generator<*, *, *> {
   while (true) {
     const ev = yield take(keepIdleTimeChannel);
     yield call(
@@ -401,7 +398,7 @@ export function* watchKeepIdleTime() {
   }
 }
 
-export function* watchDismissIdleTime() {
+export function* watchDismissIdleTime(): Generator<*, *, *> {
   while (true) {
     const ev = yield take(dismissIdleTimeChannel);
     yield call(
@@ -416,7 +413,7 @@ export function* watchDismissIdleTime() {
   }
 }
 
-export function* createIpcListeners(): void {
+export function* createIpcListeners(): Generator<*, *, *> {
   acceptScreenshotChannel = yield call(createIpcChannel, 'screenshot-accept');
   yield fork(watchAcceptScreenshot);
 

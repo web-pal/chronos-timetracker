@@ -7,14 +7,19 @@ import {
 } from 'redux-saga/effects';
 import createActionCreators from 'redux-resource-action-creators';
 
+import * as Api from 'api';
+
+import type {
+  Id,
+} from 'types';
+
 import {
   getUiState,
 } from 'selectors';
 import {
-  types,
+  actionTypes,
 } from 'actions';
 
-import * as Api from 'api';
 import {
   throwError,
 } from './ui';
@@ -29,7 +34,7 @@ export function* fetchSprints(): Generator<*, *, *> {
   try {
     yield put(actions.pending());
 
-    const boardId: string | null = yield select(getUiState('issuesSourceId'));
+    const boardId: Id = yield select(getUiState('issuesSourceId'));
     const response = yield call(Api.fetchSprints, { boardId });
     yield put(actions.succeeded({
       resources: response.values,
@@ -43,5 +48,5 @@ export function* fetchSprints(): Generator<*, *, *> {
 }
 
 export function* watchFetchSprintsRequest(): Generator<*, *, *> {
-  yield takeEvery(types.FETCH_SPRINTS_REQUEST, fetchSprints);
+  yield takeEvery(actionTypes.FETCH_SPRINTS_REQUEST, fetchSprints);
 }

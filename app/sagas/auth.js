@@ -10,21 +10,15 @@ import {
   ipcRenderer,
   remote,
 } from 'electron';
-import Raven from 'raven-js';
 
 import * as Api from 'api';
+
 import {
   actionTypes,
   authActions,
   uiActions,
-  clearAllReducers,
 } from 'actions';
 
-import type {
-  LoginRequestAction,
-  LoginOAuthRequestAction,
-} from '../types';
-import jira from '../utils/jiraClient';
 import {
   setToStorage,
   removeFromStorage,
@@ -33,6 +27,8 @@ import {
   initialConfigureApp,
 } from './initializeApp';
 import createIpcChannel from './ipc';
+
+import jira from '../utils/jiraClient';
 
 
 export function transformValidHost(host: string): URL {
@@ -59,7 +55,7 @@ export function transformValidHost(host: string): URL {
 export function* basicAuthLoginForm(): Generator<*, void, *> {
   while (true) {
     try {
-      const { payload }: LoginRequestAction = yield take(actionTypes.LOGIN_REQUEST);
+      const { payload } = yield take(actionTypes.LOGIN_REQUEST);
       const host = yield call(transformValidHost, payload.host);
       const protocol = host.protocol.slice(0, -1);
 
@@ -115,7 +111,7 @@ export function* basicAuthLoginForm(): Generator<*, void, *> {
 export function* oAuthLoginForm(): Generator<*, *, *> {
   while (true) {
     try {
-      const { host }: LoginOAuthRequestAction = yield take(actionTypes.LOGIN_OAUTH_REQUEST);
+      const { host } = yield take(actionTypes.LOGIN_OAUTH_REQUEST);
       yield put(uiActions.setUiState('loginRequestInProcess', true));
 
       const { hostname } = yield call(transformValidHost, host);
@@ -207,10 +203,8 @@ export function* logoutFlow(): Generator<*, *, *> {
       if (!running && !uploading) {
         yield call(removeFromStorage, 'desktop_tracker_jwt');
         yield call(removeFromStorage, 'jira_credentials');
-        yield put(clearAllReducers());
       }
     } catch (err) {
-      Raven.captureException(err);
       console.log(err);
     }
   }

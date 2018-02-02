@@ -12,23 +12,20 @@ import {
 import Raven from 'raven-js';
 import moment from 'moment';
 
+import type {
+  Id,
+} from 'types';
+
 import {
   uiActions,
   issuesActions,
   sprintsActions,
-  types,
+  actionTypes,
 } from 'actions';
 import {
   getResourceIds,
   getIssueWorklogs,
 } from 'selectors';
-
-import type {
-  LogLevel,
-  LogLevels,
-  FlagType,
-  FlagAction,
-} from '../types';
 
 import {
   setToStorage,
@@ -39,7 +36,7 @@ import {
 import config from '../config';
 
 
-const LOG_LEVELS: LogLevels = {
+const LOG_LEVELS = {
   info: 'info',
   log: 'log',
   error: 'error',
@@ -48,7 +45,7 @@ const LOG_LEVELS: LogLevels = {
 
 const mutedText: string = 'color: #888; font-weight: 100;';
 
-const LOG_STYLE: { [LogLevel]: string } = {
+const LOG_STYLE = {
   info: 'color: white; background: blue;',
   log: 'color: white; background: magenta;',
   error: 'color: white; background: red;',
@@ -57,7 +54,7 @@ const LOG_STYLE: { [LogLevel]: string } = {
 
 export function* infoLog(...argw: any): Generator<*, void, *> {
   if (config.infoLog) {
-    const level: LogLevel = LOG_LEVELS.info;
+    const level = LOG_LEVELS.info;
     yield call(
       console.groupCollapsed,
       `%c log %c ${level} %c ${argw[0]} %c @ ${moment().format('hh:mm:ss')}`,
@@ -74,8 +71,6 @@ export function* infoLog(...argw: any): Generator<*, void, *> {
 export function* throwError(err: mixed): Generator<*, void, *> {
   yield call(console.error, err);
   Raven.captureException(err);
-  // TODO
-  // yield call(notify, 'unexpected error in runtime', 'Error in runtime', 'normal', 'errorIcon');
 }
 
 
@@ -95,11 +90,11 @@ function* autoDeleteFlag(id) {
 export function* notify(
   message: string = '',
   title: string = '',
-  actions: Array<FlagAction> = [],
+  actions: Array<any> = [],
   level: string = 'normal',
   icon: string = 'bellIcon',
 ): Generator<*, void, *> {
-  const newFlag: FlagType = {
+  const newFlag = {
     id: uuidv4(),
     title,
     actions,
@@ -108,7 +103,9 @@ export function* notify(
     icon,
   };
   yield put(uiActions.addFlag(newFlag));
-  yield fork(autoDeleteFlag, newFlag.id);
+  if (!actions.length) {
+    yield fork(autoDeleteFlag, newFlag.id);
+  }
 }
 
 function* onSidebarChange(sidebarType) {
@@ -151,6 +148,9 @@ function* onUiChange({
 export function* scrollToIndexRequest({
   worklogId,
   issueId,
+}: {
+  worklogId: Id,
+  issueId: Id,
 }): Generator<*, *, *> {
   try {
     const worklogs = yield select(getIssueWorklogs(issueId));
@@ -164,12 +164,12 @@ export function* scrollToIndexRequest({
 }
 
 export function* watchUiStateChange(): Generator<*, *, *> {
-  yield takeEvery(types.SET_UI_STATE, onUiChange);
+  yield takeEvery(actionTypes.SET_UI_STATE, onUiChange);
 }
 
 export function* watchScrollToIndexRequest(): Generator<*, *, *> {
   yield takeEvery(
-    types.ISSUE_WORKLOGS_SCROLL_TO_INDEX_REQUEST,
+    actionTypes.ISSUE_WORKLOGS_SCROLL_TO_INDEX_REQUEST,
     scrollToIndexRequest,
   );
 }

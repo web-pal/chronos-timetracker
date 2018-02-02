@@ -56,13 +56,6 @@ const initialState: UiState = {
     confirmDeleteWorklog: false,
     editWorklog: false,
   },
-  settingsModalOpen: false,
-  supportModalOpen: false,
-  aboutModalOpen: false,
-  alertModalOpen: false,
-  confirmDeleteWorklogModalOpen: false,
-  worklogModalOpen: false,
-  editWorklogModalOpen: false,
 
   flags: [],
 };

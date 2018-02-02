@@ -1,6 +1,10 @@
 // @flow
-import { select, call } from 'redux-saga/effects';
+import {
+  select,
+  call,
+} from 'redux-saga/effects';
 import storage from 'electron-json-storage';
+
 import {
   getUiState,
   getUserData,

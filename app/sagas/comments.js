@@ -13,9 +13,13 @@ import createActionCreators from 'redux-resource-action-creators';
 
 import * as Api from 'api';
 
+import type {
+  Id,
+} from 'types';
+
 import {
   uiActions,
-  types,
+  actionTypes,
 } from 'actions';
 
 import {
@@ -25,7 +29,7 @@ import {
 } from './ui';
 
 
-export function* getIssueComments(issueId): Generator<*, void, *> {
+export function* getIssueComments(issueId: Id): Generator<*, void, *> {
   const actions = createActionCreators('read', {
     resourceName: 'issuesComments',
     request: `issue_${issueId}`,
@@ -59,6 +63,9 @@ export function* getIssueComments(issueId): Generator<*, void, *> {
 export function* addIssueComment({
   text,
   issueId,
+}: {
+  text: string,
+  issueId: Id,
 }): Generator<*, void, *> {
   const actions = createActionCreators('create', {
     resourceName: 'issuesComments',
@@ -88,5 +95,5 @@ export function* addIssueComment({
 }
 
 export function* watchIssueCommentRequest(): Generator<*, *, *> {
-  yield takeEvery(types.COMMENT_REQUEST, addIssueComment);
+  yield takeEvery(actionTypes.COMMENT_REQUEST, addIssueComment);
 }

@@ -4,17 +4,12 @@ import {
   put,
   call,
   fork,
-  select,
 } from 'redux-saga/effects';
 
 import {
   uiActions,
   timerActions,
-  issuesActions,
 } from 'actions';
-import {
-  getSelectedIssue,
-} from 'selectors';
 
 import createIpcChannel from './ipc';
 
@@ -24,13 +19,11 @@ function getTrayChannelListener(channel, type) {
     while (true) {
       yield take(channel);
       if (type === 'tray-start-click') {
-        const selectedIssue = yield select(getSelectedIssue);
-        yield put(issuesActions.setTrackingIssue(selectedIssue));
         yield put(timerActions.startTimer());
       } else if (type === 'tray-stop-click') {
         yield put(timerActions.stopTimerRequest());
       } else if (type === 'tray-settings-click') {
-        yield put(uiActions.setSettingsModalOpen(true));
+        yield put(uiActions.setModalState('settings', true));
       }
     }
   };

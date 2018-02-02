@@ -9,14 +9,13 @@ import Raven from 'raven-js';
 import createActionCreators from 'redux-resource-action-creators';
 
 import {
-  types,
+  actionTypes,
   uiActions,
 } from 'actions';
 import {
-  getResourceMap,
-  getUiState,
   getCurrentProjectId,
 } from 'selectors';
+
 import * as Api from 'api';
 
 import {
@@ -90,5 +89,5 @@ export function* fetchProjectStatuses(): Generator<*, *, *> {
 
 
 export function* watchFetchProjectStatusesRequest(): Generator<*, *, *> {
-  yield takeLatest(types.FETCH_PROJECT_STATUSES_REQUEST, fetchProjectStatuses);
+  yield takeLatest(actionTypes.FETCH_PROJECT_STATUSES_REQUEST, fetchProjectStatuses);
 }
