@@ -1,7 +1,7 @@
 // @flow
 import type {
   AuthAction,
-} from '../types/auth';
+} from 'types';
 
 import * as actionTypes from './actionTypes';
 

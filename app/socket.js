@@ -29,7 +29,7 @@ export default class Socket {
 
     this.socket.on('new settings', (response) => {
       console.log('new settings', response);
-      store.dispatch(settingsActions.fillSettings(response.newSetting.desktopApp));
+      // store.dispatch(settingsActions.fillSettings(response.newSetting.desktopApp));
     });
 
     this.socket.on('showCurrentWorklog', () => {

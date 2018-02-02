@@ -1,5 +1,8 @@
 // @flow
 import * as actionTypes from '../actions/actionTypes/issues';
+import type {
+  Id,
+} from './';
 
 
 export type IssuesAction =
@@ -25,13 +28,13 @@ export type IssuesAction =
   |} |
   {|
     type: typeof actionTypes.TRANSITION_ISSUE_REQUEST,
-    transitionId: number | string,
-    issueId: number | string,
+    transitionId: Id,
+    issueId: Id,
   |} |
   {|
     type: typeof actionTypes.COMMENT_REQUEST,
     text: string,
-    issueId: number,
+    issueId: Id,
   |} |
   {|
     type: typeof actionTypes.ASSIGN_ISSUE_REQUEST,

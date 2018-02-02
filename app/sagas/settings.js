@@ -28,7 +28,7 @@ export function* getSettings() {
       'got backend settings',
       payload,
     );
-    yield put(settingsActions.fillSettings(payload));
+    // yield put(settingsActions.fillSettings(payload));
   } catch (err) {
     Raven.captureException(err);
   }

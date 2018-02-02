@@ -1,7 +1,7 @@
 // @flow
 import type {
   ProfileAction,
-} from '../types/profile';
+} from 'types';
 
 import * as actionTypes from './actionTypes';
 

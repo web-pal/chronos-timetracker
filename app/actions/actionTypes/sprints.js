@@ -1,3 +1,3 @@
 // @flow
 
-export const FETCH_SPRINTS_REQUEST: 'projects/FETCH_SPRINTS_REQUEST' = 'projects/FETCH_SPRINTS_REQUEST';
+export const FETCH_SPRINTS_REQUEST = 'projects/FETCH_SPRINTS_REQUEST';

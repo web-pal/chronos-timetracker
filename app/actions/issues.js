@@ -1,7 +1,8 @@
 // @flow
 import type {
+  Id,
   IssuesAction,
-} from '../types/issues';
+} from 'types';
 
 import * as actionTypes from './actionTypes';
 
@@ -21,8 +22,7 @@ export const fetchIssuesRequest = (
   payload,
 });
 
-export const fetchRecentIssuesRequest = (
-): IssuesAction => ({
+export const fetchRecentIssuesRequest = (): IssuesAction => ({
   type: actionTypes.FETCH_RECENT_ISSUES_REQUEST,
 });
 
@@ -43,8 +43,8 @@ export const selectIssue = (
 });
 
 export const transitionIssueRequest = (
-  transitionId: string | number,
-  issueId: string | number,
+  transitionId: Id,
+  issueId: Id,
 ): IssuesAction => ({
   type: actionTypes.TRANSITION_ISSUE_REQUEST,
   transitionId,
@@ -53,7 +53,7 @@ export const transitionIssueRequest = (
 
 export const commentRequest = (
   text: string,
-  issueId: number,
+  issueId: Id,
 ): IssuesAction => ({
   type: actionTypes.COMMENT_REQUEST,
   text,
@@ -61,7 +61,7 @@ export const commentRequest = (
 });
 
 export const assignIssueRequest = (
-  issueId: number | string,
+  issueId: Id,
 ): IssuesAction => ({
   type: actionTypes.ASSIGN_ISSUE_REQUEST,
   issueId,

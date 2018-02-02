@@ -1,6 +1,4 @@
 // @flow
-import type { ClearAllReducers, ClearAllReducersAction } from '../types';
-import { ___CLEAR_ALL_REDUCERS___ } from './actionTypes/';
 
 export * as profileActions from './profile';
 export * as authActions from './auth';
@@ -15,8 +13,3 @@ export * as resourcesActions from './resources';
 
 export * as types from './actionTypes/';
 export * as actionTypes from './actionTypes';
-
-// eslint-disable-next-line import/prefer-default-export
-export const clearAllReducers: ClearAllReducers = (): ClearAllReducersAction => ({
-  type: ___CLEAR_ALL_REDUCERS___,
-});

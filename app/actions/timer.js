@@ -1,72 +1,75 @@
 // @flow
-import * as types from './actionTypes';
 import type {
-  Tick, TickAction,
-  StartTimer, StartTimerAction,
-  StopTimer, StopTimerAction,
-  StopTimerRequest, StopTimerRequestAction,
-  SetIdleState, SetIdleStateAction,
-  SetLastScreenshotTime, SetLastScreenshotTimeAction,
-  ResetTimer, ResetTimerAction,
-  AddScreenshot, AddScreenshotAction,
-  SetScreenshotPeriods, SetScreenshotPeriodsAction,
-  AddIdleTime, AddIdleTimeAction,
-  DismissIdleTime, DismissIdleTimeAction,
-  Screenshot, Idle,
-} from '../types';
+  TimerAction,
+} from 'types';
 
-export const tick: Tick = (): TickAction => ({ type: types.TICK });
-export const startTimer: StartTimer = (): StartTimerAction => ({ type: types.START_TIMER });
-export const stopTimer: StopTimer = (): StopTimerAction => ({ type: types.STOP_TIMER });
-export const continueTimer = () => ({
+import * as types from './actionTypes';
+
+
+export const tick = (): TimerAction => ({
+  type: types.TICK,
+});
+
+export const startTimer = (): TimerAction => ({
+  type: types.START_TIMER,
+});
+
+export const stopTimer = (): TimerAction => ({
+  type: types.STOP_TIMER,
+});
+
+export const continueTimer = (): TimerAction => ({
   type: types.CONTINUE_TIMER,
 });
-export const stopTimerRequest: StopTimerRequest = (): StopTimerRequestAction => ({
+
+export const stopTimerRequest = (): TimerAction => ({
   type: types.STOP_TIMER_REQUEST,
 });
 
-export const setIdleState: SetIdleState = (
+export const setIdleState = (
   payload: boolean,
-): SetIdleStateAction => ({
+): TimerAction => ({
   type: types.SET_IDLE_STATE,
   payload,
 });
 
-export const setLastScreenshotTime: SetLastScreenshotTime = (
+export const setLastScreenshotTime = (
   payload: number,
-): SetLastScreenshotTimeAction => ({
+): TimerAction => ({
   type: types.SET_LAST_SCREENSHOT_TIME,
   payload,
 });
 
-export const resetTimer: ResetTimer = (): ResetTimerAction => ({ type: types.RESET_TIMER });
-
-export const addScreenshot: AddScreenshot = (
-  screenshot: Screenshot,
-  screenshotTime: number,
-): AddScreenshotAction => ({
-  type: types.ADD_SCREENSHOT,
-  payload: screenshot,
-  meta: screenshotTime,
+export const resetTimer = (): TimerAction => ({
+  type: types.RESET_TIMER,
 });
 
-export const setScreenshotPeriods: SetScreenshotPeriods = (
+export const addScreenshot = (
+  screenshot: any,
+  screenshotTime: number,
+): TimerAction => ({
+  type: types.ADD_SCREENSHOT,
+  screenshot,
+  screenshotTime,
+});
+
+export const setScreenshotPeriods = (
   payload: Array<number>,
-): SetScreenshotPeriodsAction => ({
+): TimerAction => ({
   type: types.SET_SCREENSHOT_PERIODS,
   payload,
 });
 
-export const addIdleTime: AddIdleTime = (
-  payload: Idle,
-): AddIdleTimeAction => ({
+export const addIdleTime = (
+  payload: any,
+): TimerAction => ({
   type: types.ADD_IDLE_TIME,
   payload,
 });
 
-export const dismissIdleTime: DismissIdleTime = (
+export const dismissIdleTime = (
   payload: number,
-): DismissIdleTimeAction => ({
+): TimerAction => ({
   type: types.DISMISS_IDLE_TIME,
   payload,
 });

@@ -1,14 +1,33 @@
 // @flow
 import React from 'react';
-import type { StatelessFunctionalComponent, Node } from 'react';
-import ModalDialog, { ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
+import {
+  connect,
+} from 'react-redux';
+
+import type {
+  StatelessFunctionalComponent,
+  Node,
+} from 'react';
+
+import ModalDialog, {
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+} from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button';
-import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { ModalContentContainer } from 'styles/modals';
-import { uiActions, settingsActions } from 'actions';
-import { Flex } from 'components';
+import {
+  ModalContentContainer,
+} from 'styles/modals';
+import {
+  uiActions,
+  settingsActions,
+} from 'actions';
+
+import {
+  Flex,
+} from 'components';
 import {
   getSettingsModalTab,
   getSettingsModalOpen,
@@ -24,7 +43,8 @@ import GeneralSettings from './GeneralSettings';
 import NotificationSettings from './NotificationSettings';
 import UpdateSettings from './UpdateSettings';
 
-import type { Settings,
+import type {
+  Settings,
   SetSettingsModalOpen,
   SetSettingsModalTab,
   SetLocalDesktopSetting,
@@ -63,15 +83,16 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
   setSettingsModalTab,
   setLocalDesktopSetting,
   installUpdateRequest,
+  setModalState,
 }: Props): Node => isOpen &&
   <ModalDialog
-    onClose={() => setSettingsModalOpen(false)}
+    onClose={() => setModalState('settings', false)}
     footer={() => (
       <ModalFooter>
         <Flex row style={{ justifyContent: 'flex-end', width: '100%' }}>
           <Button
             appearance="default"
-            onClick={() => setSettingsModalOpen(false)}
+            onClick={() => setModalState('settings', false)}
           >
             Close
           </Button>

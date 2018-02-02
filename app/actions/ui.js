@@ -1,7 +1,7 @@
 // @flow
 import type {
   UiAction,
-} from '../types/ui';
+} from 'types';
 
 import * as actionTypes from './actionTypes';
 

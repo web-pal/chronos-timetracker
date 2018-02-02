@@ -18,11 +18,6 @@ const initialState: SettingsState = {
 
 export default function settings(state: SettingsState = initialState, action: Action) {
   switch (action.type) {
-    case types.FILL_SETTINGS:
-      return {
-        ...state,
-        ...action.payload,
-      };
     case types.FILL_LOCAL_DESKTOP_SETTINGS:
       return {
         ...state,
@@ -31,14 +26,14 @@ export default function settings(state: SettingsState = initialState, action: Ac
     case types.SET_SETTINGS_MODAL_TAB:
       return {
         ...state,
-        modalTab: action.payload,
+        modalTab: action.tabName,
       };
     case types.SET_LOCAL_DESKTOP_SETTING:
       return {
         ...state,
         localDesktopSettings: {
           ...state.localDesktopSettings,
-          [action.meta]: action.payload,
+          [action.settingName]: action.value,
         },
       };
     case types.___CLEAR_ALL_REDUCERS___:
