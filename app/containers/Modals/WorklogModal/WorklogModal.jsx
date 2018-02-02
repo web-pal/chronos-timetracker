@@ -93,7 +93,12 @@ class WorklogModal extends Component<Props, State> {
           timeSpent: nextProps.worklog.timeSpent,
           startTime: moment(nextProps.worklog.started),
           comment: nextProps.worklog.comment,
-        })
+        });
+      } else {
+        setTimeout(() => {
+          this.setState({ timeSpent: '' });
+          this.setDateAndTimeToNow();
+        }, 50);
       }
       setTimeout(() => {
         if (this.timeInput) this.timeInput.focus();

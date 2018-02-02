@@ -50,3 +50,5 @@ main.js.map
 npm-debug.log.*
 worklogs/*
 screenshots/*
+
+package-lock\.json
