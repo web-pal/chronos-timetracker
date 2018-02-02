@@ -106,6 +106,13 @@ class WorklogModal extends Component<Props, State> {
     }
   }
 
+  setDateAndTimeToNow = (e) => {
+    const newTime = moment();
+    const newDate = moment().format('MM/DD/YYYY');
+    this.setState({ startTime: newTime });
+    this.setState({ date: newDate });
+  }
+
   handleTimeChange = label => (value) => {
     this.setState({ [label]: value });
   }
@@ -158,6 +165,18 @@ class WorklogModal extends Component<Props, State> {
           <ModalFooter>
             <Flex row style={{ justifyContent: 'flex-end', width: '100%' }}>
               <ButtonGroup>
+                <Button appearance="primary" onClick={this.setDateAndTimeToNow}>
+                  Now
+                </Button>
+                <Button
+                  appearance="subtle"
+                  onClick={() => {
+                    setModalState('worklog', false);
+                    setUiState('editWorklogId', null);
+                  }}
+                  >
+                  Cancel
+                </Button>
                 <Button
                   appearance="primary"
                   disabled={saveInProcess}
