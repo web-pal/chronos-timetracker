@@ -14,3 +14,9 @@ export type WorklogsAction =
     type: typeof actionTypes.DELETE_WORKLOG_REQUEST,
     worklogId: Id,
   |};
+
+export type Worklog = any;
+
+export type WorklogsResources = {
+  [Id]: Worklog,
+}

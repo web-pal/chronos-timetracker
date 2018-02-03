@@ -3,19 +3,22 @@ import React from 'react';
 import {
   connect,
 } from 'react-redux';
-import {
-  bindActionCreators,
-} from 'redux';
 
 import type {
   StatelessFunctionalComponent,
   Node,
-  Element,
 } from 'react';
+import type {
+  Connector,
+} from 'react-redux';
+import type {
+  Id,
+  Dispatch,
+} from 'types';
 
 import {
   getUiState,
-  getTimerRunning,
+  getTimerState,
 } from 'selectors';
 import {
   IssueViewPlaceholder,
@@ -30,11 +33,6 @@ import {
   IssueViewTabContainer,
 } from './styled';
 
-import type {
-  Id,
-  TabLabel,
-} from '../../types';
-
 import IssueDetails from './IssueDetails';
 import IssueComments from './IssueComments';
 import IssueWorklogs from './IssueWorklogs';
@@ -43,15 +41,12 @@ import TrackingBar from './TrackingBar';
 import IssueViewHeader from '../IssueView/IssueViewHeader';
 import IssueViewTabs from './IssueViewTabs';
 
+
 type Props = {
   selectedIssueId: Id | null,
-  currentTab: TabLabel,
+  currentTab: string,
   timerRunning: boolean,
-};
-
-export type Tab = {
-  label: TabLabel,
-  content: Element<typeof IssueDetails | typeof IssueComments | typeof IssueWorklogs>
+  dispatch: Dispatch,
 };
 
 const tabs = [
@@ -65,7 +60,7 @@ const IssueView: StatelessFunctionalComponent<Props> = ({
   selectedIssueId,
   currentTab,
   timerRunning,
-  setUiState,
+  dispatch,
 }: Props): Node => (selectedIssueId
   ? (
     <IssueViewContainer column>
@@ -75,8 +70,10 @@ const IssueView: StatelessFunctionalComponent<Props> = ({
       <IssueContainer>
         <IssueViewHeader />
         <IssueViewTabs
+          onTabClick={(tab) => {
+            dispatch(uiActions.setUiState('issueViewTab', tab));
+          }}
           currentTab={currentTab}
-          setUiState={setUiState}
           tabs={tabs}
         />
         <IssueViewTabContainer>
@@ -104,14 +101,13 @@ function mapStateToProps(state) {
   return {
     selectedIssueId: getUiState('selectedIssueId')(state),
     currentTab: getUiState('issueViewTab')(state),
-    timerRunning: getTimerRunning(state),
+    timerRunning: getTimerState('running')(state),
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    ...uiActions,
-  }, dispatch);
-}
+const connector: Connector<{}, Props> = connect(
+  mapStateToProps,
+  dispatch => ({ dispatch }),
+);
 
-export default connect(mapStateToProps, mapDispatchToProps)(IssueView);
+export default connector(IssueView);

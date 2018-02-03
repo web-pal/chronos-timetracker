@@ -6,6 +6,9 @@ import type {
   StatelessFunctionalComponent,
   Node,
 } from 'react';
+import type {
+  Worklog,
+} from 'types';
 
 import {
   Flex,
@@ -19,18 +22,13 @@ import EditFilledIcon from '@atlaskit/icon/glyph/edit-filled';
 import LinkIcon from '@atlaskit/icon/glyph/link';
 import TrashIcon from '@atlaskit/icon/glyph/trash';
 
-import type {
-  Worklog,
-  DeleteWorklogRequest,
-  EditWorklogRequest,
-} from '../../../types';
-
 import {
   WorklogContainer,
   UserAvatar,
   WorklogActions,
   Edited,
 } from './styled';
+
 
 const isEdited = (worklog: Worklog) => (
   moment(worklog.created).format('D/M/H/m') !== moment(worklog.updated).format('D/M/H/m')
@@ -39,22 +37,20 @@ const isEdited = (worklog: Worklog) => (
 
 type Props = {
   style: any,
-  selected: boolean,
   worklog: Worklog,
+  selected: boolean,
   issueKey: string,
-  deleteWorklogRequest: DeleteWorklogRequest,
-  editWorklogRequest: EditWorklogRequest,
+  onEditWorklog: () => void,
+  onDeleteWorklog: () => void,
 };
 
 const WorklogItem: StatelessFunctionalComponent<Props> = ({
   style,
-  selected,
   worklog,
+  selected,
   issueKey,
-  onDeleteWorklog,
   onEditWorklog,
-  deleteWorklogRequest,
-  editWorklogRequest,
+  onDeleteWorklog,
 }: Props): Node => (
   <WorklogContainer selected={selected} id={`worklog-${worklog.id}`} style={style}>
     <Flex row alignCenter style={{ padding: 10 }}>

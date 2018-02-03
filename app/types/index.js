@@ -1,15 +1,23 @@
 // @flow
 
 import type {
+  Store as ReduxStore,
+  Dispatch as ReduxDispatch,
+} from 'redux';
+
+import type {
   UiAction,
+  UiState,
 } from './ui';
 
 import type {
   SettingsAction,
+  SettingsState,
 } from './settings';
 
 import type {
   TimerAction,
+  TimerState,
 } from './timer';
 
 import type {
@@ -18,6 +26,7 @@ import type {
 
 import type {
   ProfileAction,
+  ProfileState,
 } from './profile';
 
 import type {
@@ -31,6 +40,22 @@ import type {
 import type {
   IssuesAction,
 } from './issues';
+
+import type {
+  IssuesFieldsState,
+} from './issuesFields';
+
+import type {
+  IssuesTypesState,
+} from './issuesTypes';
+
+import type {
+  IssuesCommentsState,
+} from './issuesComments';
+
+import type {
+  IssuesStatusesState,
+} from './issuesStatuses';
 
 import type {
   WorklogsAction,
@@ -63,6 +88,7 @@ export type {
 export type {
   ProfileAction,
   ProfileState,
+  User,
 } from './profile';
 
 export type {
@@ -71,21 +97,62 @@ export type {
 
 export type {
   ProjectsAction,
+  ProjectsResources,
+  Project,
 } from './projects';
 
 export type {
+  BoardsResources,
+  Board,
+} from './boards';
+
+export type {
   IssuesAction,
+  IssuesResources,
+  Issue,
 } from './issues';
 
 export type {
+  IssuesFieldsState,
+  IssuesFieldsResources,
+  IssueField,
+} from './issuesFields';
+
+export type {
+  IssuesTypesState,
+  IssuesTypesResources,
+  IssueType,
+} from './issuesTypes';
+
+export type {
+  IssuesCommentsState,
+  IssuesCommentsResources,
+  IssueComment,
+} from './issuesComments';
+
+export type {
+  IssuesStatusesState,
+  IssuesStatusesResources,
+  IssueStatus,
+} from './issuesStatuses';
+
+export type {
   WorklogsAction,
+  WorklogsResources,
+  Worklog,
 } from './worklogs';
 
 export type {
   SprintsAction,
+  SprintsResources,
+  Sprint,
 } from './sprints';
 
 export type Id = string | number;
+
+export type IndexedIds = {
+  [Id]: number,
+}
 
 export type Action =
   UiAction |
@@ -98,3 +165,16 @@ export type Action =
   IssuesAction |
   WorklogsAction |
   SprintsAction;
+
+export type State =
+  UiState &
+  SettingsState &
+  TimerState &
+  ProfileState &
+  IssuesFieldsState &
+  IssuesTypesState &
+  IssuesCommentsState &
+  IssuesStatusesState;
+
+export type Store = ReduxStore<State, Action>;
+export type Dispatch = ReduxDispatch<Action>;

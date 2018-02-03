@@ -36,7 +36,7 @@ export type UiAction =
   {|
     type: typeof actionTypes.SET_ISSUES_FILTER,
     filterType: string,
-    value: Array<string>,
+    value: Array<string | boolean>,
   |} |
   {|
     type: typeof actionTypes.CHECK_FOR_UPDATES_REQUEST,
@@ -73,6 +73,7 @@ export type UiState = {|
   deleteWorklogId: Id | null,
   editWorklogId: Id | null,
   worklogFormIssueId: Id | null,
+  worklogComment: string,
 
   selectedIssueId: Id | null,
   issuesSourceType: string | null,
@@ -85,13 +86,10 @@ export type UiState = {|
   commentAdding: boolean,
 
   modalState: {|
-    settings: boolean,
-    support: boolean,
-    about: boolean,
     alert: boolean,
-    worklog: boolean,
     confirmDeleteWorklog: boolean,
-    editWorklog: boolean,
+    settings: boolean,
+    worklog: boolean,
   |},
 
   flags: Array<any>,

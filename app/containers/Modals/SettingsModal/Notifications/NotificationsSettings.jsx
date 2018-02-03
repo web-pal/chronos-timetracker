@@ -1,22 +1,38 @@
 // @flow
 import React from 'react';
-import type { StatelessFunctionalComponent, Node } from 'react';
-import { AkFieldRadioGroup as RadioButtonGroup } from '@atlaskit/field-radio-group';
-import { CheckboxStateless as Checkbox } from '@atlaskit/checkbox';
-import { H100 } from 'styles/typography';
-import { Flex } from 'components';
 
-import { SettingsSectionContent, ContentLabel } from './styled';
-import type { LocalDesktopSettings, SetLocalDesktopSetting } from '../../../types';
+import type {
+  StatelessFunctionalComponent,
+  Node,
+} from 'react';
+
+import {
+  AkFieldRadioGroup as RadioButtonGroup,
+} from '@atlaskit/field-radio-group';
+import {
+  CheckboxStateless as Checkbox,
+} from '@atlaskit/checkbox';
+import {
+  Flex,
+} from 'components';
+import {
+  H100,
+} from 'styles/typography';
+
+import {
+  SettingsSectionContent,
+  ContentLabel,
+} from './styled';
+
 
 type Props = {
-  settings: LocalDesktopSettings,
-  setLocalDesktopSetting: SetLocalDesktopSetting,
+  settings: any,
+  onChangeSetting: (value: any, settingName: string) => void,
 }
 
 const NotificationsSettings: StatelessFunctionalComponent<Props> = ({
   settings,
-  setLocalDesktopSetting,
+  onChangeSetting,
 }: Props): Node => {
   const notificationsTypes = [
     {
@@ -68,9 +84,12 @@ const NotificationsSettings: StatelessFunctionalComponent<Props> = ({
           id="showPreview"
           isChecked={settings.showScreenshotPreview}
           label="Enable screen preview notifications"
-          onChange={
-            () => setLocalDesktopSetting(!settings.showScreenshotPreview, 'showScreenshotPreview')
-          }
+          onChange={() => {
+            onChangeSetting(
+              !settings.showScreenshotPreview,
+              'showScreenshotPreview',
+            );
+          }}
         />
 
         {process.platform === 'darwin' &&
@@ -85,10 +104,12 @@ const NotificationsSettings: StatelessFunctionalComponent<Props> = ({
               <div style={{ marginLeft: -8 }}>
                 <RadioButtonGroup
                   items={notificationsTypes}
-                  onRadioChange={() => setLocalDesktopSetting(
-                    !settings.nativeNotifications,
-                    'nativeNotifications',
-                  )}
+                  onRadioChange={() => {
+                    onChangeSetting(
+                      !settings.nativeNotifications,
+                      'nativeNotifications',
+                    );
+                  }}
                 />
               </div>
             }
@@ -104,9 +125,12 @@ const NotificationsSettings: StatelessFunctionalComponent<Props> = ({
           <div style={{ marginLeft: -8 }}>
             <RadioButtonGroup
               items={screenshotPreviewDuration}
-              onRadioChange={ev =>
-                setLocalDesktopSetting(Number(ev.target.value), 'screenshotPreviewTime')
-              }
+              onRadioChange={(ev) => {
+                onChangeSetting(
+                  Number(ev.target.value),
+                  'screenshotPreviewTime',
+                );
+              }}
             />
           </div>
         }

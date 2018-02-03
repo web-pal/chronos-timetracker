@@ -3,14 +3,18 @@ import React from 'react';
 import {
   connect,
 } from 'react-redux';
-import {
-  bindActionCreators,
-} from 'redux';
 
 import type {
   StatelessFunctionalComponent,
   Node,
 } from 'react';
+import type {
+  Connector,
+} from 'react-redux';
+import type {
+  Issue,
+} from 'types';
+
 
 import {
   getSelectedIssue,
@@ -24,10 +28,6 @@ import {
   getEpicColor,
 } from 'jiraColors-util';
 import ReactMarkdown from 'react-markdown';
-
-import type {
-  Issue,
-} from '../../../types';
 
 import {
   IssueDetailsContainer,
@@ -210,4 +210,9 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(IssueDetails);
+const connector: Connector<{}, Props> = connect(
+  mapStateToProps,
+  dispatch => ({ dispatch }),
+);
+
+export default connector(IssueDetails);

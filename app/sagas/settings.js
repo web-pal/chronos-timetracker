@@ -1,8 +1,8 @@
 // @flow
 import {
   call,
-  take,
   put,
+  takeEvery,
   select,
 } from 'redux-saga/effects';
 import {
@@ -16,7 +16,7 @@ import {
   uiActions,
 } from 'actions';
 import {
-  getLocalDesktopSettings,
+  getSettingsState,
 } from 'selectors';
 
 import {
@@ -45,34 +45,42 @@ export function* getSettings(): Generator<*, *, *> {
   }
 }
 
-export function* watchLocalDesktopSettingsChange(): Generator<*, *, *> {
-  while (true) {
-    const { payload, meta } = yield take(actionTypes.SET_LOCAL_DESKTOP_SETTING);
-    yield call(
-      infoLog,
-      'set local desktop setting request',
-      {
-        key: meta,
-        payload,
-      },
-    );
-    if (meta === 'trayShowTimer' && !payload) {
-      remote.getGlobal('tray').setTitle('');
-    }
-    if (meta === 'updateChannel') {
-      yield call(
-        infoLog,
-        `switched updateChannel to ${payload}, checking for updates...`,
-      );
-      yield put(uiActions.checkForUpdatesRequest());
-    }
-    const newLocalSettings = yield select(getLocalDesktopSettings);
-    newLocalSettings[meta] = payload;
-    yield call(
-      infoLog,
-      'new local desktop settings = ',
-      newLocalSettings,
-    );
-    yield call(setToStorage, 'localDesktopSettings', newLocalSettings);
+export function* onChangeLocalDesktopSettings({
+  settingName,
+  value,
+}: {
+  settingName: string,
+  value: any,
+}): Generator<*, *, *> {
+  yield call(
+    infoLog,
+    'set local desktop setting request',
+    {
+      value,
+      settingName,
+    },
+  );
+  if (settingName === 'trayShowTimer' && !value) {
+    remote.getGlobal('tray').setTitle('');
   }
+  if (settingName === 'updateChannel') {
+    yield call(
+      infoLog,
+      `switched updateChannel to ${value}, checking for updates...`,
+    );
+    yield put(uiActions.checkForUpdatesRequest());
+  }
+  const newLocalSettings = yield select(getSettingsState('localDesktopSettings'));
+  yield call(
+    setToStorage,
+    'localDesktopSettings',
+    {
+      ...newLocalSettings,
+      [settingName]: value,
+    },
+  );
+}
+
+export function* watchLocalDesktopSettingsChange(): Generator<*, *, *> {
+  yield takeEvery(actionTypes.SET_LOCAL_DESKTOP_SETTING, onChangeLocalDesktopSettings);
 }

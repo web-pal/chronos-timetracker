@@ -4,9 +4,6 @@ import {
   connect,
 } from 'react-redux';
 import {
-  bindActionCreators,
-} from 'redux';
-import {
   getStatus as getResourceStatus,
 } from 'redux-resource';
 
@@ -14,6 +11,9 @@ import type {
   StatelessFunctionalComponent,
   Node,
 } from 'react';
+import type {
+  Connector,
+} from 'react-redux';
 
 import {
   Flex,
@@ -34,9 +34,9 @@ import Button, {
 } from '@atlaskit/button';
 import Spinner from '@atlaskit/spinner';
 import {
+  getTimerState,
   getSelectedIssue,
-  getTimerRunning,
-  getUserData,
+  getSelfKey,
   getResourceMappedList,
 } from 'selectors';
 
@@ -48,12 +48,9 @@ import {
 
 import type {
   Issue,
-  StartTimer,
-  SetWorklogModalOpen,
-  IssueTransition,
-  TransitionIssueRequest,
-  AssignIssueRequest,
-} from '../../../types';
+  IssueStatus,
+  Dispatch,
+} from 'types';
 import {
   ProjectAvatar,
   ALink,
@@ -67,16 +64,14 @@ import {
   IssueViewHeaderContainer,
 } from './styled';
 
+
 type Props = {
   selectedIssue: Issue,
   timerRunning: boolean,
-  issueTransitions: Array<IssueTransition>,
   transitionsIsFetching: boolean,
+  issueTransitions: Array<IssueStatus>,
   selfKey: string,
-  startTimer: StartTimer,
-  setWorklogModalOpen: SetWorklogModalOpen,
-  transitionIssueRequest: TransitionIssueRequest,
-  assignIssueRequest: AssignIssueRequest,
+  dispatch: Dispatch,
 };
 
 const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
@@ -85,11 +80,7 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
   transitionsIsFetching,
   issueTransitions,
   selfKey,
-  startTimer,
-  setModalState,
-  transitionIssueRequest,
-  assignIssueRequest,
-  setUiState,
+  dispatch,
 }: Props):Node => (
   <IssueViewHeaderContainer>
     <Flex row alignCenter spaceBetween style={{ marginBottom: 15 }}>
@@ -137,7 +128,7 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
         : <StartButton
           alt="Start Tracking"
           onClick={() => {
-            startTimer();
+            dispatch(timerActions.startTimer());
           }}
         />
       }
@@ -146,9 +137,18 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
       <ButtonGroup>
         <Button
           onClick={() => {
-            setUiState('editWorklogId', null);
-            setUiState('worklogFormIssueId', selectedIssue.id);
-            setModalState('worklog', true);
+            dispatch(uiActions.setUiState(
+              'editWorklogId',
+              null,
+            ));
+            dispatch(uiActions.setUiState(
+              'worklogFormIssueId',
+              selectedIssue.id,
+            ));
+            dispatch(uiActions.setModalState(
+              'worklog',
+              true,
+            ));
           }}
         >
           Log work
@@ -172,7 +172,12 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
             {!transitionsIsFetching && issueTransitions.map(t =>
               <DropdownItem
                 key={t.id}
-                onClick={() => transitionIssueRequest(t.id, selectedIssue.id)}
+                onClick={() => {
+                  dispatch(issuesActions.transitionIssueRequest(
+                    t.id,
+                    selectedIssue.id,
+                  ));
+                }}
               >
                 {t.name}
               </DropdownItem>)
@@ -182,7 +187,13 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
         <div style={{ width: 10 }} />
         {(selectedIssue.fields.assignee === null ||
           selectedIssue.fields.assignee.key !== selfKey) &&
-          <Button onClick={() => assignIssueRequest(selectedIssue.id)}>
+          <Button
+            onClick={() => {
+              dispatch(issuesActions.assignIssueRequest(
+                selectedIssue.id,
+              ));
+            }}
+          >
             Assign to me
           </Button>
         }
@@ -194,7 +205,7 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
 function mapStateToProps(state) {
   return {
     selectedIssue: getSelectedIssue(state),
-    timerRunning: getTimerRunning(state),
+    timerRunning: getTimerState('running')(state),
     issueTransitions: getResourceMappedList(
       'issuesStatuses',
       'issueTransitions',
@@ -203,16 +214,13 @@ function mapStateToProps(state) {
       state,
       'issuesStatuses.requests.issueTransitions.status',
     ).pending,
-    selfKey: getUserData(state).key,
+    selfKey: getSelfKey(state),
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    ...timerActions,
-    ...uiActions,
-    ...issuesActions,
-  }, dispatch);
-}
+const connector: Connector<{}, Props> = connect(
+  mapStateToProps,
+  dispatch => ({ dispatch }),
+);
 
-export default connect(mapStateToProps, mapDispatchToProps)(IssueViewHeader);
+export default connector(IssueViewHeader);

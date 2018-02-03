@@ -4,9 +4,6 @@ import {
   connect,
 } from 'react-redux';
 import {
-  bindActionCreators,
-} from 'redux';
-import {
   ipcRenderer,
 } from 'electron';
 
@@ -14,6 +11,12 @@ import type {
   StatelessFunctionalComponent,
   Node,
 } from 'react';
+import type {
+  Connector,
+} from 'react-redux';
+import type {
+  Dispatch,
+} from 'types';
 
 import {
   issuesActions,
@@ -35,33 +38,26 @@ import {
   FiltersAppliedBadge,
 } from './styled';
 
-import type {
-  SetSidebarFiltersOpen,
-  SetIssuesSearchValue,
-} from '../../../../types';
-
 type Props = {
+  searchValue: string,
+  filterStatusesIsFetched: boolean,
+  sidebarFiltersIsOpen: boolean,
+  filtersApplied: boolean,
+  currentProjectId: string,
   host: string,
   protocol: string,
-  currentProjectId: string,
-  searchValue: string,
-  sidebarFiltersIsOpen: boolean,
-  setSidebarFiltersOpen: SetSidebarFiltersOpen,
-  setIssuesSearchValue: SetIssuesSearchValue,
-  filtersApplied: boolean,
+  dispatch: Dispatch,
 }
 
 const IssuesHeader: StatelessFunctionalComponent<Props> = ({
   searchValue,
+  filterStatusesIsFetched,
   sidebarFiltersIsOpen,
-  setUiState,
   filtersApplied,
   currentProjectId,
-  fetchProjectStatusesRequest,
-  filterStatusesIsFetched,
   host,
   protocol,
-  refetchIssuesRequest,
+  dispatch,
 }: Props): Node =>
   <SearchBar>
     <SearchIcon
@@ -73,8 +69,11 @@ const IssuesHeader: StatelessFunctionalComponent<Props> = ({
       type="text"
       value={searchValue}
       onChange={(ev) => {
-        setUiState('issuesSearch', ev.target.value);
-        refetchIssuesRequest(true);
+        dispatch(uiActions.setUiState(
+          'issuesSearch',
+          ev.target.value,
+        ));
+        dispatch(issuesActions.refetchIssuesRequest(true));
       }}
     />
     <SearchOptions>
@@ -95,9 +94,12 @@ const IssuesHeader: StatelessFunctionalComponent<Props> = ({
           primaryColor={sidebarFiltersIsOpen ? '#0052CC' : '#333333'}
           onClick={() => {
             if (!filterStatusesIsFetched) {
-              fetchProjectStatusesRequest();
+              dispatch(projectsActions.fetchProjectStatusesRequest());
             }
-            setUiState('sidebarFiltersIsOpen', !sidebarFiltersIsOpen);
+            dispatch(uiActions.setUiState(
+              'sidebarFiltersIsOpen',
+              !sidebarFiltersIsOpen,
+            ));
           }}
         />
       </span>
@@ -120,12 +122,9 @@ function mapStateToProps(state) {
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    ...uiActions,
-    ...issuesActions,
-    ...projectsActions,
-  }, dispatch);
-}
+const connector: Connector<{}, Props> = connect(
+  mapStateToProps,
+  dispatch => ({ dispatch }),
+);
 
-export default connect(mapStateToProps, mapDispatchToProps)(IssuesHeader);
+export default connector(IssuesHeader);

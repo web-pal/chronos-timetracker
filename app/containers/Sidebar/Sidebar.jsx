@@ -3,20 +3,22 @@ import React from 'react';
 import {
   connect,
 } from 'react-redux';
-import {
-  bindActionCreators,
-} from 'redux';
 
 import type {
   StatelessFunctionalComponent,
   Node,
 } from 'react';
+import type {
+  Connector,
+} from 'react-redux';
+import type {
+  Dispatch,
+} from 'types';
 
 import {
   uiActions,
 } from 'actions';
 import {
-  getSelectedProjectId,
   getUiState,
 } from 'selectors';
 
@@ -31,33 +33,36 @@ import {
   Tab,
 } from './styled';
 
-import type {
-  SetSidebarType,
-  SidebarType,
-} from '../../types';
-
 
 type Props = {
-  sidebarType: SidebarType,
-  setSidebarType: SetSidebarType,
+  sidebarType: string,
+  dispatch: Dispatch,
 };
 
 const Sidebar: StatelessFunctionalComponent<Props> = ({
   sidebarType,
-  setUiState,
+  dispatch,
 }: Props): Node => (
   <SidebarContainer>
     <IssuesSourcePicker />
     <TabContainer>
       <Tab
         active={sidebarType === 'recent'}
-        onClick={() => setUiState('sidebarType', 'recent')}
+        onClick={() => {
+          dispatch(
+            uiActions.setUiState('sidebarType', 'recent'),
+          );
+        }}
       >
         Recent worklogs
       </Tab>
       <Tab
         active={sidebarType === 'all'}
-        onClick={() => setUiState('sidebarType', 'all')}
+        onClick={() => {
+          dispatch(
+            uiActions.setUiState('sidebarType', 'all'),
+          );
+        }}
       >
         Issues
       </Tab>
@@ -72,14 +77,12 @@ const Sidebar: StatelessFunctionalComponent<Props> = ({
 function mapStateToProps(state) {
   return {
     sidebarType: getUiState('sidebarType')(state),
-    selectedProjectId: getSelectedProjectId(state),
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    ...uiActions,
-  }, dispatch);
-}
+const connector: Connector<{}, Props> = connect(
+  mapStateToProps,
+  dispatch => ({ dispatch }),
+);
 
-export default connect(mapStateToProps, mapDispatchToProps)(Sidebar);
+export default connector(Sidebar);

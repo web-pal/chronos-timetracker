@@ -16,6 +16,9 @@ import type {
 import type {
   Connector,
 } from 'react-redux';
+import type {
+  Dispatch,
+} from 'types';
 
 import {
   Flex,
@@ -52,6 +55,7 @@ type Props = {
   isPaidUser: boolean,
   host: string | null,
   step: number,
+  dispatch: Dispatch,
 } & FormProps
 
 const AuthForm: StatelessFunctionalComponent<Props> = ({
@@ -72,7 +76,11 @@ const AuthForm: StatelessFunctionalComponent<Props> = ({
       <ContentOuter>
         <TeamStep
           isActiveStep={step === 1}
-          onContinue={() => dispatch(uiActions.setUiState('authFormStep', 2))}
+          onContinue={() => {
+            dispatch(
+              uiActions.setUiState('authFormStep', 2),
+            );
+          }}
           loginError={loginError}
         />
         <EmailStep

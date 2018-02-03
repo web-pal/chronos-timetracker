@@ -29,14 +29,10 @@ import {
   Subtitle,
 } from '../styled';
 
-import type {
-  ProfileAction,
-} from '../../../types';
-
 
 type Props = {
   loginError: string,
-  onContinue: () => ProfileAction,
+  onContinue: () => void,
   isActiveStep: boolean,
   onBack: () => any,
   loginRequestInProcess: boolean,

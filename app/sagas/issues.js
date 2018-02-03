@@ -25,7 +25,6 @@ import {
   getUserData,
   getResourceMap,
   getUiState,
-  getSidebarType,
   getCurrentProjectId,
   getResourceItemBydId,
 } from 'selectors';
@@ -129,7 +128,7 @@ function buildJQLQuery({
     (sprintId && `sprint = ${sprintId}`),
     (worklogAuthor && `worklogAuthor = ${worklogAuthor}`),
     (type.length && `issueType in (${type.join(',')})`),
-    (status.length && `status in (${type.join(',')})`),
+    (status.length && `status in (${status.join(',')})`),
     (assignee.length && mapAssignee(assignee[0])),
     ((searchValue.length && projectKey) && mapSearchValue(searchValue, projectKey)),
     (additionalJQL && additionalJQL),
@@ -360,7 +359,7 @@ export function* refetchIssues(debouncing: boolean): Generator<*, void, *> {
       },
     }));
 
-    const sidebarType = yield select(getSidebarType);
+    const sidebarType = yield select(getUiState('sidebarType'));
     if (sidebarType === 'recent') {
       yield put(resourcesActions.clearResourceList({
         resourceName: 'issues',

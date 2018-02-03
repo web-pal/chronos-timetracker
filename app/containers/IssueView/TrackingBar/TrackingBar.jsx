@@ -4,22 +4,24 @@ import moment from 'moment';
 import {
   connect,
 } from 'react-redux';
-import {
-  bindActionCreators,
-} from 'redux';
 
 import type {
   StatelessFunctionalComponent,
   Node,
 } from 'react';
+import type {
+  Connector,
+} from 'react-redux';
+import type {
+  Issue,
+  Dispatch,
+} from 'types';
 
 import {
-  getTimerTime,
   getTrackingIssue,
-  getScreenshotsAllowed,
+  getTimerState,
 } from 'selectors';
 import {
-  issuesActions,
   timerActions,
   uiActions,
 } from 'actions';
@@ -32,11 +34,6 @@ import {
 import CameraIcon from '@atlaskit/icon/glyph/camera';
 import Tooltip from '@atlaskit/tooltip';
 
-import type {
-  Issue,
-  SelectIssue,
-  StopTimerRequest,
-} from '../../../types';
 import {
   IssueName,
   Dot,
@@ -45,13 +42,13 @@ import {
   Container,
 } from './styled';
 
+
 type Props = {
   time: number,
   screenshotUploading: boolean,
   screenshotsAllowed: boolean,
   trackingIssue: Issue,
-  selectIssue: SelectIssue,
-  stopTimerRequest: StopTimerRequest,
+  dispatch: Dispatch,
 }
 
 function addLeadingZero(s: number): string {
@@ -71,8 +68,7 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
   screenshotUploading,
   screenshotsAllowed,
   trackingIssue,
-  stopTimerRequest,
-  setUiState,
+  dispatch,
 }: Props): Node => (
   <CSSTransitionGroup
     transitionName="tracking-bar"
@@ -89,7 +85,11 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
               description="Screenshots are enabled"
               position="bottom"
             >
-              <CameraIcon size="large" primaryColor="white" label="Screenshots on" />
+              <CameraIcon
+                size="large"
+                primaryColor="white"
+                label="Screenshots on"
+              />
             </Tooltip>
           </div>
         }
@@ -97,8 +97,10 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
       <Flex row alignCenter>
         <IssueName
           onClick={() => {
-            setUiState('selectedIssueId', trackingIssue.id);
-            // jumpToTrackingIssue();
+            dispatch(uiActions.setUiState(
+              'selectedIssueId',
+              trackingIssue.id,
+            ));
           }}
         >
           {trackingIssue.key}
@@ -116,13 +118,15 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
               'Currently app in process of uploading screenshot, wait few seconds please',
             );
           } else {
-            stopTimerRequest();
+            dispatch(timerActions.stopTimerRequest());
           }
         }}
       >
         <StopButton
           alt="stop"
-          onClick={() => stopTimerRequest()}
+          onClick={() => {
+            dispatch(timerActions.stopTimerRequest());
+          }}
         />
       </div>
     </Container>
@@ -131,19 +135,16 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
 
 function mapStateToProps(state) {
   return {
-    time: getTimerTime(state),
+    time: getTimerState('time')(state),
     screenshotUploading: false,
-    screenshotsAllowed: getScreenshotsAllowed(state),
+    screenshotsAllowed: false,
     trackingIssue: getTrackingIssue(state),
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    ...issuesActions,
-    ...timerActions,
-    ...uiActions,
-  }, dispatch);
-}
+const connector: Connector<{}, Props> = connect(
+  mapStateToProps,
+  dispatch => ({ dispatch }),
+);
 
-export default connect(mapStateToProps, mapDispatchToProps)(TrackingBar);
+export default connector(TrackingBar);

@@ -1,15 +1,31 @@
 // @flow
 import React from 'react';
-import type { StatelessFunctionalComponent, Node } from 'react';
-import { CheckboxStateless as Checkbox, CheckboxGroup } from '@atlaskit/checkbox';
-import { H100 } from 'styles/typography';
-import { Flex } from 'components';
 
-import { SettingsSectionContent, ContentLabel } from './styled';
-import type { LocalDesktopSettings } from '../../../types';
+import type {
+  StatelessFunctionalComponent,
+  Node,
+} from 'react';
+
+import {
+  CheckboxStateless as Checkbox,
+  CheckboxGroup,
+} from '@atlaskit/checkbox';
+
+import {
+  H100,
+} from 'styles/typography';
+import {
+  Flex,
+} from 'components';
+
+import {
+  SettingsSectionContent,
+  ContentLabel,
+} from './styled';
+
 
 type Props = {
-  settings: LocalDesktopSettings,
+  settings: any,
   setTraySettings: {
     (value: boolean): any,
   }

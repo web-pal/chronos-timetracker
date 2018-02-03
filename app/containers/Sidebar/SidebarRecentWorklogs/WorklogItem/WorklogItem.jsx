@@ -1,8 +1,14 @@
 import React from 'react';
+
 import type {
   StatelessFunctionalComponent,
   Node,
 } from 'react';
+import type {
+  Id,
+  Issue,
+  Worklog,
+} from 'types';
 
 import Tooltip from '@atlaskit/tooltip';
 import CommentIcon from '@atlaskit/icon/glyph/comment';
@@ -20,20 +26,14 @@ import {
   IssueType,
 } from './styled';
 
-import type {
-  Issue,
-  SelectIssue,
-  Worklog,
-  SetIssueViewTab,
-} from '../../../../types';
-
 
 type Props = {
+  active: boolean,
   issue: Issue,
   worklog: Worklog,
-  active: boolean,
-  selectIssue: SelectIssue,
-  setIssueViewTab: SetIssueViewTab,
+  showShowButton: boolean,
+  selectIssue: (id: Id) => void,
+  onClickShow: (id: Id) => void,
 }
 
 const WorklogItem: StatelessFunctionalComponent<Props> = ({
@@ -41,12 +41,13 @@ const WorklogItem: StatelessFunctionalComponent<Props> = ({
   issue,
   worklog,
   selectIssue,
+  showShowButton,
   onClickShow,
 }: Props): Node =>
   <WorklogItemContainer
     isSelected={active}
     onClick={() => {
-      selectIssue(issue);
+      selectIssue(issue.id);
     }}
   >
     <Flex column>
@@ -78,9 +79,11 @@ const WorklogItem: StatelessFunctionalComponent<Props> = ({
         }
       </IssueMeta>
     </Flex>
-    <Button onClick={() => onClickShow(issue)}>
-      show
-    </Button>
+    {showShowButton &&
+      <Button onClick={() => onClickShow(issue.id)}>
+        show
+      </Button>
+    }
     <Time>{worklog.timeSpent}</Time>
   </WorklogItemContainer>;
 

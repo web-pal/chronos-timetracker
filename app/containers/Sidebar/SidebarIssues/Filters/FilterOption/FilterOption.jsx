@@ -16,13 +16,9 @@ import {
   OptionImage,
 } from './styled';
 
-import type {
-  FilterOption,
-} from '../../../../../types';
-
 
 type Props = {
-  option: FilterOption,
+  option: any,
   onChange: any,
   showIcons: boolean,
   isChecked: boolean,
@@ -38,7 +34,7 @@ const FilterItem: StatelessFunctionalComponent<Props> = ({
     id,
     iconUrl,
     name,
-  }: FilterOption = option;
+  } = option;
   return (
     <OptionContainer>
       <Checkbox

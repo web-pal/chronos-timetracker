@@ -40,3 +40,9 @@ export type IssuesAction =
     type: typeof actionTypes.ASSIGN_ISSUE_REQUEST,
     issueId: number | string,
   |};
+
+export type Issue = any;
+
+export type IssuesResources = {
+  [Id]: Issue,
+}

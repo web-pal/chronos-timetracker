@@ -4,9 +4,6 @@ import {
   connect,
 } from 'react-redux';
 import {
-  bindActionCreators,
-} from 'redux';
-import {
   getStatus as getResourceStatus,
 } from 'redux-resource';
 
@@ -14,6 +11,13 @@ import type {
   StatelessFunctionalComponent,
   Node,
 } from 'react';
+import type {
+  Connector,
+} from 'react-redux';
+import type {
+  Id,
+  Dispatch,
+} from 'types';
 
 import {
   Flex,
@@ -21,8 +25,6 @@ import {
 } from 'components';
 import {
   uiActions,
-  issuesActions,
-  worklogsActions,
 } from 'actions';
 import {
   getRecentIssues,
@@ -33,11 +35,6 @@ import TimestampItem from './TimestampItem';
 import WorklogItem from './WorklogItem';
 import NoWorklogs from './NoWorklogs';
 
-import type {
-  Id,
-  SelectIssue,
-  SelectWorklog,
-} from '../../../types';
 
 import {
   ListContainer,
@@ -57,15 +54,16 @@ moment.locale('en', {
 type Props = {
   recentIssues: any,
   selectedWorklogId: Id | null,
+  currentIssueViewTab: string,
   issuesFetching: boolean,
   projectsFetching: boolean,
-  selectIssue: SelectIssue,
-  selectWorklog: SelectWorklog,
+  dispatch: Dispatch,
 }
 
 const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
   recentIssues,
   selectedWorklogId,
+  currentIssueViewTab,
   issuesFetching,
   projectsFetching,
   dispatch,
@@ -90,19 +88,24 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
                   key={`${day}_${worklog.id}`}
                   issue={worklog.issue}
                   active={selectedWorklogId === worklog.id}
-                  selectIssue={(issue) => {
-                    dispatch(uiActions.setUiState('selectedIssueId', issue.id));
+                  showShowButton={currentIssueViewTab !== 'Worklogs'}
+                  selectIssue={(issueId) => {
+                    dispatch(uiActions.setUiState('selectedIssueId', issueId));
                     dispatch(uiActions.setUiState('selectedWorklogId', worklog.id));
+                    dispatch(uiActions.issueWorklogsScrollToIndexRequest(
+                      worklog.id,
+                      issueId,
+                    ));
                   }}
                   onClickShow={
-                    (issue) => {
+                    (issueId) => {
                       dispatch(uiActions.setUiState(
                         'issueViewTab',
                         'Worklogs',
                       ));
                       dispatch(uiActions.issueWorklogsScrollToIndexRequest(
                         worklog.id,
-                        issue.id,
+                        issueId,
                       ));
                     }
                   }
@@ -129,16 +132,13 @@ function mapStateToProps(state) {
       'projects.requests.allProjects.status',
       true,
     ).pending,
+    currentIssueViewTab: getUiState('issueViewTab')(state),
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    ...uiActions,
-    ...issuesActions,
-    ...worklogsActions,
-    dispatch,
-  }, dispatch);
-}
+const connector: Connector<{}, Props> = connect(
+  mapStateToProps,
+  dispatch => ({ dispatch }),
+);
 
-export default connect(mapStateToProps, mapDispatchToProps)(SidebarRecentItems);
+export default connector(SidebarRecentItems);

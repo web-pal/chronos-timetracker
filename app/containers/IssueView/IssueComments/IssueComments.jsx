@@ -4,14 +4,16 @@ import moment from 'moment';
 import {
   connect,
 } from 'react-redux';
-import {
-  bindActionCreators,
-} from 'redux';
 
 import type {
-  StatelessFunctionalComponent,
-  Node,
-} from 'react';
+  Id,
+  User,
+  IssueComment,
+  Dispatch,
+} from 'types';
+import type {
+  Connector,
+} from 'react-redux';
 
 import ReactMarkdown from 'react-markdown';
 import Spinner from '@atlaskit/spinner';
@@ -50,17 +52,18 @@ import {
   YourComment,
 } from './styled';
 
-import type {
-  IssueComment,
-  CommentRequest,
-  User,
-} from '../../../types';
 
 type Props = {
   comments: Array<IssueComment>,
+  commentsFetching: boolean,
   adding: boolean,
   self: User,
-  commentRequest: CommentRequest,
+  selectedIssueId: Id,
+  dispatch: Dispatch,
+};
+
+type State = {
+  comment: string,
 };
 
 class IssueComments extends Component<Props, State> {
@@ -74,8 +77,8 @@ class IssueComments extends Component<Props, State> {
       commentsFetching,
       adding,
       self,
-      commentRequest,
       selectedIssueId,
+      dispatch,
     }: Props = this.props;
     return (
       <ActivitySection>
@@ -139,7 +142,10 @@ class IssueComments extends Component<Props, State> {
                 <Actions>
                   <Button
                     onClick={() => {
-                      commentRequest(this.state.comment, selectedIssueId);
+                      dispatch(issuesActions.commentRequest(
+                        this.state.comment,
+                        selectedIssueId,
+                      ));
                       this.setState({ comment: '' });
                     }}
                     iconAfter={adding ? <Spinner /> : null}
@@ -153,9 +159,9 @@ class IssueComments extends Component<Props, State> {
           }
         </Flex>
       </ActivitySection>
-    )
+    );
   }
-};
+}
 
 function mapStateToProps(state) {
   const selectedIssueId = getUiState('selectedIssueId')(state);
@@ -174,8 +180,9 @@ function mapStateToProps(state) {
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators(issuesActions, dispatch);
-}
+const connector: Connector<{}, Props> = connect(
+  mapStateToProps,
+  dispatch => ({ dispatch }),
+);
 
-export default connect(mapStateToProps, mapDispatchToProps)(IssueComments);
+export default connector(IssueComments);

@@ -31,16 +31,8 @@ import {
 } from 'actions';
 import {
   getUserData,
-  getTimerTime,
-  getTimerRunning,
-  getScreenshotsSettings,
-  getScreenshots,
-  getScreenshotPeriods,
-  getTimerIdleState,
-  getWorklogComment,
-  getLocalDesktopSettings,
-  getKeepedIdles,
-  getIdles,
+  getTimerState,
+  getSettingsState,
   getUiState,
 } from 'selectors';
 
@@ -64,10 +56,8 @@ const system = remote.require('@paulcbetts/system-idle-time');
 
 function* isScreenshotsAllowed() {
   try {
-    const {
-      screenshotsEnabled,
-      screenshotsEnabledUsers,
-    } = yield select(getScreenshotsSettings);
+    const screenshotsEnabled = yield select(getSettingsState('screenshotsEnabled'));
+    const screenshotsEnabledUsers = yield select(getSettingsState('screenshotsEnabledUsers'));
     yield call(
       infoLog,
       'checking if screenshots is allowed',
@@ -109,8 +99,8 @@ let totalIdleTimeDuringOneMinute = 0;
 function* idleCheck() {
   try {
     const idleTime = system.getIdleTime();
-    const idleState = yield select(getTimerIdleState);
-    const currentTime = yield select(getTimerTime);
+    const idleState = yield select(getTimerState('idleState'));
+    const currentTime = yield select(getTimerState('time'));
     if (idleState && idleTime < config.idleTimeThreshold * 1000) {
       yield put(timerActions.setIdleState(false));
       remote.getGlobal('sharedObj').idleTime = prevIdleTime;
@@ -134,10 +124,11 @@ let nextPeriod;
 
 function* screenshotsCheck() {
   try {
-    const { screenshotsQuantity, screenshotsPeriod } = yield select(getScreenshotsSettings);
-    const time = yield select(getTimerTime);
-    const idleState = yield select(getTimerIdleState);
-    let periods = yield select(getScreenshotPeriods);
+    const screenshotsQuantity = yield select(getSettingsState('screenshotsQuantity'));
+    const screenshotsPeriod = yield select(getSettingsState('screenshotsPeriod'));
+    const time = yield select(getTimerState('time'));
+    const idleState = yield select(getTimerState('idleState'));
+    let periods = yield select(getTimerState('screenshotPeriods'));
     if (time === periods[0]) {
       if (!idleState) {
         yield fork(takeScreenshot);
@@ -158,7 +149,7 @@ function* screenshotsCheck() {
 
 function* activityCheck(secondsToMinutesGrid) {
   try {
-    const time = yield select(getTimerTime);
+    const time = yield select(getTimerState('time'));
     if (time % 60 === secondsToMinutesGrid) {
       yield call(
         infoLog,
@@ -177,8 +168,8 @@ function* activityCheck(secondsToMinutesGrid) {
 }
 
 function* setTimeToTray() {
-  const time = yield select(getTimerTime);
-  const localDesktopSettings = yield select(getLocalDesktopSettings);
+  const time = yield select(getTimerState('time'));
+  const localDesktopSettings = yield select(getSettingsState('localDesktopSettings'));
   const { trayShowTimer } = localDesktopSettings;
   if (trayShowTimer) {
     const humanFormat = new Date(time * 1000).toISOString().substr(11, 5);
@@ -202,10 +193,8 @@ function* timerStep(screenshotsAllowed, secondsToMinutesGrid) {
 
 
 export function* runTimer(channel: any): Generator<*, *, *> {
-  const {
-    screenshotsPeriod,
-    screenshotsQuantity,
-  } = yield select(getScreenshotsSettings);
+  const screenshotsQuantity = yield select(getSettingsState('screenshotsQuantity'));
+  const screenshotsPeriod = yield select(getSettingsState('screenshotsPeriod'));
 
   const screenshotsAllowed = yield call(isScreenshotsAllowed);
   const currentSeconds = parseInt(moment().format('ss'), 10);
@@ -228,12 +217,12 @@ function* stopTimer(channel, timerInstance) {
     channel.close();
     yield cancel(timerInstance);
     const issueId = yield select(getUiState('trackingIssueId'));
-    const timeSpentInSeconds = yield select(getTimerTime);
-    const comment = yield select(getWorklogComment);
-    const screenshots = yield select(getScreenshots);
-    const keepedIdles = yield select(getKeepedIdles);
-    const idles = yield select(getIdles);
-    const { screenshotsPeriod } = yield select(getScreenshotsSettings);
+    const timeSpentInSeconds = yield select(getTimerState('time'));
+    const comment = yield select(getUiState('worklogComment'));
+    const screenshots = yield select(getTimerState('screenshots'));
+    const keepedIdles = yield select(getTimerState('keepedIdles'));
+    const idles = yield select(getTimerState('idles'));
+    const screenshotsPeriod = yield select(getSettingsState('screenshotsPeriod'));
     const worklogType = null;
     const activity = calculateActivity({
       currentIdleList: idles.map(idle => idle.to - idle.from),
@@ -271,7 +260,7 @@ export function* timerFlow(): Generator<*, *, *> {
     const timerInstance = yield fork(runTimer, channel);
     while (true) {
       yield take(actionTypes.STOP_TIMER_REQUEST);
-      const time = yield select(getTimerTime);
+      const time = yield select(getTimerState('time'));
       if (time < 60) {
         yield put(uiActions.setModalState('alert', true));
         const { type } = yield take([actionTypes.CONTINUE_TIMER, actionTypes.STOP_TIMER]);
@@ -346,7 +335,7 @@ export function* watchAcceptScreenshot(): Generator<*, *, *> {
       'screenshot accepted',
       ev,
     );
-    const running = yield select(getTimerRunning);
+    const running = yield select(getTimerState('running'));
     if (running) {
       const { getGlobal } = remote;
       const {
@@ -373,7 +362,7 @@ export function* watchRejectScreenshot(): Generator<*, *, *> {
       'screenshot rejected',
       ev,
     );
-    const running = yield select(getTimerRunning);
+    const running = yield select(getTimerState('running'));
     if (running) {
       const { getGlobal } = remote;
       const { lastScreenshotPath } = getGlobal('sharedObj');

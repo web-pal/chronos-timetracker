@@ -8,6 +8,8 @@ export type ProfileAction =
     payload: any,
   |};
 
+export type User = any;
+
 export type ProfileState = {|
-  userData: any,
+  userData: User,
 |};

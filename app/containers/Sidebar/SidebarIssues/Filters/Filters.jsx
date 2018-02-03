@@ -4,9 +4,6 @@ import {
   connect,
 } from 'react-redux';
 import {
-  bindActionCreators,
-} from 'redux';
-import {
   getStatus as getResourceStatus,
 } from 'redux-resource';
 
@@ -14,6 +11,12 @@ import type {
   StatelessFunctionalComponent,
   Node,
 } from 'react';
+import type {
+  Connector,
+} from 'react-redux';
+import type {
+  Dispatch,
+} from 'types';
 
 import Button, {
   ButtonGroup,
@@ -45,30 +48,23 @@ import {
 } from './styled';
 import FilterOption from './FilterOption';
 
-import type {
-  SetIssuesFilter,
-  IssueFilters,
-  SetSidebarFiltersOpen,
-} from '../../../../types';
-
 
 type Props = {
-  setIssuesFilter: SetIssuesFilter,
-  filters: IssueFilters,
+  filters: any,
+  options: any,
   issuesCount: number,
-  fetching: boolean,
-  setSidebarFiltersOpen: SetSidebarFiltersOpen
+  issuesFetching: boolean,
+  optionsFetching: boolean,
+  dispatch: Dispatch,
 };
 
 const SidebarFilters: StatelessFunctionalComponent<Props> = ({
-  setUiState,
-  setIssuesFilters,
   filters,
+  options,
   issuesCount,
   issuesFetching,
-  options,
   optionsFetching,
-  refetchIssuesRequest,
+  dispatch,
 }: Props): Node => (
   <FiltersContainer>
     {optionsFetching ?
@@ -89,19 +85,19 @@ const SidebarFilters: StatelessFunctionalComponent<Props> = ({
                   isChecked={filters[type.key].includes(option.id)}
                   onChange={(value, checked) => {
                     if (type.key === 'assignee') {
-                      setIssuesFilters(
+                      dispatch(uiActions.setIssuesFilters(
                         type.key,
                         [!checked && value].filter(Boolean),
-                      );
+                      ));
                     } else {
-                      setIssuesFilters(
+                      dispatch(uiActions.setIssuesFilters(
                         type.key,
                         !checked ?
                           [...filters[type.key], value] :
                           filters[type.key].filter(f => f !== value),
-                      );
+                      ));
                     }
-                    refetchIssuesRequest(true);
+                    dispatch(issuesActions.refetchIssuesRequest(true));
                   }}
                   showIcons={type.showIcons}
                 />
@@ -124,10 +120,10 @@ const SidebarFilters: StatelessFunctionalComponent<Props> = ({
       <ButtonGroup>
         <Button
           onClick={() => {
-            setIssuesFilters('assignee', []);
-            setIssuesFilters('status', []);
-            setIssuesFilters('type', []);
-            refetchIssuesRequest();
+            dispatch(uiActions.setIssuesFilters('assignee', []));
+            dispatch(uiActions.setIssuesFilters('status', []));
+            dispatch(uiActions.setIssuesFilters('type', []));
+            dispatch(issuesActions.refetchIssuesRequest());
           }}
         >
           Clear filters
@@ -135,7 +131,10 @@ const SidebarFilters: StatelessFunctionalComponent<Props> = ({
         <Button
           appearance="primary"
           onClick={() => {
-            setUiState('sidebarFiltersIsOpen', false);
+            dispatch(uiActions.setUiState(
+              'sidebarFiltersIsOpen',
+              false,
+            ));
           }}
         >
           Close
@@ -164,11 +163,9 @@ function mapStateToProps(state) {
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    ...uiActions,
-    ...issuesActions,
-  }, dispatch);
-}
+const connector: Connector<{}, Props> = connect(
+  mapStateToProps,
+  dispatch => ({ dispatch }),
+);
 
-export default connect(mapStateToProps, mapDispatchToProps)(SidebarFilters);
+export default connector(SidebarFilters);

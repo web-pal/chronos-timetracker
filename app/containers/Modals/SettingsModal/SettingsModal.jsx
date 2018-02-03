@@ -8,6 +8,12 @@ import type {
   StatelessFunctionalComponent,
   Node,
 } from 'react';
+import type {
+  Connector,
+} from 'react-redux';
+import type {
+  Dispatch,
+} from 'types';
 
 import ModalDialog, {
   ModalFooter,
@@ -15,7 +21,6 @@ import ModalDialog, {
   ModalTitle,
 } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button';
-import { bindActionCreators } from 'redux';
 
 import {
   ModalContentContainer,
@@ -29,49 +34,32 @@ import {
   Flex,
 } from 'components';
 import {
-  getSettingsModalTab,
-  getSettingsModalOpen,
-  getLocalDesktopSettings,
-  getUpdateCheckRunning,
-  getUpdateAvailable,
-  getUpdateFetching,
+  getUiState,
+  getSettingsState,
   getModalState,
 } from 'selectors';
 
 
-import GeneralSettings from './GeneralSettings';
-import NotificationSettings from './NotificationSettings';
-import UpdateSettings from './UpdateSettings';
-
-import type {
-  Settings,
-  SetSettingsModalOpen,
-  SetSettingsModalTab,
-  SetLocalDesktopSetting,
-  SettingsTab,
-  UpdateInfo,
-  InstallUpdateRequest,
-} from '../../../types';
+import GeneralSettings from './General';
+import NotificationSettings from './Notifications';
+import UpdateSettings from './Update';
 
 import {
   Separator,
   SettingsSectionLabel,
 } from './styled';
 
+
 type Props = {
   isOpen: boolean,
-  tab: SettingsTab,
-  settings: Settings,
+  tab: string,
+  settings: any,
   updateCheckRunning: boolean,
-  updateAvailable: UpdateInfo,
+  updateAvailable: any,
   updateFetching: boolean,
-  setSettingsModalOpen: SetSettingsModalOpen,
-  setSettingsModalTab: SetSettingsModalTab,
-  setLocalDesktopSetting: SetLocalDesktopSetting,
-  installUpdateRequest: InstallUpdateRequest,
+  dispatch: Dispatch,
 }
 
-/* eslint-disable indent */ // buggy rule
 const SettingsModal: StatelessFunctionalComponent<Props> = ({
   isOpen,
   tab,
@@ -79,50 +67,56 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
   updateAvailable,
   updateFetching,
   updateCheckRunning,
-  setSettingsModalOpen,
-  setSettingsModalTab,
-  setLocalDesktopSetting,
-  installUpdateRequest,
-  setModalState,
-}: Props): Node => isOpen &&
+  dispatch,
+}: Props): Node => isOpen && (
   <ModalDialog
-    onClose={() => setModalState('settings', false)}
+    header={() => (
+      <ModalHeader>
+        <ModalTitle>Settings</ModalTitle>
+      </ModalHeader>
+    )}
     footer={() => (
       <ModalFooter>
         <Flex row style={{ justifyContent: 'flex-end', width: '100%' }}>
           <Button
             appearance="default"
-            onClick={() => setModalState('settings', false)}
+            onClick={() => {
+              dispatch(uiActions.setModalState('settings', false));
+            }}
           >
             Close
           </Button>
         </Flex>
       </ModalFooter>
     )}
-    header={() => (
-      <ModalHeader>
-        <ModalTitle>Settings</ModalTitle>
-      </ModalHeader>
-    )}
+    onClose={() => {
+      dispatch(uiActions.setModalState('settings', false));
+    }}
   >
     <ModalContentContainer>
       <Flex row style={{ height: 324 }}>
         <Flex column style={{ width: 85 }}>
           <SettingsSectionLabel
             active={tab === 'General'}
-            onClick={() => setSettingsModalTab('General')}
+            onClick={() => {
+              dispatch(settingsActions.setSettingsModalTab('General'));
+            }}
           >
             General
           </SettingsSectionLabel>
           <SettingsSectionLabel
             active={tab === 'Notifications'}
-            onClick={() => setSettingsModalTab('Notifications')}
+            onClick={() => {
+              dispatch(settingsActions.setSettingsModalTab('Notifications'));
+            }}
           >
             Notifications
           </SettingsSectionLabel>
           <SettingsSectionLabel
             active={tab === 'Updates'}
-            onClick={() => setSettingsModalTab('Updates')}
+            onClick={() => {
+              dispatch(settingsActions.setSettingsModalTab('Updates'));
+            }}
           >
             Updates
           </SettingsSectionLabel>
@@ -131,42 +125,61 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
         {tab === 'General' &&
           <GeneralSettings
             settings={settings}
-            setTraySettings={value => setLocalDesktopSetting(value, 'trayShowTimer')}
+            setTraySettings={(value) => {
+              dispatch(settingsActions.setLocalDesktopSetting(
+                value,
+                'trayShowTimer',
+              ));
+            }}
           />
         }
         {tab === 'Notifications' &&
           <NotificationSettings
             settings={settings}
-            setLocalDesktopSetting={setLocalDesktopSetting}
+            onChangeSetting={(value, settingName) => {
+              dispatch(settingsActions.setLocalDesktopSetting(
+                value,
+                settingName,
+              ));
+            }}
           />
         }
         {tab === 'Updates' &&
           <UpdateSettings
             channel={settings.updateChannel}
-            setChannel={value => setLocalDesktopSetting(value, 'updateChannel')}
+            setChannel={(value) => {
+              dispatch(settingsActions.setLocalDesktopSetting(
+                value,
+                'updateChannel',
+              ));
+            }}
             updateCheckRunning={updateCheckRunning}
             updateAvailable={updateAvailable}
             updateFetching={updateFetching}
-            installUpdateRequest={installUpdateRequest}
+            onUpdateClick={() => {
+              dispatch(uiActions.installUpdateRequest());
+            }}
           />
         }
       </Flex>
     </ModalContentContainer>
-  </ModalDialog>;
+  </ModalDialog>
+);
 
 function mapStateToProps(state) {
   return {
     isOpen: getModalState('settings')(state),
-    settings: getLocalDesktopSettings(state),
-    tab: getSettingsModalTab(state),
-    updateCheckRunning: getUpdateCheckRunning(state),
-    updateAvailable: getUpdateAvailable(state),
-    updateFetching: getUpdateFetching(state),
+    settings: getSettingsState('localDesktopSettings')(state),
+    tab: getSettingsState('modalTab')(state),
+    updateCheckRunning: getUiState('updateCheckRunning')(state),
+    updateAvailable: getUiState('updateAvailable')(state),
+    updateFetching: getUiState('updateFetching')(state),
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ ...uiActions, ...settingsActions }, dispatch);
-}
+const connector: Connector<{}, Props> = connect(
+  mapStateToProps,
+  dispatch => ({ dispatch }),
+);
 
-export default connect(mapStateToProps, mapDispatchToProps)(SettingsModal);
+export default connector(SettingsModal);

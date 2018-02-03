@@ -36,6 +36,7 @@ const initialState: UiState = {
   deleteWorklogId: null,
   editWorklogId: null,
   worklogFormIssueId: null,
+  worklogComment: '',
 
   selectedIssueId: null,
   issuesSourceType: null,
@@ -48,13 +49,10 @@ const initialState: UiState = {
   commentAdding: false,
 
   modalState: {
-    settings: false,
-    support: false,
-    about: false,
     alert: false,
-    worklog: false,
     confirmDeleteWorklog: false,
-    editWorklog: false,
+    settings: false,
+    worklog: false,
   },
 
   flags: [],

@@ -4,9 +4,6 @@ import {
   connect,
 } from 'react-redux';
 import {
-  bindActionCreators,
-} from 'redux';
-import {
   InfiniteLoader,
   AutoSizer,
   List,
@@ -24,9 +21,14 @@ import type {
   StatelessFunctionalComponent,
   Node,
 } from 'react';
+import type {
+  Id,
+  Dispatch,
+  Issue,
+} from 'types';
 
 import {
-  getSidebarIssues2,
+  getSidebarIssues,
   getResourceMeta,
   getUiState,
 } from 'selectors';
@@ -38,13 +40,6 @@ import {
   uiActions,
   resourcesActions,
 } from 'actions';
-import type {
-  IssuesMap,
-  FetchIssuesRequest,
-  SelectIssue,
-  Issue,
-  Id,
-} from '../../../types';
 import {
   ListContainer,
 } from './styled';
@@ -56,18 +51,20 @@ import Filters from './Filters';
 
 
 type Props = {
-  issues: IssuesMap,
+  issues: Array<Issue>,
   issuesFetching: boolean,
   projectsFetching: boolean,
   sidebarFiltersIsOpen: boolean,
   totalCount: number,
   selectedIssueId: Id | null,
   trackingIssueId: Id | null,
-  fetchIssuesRequest: FetchIssuesRequest,
-  selectIssue: SelectIssue,
-  saveLastRenderedIndex: ({ startIndex: number, stopIndex: number }) => void,
+  saveLastRenderedIndex: ({
+    startIndex: number,
+    stopIndex: number,
+  }) => void,
   saveOnRowsRenderedFunction: (Function) => void,
-  registerInfiniteNode: (Function) => void,
+  registerInfiniteNode: any,
+  dispatch: Dispatch,
 };
 
 const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
@@ -78,11 +75,10 @@ const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
   totalCount,
   selectedIssueId,
   trackingIssueId,
-  fetchIssuesRequest,
   saveLastRenderedIndex,
   saveOnRowsRenderedFunction,
   registerInfiniteNode,
-  setUiState,
+  dispatch,
 }: Props): Node =>
   <ListContainer>
     <IssuesHeader />
@@ -97,12 +93,11 @@ const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
       threshold={20}
       loadMoreRows={({ startIndex, stopIndex }) =>
         new Promise((resolve) => {
-          fetchIssuesRequest({
+          dispatch(issuesActions.fetchIssuesRequest({
             startIndex,
             stopIndex,
             resolve,
-            search: false,
-          });
+          }));
         })
       }
     >
@@ -137,9 +132,13 @@ const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
                           issue={item}
                           active={selectedIssueId === item.id}
                           tracking={trackingIssueId === item.id}
-                          selectIssue={(issue) => {
-                            setUiState('selectedIssueId', issue.id);
-                            setUiState('selectedWorklogId', null);
+                          selectIssue={(issueId) => {
+                            dispatch(
+                              uiActions.setUiState('selectedIssueId', issueId),
+                            );
+                            dispatch(
+                              uiActions.setUiState('selectedWorklogId', null),
+                            );
                           }}
                         /> :
                         <IssueItemPlaceholder />
@@ -169,7 +168,7 @@ function mapStateToProps(state) {
     'filterIssuesTotalCount',
   )(state);
   return {
-    issues: getSidebarIssues2(state),
+    issues: getSidebarIssues(state),
     projectsFetching,
     issuesFetching,
     totalCount,
@@ -183,16 +182,11 @@ function mapStateToProps(state) {
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    ...issuesActions,
-    ...resourcesActions,
-    ...uiActions,
-  }, dispatch);
-}
-
 export default compose(
-  connect(mapStateToProps, mapDispatchToProps),
+  connect(
+    mapStateToProps,
+    dispatch => ({ dispatch }),
+  ),
   withHandlers(() => {
     let infiniteNode;
     let onRowsRendered;
@@ -219,12 +213,12 @@ export default compose(
   lifecycle({
     componentWillReceiveProps(nextProps) {
       if (nextProps.refetchFilterIssuesMarker && !this.props.refetchFilterIssuesMarker) {
-        this.props.setResourceMeta({
+        this.props.dispatch(resourcesActions.setResourceMeta({
           resourceName: 'issues',
           meta: {
             refetchFilterIssuesMarker: false,
           },
-        });
+        }));
         this.props.resetLoadMoreRowsCache();
         setTimeout(() => {
           if (this.props.tellInfiniteLoaderToLoadRows) {

@@ -5,6 +5,10 @@ import type {
   StatelessFunctionalComponent,
   Node,
 } from 'react';
+import type {
+  Id,
+  Issue,
+} from 'types';
 
 import Tooltip from '@atlaskit/tooltip';
 import ShortcutIcon from '@atlaskit/icon/glyph/shortcut';
@@ -24,33 +28,24 @@ import {
   IssueType,
   IssuePriority,
   IssueLabel,
-  TimeLogged,
 } from './styled';
-
-import type {
-  Issue,
-  SelectIssue,
-  Worklog,
-} from '../../../../types';
 
 
 type Props = {
   issue: Issue,
-  worklog?: Worklog | null,
   active: boolean,
-  selectIssue: SelectIssue,
+  selectIssue: (issueId: Id) => void
 }
 
 const IssueItem: StatelessFunctionalComponent<Props> = ({
   issue,
-  worklog,
   active,
   selectIssue,
 }: Props = {}): Node =>
   <IssueContainer
     active={active}
     onClick={() => {
-      selectIssue(issue);
+      selectIssue(issue.id);
     }}
   >
     <IssueNameContainer>
@@ -98,16 +93,6 @@ const IssueItem: StatelessFunctionalComponent<Props> = ({
       >
         {issue.fields.status.name.toUpperCase()}
       </IssueLabel>
-      {worklog &&
-        <Tooltip
-          description="Time logged"
-          position="bottom"
-        >
-          <TimeLogged>
-            {worklog.timeSpent}
-          </TimeLogged>
-        </Tooltip>
-      }
     </IssueFieldsContainer>
   </IssueContainer>;
 

@@ -10,10 +10,6 @@ import {
   Flex,
 } from 'components';
 
-import type {
-  TabLabel,
-} from '../../../types';
-
 import {
   TabItem,
 } from './styled';
@@ -21,13 +17,14 @@ import {
 
 type Props = {
   tabs: any,
-  currentTab: TabLabel,
+  currentTab: string,
+  onTabClick: (tab: string) => void,
 }
 
 const IssueViewTabs: StatelessFunctionalComponent<Props> = ({
   tabs,
   currentTab,
-  setUiState,
+  onTabClick,
 }: Props): Node => (
   <Flex column style={{ minHeight: 32 }}>
     <Flex row spaceBetween style={{ minHeight: 32 }}>
@@ -36,7 +33,9 @@ const IssueViewTabs: StatelessFunctionalComponent<Props> = ({
           <TabItem
             key={tab}
             active={tab === currentTab}
-            onClick={() => setUiState('issueViewTab', tab)}
+            onClick={() => {
+              onTabClick(tab);
+            }}
           >
             {tab}
           </TabItem>,

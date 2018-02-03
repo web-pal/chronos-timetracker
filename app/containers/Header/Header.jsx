@@ -4,38 +4,39 @@ import {
   connect,
 } from 'react-redux';
 import {
-  bindActionCreators,
-} from 'redux';
-import DropdownMenu, {
-  DropdownItemGroup,
-  DropdownItem,
-} from '@atlaskit/dropdown-menu';
-import {
   shell,
 } from 'electron';
+import {
+  getStatus as getResourceStatus,
+} from 'redux-resource';
 
 import type {
   StatelessFunctionalComponent,
   Node,
 } from 'react';
+import type {
+  Connector,
+} from 'react-redux';
+import type {
+  User,
+  Dispatch,
+} from 'types';
 
 
+import DropdownMenu, {
+  DropdownItemGroup,
+  DropdownItem,
+} from '@atlaskit/dropdown-menu';
+
 import {
-  getStatus as getResourceStatus,
-} from 'redux-resource';
-import {
-  profileActions,
   authActions,
   uiActions,
   settingsActions,
   issuesActions,
-  resourcesActions,
 } from 'actions';
 import {
   getUserData,
-  getHost,
-  getUpdateAvailable,
-  getUpdateFetching,
+  getUiState,
 } from 'selectors';
 import {
   cogIcon,
@@ -59,28 +60,14 @@ import {
   RefreshIcon,
 } from './styled';
 
-import type {
-  LogoutRequest,
-  User,
-  UpdateInfo,
-  SetSettingsModalOpen,
-  SetSettingsModalTab,
-  FetchRecentIssuesRequest,
-} from '../../types';
-
 
 type Props = {
   userData: User,
-  host: URL,
-  updateAvailable: UpdateInfo,
+  host: string,
+  updateAvailable: string,
   updateFetching: boolean,
   issuesFetching: boolean,
-
-  fetchRecentIssuesRequest: FetchRecentIssuesRequest,
-
-  logoutRequest: LogoutRequest,
-  setSettingsModalOpen: SetSettingsModalOpen,
-  setSettingsModalTab: SetSettingsModalTab,
+  dispatch: Dispatch,
 };
 
 const Header: StatelessFunctionalComponent<Props> = ({
@@ -89,13 +76,7 @@ const Header: StatelessFunctionalComponent<Props> = ({
   updateAvailable,
   updateFetching,
   issuesFetching,
-  logoutRequest,
-  setSettingsModalOpen,
-  setSettingsModalTab,
-  setModalState,
-  clearResourceList,
-  setResourceMeta,
-  refetchIssuesRequest,
+  dispatch,
 }: Props): Node =>
   <HeaderContainer className="webkit-drag">
     <ProfileContainer>
@@ -118,12 +99,14 @@ const Header: StatelessFunctionalComponent<Props> = ({
         src={refreshWhite}
         onClick={() => {
           if (!issuesFetching) {
-            refetchIssuesRequest();
+            dispatch(issuesActions.refetchIssuesRequest());
           }
         }}
         alt="Refresh"
       />
-      {updateAvailable && <UpdateAvailableBadge />}
+      {updateAvailable &&
+        <UpdateAvailableBadge />
+      }
       <DropdownMenu
         triggerType="default"
         position="bottom right"
@@ -135,13 +118,21 @@ const Header: StatelessFunctionalComponent<Props> = ({
         }
       >
         <DropdownItemGroup>
-          <DropdownItem onClick={() => setModalState('settings', true)}>
+          <DropdownItem
+            onClick={() => {
+              dispatch(uiActions.setModalState('settings', true));
+            }}
+          >
             Settings
           </DropdownItem>
-          <DropdownItem onClick={() => shell.openExternal(config.supportLink)}>
+          <DropdownItem
+            onClick={() => shell.openExternal(config.supportLink)}
+          >
             Support and feedback
           </DropdownItem>
-          <DropdownItem onClick={() => shell.openExternal(config.githubLink)}>
+          <DropdownItem
+            onClick={() => shell.openExternal(config.githubLink)}
+          >
             Github
           </DropdownItem>
           <DropdownSeparator />
@@ -149,8 +140,8 @@ const Header: StatelessFunctionalComponent<Props> = ({
           {updateAvailable && !updateFetching && [
             <DropdownUpdateItem
               onClick={() => {
-                setModalState('settings', true);
-                setSettingsModalTab('Updates');
+                dispatch(uiActions.setModalState('settings', true));
+                dispatch(settingsActions.setSettingsModalTab('Updates'));
               }}
             >
               {updateAvailable} is out! Update now.
@@ -158,7 +149,11 @@ const Header: StatelessFunctionalComponent<Props> = ({
             <DropdownSeparator />,
           ]}
 
-          <DropdownLogoutItem onClick={logoutRequest}>
+          <DropdownLogoutItem
+            onClick={() => {
+              dispatch(authActions.logoutRequest());
+            }}
+          >
             Logout
           </DropdownLogoutItem>
         </DropdownItemGroup>
@@ -170,25 +165,19 @@ const Header: StatelessFunctionalComponent<Props> = ({
 function mapStateToProps(state) {
   return {
     userData: getUserData(state),
-    host: getHost(state),
-    updateAvailable: getUpdateAvailable(state),
+    host: getUiState('host')(state),
+    updateAvailable: getUiState('updateAvailable')(state),
+    updateFetching: getUiState('updateFetching')(state),
     issuesFetching: getResourceStatus(
       state,
       'issues.requests.filterIssues.status',
     ).pending,
-    updateFetching: getUpdateFetching(state),
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    ...profileActions,
-    ...authActions,
-    ...uiActions,
-    ...settingsActions,
-    ...issuesActions,
-    ...resourcesActions,
-  }, dispatch);
-}
+const connector: Connector<{}, Props> = connect(
+  mapStateToProps,
+  dispatch => ({ dispatch }),
+);
 
-export default connect(mapStateToProps, mapDispatchToProps)(Header);
+export default connector(Header);

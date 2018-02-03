@@ -1,28 +1,54 @@
 // @flow
 import React from 'react';
-import type { StatelessFunctionalComponent, Node } from 'react';
-import { Flex } from 'components';
-import { CheckboxStateless as Checkbox } from '@atlaskit/checkbox';
-import { H100 } from 'styles/typography';
-import Button, { ButtonGroup } from '@atlaskit/button';
-import { remote } from 'electron';
+import {
+  remote,
+} from 'electron';
+
+import type {
+  StatelessFunctionalComponent,
+  Node,
+} from 'react';
+
+import {
+  CheckboxStateless as Checkbox,
+} from '@atlaskit/checkbox';
+import Button, {
+  ButtonGroup,
+} from '@atlaskit/button';
 import Spinner from '@atlaskit/spinner';
-import { openURLInBrowser } from 'external-open-util';
 
-import { SettingsSectionContent, ContentLabel } from './styled';
-import { version } from '../../../package.json';
-import type { UpdateInfo, InstallUpdateRequest } from '../../../types';
+import {
+  Flex,
+} from 'components';
+import {
+  H100,
+} from 'styles/typography';
 
-const { autoUpdater } = remote.require('electron-updater');
+import {
+  openURLInBrowser,
+} from 'external-open-util';
+
+import {
+  SettingsSectionContent,
+  ContentLabel,
+} from './styled';
+
+import {
+  version,
+} from '../../../../package.json';
+
+const {
+  autoUpdater,
+} = remote.require('electron-updater');
+
 
 type Props = {
   channel: string,
   updateCheckRunning: boolean,
-  updateAvailable: UpdateInfo,
+  updateAvailable: any,
   updateFetching: boolean,
-
-  setChannel: any,
-  installUpdateRequest: InstallUpdateRequest,
+  setChannel: (channel: string) => void,
+  onUpdateClick: () => void,
 };
 
 const UpdateSettings: StatelessFunctionalComponent<Props> = ({
@@ -31,7 +57,7 @@ const UpdateSettings: StatelessFunctionalComponent<Props> = ({
   updateCheckRunning,
   updateAvailable,
   updateFetching,
-  installUpdateRequest,
+  onUpdateClick,
 } : Props): Node => (
   <SettingsSectionContent style={{ width: '100%' }}>
     <ContentLabel>
@@ -51,8 +77,13 @@ const UpdateSettings: StatelessFunctionalComponent<Props> = ({
               <div>
                 <Button
                   appearance="primary"
-                  onClick={installUpdateRequest}
-                  iconAfter={updateFetching ? <Spinner invertColor /> : false}
+                  onClick={() => {
+                    onUpdateClick();
+                  }}
+                  iconAfter={
+                    updateFetching &&
+                      <Spinner invertColor />
+                  }
                 >
                   {updateFetching
                     ? 'Updating'
@@ -65,7 +96,11 @@ const UpdateSettings: StatelessFunctionalComponent<Props> = ({
                 <Button
                   appearance="link"
                   spacing="compact"
-                  onClick={openURLInBrowser('https://github.com/web-pal/Chronos/releases')}
+                  onClick={() => {
+                    openURLInBrowser(
+                      'https://github.com/web-pal/Chronos/releases',
+                    );
+                  }}
                 >
                   download latest release manually
                 </Button>

@@ -4,9 +4,6 @@ import {
   connect,
 } from 'react-redux';
 import {
-  bindActionCreators,
-} from 'redux';
-import {
   getStatus as getResourceStatus,
 } from 'redux-resource';
 
@@ -14,6 +11,12 @@ import type {
   StatelessFunctionalComponent,
   Node,
 } from 'react';
+import type {
+  Connector,
+} from 'react-redux';
+import type {
+  Dispatch,
+} from 'types';
 
 import {
   SingleSelect,
@@ -26,9 +29,7 @@ import {
   getIssuesSourceSelectedOption,
   getUiState,
 } from 'selectors';
-
 import {
-  projectsActions,
   issuesActions,
   sprintsActions,
   uiActions,
@@ -38,33 +39,27 @@ import {
   IssuesSourceContainer,
 } from './styled';
 
-import type {
-  SelectOption,
-  SelectSprint,
-} from '../../../types';
-
 
 type Props = {
-  options: Array<SelectOption>,
-  sprintsOptions: Array<SelectOption>,
-  selectedOption: SelectOption,
-  selectedSprintOption: SelectOption,
+  options: Array<any>,
+  sprintsOptions: Array<any>,
+  selectedOption: any,
+  selectedSprintOption: any,
   projectsFetching: boolean,
   sprintsFetching: boolean,
   selectedSourceType: string,
+  dispatch: Dispatch,
 };
 
 const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
   options,
-  selectedOption,
   sprintsOptions,
+  selectedOption,
   selectedSprintOption,
   projectsFetching,
   sprintsFetching,
   selectedSourceType,
-  setUiState,
-  refetchIssuesRequest,
-  fetchSprintsRequest,
+  dispatch,
 }: Props): Node =>
   <IssuesSourceContainer>
     <SingleSelect
@@ -75,14 +70,14 @@ const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
       placeholder="Select project or board"
       onSelected={({ item }) => {
         const type = item.meta.board ? item.meta.board.type : 'project';
-        setUiState('issuesSprintId', null);
-        setUiState('issuesSourceId', item.value);
-        setUiState('issuesSourceType', type);
+        dispatch(uiActions.setUiState('issuesSprintId', null));
+        dispatch(uiActions.setUiState('issuesSourceId', item.value));
+        dispatch(uiActions.setUiState('issuesSourceType', type));
         if (type === 'scrum') {
-          fetchSprintsRequest();
+          dispatch(sprintsActions.fetchSprintsRequest());
         } else if (item.value) {
-          setUiState('filterStatusesIsFetched', false);
-          refetchIssuesRequest();
+          dispatch(uiActions.setUiState('filterStatusesIsFetched', false));
+          dispatch(issuesActions.refetchIssuesRequest());
         }
       }}
       isLoading={projectsFetching}
@@ -98,8 +93,8 @@ const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
         defaultSelected={selectedSprintOption || undefined}
         placeholder="Select sprint"
         onSelected={({ item }) => {
-          setUiState('issuesSprintId', item.value);
-          refetchIssuesRequest();
+          dispatch(uiActions.setUiState('issuesSprintId', item.value));
+          dispatch(issuesActions.refetchIssuesRequest());
         }}
         isLoading={sprintsFetching}
         loadingMessage="Fetching sprints..."
@@ -130,13 +125,9 @@ function mapStateToProps(state) {
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    ...projectsActions,
-    ...uiActions,
-    ...issuesActions,
-    ...sprintsActions,
-  }, dispatch);
-}
+const connector: Connector<{}, Props> = connect(
+  mapStateToProps,
+  dispatch => ({ dispatch }),
+);
 
-export default connect(mapStateToProps, mapDispatchToProps)(IssuesSourcePicker);
+export default connector(IssuesSourcePicker);

@@ -3,9 +3,6 @@ import React from 'react';
 import {
   connect,
 } from 'react-redux';
-import {
-  bindActionCreators,
-} from 'redux';
 
 import type {
   StatelessFunctionalComponent,
@@ -14,13 +11,18 @@ import type {
 import type {
   Connector,
 } from 'react-redux';
+import type {
+  Id,
+  Issue,
+  Worklog,
+  Dispatch,
+} from 'types';
 
 import {
   Flex,
   AutosizableList as List,
 } from 'components';
 import {
-  worklogsActions,
   uiActions,
 } from 'actions';
 import {
@@ -30,9 +32,6 @@ import {
   H600,
 } from 'styles/typography';
 import {
-  getSelectedWorklog,
-  getWorklogListScrollIndex,
-  getSelectedWorklogId,
   getSelectedIssueWorklogs,
   getSelectedIssue,
   getUiState,
@@ -40,30 +39,20 @@ import {
 
 import WorklogItem from './WorklogItem';
 
-import type {
-  Id,
-  Issue,
-  DeleteWorklogRequest,
-  EditWorklogRequest,
-} from '../../../types';
-
 
 type Props = {
+  worklogs: Array<Worklog>,
+  issue: Issue,
   selectedWorklogId: Id | null,
-  selectedIssue: Issue,
-  scrollIndex: number,
-  deleteWorklogRequest: DeleteWorklogRequest,
-  editWorklogRequest: EditWorklogRequest,
+  scrollToIndex: number,
+  dispatch: Dispatch,
 };
 
 const IssueWorklogs: StatelessFunctionalComponent<Props> = ({
   worklogs,
   issue,
   selectedWorklogId,
-  selectedIssue,
   scrollToIndex,
-  deleteWorklogRequest,
-  editWorklogRequest,
   dispatch,
 }: Props): Node => (
   <Flex column style={{ flexGrow: 1 }}>
@@ -102,8 +91,6 @@ const IssueWorklogs: StatelessFunctionalComponent<Props> = ({
                   dispatch(uiActions.setModalState('confirmDeleteWorklog', true));
                   dispatch(uiActions.setUiState('deleteWorklogId', worklog.id));
                 }}
-                deleteWorklogRequest={deleteWorklogRequest}
-                editWorklogRequest={editWorklogRequest}
               />
             );
           },
@@ -129,7 +116,6 @@ function mapStateToProps(state) {
     worklogs: getSelectedIssueWorklogs(state),
     issue: getSelectedIssue(state),
     selectedWorklogId: getUiState('selectedWorklogId')(state),
-    selectedIssue: getSelectedIssue(state),
     scrollToIndex: getUiState('issueViewWorklogsScrollToIndex')(state),
   };
 }

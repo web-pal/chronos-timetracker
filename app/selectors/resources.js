@@ -3,19 +3,36 @@ import {
   createSelector,
 } from 'reselect';
 
+import type {
+  Id,
+  State,
+} from 'types';
 
-export const getResourceIds = (resourceName, listName) =>
-  state => state[resourceName].lists[listName];
 
-export const getResourceMap = resourceName =>
-  state => state[resourceName].resources;
+export const getResourceIds = (
+  resourceName: string,
+  listName: string,
+) =>
+  (state: State) =>
+    state[resourceName].lists[listName];
 
-export const getResourceMeta = (resourceName, metaKey) =>
-  state => state[resourceName].meta[metaKey];
+export const getResourceMap = (resourceName: string) =>
+  (state: State) =>
+    state[resourceName].resources;
+
+export const getResourceMeta = (
+  resourceName: string,
+  metaKey: string,
+) =>
+  (state: State) =>
+    state[resourceName].meta[metaKey];
 
 const resourceSelectors = {};
 
-export const getResourceMappedList = (resourceName, listName) => {
+export const getResourceMappedList = (
+  resourceName: string,
+  listName: string,
+) => {
   if (resourceSelectors[resourceName]) {
     return resourceSelectors[`${resourceName}${listName}`];
   }
@@ -30,7 +47,9 @@ export const getResourceMappedList = (resourceName, listName) => {
   return resourceSelectors[`${resourceName}${listName}`];
 };
 
-export const getResourceItemBydId =
-  (resourceName: string, id) =>
-    state =>
-      state[resourceName].resources[id] || null;
+export const getResourceItemBydId = (
+  resourceName: string,
+  id: Id,
+) =>
+  (state: State) =>
+    state[resourceName].resources[id] || null;

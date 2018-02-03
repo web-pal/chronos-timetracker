@@ -5,14 +5,13 @@ import type {
   StatelessFunctionalComponent,
   Node,
 } from 'react';
+import type {
+  Worklog,
+} from 'types';
 
 import {
   stj,
 } from 'time-util';
-
-import type {
-  Worklog,
-} from '../../../../types';
 
 import {
   TimestampContainer,

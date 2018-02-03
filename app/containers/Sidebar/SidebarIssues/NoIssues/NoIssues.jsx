@@ -19,7 +19,10 @@ import {
 
 const NoIssues: StatelessFunctionalComponent<*> = (): Node =>
   <NoIssuesContainer>
-    <NoIssuesImage src={noIssuesImage} alt="Not found" />
+    <NoIssuesImage
+      src={noIssuesImage}
+      alt="Not found"
+    />
     <Title>
       No issues found
     </Title>
