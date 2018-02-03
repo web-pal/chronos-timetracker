@@ -1,13 +1,26 @@
 // @flow
 import React, { Component } from 'react';
-import { remote, ipcRenderer } from 'electron';
-import { Button } from 'styles/buttons';
-import { Flex } from 'components';
-import { PopupContainer, PopupImage } from './styled';
+import {
+  remote,
+  ipcRenderer,
+} from 'electron';
 
+import {
+  Flex,
+} from 'components';
+
+import {
+  Button,
+} from 'styles/buttons';
+import {
+  PopupContainer,
+  PopupImage,
+} from './styled';
 import '../../../assets/stylesheets/main.less';
 
-const { getGlobal } = remote;
+const {
+  getGlobal,
+} = remote;
 let acceptLock = false;
 
 type State = {
