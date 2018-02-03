@@ -171,7 +171,7 @@ function* getInitializeAppData(): Generator<*, *, *> {
 
   const jwt = yield call(
     getFromStorage,
-    'desktop_tracker_jwt',
+    'jira_jwt',
   );
   let oAuthCredentials = {};
   if (jwt) {
@@ -214,7 +214,8 @@ export function* initializeApp(): Generator<*, *, *> {
       authData,
     } = yield call(getInitializeAppData);
     if (tryLogin) {
-      const loginFunc = authType === 'OAuth' ? jira.oauth : jira.basicAuth;
+      const loginFunc =
+        authType === 'OAuth' ? jira.oauth : jira.basicAuth;
       yield call(loginFunc, authData);
       yield call(
         initialConfigureApp,

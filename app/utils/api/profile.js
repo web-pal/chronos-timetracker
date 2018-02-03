@@ -75,9 +75,8 @@ export function chronosBackendAuth({
     },
     body: JSON.stringify({
       type: 'basic_auth',
-      baseUrl: host.hostname,
-      username,
-      password,
+      baseUrl: host,
+      basicToken: Buffer.from(`${username}:${password}`).toString('base64'),
     }),
   })
     .then((res) => {

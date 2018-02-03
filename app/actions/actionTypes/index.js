@@ -11,4 +11,4 @@ export * from './issues';
 export * from './timer';
 export * from './worklogs';
 
-export const ___CLEAR_ALL_REDUCERS___ = '___CLEAR_ALL_REDUCERS___';
+export const __CLEAR_ALL_REDUCERS__ = '__CLEAR_ALL_REDUCERS__';

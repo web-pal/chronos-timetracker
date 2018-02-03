@@ -8,6 +8,7 @@ import {
 import {
   includedResources,
 } from 'redux-resource-plugins';
+
 import {
   reducer as formReducer,
 } from 'redux-form';
@@ -19,6 +20,7 @@ import timer from './timer';
 
 import indexedListPlugin from './resourcesPlugins/indexedListPlugin';
 import clearListPlugin from './resourcesPlugins/clearListPlugin';
+import clearAllPlugin from './resourcesPlugins/clearAllPlugin';
 import metaPlugin from './resourcesPlugins/metaPlugin';
 
 
@@ -28,8 +30,15 @@ const rootReducer = combineReducers({
   settings,
   timer,
   form: formReducer,
-  issuesComments: resourceReducer('issuesComments'),
+  issuesComments: resourceReducer('issuesComments', {
+    plugins: [
+      clearAllPlugin,
+    ],
+  }),
   issuesFields: resourceReducer('issuesFields', {
+    plugins: [
+      clearAllPlugin,
+    ],
     initialState: {
       lists: {
         allFields: [],
@@ -37,6 +46,9 @@ const rootReducer = combineReducers({
     },
   }),
   issuesTypes: resourceReducer('issuesTypes', {
+    plugins: [
+      clearAllPlugin,
+    ],
     initialState: {
       lists: {
         issuesTypes: [],
@@ -44,6 +56,9 @@ const rootReducer = combineReducers({
     },
   }),
   issuesStatuses: resourceReducer('issuesStatuses', {
+    plugins: [
+      clearAllPlugin,
+    ],
     initialState: {
       lists: {
         issuesStatuses: [],
@@ -52,6 +67,9 @@ const rootReducer = combineReducers({
     },
   }),
   sprints: resourceReducer('sprints', {
+    plugins: [
+      clearAllPlugin,
+    ],
     initialState: {
       lists: {
         allSprints: [],
@@ -59,6 +77,9 @@ const rootReducer = combineReducers({
     },
   }),
   boards: resourceReducer('boards', {
+    plugins: [
+      clearAllPlugin,
+    ],
     initialState: {
       lists: {
         allBoards: [],
@@ -66,6 +87,9 @@ const rootReducer = combineReducers({
     },
   }),
   projects: resourceReducer('projects', {
+    plugins: [
+      clearAllPlugin,
+    ],
     initialState: {
       lists: {
         allProjects: [],
@@ -73,7 +97,10 @@ const rootReducer = combineReducers({
     },
   }),
   worklogs: resourceReducer('worklogs', {
-    plugins: [includedResources],
+    plugins: [
+      includedResources,
+      clearAllPlugin,
+    ],
   }),
   issues: resourceReducer('issues', {
     plugins: [
@@ -81,6 +108,7 @@ const rootReducer = combineReducers({
       indexedListPlugin,
       clearListPlugin,
       metaPlugin,
+      clearAllPlugin,
     ],
     initialState: {
       meta: {

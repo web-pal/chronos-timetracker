@@ -10,6 +10,9 @@ import {
   ipcRenderer,
   remote,
 } from 'electron';
+import {
+  selection,
+} from 'redux-resource-plugins';
 
 import * as Api from 'api';
 
@@ -71,6 +74,15 @@ export function* basicAuthLoginForm(): Generator<*, void, *> {
           path_prefix: host.pathname,
         },
       );
+      const {
+        token,
+      } = yield call(
+        Api.chronosBackendAuth,
+        {
+          ...payload,
+          host: host.hostname,
+        },
+      );
       yield call(
         setToStorage,
         'jira_credentials',
@@ -78,6 +90,11 @@ export function* basicAuthLoginForm(): Generator<*, void, *> {
           username: payload.username,
           host: payload.host,
         },
+      );
+      yield call(
+        setToStorage,
+        'desktop_tracker_jwt',
+        token,
       );
       yield call(
         initialConfigureApp,
@@ -204,6 +221,9 @@ export function* logoutFlow(): Generator<*, *, *> {
         yield call(removeFromStorage, 'desktop_tracker_jwt');
         yield call(removeFromStorage, 'jira_credentials');
       }
+      yield put({
+        type: actionTypes.__CLEAR_ALL_REDUCERS__,
+      });
     } catch (err) {
       console.log(err);
     }

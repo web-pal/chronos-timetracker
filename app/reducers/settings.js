@@ -41,6 +41,8 @@ export default function settings(
           [action.settingName]: action.value,
         },
       };
+    case actionTypes.__CLEAR_ALL_REDUCERS__:
+      return initialState;
     default:
       return state;
   }

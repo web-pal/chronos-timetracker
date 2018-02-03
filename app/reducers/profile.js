@@ -23,6 +23,8 @@ function profile(
         ...state,
         userData: action.payload,
       };
+    case actionTypes.__CLEAR_ALL_REDUCERS__:
+      return initialState;
     default:
       return state;
   }

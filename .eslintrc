@@ -17,7 +17,7 @@
     "jsx-a11y/click-events-have-key-events": "off",
     "flowtype-errors/show-errors": 2,
     "no-console": "off",
-    "no-underscore-dangle": ["error", { "allow": ["___CLEAR_ALL_REDUCERS___"] }]
+    "no-underscore-dangle": ["error", { "allow": ["__CLEAR_ALL_REDUCERS__"] }]
   },
   "globals": {
     "Generator": true,

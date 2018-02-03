@@ -71,6 +71,7 @@ export default function timer(
         time: state.time - action.payload,
       };
     case actionTypes.RESET_TIMER:
+    case actionTypes.__CLEAR_ALL_REDUCERS__:
       return initialState;
     default:
       return state;

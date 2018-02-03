@@ -96,6 +96,8 @@ export default function ui(
         flags: state.flags.filter(f => f.id !== id),
       };
     }
+    case actionTypes.__CLEAR_ALL_REDUCERS__:
+      return initialState;
     default:
       return state;
   }
