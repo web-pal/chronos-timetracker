@@ -28,7 +28,6 @@ import {
   getResourceMap,
 } from 'selectors';
 
-
 import {
   trackMixpanel,
   incrementMixpanel,
@@ -97,6 +96,7 @@ export function* saveWorklog({
     startTime,
     timeSpent,
     timeSpentInSeconds,
+    isAuto = true,
   },
 }: {
   payload: any,
@@ -177,8 +177,13 @@ export function* saveWorklog({
       '',
       worklogId ? 'Successfully edited worklog' : 'Successfully added worklog',
     );
-    trackMixpanel('Worklog uploaded (Manual)', { timeSpentSeconds });
     incrementMixpanel('Logged time(seconds)', timeSpentSeconds);
+    trackMixpanel(
+      `Worklog uploaded (${isAuto ? 'Automatic' : 'Manual'})`,
+      {
+        timeSpentInSeconds,
+      },
+    );
     return worklog;
   } catch (err) {
     yield call(throwError, err);
@@ -213,6 +218,7 @@ export function* uploadWorklog(options: any): Generator<*, *, *> {
       payload: {
         ...options,
         startTime,
+        isAuto: true,
       },
     });
 
@@ -228,7 +234,6 @@ export function* uploadWorklog(options: any): Generator<*, *, *> {
       keepedIdles,
     };
     yield call(Api.chronosBackendUploadWorklog, backendUploadOptions);
-    trackMixpanel('Worklog uploaded (Automatic)', { timeSpentInSeconds });
     incrementMixpanel('Logged time(seconds)', timeSpentInSeconds);
     yield call(
       infoLog,
@@ -300,6 +305,7 @@ export function* deleteWorklog({
     }));
     yield call(infoLog, 'worklog deleted', worklog);
     yield call(notify, '', 'Successfully deleted worklog');
+    trackMixpanel('Worklog deleted');
   } catch (err) {
     yield call(notify, '', 'Failed to delete worklog');
     yield call(throwError, err);

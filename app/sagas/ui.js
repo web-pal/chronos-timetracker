@@ -34,6 +34,9 @@ import {
   issueSelectFlow,
 } from './issues';
 import config from '../config';
+import {
+  trackMixpanel,
+} from '../utils/stat';
 
 
 const LOG_LEVELS = {
@@ -136,9 +139,15 @@ function* onUiChange({
     }
     if (key === 'selectedIssueId') {
       yield fork(issueSelectFlow, value);
+      trackMixpanel('Issue was selected');
+    }
+    if (key === 'selectedWorklogId') {
+      yield fork(issueSelectFlow, value);
+      trackMixpanel('Worklog was selected');
     }
     if (key === 'sidebarType') {
       yield fork(onSidebarChange, value);
+      trackMixpanel(`Issue was changed on ${value}`);
     }
   } catch (err) {
     yield call(throwError, err);

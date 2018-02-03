@@ -10,9 +10,6 @@ import {
   ipcRenderer,
   remote,
 } from 'electron';
-import {
-  selection,
-} from 'redux-resource-plugins';
 
 import * as Api from 'api';
 
@@ -29,6 +26,9 @@ import {
 import {
   initialConfigureApp,
 } from './initializeApp';
+import {
+  throwError,
+} from './ui';
 import createIpcChannel from './ipc';
 
 import jira from '../utils/jiraClient';
@@ -121,6 +121,7 @@ export function* basicAuthLoginForm(): Generator<*, void, *> {
         'loginError',
         'Can not authenticate user. Please try again',
       ));
+      yield call(throwError, err);
     }
   }
 }
@@ -197,6 +198,7 @@ export function* oAuthLoginForm(): Generator<*, *, *> {
         'loginError',
         'Can not authenticate user. Please try again',
       ));
+      yield call(throwError, err);
     }
   }
 }
@@ -225,7 +227,7 @@ export function* logoutFlow(): Generator<*, *, *> {
         type: actionTypes.__CLEAR_ALL_REDUCERS__,
       });
     } catch (err) {
-      console.log(err);
+      yield call(throwError, err);
     }
   }
 }
@@ -235,14 +237,22 @@ function getOauthChannelListener(channel, type) {
     return function* listenOauthAccepted(): Generator<*, *, *> {
       while (true) {
         const ev = yield take(channel);
-        yield put(authActions.acceptOAuth(ev.payload[0]));
+        try {
+          yield put(authActions.acceptOAuth(ev.payload[0]));
+        } catch (err) {
+          yield call(throwError, err);
+        }
       }
     };
   }
   return function* listenOauthDenied(): Generator<*, *, *> {
     while (true) {
       yield take(channel);
-      yield put(authActions.denyOAuth());
+      try {
+        yield put(authActions.denyOAuth());
+      } catch (err) {
+        yield call(throwError, err);
+      }
     }
   };
 }

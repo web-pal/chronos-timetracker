@@ -226,7 +226,7 @@ export function* initializeApp(): Generator<*, *, *> {
       );
     }
   } catch (err) {
-    console.log(err);
+    yield call(throwError, err);
   }
   yield put(uiActions.setUiState('initializeInProcess', false));
 }

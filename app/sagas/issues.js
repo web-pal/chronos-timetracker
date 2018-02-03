@@ -11,7 +11,6 @@ import {
   takeEvery,
   cancel,
 } from 'redux-saga/effects';
-import Raven from 'raven-js';
 import createActionCreators from 'redux-resource-action-creators';
 
 import * as Api from 'api';
@@ -46,6 +45,9 @@ import {
   getIssueComments,
 } from './comments';
 import createIpcChannel from './ipc';
+import {
+  trackMixpanel,
+} from '../utils/stat';
 
 
 const JQL_RESTRICTED_CHARS_REGEX = /[+.,;?|*/%^$#@[\]]/;
@@ -162,6 +164,7 @@ function* fetchAdditionalWorklogsForIssues(issues) {
       'filled issues with lacking worklogs: ',
       withAdditionalWorklogs,
     );
+    trackMixpanel('Additional worklogs was fetched');
     return withAdditionalWorklogs;
   }
   return issues;
@@ -264,7 +267,6 @@ export function* fetchIssues({
       resources: [],
     }));
     yield call(throwError, err);
-    Raven.captureException(err);
   }
 }
 
@@ -333,7 +335,6 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
       resources: [],
     }));
     yield call(throwError, err);
-    Raven.captureException(err);
   }
 }
 
@@ -396,7 +397,6 @@ export function* getIssueTransitions(issueId: string | number): Generator<*, voi
     );
   } catch (err) {
     yield call(throwError, err);
-    Raven.captureException(err);
   }
 }
 
@@ -437,6 +437,7 @@ export function* transitionIssue({
       '',
       `Moved issue ${issue.key} to ${transition.to.name}`,
     );
+    trackMixpanel('Transition of an issue was done');
   } catch (err) {
     yield call(
       notify,
@@ -492,6 +493,7 @@ export function* assignIssue({
       '',
       `${issue.key} is assigned to you`,
     );
+    trackMixpanel('Issue was assigned to user');
   } catch (err) {
     yield call(
       notify,
@@ -499,7 +501,6 @@ export function* assignIssue({
       'Cannot assign issue. Probably no permission',
     );
     yield call(throwError, err);
-    Raven.captureException(err);
   }
 }
 
@@ -520,7 +521,6 @@ export function* fetchIssueFields(): Generator<*, void, *> {
     yield call(infoLog, 'got issue fields', issuesFields);
   } catch (err) {
     yield call(throwError, err);
-    Raven.captureException(err);
   }
 }
 
@@ -541,7 +541,6 @@ export function* fetchEpics(): Generator<*, void, *> {
     yield call(infoLog, 'got epics', issues);
   } catch (err) {
     yield call(throwError, err);
-    Raven.captureException(err);
   }
 }
 
@@ -572,8 +571,9 @@ function getNewIssueChannelListener(channel) {
           '',
           `${issue.key} was created`,
         );
+        trackMixpanel('New issue was created');
       } catch (err) {
-        Raven.captureException(err);
+        yield call(throwError, err);
       }
     }
   };

@@ -39,7 +39,6 @@ export function* fetchProjects(): Generator<*, *, *> {
   } catch (err) {
     yield call(notify, '', 'Failed to load projects, check your permissions');
     yield call(throwError, err);
-    Raven.captureException(err);
   }
 }
 

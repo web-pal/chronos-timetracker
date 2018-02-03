@@ -56,7 +56,6 @@ export function* getIssueComments(issueId: Id): Generator<*, void, *> {
     yield call(infoLog, `got comments for issue ${issueId}`, comments);
   } catch (err) {
     yield call(throwError, err);
-    Raven.captureException(err);
   }
 }
 

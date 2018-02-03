@@ -41,8 +41,6 @@ export function* fetchBoards(): Generator<*, void, *> {
         },
       ];
       yield call(notify, '', 'Can not load boards', flagActions);
-    } else {
-      console.log(err);
     }
   }
 }

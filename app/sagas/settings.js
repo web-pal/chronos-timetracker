@@ -21,6 +21,7 @@ import {
 
 import {
   infoLog,
+  throwError,
 } from './ui';
 import {
   setToStorage,
@@ -41,7 +42,7 @@ export function* getSettings(): Generator<*, *, *> {
     );
     // yield put(settingsActions.fillSettings(payload));
   } catch (err) {
-    console.log(err);
+    yield call(throwError, err);
   }
 }
 
@@ -52,33 +53,37 @@ export function* onChangeLocalDesktopSettings({
   settingName: string,
   value: any,
 }): Generator<*, *, *> {
-  yield call(
-    infoLog,
-    'set local desktop setting request',
-    {
-      value,
-      settingName,
-    },
-  );
-  if (settingName === 'trayShowTimer' && !value) {
-    remote.getGlobal('tray').setTitle('');
-  }
-  if (settingName === 'updateChannel') {
+  try {
     yield call(
       infoLog,
-      `switched updateChannel to ${value}, checking for updates...`,
+      'set local desktop setting request',
+      {
+        value,
+        settingName,
+      },
     );
-    yield put(uiActions.checkForUpdatesRequest());
+    if (settingName === 'trayShowTimer' && !value) {
+      remote.getGlobal('tray').setTitle('');
+    }
+    if (settingName === 'updateChannel') {
+      yield call(
+        infoLog,
+        `switched updateChannel to ${value}, checking for updates...`,
+      );
+      yield put(uiActions.checkForUpdatesRequest());
+    }
+    const newLocalSettings = yield select(getSettingsState('localDesktopSettings'));
+    yield call(
+      setToStorage,
+      'localDesktopSettings',
+      {
+        ...newLocalSettings,
+        [settingName]: value,
+      },
+    );
+  } catch (err) {
+    yield call(throwError, err);
   }
-  const newLocalSettings = yield select(getSettingsState('localDesktopSettings'));
-  yield call(
-    setToStorage,
-    'localDesktopSettings',
-    {
-      ...newLocalSettings,
-      [settingName]: value,
-    },
-  );
 }
 
 export function* watchLocalDesktopSettingsChange(): Generator<*, *, *> {
