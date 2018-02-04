@@ -156,6 +156,14 @@ export function* saveWorklog({
       }));
     }
     yield put(uiActions.setUiState(
+      'selectedIssueId',
+      issueId,
+    ));
+    yield put(uiActions.setUiState(
+      'issueViewTab',
+      'Worklogs',
+    ));
+    yield put(uiActions.setUiState(
       'selectedWorklogId',
       worklog.id,
     ));
