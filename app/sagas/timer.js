@@ -193,6 +193,7 @@ function* timerStep(screenshotsAllowed, secondsToMinutesGrid) {
 
 
 export function* runTimer(channel: any): Generator<*, *, *> {
+  remote.getGlobal('sharedObj').running = true;
   const screenshotsQuantity = yield select(getSettingsState('screenshotsQuantity'));
   const screenshotsPeriod = yield select(getSettingsState('screenshotsPeriod'));
 
@@ -211,7 +212,11 @@ export function* runTimer(channel: any): Generator<*, *, *> {
   yield takeEvery(channel, timerStep, screenshotsAllowed, secondsToMinutesGrid);
 }
 
+let closeAfterStopTimer = false;
+
 function* stopTimer(channel, timerInstance) {
+  remote.getGlobal('sharedObj').uploading = true;
+  remote.getGlobal('sharedObj').running = false;
   try {
     yield call(ipcRenderer.send, 'stop-timer');
     channel.close();
@@ -234,17 +239,24 @@ function* stopTimer(channel, timerInstance) {
     //
     yield put(timerActions.resetTimer());
     // yield put(worklogsActions.setTemporaryWorklogId(null));
-    yield call(uploadWorklog, {
-      issueId,
-      comment,
-      timeSpentInSeconds,
-      screenshotsPeriod,
-      worklogType,
-      screenshots,
-      activity,
-      keepedIdles,
-    });
+    if (timeSpentInSeconds >= 60) {
+      yield call(uploadWorklog, {
+        issueId,
+        comment,
+        timeSpentInSeconds,
+        screenshotsPeriod,
+        worklogType,
+        screenshots,
+        activity,
+        keepedIdles,
+      });
+    }
+    remote.getGlobal('sharedObj').uploading = false;
+    if (closeAfterStopTimer) {
+      ipcRenderer.send('ready-to-quit');
+    }
   } catch (err) {
+    remote.getGlobal('sharedObj').uploading = false;
     yield call(throwError, err);
   }
 }
@@ -294,21 +306,7 @@ export function* watchStartTimer(): Generator<*, *, *> {
   });<]
 } */
 
-/* function forceSave() {
-  const { getGlobal } = remote;
-  const { running, uploading } = getGlobal('sharedObj');
-
-  // eslint-disable-next-line no-alert
-  if (running && window.confirm('Tracking in progress, save worklog before quit?')) {
-    setForceQuitFlag();
-    stopTimerRequest();
-  }
-  if (uploading) {
-    // eslint-disable-next-line no-alert
-    window.alert('Currently app in process of saving worklog, wait few seconds please');
-  }
-}
-
+/*
 function dismissIdleTime() {
   const seconds = Math.ceil(time / 1000);
   cutIddles(Math.ceil(seconds / 60));
@@ -326,6 +324,7 @@ let acceptScreenshotChannel;
 let rejectScreenshotChannel;
 let keepIdleTimeChannel;
 let dismissIdleTimeChannel;
+let forceSaveChannel;
 
 export function* watchAcceptScreenshot(): Generator<*, *, *> {
   while (true) {
@@ -402,6 +401,23 @@ export function* watchDismissIdleTime(): Generator<*, *, *> {
   }
 }
 
+export function* watchForceSave(): Generator<*, *, *> {
+  while (true) {
+    yield take(forceSaveChannel);
+    const { getGlobal } = remote;
+    const { running, uploading } = getGlobal('sharedObj');
+
+    // eslint-disable-next-line no-alert
+    if (running && window.confirm('Tracking in progress, save worklog before quit?')) {
+      closeAfterStopTimer = true;
+      yield put(timerActions.stopTimerRequest());
+    } else if (uploading) {
+      // eslint-disable-next-line no-alert
+      window.alert('Currently app in process of saving worklog, wait few seconds please');
+    }
+  }
+}
+
 export function* createIpcListeners(): Generator<*, *, *> {
   acceptScreenshotChannel = yield call(createIpcChannel, 'screenshot-accept');
   yield fork(watchAcceptScreenshot);
@@ -415,5 +431,6 @@ export function* createIpcListeners(): Generator<*, *, *> {
   dismissIdleTimeChannel = yield call(createIpcChannel, 'dismiss-idle-time');
   yield fork(watchDismissIdleTime);
 
-  // ipcRenderer.on('force-save', forceSave);
+  forceSaveChannel = yield call(createIpcChannel, 'force-save');
+  yield fork(watchForceSave);
 }
