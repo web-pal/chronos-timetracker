@@ -431,6 +431,7 @@ export function* transitionIssue({
       }],
     }));
     yield fork(getIssueTransitions, issueId);
+    yield fork(refetchIssues, false);
 
     yield call(
       notify,
