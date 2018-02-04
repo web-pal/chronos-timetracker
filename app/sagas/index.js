@@ -71,5 +71,6 @@ export default function* rootSaga(): Generator<*, void, *> {
     // ui
     fork(uiSagas.watchUiStateChange),
     fork(uiSagas.watchScrollToIndexRequest),
+    fork(uiSagas.watchSetIssuesFilter),
   ]);
 }

@@ -3,6 +3,7 @@ import {
   delay,
 } from 'redux-saga';
 import {
+  takeLatest,
   takeEvery,
   put,
   call,
@@ -25,6 +26,7 @@ import {
 import {
   getResourceIds,
   getIssueWorklogs,
+  getUiState,
 } from 'selectors';
 
 import {
@@ -153,6 +155,15 @@ function* onUiChange({
   }
 }
 
+function* onIssuesFilterChange(): Generator<*, *, *> {
+  const filters = yield select(getUiState('issuesFilters'));
+  yield call(
+    setToStorage,
+    'issuesFilters',
+    filters,
+  );
+}
+
 export function* scrollToIndexRequest({
   worklogId,
   issueId,
@@ -179,5 +190,12 @@ export function* watchScrollToIndexRequest(): Generator<*, *, *> {
   yield takeEvery(
     actionTypes.ISSUE_WORKLOGS_SCROLL_TO_INDEX_REQUEST,
     scrollToIndexRequest,
+  );
+}
+
+export function* watchSetIssuesFilter(): Generator<*, *, *> {
+  yield takeLatest(
+    actionTypes.SET_ISSUES_FILTER,
+    onIssuesFilterChange,
   );
 }

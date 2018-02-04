@@ -10,17 +10,12 @@ import {
   getUserData,
 } from 'selectors';
 
-type StorageKeys =
-  'issuesSourceId'
-  | 'issuesSourceType'
-  | 'issuesSprintId'
-  | 'localDesktopSettings'
-  | 'desktop_tracker_jwt';
 
-const prefixedKeys: Array<StorageKeys> = [
+const prefixedKeys = [
   'issuesSourceId',
   'issuesSourceType',
   'issuesSprintId',
+  'issuesFilters',
 ];
 
 export const storageGetPromise = (key: string): Promise<mixed> => new Promise((resolve) => {

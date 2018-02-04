@@ -102,6 +102,7 @@ export function* initialConfigureApp({
   const issuesSourceId: Id | null = yield call(getFromStorage, 'issuesSourceId');
   const issuesSourceType = yield call(getFromStorage, 'issuesSourceType');
   const issuesSprintId: Id | null = yield call(getFromStorage, 'issuesSprintId');
+  const issuesFilters = yield call(getFromStorage, 'issuesFilters');
 
   let settings = yield call(getFromStorage, 'localDesktopSettings');
   if (!settings || !Object.keys(settings).length) {
@@ -127,6 +128,9 @@ export function* initialConfigureApp({
   yield put(uiActions.setUiState('issuesSourceId', issuesSourceId));
   yield put(uiActions.setUiState('issuesSprintId', issuesSprintId));
   yield put(uiActions.setUiState('issuesSourceType', issuesSourceType));
+  if (issuesFilters) {
+    yield put(uiActions.setUiState('issuesFilters', issuesFilters));
+  }
 
   yield put(settingsActions.fillLocalDesktopSettings(settings));
   yield put(uiActions.setUiState('protocol', protocol));

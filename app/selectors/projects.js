@@ -45,7 +45,7 @@ export const getCurrentProjectId = createSelector(
     if (issuesSprintId && issuesSourceType === 'scrum') {
       const sprint = sprintsMap[issuesSprintId];
       if (sprint) {
-        const board = sprintsMap[sprint.originBoardId];
+        const board = boardsMap[sprint.originBoardId];
         if (board) {
           projectId = board.location.projectId; // eslint-disable-line
         }
