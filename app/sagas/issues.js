@@ -605,9 +605,6 @@ export function* watchReFetchIssuesRequest(): Generator<*, *, *> {
   let task;
   while (true) {
     const { debouncing } = yield take(actionTypes.REFETCH_ISSUES_REQUEST);
-    if (debouncing && task) {
-      yield cancel(task);
-    }
     if (task) {
       yield cancel(task);
     }
