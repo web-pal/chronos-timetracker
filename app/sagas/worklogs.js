@@ -221,6 +221,7 @@ export function* uploadWorklog(options: any): Generator<*, *, *> {
         isAuto: true,
       },
     });
+    yield put(uiActions.setUiState('worklogComment', ''));
 
     const backendUploadOptions = {
       worklogId: worklog.id,

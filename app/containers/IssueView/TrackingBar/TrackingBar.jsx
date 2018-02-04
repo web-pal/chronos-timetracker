@@ -18,6 +18,7 @@ import type {
 } from 'types';
 
 import {
+  getUiState,
   getTrackingIssue,
   getTimerState,
 } from 'selectors';
@@ -34,6 +35,7 @@ import {
 import CameraIcon from '@atlaskit/icon/glyph/camera';
 import Tooltip from '@atlaskit/tooltip';
 
+import WorklogCommentDialog from './WorklogCommentDialog';
 import {
   IssueName,
   Dot,
@@ -48,6 +50,7 @@ type Props = {
   screenshotUploading: boolean,
   screenshotsAllowed: boolean,
   trackingIssue: Issue,
+  worklogComment: string,
   dispatch: Dispatch,
 }
 
@@ -68,6 +71,7 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
   screenshotUploading,
   screenshotsAllowed,
   trackingIssue,
+  worklogComment,
   dispatch,
 }: Props): Node => (
   <CSSTransitionGroup
@@ -79,6 +83,12 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
   >
     <Container>
       <Flex row alignCenter>
+        <WorklogCommentDialog
+          comment={worklogComment}
+          onSetComment={(comment) => {
+            dispatch(uiActions.setUiState('worklogComment', comment));
+          }}
+        />
         {screenshotsAllowed &&
           <div style={{ marginLeft: 10 }}>
             <Tooltip
@@ -139,6 +149,7 @@ function mapStateToProps(state) {
     screenshotUploading: false,
     screenshotsAllowed: false,
     trackingIssue: getTrackingIssue(state),
+    worklogComment: getUiState('worklogComment')(state),
   };
 }
 
