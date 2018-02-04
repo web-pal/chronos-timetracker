@@ -234,7 +234,6 @@ export function* uploadWorklog(options: any): Generator<*, *, *> {
       keepedIdles,
     };
     yield call(Api.chronosBackendUploadWorklog, backendUploadOptions);
-    incrementMixpanel('Logged time(seconds)', timeSpentInSeconds);
     yield call(
       infoLog,
       'worklog uploaded',

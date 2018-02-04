@@ -21,7 +21,7 @@ import {
   timerActions,
 } from 'actions';
 import {
-  getLocalDesktopSettings,
+  getSettingsState,
 } from 'selectors';
 
 import {
@@ -29,6 +29,12 @@ import {
   infoLog,
 } from './ui';
 import createIpcChannel from './ipc';
+
+import {
+  trackMixpanel,
+  incrementMixpanel,
+} from '../utils/stat';
+
 
 const {
   autoUpdater,
@@ -40,6 +46,8 @@ let updateAvailableChannel;
 let updateNotAvailableChannel;
 let updateDownloadedChannel;
 
+let newVersion = null;
+let updateDownloaded = false;
 autoUpdater.autoDownload = true;
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
@@ -52,7 +60,12 @@ export function* watchInstallUpdateRequest(): Generator<*, *, *> {
       'downloading update...',
     );
     yield put(uiActions.setUiState('updateFetching', true));
-    yield call(autoUpdater.downloadUpdate);
+    if (updateDownloaded) {
+      ipcRenderer.send('set-should-quit');
+      autoUpdater.quitAndInstall();
+    } else {
+      yield call(autoUpdater.downloadUpdate);
+    }
   }
 }
 
@@ -72,9 +85,8 @@ function* watchUpdateAvailable(): Generator<*, *, *> {
       'update is availible',
       meta,
     );
-    yield put(uiActions.setUiState('updateCheckRunning', false));
-    const newVersion = ev.version;
-    yield put(uiActions.setUiState('updateAvailable', newVersion));
+    yield put(uiActions.setUiState('updateFetching', true));
+    newVersion = ev.version;
   }
 }
 
@@ -98,9 +110,13 @@ function* watchUpdateDownloaded(): Generator<*, *, *> {
       'update downloaded!',
       meta,
     );
+    yield put(uiActions.setUiState('updateAvailable', newVersion));
     yield put(uiActions.setUiState('updateFetching', false));
     const { getGlobal } = remote;
     yield call(delay, 500);
+    updateDownloaded = true;
+    trackMixpanel('Update installed');
+    incrementMixpanel('Update installed', 1);
     if (window.confirm('New version is available. Do you like to install it now?')) {
       const { running, uploading } = getGlobal('sharedObj');
       if (uploading) {
@@ -123,7 +139,7 @@ export function* checkForUpdatesFlow(): Generator<*, *, *> {
   try {
     while (true) {
       yield take(actionTypes.CHECK_FOR_UPDATES_REQUEST);
-      const { updateChannel } = yield select(getLocalDesktopSettings);
+      const { updateChannel } = yield select(getSettingsState('localDesktopSettings'));
       yield call(
         infoLog,
         `check for updates request for channel ${updateChannel}`,

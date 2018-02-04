@@ -46,6 +46,10 @@ import {
 } from './ui';
 
 import jira from '../utils/jiraClient';
+import {
+  trackMixpanel,
+  incrementMixpanel,
+} from '../utils/stat';
 
 
 function identifyInSentryAndMixpanel(host: string, userData: any): void {
@@ -228,5 +232,7 @@ export function* initializeApp(): Generator<*, *, *> {
   } catch (err) {
     yield call(throwError, err);
   }
+  trackMixpanel('Application was initialized');
+  incrementMixpanel('Initialize', 1);
   yield put(uiActions.setUiState('initializeInProcess', false));
 }

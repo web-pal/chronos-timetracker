@@ -32,6 +32,10 @@ import {
 import createIpcChannel from './ipc';
 
 import jira from '../utils/jiraClient';
+import {
+  trackMixpanel,
+  incrementMixpanel,
+} from '../utils/stat';
 
 
 export function transformValidHost(host: string): URL {
@@ -115,6 +119,8 @@ export function* basicAuthLoginForm(): Generator<*, void, *> {
         },
       );
       yield put(uiActions.setUiState('loginRequestInProcess', false));
+      trackMixpanel('Jira login');
+      incrementMixpanel('Jira login', 1);
     } catch (err) {
       yield put(uiActions.setUiState('loginRequestInProcess', false));
       yield put(uiActions.setUiState(
@@ -226,6 +232,8 @@ export function* logoutFlow(): Generator<*, *, *> {
       yield put({
         type: actionTypes.__CLEAR_ALL_REDUCERS__,
       });
+      trackMixpanel('Logout');
+      incrementMixpanel('Logout', 1);
     } catch (err) {
       yield call(throwError, err);
     }

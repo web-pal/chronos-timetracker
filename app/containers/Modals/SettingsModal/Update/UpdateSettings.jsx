@@ -78,7 +78,9 @@ const UpdateSettings: StatelessFunctionalComponent<Props> = ({
                 <Button
                   appearance="primary"
                   onClick={() => {
-                    onUpdateClick();
+                    if (!updateFetching) {
+                      onUpdateClick();
+                    }
                   }}
                   iconAfter={
                     updateFetching &&
