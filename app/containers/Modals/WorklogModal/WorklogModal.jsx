@@ -99,6 +99,9 @@ class WorklogModal extends Component<Props, State> {
           startTime: moment(nextProps.worklog.started),
           comment: nextProps.worklog.comment,
         });
+      } else {
+        this.setState({ timeSpent: '' });
+        this.setDateAndTimeToNow();
       }
       setTimeout(() => {
         if (this.timeInput) {
@@ -111,6 +114,12 @@ class WorklogModal extends Component<Props, State> {
         comment: '',
       });
     }
+  }
+
+  setDateAndTimeToNow = () => {
+    const now = moment();
+    this.setState({ startTime: now });
+    this.setState({ date: now.format('MM/DD/YYYY') });
   }
 
   handleTimeChange = label => (value) => {
