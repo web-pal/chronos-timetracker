@@ -30,7 +30,7 @@ import {
   Flex,
 } from 'components';
 import {
-  CSSTransitionGroup,
+  Transition,
 } from 'react-transition-group';
 import CameraIcon from '@atlaskit/icon/glyph/camera';
 import Tooltip from '@atlaskit/tooltip';
@@ -74,12 +74,11 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
   worklogComment,
   dispatch,
 }: Props): Node => (
-  <CSSTransitionGroup
-    transitionName="tracking-bar"
-    transitionAppear
-    transitionAppearTimeout={250}
-    transitionEnter={false}
-    transitionLeave={false}
+  <Transition
+    appear
+    timeout={250}
+    enter={false}
+    expit={false}
   >
     <Container>
       <Flex row alignCenter>
@@ -140,7 +139,7 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
         />
       </div>
     </Container>
-  </CSSTransitionGroup>
+  </Transition>
 );
 
 function mapStateToProps(state) {

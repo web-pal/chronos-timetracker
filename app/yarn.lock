@@ -29,9 +29,9 @@ bluebird@^3.5.1:
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.1.tgz#d9551f9de98f1fcda1e683d17ee91a0602ee2eb9"
 
-builder-util-runtime@~4.0.2:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/builder-util-runtime/-/builder-util-runtime-4.0.2.tgz#673f1a0f2e275e6f80a16ce57225589a003c9a52"
+builder-util-runtime@~4.0.3:
+  version "4.0.5"
+  resolved "https://registry.yarnpkg.com/builder-util-runtime/-/builder-util-runtime-4.0.5.tgz#5340cf9886b9283ea6e5b20dc09b5e3e461aef62"
   dependencies:
     bluebird-lst "^1.0.5"
     debug "^3.1.0"
@@ -48,23 +48,23 @@ electron-is-dev@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/electron-is-dev/-/electron-is-dev-0.3.0.tgz#14e6fda5c68e9e4ecbeff9ccf037cbd7c05c5afe"
 
-electron-log@^2.2.9:
+electron-log@2.2.14:
   version "2.2.14"
   resolved "https://registry.yarnpkg.com/electron-log/-/electron-log-2.2.14.tgz#2123319ccb8d70b0db07f0eda57d5823cb42b4b0"
 
-electron-updater@^2.19.1:
-  version "2.19.1"
-  resolved "https://registry.yarnpkg.com/electron-updater/-/electron-updater-2.19.1.tgz#2265136b7ef15f7cb06e4032eaaf64382f642437"
+electron-updater@2.20.1:
+  version "2.20.1"
+  resolved "https://registry.yarnpkg.com/electron-updater/-/electron-updater-2.20.1.tgz#3d2714a3e472fbf198f6053daf8fd12209101aa2"
   dependencies:
     bluebird-lst "^1.0.5"
-    builder-util-runtime "~4.0.2"
+    builder-util-runtime "~4.0.3"
     electron-is-dev "^0.3.0"
     fs-extra-p "^4.5.0"
     js-yaml "^3.10.0"
     lazy-val "^1.0.3"
     lodash.isequal "^4.5.0"
-    semver "^5.4.1"
-    source-map-support "^0.5.0"
+    semver "^5.5.0"
+    source-map-support "^0.5.2"
 
 esprima@^4.0.0:
   version "4.0.0"
@@ -153,13 +153,17 @@ semver@^5.4.1:
   version "5.4.1"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.4.1.tgz#e059c09d8571f0540823733433505d3a2f00b18e"
 
+semver@^5.5.0:
+  version "5.5.0"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-5.5.0.tgz#dc4bbc7a6ca9d916dee5d43516f0092b58f7b8ab"
+
 shellwords@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/shellwords/-/shellwords-0.1.1.tgz#d6b9181c1a48d397324c84871efbcfc73fc0654b"
 
-source-map-support@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.0.tgz#2018a7ad2bdf8faf2691e5fddab26bed5a2bacab"
+source-map-support@^0.5.2:
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.3.tgz#2b3d5fff298cfa4d1afd7d4352d569e9a0158e76"
   dependencies:
     source-map "^0.6.0"
 

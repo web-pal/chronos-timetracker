@@ -207,7 +207,9 @@ class WorklogModal extends Component<Props, State> {
         )}
         header={() => (
           <ModalHeader>
-            <ModalTitle>Add worklog</ModalTitle>
+            <ModalTitle>
+              {`${this.props.worklog ? 'Edit' : 'Add'} worklog`}
+            </ModalTitle>
           </ModalHeader>
         )}
       >
