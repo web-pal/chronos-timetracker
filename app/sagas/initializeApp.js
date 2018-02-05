@@ -207,7 +207,7 @@ function* getInitializeAppData(): Generator<*, *, *> {
     basicAuthCredentials;
 
   return {
-    tryLogin: authType === 'OAuth' || basicAuthDataExist,
+    tryLogin: authType === 'OAuth' || (basicAuthDataExist && basicAuthDataExist.password),
     authType,
     authData,
   };
@@ -233,10 +233,10 @@ export function* initializeApp(): Generator<*, *, *> {
         },
       );
     }
+    trackMixpanel('Application was initialized');
+    incrementMixpanel('Initialize', 1);
   } catch (err) {
     yield call(throwError, err);
   }
-  trackMixpanel('Application was initialized');
-  incrementMixpanel('Initialize', 1);
   yield put(uiActions.setUiState('initializeInProcess', false));
 }
