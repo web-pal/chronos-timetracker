@@ -22,7 +22,7 @@ export function randomPeriods(
 
 type Params = {
   currentIdleList: Array<number>,
-  timeSpentSeconds: number,
+  timeSpentInSeconds: number,
   screenshotsPeriod: number,
   firstPeriodInMinute: number,
   secondsToMinutesGrid: number,
@@ -30,7 +30,7 @@ type Params = {
 
 export function calculateActivity({
   currentIdleList,
-  timeSpentSeconds,
+  timeSpentInSeconds,
   screenshotsPeriod,
   firstPeriodInMinute,
   secondsToMinutesGrid,
@@ -47,16 +47,19 @@ export function calculateActivity({
   const lastPeriodsIdleSec: Array<any> = currentIdleList.slice(firstPeriodInMinute);
   const activityArray =
     [...Array(Math.ceil(
-      (timeSpentSeconds - firstPeriodTotalTimeSec) / screenshotsPeriod,
+      (timeSpentInSeconds - firstPeriodTotalTimeSec) / screenshotsPeriod,
     )).keys()].map((period) => {
-      const thisIdleList: Array<any> = lastPeriodsIdleSec
-        .slice(
-          period * minutesInPeriod,
-          (period + 1) * minutesInPeriod,
-        );
-      const idleSec: number = thisIdleList
-        .reduce((totalWasted, wastedHere) => (totalWasted + wastedHere), 0) / 1000;
-      return Math.round(100 * (1 - (idleSec / (thisIdleList.length * 60))));
+      if (period) {
+        const thisIdleList: Array<any> = lastPeriodsIdleSec
+          .slice(
+            period * minutesInPeriod,
+            (period + 1) * minutesInPeriod,
+          );
+        const idleSec: number = thisIdleList
+          .reduce((totalWasted, wastedHere) => (totalWasted + wastedHere), 0) / 1000;
+        return Math.round(100 * (1 - (idleSec / (thisIdleList.length * 60))));
+      }
+      return 100;
     });
 
   activityArray.unshift(Math.round(100 * (1 - (firstPeriodIdleSec / firstPeriodTotalTimeSec))));

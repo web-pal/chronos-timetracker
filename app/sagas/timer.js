@@ -1,46 +1,63 @@
-import { call, take, fork, select, put, takeEvery, cancel } from 'redux-saga/effects';
-import { eventChannel } from 'redux-saga';
+// @flow
+import {
+  call,
+  take,
+  fork,
+  select,
+  put,
+  takeEvery,
+  cancel,
+} from 'redux-saga/effects';
+import {
+  eventChannel,
+} from 'redux-saga';
+import {
+  remote,
+  ipcRenderer,
+} from 'electron';
 import moment from 'moment';
 import NanoTimer from 'nanotimer';
-import { remote, ipcRenderer } from 'electron';
+
+import config from 'config';
+import {
+  randomPeriods,
+  calculateActivity,
+} from 'timer-helper';
+
+import {
+  actionTypes,
+  uiActions,
+  timerActions,
+} from 'actions';
 import {
   getUserData,
-  getTimerTime,
-  getTimerRunning,
-  getScreenshotsSettings,
-  getScreenshots,
-  getScreenshotPeriods,
-  getTimerIdleState,
-  getSelectedIssue,
-  getTrackingIssueId,
-  getWorklogComment,
-  getLocalDesktopSettings,
-  getKeepedIdles,
-  getIdles,
+  getTimerState,
+  getSettingsState,
+  getUiState,
 } from 'selectors';
-import Raven from 'raven-js';
-import { uiActions, timerActions, issuesActions, worklogsActions, types } from 'actions';
-import { idleTimeThreshold } from 'config';
-import { randomPeriods, calculateActivity } from 'timer-helper';
 
-import createIpcChannel from './ipc';
-import { throwError, infoLog } from './ui';
-import { uploadWorklog } from './worklogs';
+import {
+  throwError,
+  infoLog,
+} from './ui';
+import {
+  uploadWorklog,
+} from './worklogs';
 import {
   uploadScreenshot,
   rejectScreenshot,
   takeScreenshot,
   cleanExcessScreenshotPeriods,
 } from './screenshots';
+import createIpcChannel from './ipc';
+
 
 const system = remote.require('@paulcbetts/system-idle-time');
 
 function* isScreenshotsAllowed() {
   try {
-    const {
-      screenshotsEnabled,
-      screenshotsEnabledUsers,
-    } = yield select(getScreenshotsSettings);
+    const screenshotsEnabled = yield select(getSettingsState('screenshotsEnabled'));
+    const screenshotsEnabledUsers = yield select(getSettingsState('screenshotsEnabledUsers'));
     yield call(
       infoLog,
       'checking if screenshots is allowed',
@@ -54,11 +71,10 @@ function* isScreenshotsAllowed() {
     const cond3 = screenshotsEnabled === 'excludingUsers' &&
       !screenshotsEnabledUsers.includes(key);
     const screenshotsAllowed = cond1 || cond2 || cond3;
-    yield put(uiActions.setScreenshotsAllowed(screenshotsAllowed));
+    yield put(uiActions.setUiState('screenshotsAllowed', screenshotsAllowed));
     return screenshotsAllowed;
   } catch (err) {
     yield call(throwError, err);
-    Raven.captureException(err);
     return false;
   }
 }
@@ -83,16 +99,16 @@ let totalIdleTimeDuringOneMinute = 0;
 function* idleCheck() {
   try {
     const idleTime = system.getIdleTime();
-    const idleState = yield select(getTimerIdleState);
-    const currentTime = yield select(getTimerTime);
-    if (idleState && idleTime < idleTimeThreshold * 1000) {
+    const idleState = yield select(getTimerState('idleState'));
+    const currentTime = yield select(getTimerState('time'));
+    if (idleState && idleTime < config.idleTimeThreshold * 1000) {
       yield put(timerActions.setIdleState(false));
       remote.getGlobal('sharedObj').idleTime = prevIdleTime;
       remote.getGlobal('sharedObj').idleDetails =
         { from: currentTime - (Math.ceil(prevIdleTime / 1000)), to: currentTime };
       ipcRenderer.send('show-idle-popup');
     }
-    if (!idleState && idleTime >= idleTimeThreshold * 1000) {
+    if (!idleState && idleTime >= config.idleTimeThreshold * 1000) {
       yield put(timerActions.setIdleState(true));
     }
     if ((prevIdleTime >= 5 * 1000) && prevIdleTime > idleTime) {
@@ -101,7 +117,6 @@ function* idleCheck() {
     prevIdleTime = idleTime;
   } catch (err) {
     yield call(throwError, err);
-    Raven.captureException(err);
   }
 }
 
@@ -109,10 +124,11 @@ let nextPeriod;
 
 function* screenshotsCheck() {
   try {
-    const { screenshotsQuantity, screenshotsPeriod } = yield select(getScreenshotsSettings);
-    const time = yield select(getTimerTime);
-    const idleState = yield select(getTimerIdleState);
-    let periods = yield select(getScreenshotPeriods);
+    const screenshotsQuantity = yield select(getSettingsState('screenshotsQuantity'));
+    const screenshotsPeriod = yield select(getSettingsState('screenshotsPeriod'));
+    const time = yield select(getTimerState('time'));
+    const idleState = yield select(getTimerState('idleState'));
+    let periods = yield select(getTimerState('screenshotPeriods'));
     if (time === periods[0]) {
       if (!idleState) {
         yield fork(takeScreenshot);
@@ -128,13 +144,12 @@ function* screenshotsCheck() {
     }
   } catch (err) {
     yield call(throwError, err);
-    Raven.captureException(err);
   }
 }
 
 function* activityCheck(secondsToMinutesGrid) {
   try {
-    const time = yield select(getTimerTime);
+    const time = yield select(getTimerState('time'));
     if (time % 60 === secondsToMinutesGrid) {
       yield call(
         infoLog,
@@ -149,13 +164,12 @@ function* activityCheck(secondsToMinutesGrid) {
     }
   } catch (err) {
     yield call(throwError, err);
-    Raven.captureException(err);
   }
 }
 
 function* setTimeToTray() {
-  const time = yield select(getTimerTime);
-  const localDesktopSettings = yield select(getLocalDesktopSettings);
+  const time = yield select(getTimerState('time'));
+  const localDesktopSettings = yield select(getSettingsState('localDesktopSettings'));
   const { trayShowTimer } = localDesktopSettings;
   if (trayShowTimer) {
     const humanFormat = new Date(time * 1000).toISOString().substr(11, 5);
@@ -174,21 +188,21 @@ function* timerStep(screenshotsAllowed, secondsToMinutesGrid) {
     yield call(setTimeToTray);
   } catch (err) {
     yield call(throwError, err);
-    Raven.captureException(err);
   }
 }
 
 
-export function* runTimer(channel) {
-  const { screenshotsPeriod, screenshotsQuantity } = yield select(getScreenshotsSettings);
+export function* runTimer(channel: any): Generator<*, *, *> {
+  remote.getGlobal('sharedObj').running = true;
+  const screenshotsQuantity = yield select(getSettingsState('screenshotsQuantity'));
+  const screenshotsPeriod = yield select(getSettingsState('screenshotsPeriod'));
+
   const screenshotsAllowed = yield call(isScreenshotsAllowed);
-  const currentSeconds = moment().format('ss');
+  const currentSeconds = parseInt(moment().format('ss'), 10);
   const secondsToMinutesGrid = 60 - currentSeconds;
   // second remaining to end of current Idle-minute period
-  const minutes = moment().format('mm');
-  // 33
+  const minutes = parseInt(moment().format('mm'), 10);
   const minutePeriod = screenshotsPeriod / 60;
-  // 10
   const periodNumber = Math.floor(minutes / minutePeriod) + 1;
   const periodRange = (periodNumber * minutePeriod) - minutes;
   nextPeriod = (periodRange * 60) - currentSeconds;
@@ -198,62 +212,71 @@ export function* runTimer(channel) {
   yield takeEvery(channel, timerStep, screenshotsAllowed, secondsToMinutesGrid);
 }
 
+let closeAfterStopTimer = false;
+
 function* stopTimer(channel, timerInstance) {
+  remote.getGlobal('sharedObj').uploading = true;
+  remote.getGlobal('sharedObj').running = false;
   try {
     yield call(ipcRenderer.send, 'stop-timer');
     channel.close();
     yield cancel(timerInstance);
-    const trackingIssueId = yield select(getTrackingIssueId);
-    const time = yield select(getTimerTime);
-    const comment = yield select(getWorklogComment);
-    const screenshots = yield select(getScreenshots);
-    const keepedIdles = yield select(getKeepedIdles);
-    const idles = yield select(getIdles);
-    const { screenshotsPeriod } = yield select(getScreenshotsSettings);
-    // TODO
+    const issueId = yield select(getUiState('trackingIssueId'));
+    const timeSpentInSeconds = yield select(getTimerState('time'));
+    const comment = yield select(getUiState('worklogComment'));
+    const screenshots = yield select(getTimerState('screenshots'));
+    const keepedIdles = yield select(getTimerState('keepedIdles'));
+    const idles = yield select(getTimerState('idles'));
+    const screenshotsPeriod = yield select(getSettingsState('screenshotsPeriod'));
     const worklogType = null;
     const activity = calculateActivity({
       currentIdleList: idles.map(idle => idle.to - idle.from),
-      timeSpentSeconds: time,
+      timeSpentInSeconds,
       screenshotsPeriod,
       firstPeriodInMinute: 1,
       secondsToMinutesGrid: 1,
     });
     //
     yield put(timerActions.resetTimer());
-    yield put(worklogsActions.setTemporaryWorklogId(null));
-    yield call(uploadWorklog, {
-      issueId: trackingIssueId,
-      timeSpentSeconds: time,
-      comment,
-      screenshotsPeriod,
-      worklogType,
-      screenshots,
-      activity,
-      keepedIdles,
-    });
+    // yield put(worklogsActions.setTemporaryWorklogId(null));
+    if (timeSpentInSeconds >= 60) {
+      yield call(uploadWorklog, {
+        issueId,
+        comment,
+        timeSpentInSeconds,
+        screenshotsPeriod,
+        worklogType,
+        screenshots,
+        activity,
+        keepedIdles,
+      });
+    }
+    remote.getGlobal('sharedObj').uploading = false;
+    if (closeAfterStopTimer) {
+      ipcRenderer.send('ready-to-quit');
+    }
   } catch (err) {
+    remote.getGlobal('sharedObj').uploading = false;
     yield call(throwError, err);
-    Raven.captureException(err);
   }
 }
 
 export function* timerFlow(): Generator<*, *, *> {
   try {
-    const selectedIssue = yield select(getSelectedIssue);
-    yield put(issuesActions.setTrackingIssue(selectedIssue));
-    const tempId = Math.random().toString(36).substr(2, 9);
-    yield put(worklogsActions.setTemporaryWorklogId(tempId));
+    const selectedIssueId = yield select(getUiState('selectedIssueId'));
+    yield put(uiActions.setUiState('trackingIssueId', selectedIssueId));
+    // const tempId = Math.random().toString(36).substr(2, 9);
+    // yield put(worklogsActions.setTemporaryWorklogId(tempId));
     ipcRenderer.send('start-timer');
     const channel = yield call(timerChannel);
     const timerInstance = yield fork(runTimer, channel);
     while (true) {
-      yield take(types.STOP_TIMER_REQUEST);
-      const time = yield select(getTimerTime);
+      yield take(actionTypes.STOP_TIMER_REQUEST);
+      const time = yield select(getTimerState('time'));
       if (time < 60) {
-        yield put(uiActions.setAlertModalOpen(true));
-        const { type } = yield take([types.SET_ALERT_MODAL_OPEN, types.STOP_TIMER]);
-        if (type === types.STOP_TIMER) {
+        yield put(uiActions.setModalState('alert', true));
+        const { type } = yield take([actionTypes.CONTINUE_TIMER, actionTypes.STOP_TIMER]);
+        if (type === actionTypes.STOP_TIMER) {
           yield call(stopTimer, channel, timerInstance);
           yield cancel();
         }
@@ -264,12 +287,11 @@ export function* timerFlow(): Generator<*, *, *> {
     }
   } catch (err) {
     yield call(throwError, err);
-    Raven.captureException(err);
   }
 }
 
-export function* watchStartTimer() {
-  yield takeEvery(types.START_TIMER, timerFlow);
+export function* watchStartTimer(): Generator<*, *, *> {
+  yield takeEvery(actionTypes.START_TIMER, timerFlow);
 }
 
 
@@ -284,21 +306,7 @@ export function* watchStartTimer() {
   });<]
 } */
 
-/* function forceSave() {
-  const { getGlobal } = remote;
-  const { running, uploading } = getGlobal('sharedObj');
-
-  // eslint-disable-next-line no-alert
-  if (running && window.confirm('Tracking in progress, save worklog before quit?')) {
-    setForceQuitFlag();
-    stopTimerRequest();
-  }
-  if (uploading) {
-    // eslint-disable-next-line no-alert
-    window.alert('Currently app in process of saving worklog, wait few seconds please');
-  }
-}
-
+/*
 function dismissIdleTime() {
   const seconds = Math.ceil(time / 1000);
   cutIddles(Math.ceil(seconds / 60));
@@ -316,8 +324,9 @@ let acceptScreenshotChannel;
 let rejectScreenshotChannel;
 let keepIdleTimeChannel;
 let dismissIdleTimeChannel;
+let forceSaveChannel;
 
-export function* watchAcceptScreenshot() {
+export function* watchAcceptScreenshot(): Generator<*, *, *> {
   while (true) {
     const ev = yield take(acceptScreenshotChannel);
     yield call(
@@ -325,7 +334,7 @@ export function* watchAcceptScreenshot() {
       'screenshot accepted',
       ev,
     );
-    const running = yield select(getTimerRunning);
+    const running = yield select(getTimerState('running'));
     if (running) {
       const { getGlobal } = remote;
       const {
@@ -344,7 +353,7 @@ export function* watchAcceptScreenshot() {
   }
 }
 
-export function* watchRejectScreenshot() {
+export function* watchRejectScreenshot(): Generator<*, *, *> {
   while (true) {
     const ev = yield take(rejectScreenshotChannel);
     yield call(
@@ -352,7 +361,7 @@ export function* watchRejectScreenshot() {
       'screenshot rejected',
       ev,
     );
-    const running = yield select(getTimerRunning);
+    const running = yield select(getTimerState('running'));
     if (running) {
       const { getGlobal } = remote;
       const { lastScreenshotPath } = getGlobal('sharedObj');
@@ -362,7 +371,7 @@ export function* watchRejectScreenshot() {
   }
 }
 
-export function* watchKeepIdleTime() {
+export function* watchKeepIdleTime(): Generator<*, *, *> {
   while (true) {
     const ev = yield take(keepIdleTimeChannel);
     yield call(
@@ -377,7 +386,7 @@ export function* watchKeepIdleTime() {
   }
 }
 
-export function* watchDismissIdleTime() {
+export function* watchDismissIdleTime(): Generator<*, *, *> {
   while (true) {
     const ev = yield take(dismissIdleTimeChannel);
     yield call(
@@ -392,7 +401,24 @@ export function* watchDismissIdleTime() {
   }
 }
 
-export function* createIpcListeners(): void {
+export function* watchForceSave(): Generator<*, *, *> {
+  while (true) {
+    yield take(forceSaveChannel);
+    const { getGlobal } = remote;
+    const { running, uploading } = getGlobal('sharedObj');
+
+    // eslint-disable-next-line no-alert
+    if (running && window.confirm('Tracking in progress, save worklog before quit?')) {
+      closeAfterStopTimer = true;
+      yield put(timerActions.stopTimerRequest());
+    } else if (uploading) {
+      // eslint-disable-next-line no-alert
+      window.alert('Currently app in process of saving worklog, wait few seconds please');
+    }
+  }
+}
+
+export function* createIpcListeners(): Generator<*, *, *> {
   acceptScreenshotChannel = yield call(createIpcChannel, 'screenshot-accept');
   yield fork(watchAcceptScreenshot);
 
@@ -405,5 +431,6 @@ export function* createIpcListeners(): void {
   dismissIdleTimeChannel = yield call(createIpcChannel, 'dismiss-idle-time');
   yield fork(watchDismissIdleTime);
 
-  // ipcRenderer.on('force-save', forceSave);
+  forceSaveChannel = yield call(createIpcChannel, 'force-save');
+  yield fork(watchForceSave);
 }

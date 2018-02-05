@@ -1,47 +1,30 @@
 // @flow
-
 import type {
-  FillSettings, FillSettingsAction,
-  FillLocalDesktopSettings, FillLocalDesktopSettingsAction,
-  SetLocalDesktopSetting, SetLocalDesktopSettingAction,
-  SetSettingsModalTab, SetSettingsModalTabAction,
-  RequestLocalDesktopSettings, RequestLocalDesktopSettingsAction,
-  Settings,
-} from '../types';
+  SettingsAction,
+} from 'types';
 
 import * as types from './actionTypes';
 
-export const fillSettings: FillSettings = (
-  payload: Settings,
-): FillSettingsAction => ({
-  type: types.FILL_SETTINGS,
-  payload,
-});
 
-export const fillLocalDesktopSettings: FillLocalDesktopSettings = (
-  payload,
-): FillLocalDesktopSettingsAction => ({
+export const fillLocalDesktopSettings = (
+  payload: any,
+): SettingsAction => ({
   type: types.FILL_LOCAL_DESKTOP_SETTINGS,
   payload,
 });
 
-export const setLocalDesktopSetting: SetLocalDesktopSetting = (
-  payload: any,
-  setting: string,
-): SetLocalDesktopSettingAction => ({
+export const setLocalDesktopSetting = (
+  value: any,
+  settingName: string,
+): SettingsAction => ({
   type: types.SET_LOCAL_DESKTOP_SETTING,
-  payload,
-  meta: setting,
+  value,
+  settingName,
 });
 
-export const setSettingsModalTab: SetSettingsModalTab = (
-  payload: string,
-): SetSettingsModalTabAction => ({
+export const setSettingsModalTab = (
+  tabName: string,
+): SettingsAction => ({
   type: types.SET_SETTINGS_MODAL_TAB,
-  payload,
+  tabName,
 });
-
-export const requestLocalDesktopSettings: RequestLocalDesktopSettings =
-  (): RequestLocalDesktopSettingsAction => ({
-    type: types.REQUEST_LOCAL_DESKTOP_SETTINGS,
-  });

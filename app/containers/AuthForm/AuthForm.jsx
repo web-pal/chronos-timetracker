@@ -4,9 +4,6 @@ import {
   connect,
 } from 'react-redux';
 import {
-  bindActionCreators,
-} from 'redux';
-import {
   reduxForm,
   formValueSelector,
   FormProps,
@@ -16,6 +13,12 @@ import type {
   Node,
   StatelessFunctionalComponent,
 } from 'react';
+import type {
+  Connector,
+} from 'react-redux';
+import type {
+  Dispatch,
+} from 'types';
 
 import {
   Flex,
@@ -24,30 +27,19 @@ import {
   logoShadowed,
 } from 'data/assets';
 import {
-  profileActions,
   authActions,
   uiActions,
 } from 'actions';
 import {
-  getAuthFormStep,
-  getLoginError,
-  getLoginFetching,
+  getUiState,
 } from 'selectors';
-import type {
-  LoginRequest,
-  LoginOAuthRequest,
-  DenyOAuth,
-  AcceptOAuth,
-  ThrowLoginError,
-  SetAuthFormStep,
-} from '../../types';
-
-import { validate } from './validation';
 
 import {
-  EmailStep,
-  TeamStep,
-} from './Steps';
+  validate,
+} from './validation';
+
+import EmailStep from './EmailStep';
+import TeamStep from './TeamStep';
 
 import {
   Hint,
@@ -58,56 +50,54 @@ import {
 } from './styled';
 
 type Props = {
-  loginRequest: LoginRequest,
-  loginOAuthRequest: LoginOAuthRequest,
-  denyOAuth: DenyOAuth,
-  acceptOAuth: AcceptOAuth,
-  throwLoginError: ThrowLoginError,
-  setAuthFormStep: SetAuthFormStep,
+  loginRequestInProcess: boolean,
+  loginError: string,
   isPaidUser: boolean,
-
   host: string | null,
   step: number,
-  loginError: string,
-  fetching: boolean,
-  handleSubmit: any,
+  dispatch: Dispatch,
 } & FormProps
 
 const AuthForm: StatelessFunctionalComponent<Props> = ({
-  handleSubmit,
-  loginRequest,
-  loginOAuthRequest,
-  throwLoginError,
+  loginRequestInProcess,
+  loginError,
+  isPaidUser,
   host,
   step,
-  setAuthFormStep,
-  loginError,
-  fetching,
-  isPaidUser,
+  handleSubmit,
+  dispatch,
 }: Props): Node =>
   <Container>
     <Logo src={logoShadowed} alt="Chronos" />
     <Flex column alignCenter>
-      <LoginInfo>Log in to your account</LoginInfo>
+      <LoginInfo>
+        Log in to your account
+      </LoginInfo>
       <ContentOuter>
         <TeamStep
           isActiveStep={step === 1}
-          onContinue={() => setAuthFormStep(2)}
+          onContinue={() => {
+            dispatch(
+              uiActions.setUiState('authFormStep', 2),
+            );
+          }}
           loginError={loginError}
         />
         <EmailStep
           isActiveStep={step === 2}
-          onContinue={handleSubmit(loginRequest)}
+          onContinue={handleSubmit((data) => {
+            dispatch(authActions.loginRequest(data));
+          })}
           loginError={loginError}
-          onBack={() => setAuthFormStep(1)}
+          onBack={() => dispatch(uiActions.setUiState('authFormStep', 1))}
           onJiraClick={() => {
             if (host !== null && host.length) {
-              loginOAuthRequest(host);
+              dispatch(authActions.loginOAuthRequest(host));
             } else {
-              throwLoginError('You need to fill JIRA host first');
+              dispatch(uiActions.setUiState('loginError', 'You need to fill JIRA host first'));
             }
           }}
-          loginRequestInProcess={fetching}
+          loginRequestInProcess={loginRequestInProcess}
           isPaidUser={isPaidUser}
         />
       </ContentOuter>
@@ -115,21 +105,13 @@ const AuthForm: StatelessFunctionalComponent<Props> = ({
     <Hint>Can not log in?</Hint>
   </Container>;
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    ...profileActions,
-    ...authActions,
-    ...uiActions,
-  }, dispatch);
-}
-
 const selector = formValueSelector('auth');
 function mapStateToProps(state) {
   return {
     host: selector(state, 'host'),
-    step: getAuthFormStep(state),
-    loginError: getLoginError(state),
-    fetching: getLoginFetching(state),
+    step: getUiState('authFormStep')(state),
+    loginError: getUiState('loginError')(state),
+    loginRequestInProcess: getUiState('loginRequestInProcess')(state),
     // Temporary block OAuth
     isPaidUser: false,
   };
@@ -140,4 +122,9 @@ const AuthFormDecorated = reduxForm({
   validate,
 })(AuthForm);
 
-export default connect(mapStateToProps, mapDispatchToProps)(AuthFormDecorated);
+const connector: Connector<{}, Props> = connect(
+  mapStateToProps,
+  dispatch => ({ dispatch }),
+);
+
+export default connector(AuthFormDecorated);

@@ -1,31 +1,62 @@
 // @flow
 import React from 'react';
-import type { StatelessFunctionalComponent, Node } from 'react';
-import ModalDialog, { ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
-import Button, { ButtonGroup } from '@atlaskit/button';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { danger } from 'data/svg';
-import { Flex } from 'components';
-import { uiActions, timerActions } from 'actions';
-import { getAlertModalOpen } from 'selectors';
+import {
+  connect,
+} from 'react-redux';
 
-import { DangerIcon, ModalContentContainer } from './styled';
-import type { SetAlertModalOpen, StopTimer } from '../../../types';
+import type {
+  StatelessFunctionalComponent,
+  Node,
+} from 'react';
+import type {
+  Connector,
+} from 'react-redux';
+import type {
+  Dispatch,
+} from 'types';
+
+import ModalDialog, {
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+} from '@atlaskit/modal-dialog';
+import Button, {
+  ButtonGroup,
+} from '@atlaskit/button';
+
+import {
+  uiActions,
+  timerActions,
+} from 'actions';
+import {
+  getModalState,
+} from 'selectors';
+
+import {
+  Flex,
+} from 'components';
+import {
+  danger,
+} from 'data/svg';
+import {
+  DangerIcon,
+  ModalContentContainer,
+} from './styled';
+
 
 type Props = {
   isOpen: boolean,
-  setAlertModalOpen: SetAlertModalOpen,
-  stopTimer: StopTimer,
+  dispatch: Dispatch,
 };
 
 const AlertModal: StatelessFunctionalComponent<Props> = ({
   isOpen,
-  setAlertModalOpen,
-  stopTimer,
+  dispatch,
 }: Props): Node => isOpen && (
   <ModalDialog
-    onClose={() => setAlertModalOpen(false)}
+    onClose={() => {
+      dispatch(uiActions.setModalState('alert', false));
+    }}
     footer={() => (
       <ModalFooter>
         <Flex row style={{ justifyContent: 'flex-end', width: '100%' }}>
@@ -35,14 +66,19 @@ const AlertModal: StatelessFunctionalComponent<Props> = ({
               onClick={() => {
                 // !! important to call stopTimer before setAlertModalOpen because of saga logic
                 // see sagas/timer:144-149
-                stopTimer();
-                //
-                setAlertModalOpen(false);
+                dispatch(timerActions.stopTimer());
+                dispatch(uiActions.setModalState('alert', false));
               }}
             >
               Stop timer
             </Button>
-            <Button appearance="default" onClick={() => setAlertModalOpen(false)}>
+            <Button
+              appearance="default"
+              onClick={() => {
+                dispatch(timerActions.continueTimer());
+                dispatch(uiActions.setModalState('alert', false));
+              }}
+            >
               Continue tracking
             </Button>
           </ButtonGroup>
@@ -69,12 +105,13 @@ const AlertModal: StatelessFunctionalComponent<Props> = ({
 
 function mapStateToProps(state) {
   return {
-    isOpen: getAlertModalOpen(state),
+    isOpen: getModalState('alert')(state),
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ ...uiActions, ...timerActions }, dispatch);
-}
+const connector: Connector<{}, Props> = connect(
+  mapStateToProps,
+  dispatch => ({ dispatch }),
+);
 
-export default connect(mapStateToProps, mapDispatchToProps)(AlertModal);
+export default connector(AlertModal);

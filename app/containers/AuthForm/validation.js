@@ -1,6 +1,4 @@
-import type { authFormData } from '../../types';
-
-const validate = (values: authFormData) => {
+const validate = (values) => {
   const errors = {};
   if (!values.host) {
     errors.host = 'Requried';

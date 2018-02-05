@@ -10,6 +10,7 @@
 <PROJECT_ROOT>/git/.*
 
 [libs]
+flow-typed
 
 [options]
 esproposal.class_static_fields=enable
@@ -18,17 +19,20 @@ esproposal.export_star_as=enable
 module.name_mapper.extension='less' -> '<PROJECT_ROOT>/app/assets/stub.js'
 suppress_comment= \\(.\\|\n\\)*\\$FlowFixMe
 module.name_mapper='^actions$' -> '<PROJECT_ROOT>/app/actions/'
-module.name_mapper='^types$' -> '<PROJECT_ROOT>/src/types/'
-module.name_mapper='^components$' -> '<PROJECT_ROOT>/src/components/'
-module.name_mapper='^selectors$' -> '<PROJECT_ROOT>/src/selectors/'
-module.name_mapper='^styles$' -> '<PROJECT_ROOT>/src/styles/'
+module.name_mapper='^types$' -> '<PROJECT_ROOT>/app/types/'
+module.name_mapper='^components$' -> '<PROJECT_ROOT>/app/components/'
+module.name_mapper='^selectors$' -> '<PROJECT_ROOT>/app/selectors/'
+module.name_mapper='^styles$' -> '<PROJECT_ROOT>/app/styles/'
 
-module.name_mapper='^api$' -> '<PROJECT_ROOT>/src/utils/api/'
-module.name_mapper='^config$' -> '<PROJECT_ROOT>/src/utils/config/'
-module.name_mapper='^data$' -> '<PROJECT_ROOT>/src/utils/data/'
-module.name_mapper='^external-open-util$' -> '<PROJECT_ROOT>/src/utils/external-open-util/'
-module.name_mapper='^jiraColors-util$' -> '<PROJECT_ROOT>/src/utils/jiraColors-util/'
-module.name_mapper='^log-util$' -> '<PROJECT_ROOT>/src/utils/log-util/'
-module.name_mapper='^normalize-util$' -> '<PROJECT_ROOT>/src/utils/normalize-util/'
-module.name_mapper='^screenshot-util$' -> '<PROJECT_ROOT>/src/utils/screenshot-util/'
-module.name_mapper='^time-util$' -> '<PROJECT_ROOT>/src/utils/time-util/'
+module.name_mapper='^api$' -> '<PROJECT_ROOT>/app/utils/api/'
+module.name_mapper='^config$' -> '<PROJECT_ROOT>/app/config/'
+module.name_mapper='^data$' -> '<PROJECT_ROOT>/app/utils/data/'
+module.name_mapper='^data/svg$' -> '<PROJECT_ROOT>/app/utils/data/svg/'
+module.name_mapper='^data/assets$' -> '<PROJECT_ROOT>/app/utils/data/assets/'
+module.name_mapper='^external-open-util$' -> '<PROJECT_ROOT>/app/utils/external-open-util/'
+module.name_mapper='^jiraColors-util$' -> '<PROJECT_ROOT>/app/utils/jiraColors-util/'
+module.name_mapper='^log-util$' -> '<PROJECT_ROOT>/app/utils/log-util/'
+module.name_mapper='^normalize-util$' -> '<PROJECT_ROOT>/app/utils/normalize-util/'
+module.name_mapper='^screenshot-util$' -> '<PROJECT_ROOT>/app/utils/screenshot-util/'
+module.name_mapper='^time-util$' -> '<PROJECT_ROOT>/app/utils/time-util/'
+module.name_mapper='^timer-helper$' -> '<PROJECT_ROOT>/app/utils/timer-helper/'

@@ -1,67 +1,88 @@
 // @flow
 import React from 'react';
-import type { StatelessFunctionalComponent, Node } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { uiActions } from 'actions';
-import { getSidebarType, getSelectedProjectId, getSidebarFiltersOpen } from 'selectors';
+import {
+  connect,
+} from 'react-redux';
 
-import ProjectPicker from './ProjectPicker';
-import SidebarHeader from './SidebarHeader';
-import SidebarSearch from './SidebarSearch';
-import SidebarFilters from './SidebarFilters/SidebarFilters';
-import SidebarItems from './SidebarItems/SidebarItems';
+import type {
+  StatelessFunctionalComponent,
+  Node,
+} from 'react';
+import type {
+  Connector,
+} from 'react-redux';
+import type {
+  Dispatch,
+} from 'types';
 
-import { SidebarNothingSelected, SidebarWrapper, SidebarContainer } from './styled';
+import {
+  uiActions,
+} from 'actions';
+import {
+  getUiState,
+} from 'selectors';
 
-import type { SetSidebarType, SidebarType, Id } from '../../types';
+import IssuesSourcePicker from './IssuesSourcePicker';
+import SidebarIssues from './SidebarIssues';
+import SidebarRecentWorklogs from './SidebarRecentWorklogs';
+
+import {
+  SidebarContainer,
+  TabContainer,
+  ListContainer,
+  Tab,
+} from './styled';
+
 
 type Props = {
-  sidebarType: SidebarType,
-  setSidebarType: SetSidebarType,
-  selectedProjectId: Id | null,
-  sidebarFiltersOpen: boolean,
+  sidebarType: string,
+  dispatch: Dispatch,
 };
 
 const Sidebar: StatelessFunctionalComponent<Props> = ({
   sidebarType,
-  setSidebarType,
-  selectedProjectId,
-  sidebarFiltersOpen,
+  dispatch,
 }: Props): Node => (
-  <SidebarWrapper>
-    <ProjectPicker />
-    <SidebarHeader
-      sidebarType={sidebarType}
-      setSidebarType={setSidebarType}
-    />
-    <SidebarContainer>
-      {sidebarType === 'all' &&
-        <SidebarSearch />
-      }
-      {sidebarFiltersOpen &&
-        <SidebarFilters />
-      }
-      {selectedProjectId ?
-        <SidebarItems /> :
-        <SidebarNothingSelected>
-          <span>Select project from dropdown above</span>
-        </SidebarNothingSelected>
-      }
-    </SidebarContainer>
-  </SidebarWrapper>
+  <SidebarContainer>
+    <IssuesSourcePicker />
+    <TabContainer>
+      <Tab
+        active={sidebarType === 'recent'}
+        onClick={() => {
+          dispatch(
+            uiActions.setUiState('sidebarType', 'recent'),
+          );
+        }}
+      >
+        Recent worklogs
+      </Tab>
+      <Tab
+        active={sidebarType === 'all'}
+        onClick={() => {
+          dispatch(
+            uiActions.setUiState('sidebarType', 'all'),
+          );
+        }}
+      >
+        Issues
+      </Tab>
+    </TabContainer>
+    <ListContainer sidebarType={sidebarType}>
+      <SidebarRecentWorklogs />
+      <SidebarIssues />
+    </ListContainer>
+  </SidebarContainer>
 );
 
 function mapStateToProps(state) {
   return {
-    sidebarType: getSidebarType(state),
-    selectedProjectId: getSelectedProjectId(state),
-    sidebarFiltersOpen: getSidebarFiltersOpen(state),
+    sidebarType: getUiState('sidebarType')(state),
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators(uiActions, dispatch);
-}
+const connector: Connector<{}, Props> = connect(
+  mapStateToProps,
+  dispatch => ({ dispatch }),
+);
 
-export default connect(mapStateToProps, mapDispatchToProps)(Sidebar);
+export default connector(Sidebar);

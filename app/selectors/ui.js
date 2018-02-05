@@ -1,47 +1,63 @@
 // @flow
-import type { UiState, AuthFormStep, SidebarType, TabLabel, UpdateInfo } from '../types';
+import {
+  createSelector,
+} from 'reselect';
 
-export const getAuthFormStep =
-  ({ ui }: { ui: UiState }): AuthFormStep => ui.authFormStep;
+import type {
+  Id,
+  UiState,
+  IssueType,
+  IssueStatus,
+} from '../types';
 
-export const getSidebarType =
-  ({ ui }: { ui: UiState }): SidebarType => ui.sidebarType;
+import {
+  getResourceMappedList,
+} from './resources';
+import {
+  getSelfKey,
+} from './profile';
 
-export const getIssueViewTab =
-  ({ ui }: { ui: UiState }): TabLabel => ui.issueViewTab;
 
-export const getUpdateCheckRunning =
-  ({ ui }: { ui: UiState }): boolean => ui.updateCheckRunning;
+export const getUiState = (key: string) =>
+  ({ ui }: { ui: UiState }) => ui[key];
 
-export const getUpdateAvailable =
-  ({ ui }: { ui: UiState }): UpdateInfo | null => ui.updateAvailable;
+export const getModalState = (key: string) =>
+  ({ ui }: { ui: UiState }) => ui.modalState[key];
 
-export const getUpdateFetching =
-  ({ ui }: { ui: UiState }): boolean => ui.updateFetching;
-
-export const getSettingsModalOpen =
-  ({ ui }: { ui: UiState }): boolean => ui.settingsModalOpen;
-
-export const getSupportModalOpen =
-  ({ ui }: { ui: UiState }): boolean => ui.supportModalOpen;
-
-export const getAboutModalOpen =
-  ({ ui }: { ui: UiState }): boolean => ui.aboutModalOpen;
-
-export const getAlertModalOpen =
-  ({ ui }: { ui: UiState }): boolean => ui.alertModalOpen;
-
-export const getConfirmDeleteWorklogModalOpen =
-  ({ ui }: { ui: UiState }): boolean => ui.confirmDeleteWorklogModalOpen;
-
-export const getWorklogModalOpen =
-  ({ ui }: { ui: UiState }): boolean => ui.worklogModalOpen;
-
-export const getEditWorklogModalOpen =
-  ({ ui }: { ui: UiState }): boolean => ui.editWorklogModalOpen;
-
-export const getSidebarFiltersOpen =
-  ({ ui }: { ui: UiState }): boolean => ui.sidebarFiltersOpen;
-
-export const getScreenshotsAllowed =
-  ({ ui }: { ui: UiState }): boolean => ui.screenshotsAllowed;
+export const getFilterOptions = createSelector(
+  [
+    getResourceMappedList('issuesTypes', 'issuesTypes'),
+    getResourceMappedList('issuesStatuses', 'issuesStatuses'),
+    getSelfKey,
+  ],
+  (
+    issuesTypes: Array<IssueType>,
+    issuesStatuses: Array<IssueStatus>,
+    selfKey: Id | null,
+  ) =>
+    [{
+      name: 'Type',
+      key: 'type',
+      options: issuesTypes,
+      showIcons: true,
+    }, {
+      name: 'Status',
+      key: 'status',
+      options: issuesStatuses,
+      showIcons: true,
+    }, {
+      name: 'Assignee',
+      key: 'assignee',
+      options: [
+        {
+          name: 'Current User',
+          id: selfKey,
+        },
+        {
+          name: 'Unassigned',
+          id: 'unassigned',
+        },
+      ],
+      showIcons: false,
+    }],
+);

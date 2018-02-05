@@ -1,16 +1,26 @@
 // @flow
 import React, { Component } from 'react';
 import moment from 'moment';
-import { remote, ipcRenderer as ipc } from 'electron';
+import {
+  remote,
+  ipcRenderer as ipc,
+} from 'electron';
 import Flag from '@atlaskit/flag';
 import RecentIcon from '@atlaskit/icon/glyph/recent';
-import { stj } from 'time-util';
 
-import { PopupContainer } from './styled';
+import {
+  stj,
+} from 'time-util';
+
+import {
+  PopupContainer,
+} from './styled';
 
 import '../../../assets/stylesheets/main.less';
 
-const { getGlobal } = remote;
+const {
+  getGlobal,
+} = remote;
 
 type State = {
   idleTime: number,

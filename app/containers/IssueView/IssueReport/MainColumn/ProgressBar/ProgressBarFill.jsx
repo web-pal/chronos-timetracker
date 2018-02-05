@@ -1,6 +1,9 @@
 // @flow
 import React from 'react';
-import type { StatelessFunctionalComponent, Node } from 'react';
+import type {
+  StatelessFunctionalComponent,
+  Node,
+} from 'react';
 
 import {
   ProgressBarItem,
@@ -8,6 +11,7 @@ import {
   Time,
   TimeLabel,
 } from './styled';
+
 
 type Props = {
   name: string,

@@ -1,88 +1,128 @@
 // @flow
 import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import type { StatelessFunctionalComponent, Node } from 'react';
-import { Flex, AutosizableList as List } from 'components';
-import { worklogsActions } from 'actions';
-import { noIssuesImage } from 'data/assets';
-import { H600 } from 'styles/typography';
 import {
+  connect,
+} from 'react-redux';
+
+import type {
+  StatelessFunctionalComponent,
+  Node,
+} from 'react';
+import type {
+  Connector,
+} from 'react-redux';
+import type {
+  Id,
+  Issue,
+  Worklog,
+  Dispatch,
+} from 'types';
+
+import {
+  Flex,
+  AutosizableList as List,
+} from 'components';
+import {
+  uiActions,
+} from 'actions';
+import {
+  noIssuesImage,
+} from 'data/assets';
+import {
+  H600,
+} from 'styles/typography';
+import {
+  getSelectedIssueWorklogs,
   getSelectedIssue,
-  getWorklogListScrollIndex,
-  getSelectedWorklogId,
+  getUiState,
 } from 'selectors';
 
 import WorklogItem from './WorklogItem';
 
-import type { Id, Issue, DeleteWorklogRequest, EditWorklogRequest } from '../../../types';
 
 type Props = {
+  worklogs: Array<Worklog>,
+  issue: Issue,
   selectedWorklogId: Id | null,
-  selectedIssue: Issue,
-  scrollIndex: number,
-  deleteWorklogRequest: DeleteWorklogRequest,
-  editWorklogRequest: EditWorklogRequest,
+  scrollToIndex: number,
+  dispatch: Dispatch,
 };
 
 const IssueWorklogs: StatelessFunctionalComponent<Props> = ({
+  worklogs,
+  issue,
   selectedWorklogId,
-  selectedIssue,
-  scrollIndex,
-  deleteWorklogRequest,
-  editWorklogRequest,
+  scrollToIndex,
+  dispatch,
 }: Props): Node => (
   <Flex column style={{ flexGrow: 1 }}>
     <Flex column style={{ flexGrow: 1 }}>
-      {selectedIssue.fields.worklog.worklogs &&
-        <List
-          listProps={{
-            rowCount: selectedIssue.fields.worklog.worklogs.length,
-            rowHeight: 120,
-            rowRenderer: ({ index, key, style }: { index: number, key: string, style: any }) => {
-              const worklog = selectedIssue.fields.worklog.worklogs.sort(
-                (left, right) => left.id < right.id,
-              )[index];
-
-              return <WorklogItem
+      <List
+        autoSized
+        noRowsRenderer={
+          () =>
+            <Flex row justifyCenter>
+              <Flex column alignCenter justifyCenter>
+                <img src={noIssuesImage} alt="not found" width="100px" />
+                <H600>
+                  No work logged for this issue
+                </H600>
+              </Flex>
+            </Flex>
+        }
+        listProps={{
+          rowCount: worklogs.length,
+          rowHeight: 120,
+          rowRenderer: ({ index, key, style }: { index: number, key: string, style: any }) => {
+            const worklog = worklogs[index];
+            return (
+              <WorklogItem
                 style={style}
                 key={key}
                 worklog={worklog}
                 selected={selectedWorklogId === worklog.id}
-                issueKey={selectedIssue.key}
-                deleteWorklogRequest={deleteWorklogRequest}
-                editWorklogRequest={editWorklogRequest}
-              />;
-            },
-            scrollToIndex: scrollIndex,
-          }}
-          autoSized
-        />
-      }
-      {selectedIssue.fields.worklog.worklogs.length === 0 &&
-        <Flex row justifyCenter>
-          <Flex column alignCenter justifyCenter>
-            <img src={noIssuesImage} alt="not found" width="100px" />
-            <H600>
-              No work logged for this issue
-            </H600>
-          </Flex>
-        </Flex>
-      }
+                issueKey={issue.key}
+                onEditWorklog={() => {
+                  dispatch(uiActions.setUiState('editWorklogId', worklog.id));
+                  dispatch(uiActions.setUiState('worklogFormIssueId', issue.id));
+                  dispatch(uiActions.setModalState('worklog', true));
+                }}
+                onDeleteWorklog={() => {
+                  dispatch(uiActions.setModalState('confirmDeleteWorklog', true));
+                  dispatch(uiActions.setUiState('deleteWorklogId', worklog.id));
+                }}
+              />
+            );
+          },
+          noRowsRenderer:
+            () =>
+              <Flex row justifyCenter>
+                <Flex column alignCenter justifyCenter>
+                  <img src={noIssuesImage} alt="not found" width="100px" />
+                  <H600>
+                    No work logged for this issue
+                  </H600>
+                </Flex>
+              </Flex>,
+          scrollToIndex,
+        }}
+      />
     </Flex>
   </Flex>
 );
 
 function mapStateToProps(state) {
   return {
-    selectedWorklogId: getSelectedWorklogId(state),
-    selectedIssue: getSelectedIssue(state),
-    scrollIndex: getWorklogListScrollIndex(state),
+    worklogs: getSelectedIssueWorklogs(state),
+    issue: getSelectedIssue(state),
+    selectedWorklogId: getUiState('selectedWorklogId')(state),
+    scrollToIndex: getUiState('issueViewWorklogsScrollToIndex')(state),
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators(worklogsActions, dispatch);
-}
+const connector: Connector<{}, Props> = connect(
+  mapStateToProps,
+  dispatch => ({ dispatch }),
+);
 
-export default connect(mapStateToProps, mapDispatchToProps)(IssueWorklogs);
+export default connector(IssueWorklogs);

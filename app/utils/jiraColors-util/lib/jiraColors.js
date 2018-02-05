@@ -38,7 +38,7 @@ export function getEpicColor(colorName: EpicColor): string {
     case 'ghx-label-6':
       return '#8fb021';
     case 'ghx-label-7':
-      return '#ac707a';
+      return '#C0B6F2';
     case 'ghx-label-8':
       return '#644982';
     case 'ghx-label-9':

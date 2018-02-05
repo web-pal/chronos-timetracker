@@ -1,15 +1,32 @@
 // @flow
 import React from 'react';
-import moment from 'moment';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import type { StatelessFunctionalComponent, Node } from 'react';
-import Spinner from '@atlaskit/spinner';
-import { Flex } from 'components';
-import { getSelectedIssue, getSelfKey, getHost } from 'selectors';
-import { openURLInBrowser } from 'external-open-util';
 
-import type { Issue } from '../../../types';
+import {
+  connect,
+} from 'react-redux';
+
+import type {
+  StatelessFunctionalComponent,
+  Node,
+} from 'react';
+import type {
+  Connector,
+} from 'react-redux';
+
+import {
+  Flex,
+} from 'components';
+import {
+  getSelectedIssueReport,
+  getUiState,
+} from 'selectors';
+import {
+  openURLInBrowser,
+} from 'external-open-util';
+
+import ProgressBar from './MainColumn/ProgressBar/ProgressBar';
+import StatisticsRow from './MainColumn/StatisticsRow/StatisticsRow';
+import StatisticsColumn from './MetaColumn/StatisticsColumn/StatisticsColumn';
 
 import {
   ReportTabContainer,
@@ -28,160 +45,121 @@ import {
   AtlassianLogoMetaItem,
   AtlassianLogo,
   LearnMoreLink,
+  BackgroundShape,
 } from './styled';
 
-import ProgressBar from './MainColumn/ProgressBar/ProgressBar';
-import StatisticsRow from './MainColumn/StatisticsRow/StatisticsRow';
-
-import StatisticsColumn from './MetaColumn/StatisticsColumn/StatisticsColumn';
-
-import BackgroundShapes from './BackgroundShapes';
 
 type Props = {
-  selectedIssue: Issue,
-  selfKey: string,
-  host: URL,
+  host: string,
+  report: any,
 };
 
 const IssueReport: StatelessFunctionalComponent<Props> = ({
-  selectedIssue,
-  selfKey,
   host,
-}: Props): Node => {
-  const timespent = selectedIssue.fields.timespent || 0;
-  const remaining = selectedIssue.fields.timeestimate || 0;
-  const estimate = remaining - timespent < 0 ? 0 : remaining - timespent;
+  report,
+}: Props): Node =>
+  <Flex column style={{ flexGrow: 1 }}>
+    <div>
+      <BackgroundShape number={1} color="#0962E8" opacity="1" />
+      <BackgroundShape number={2} color="#0962E8" opacity="0.5" />
+      <BackgroundShape number={3} color="#0962E8" opacity="0.25" />
+      <BackgroundShape number={4} color="#0962E8" opacity="0.15" />
+    </div>
+    <ReportTabContainer>
 
-  const { worklogs } = selectedIssue.fields.worklog;
-
-  const loggedTotal = worklogs.reduce((v, w) => v + w.timeSpentSeconds, 0);
-
-  const yourWorklogs = worklogs.filter(w => w.author.key === selfKey);
-
-  const youLoggedTotal = yourWorklogs.reduce((v, w) => v + w.timeSpentSeconds, 0);
-
-  const yourWorklogsToday = yourWorklogs.filter(w => moment(w.updated).isSameOrAfter(moment().startOf('day')));
-
-  const youLoggedToday = yourWorklogsToday.reduce((v, w) => v + w.timeSpentSeconds, 0);
-
-  const isLoading = false;
-  if (isLoading) {
-    return (
-      <Flex
-        column
-        alignCenter
-        style={{
-          flexGrow: 1,
-          justifyContent: 'center',
-          backgroundColor: '#0052CC',
-          margin: '-20px -20px auto -20px',
-        }}
-      >
-        <Spinner size="xlarge" invertColor />
-      </Flex>
-    );
-  }
-
-  return (
-    <Flex column style={{ flexGrow: 1 }}>
-      <BackgroundShapes />
-      <ReportTabContainer>
-
-        <MainColumn>
-          <Flex column style={{ width: '100%' }}>
-            <StatisticsRow
-              estimate={estimate}
-              remaining={remaining}
-            />
-            <ProgressBar
-              loggedTotal={loggedTotal}
-              remaining={remaining}
-            />
-          </Flex>
-
-          <CTAArea>
-            <Heading>
-              View reports and calculate salaries in Chronos Timesheets
-            </Heading>
-            <CTAButton
-              onClick={openURLInBrowser(`${host.origin}/plugins/servlet/ac/jira-chronos/api-page-jira`)}
-            >
-              Open plugin
-            </CTAButton>
-            <ChronosTimesheetsScreenshot />
-          </CTAArea>
-
-          <HelpText
-            onClick={openURLInBrowser('https://marketplace.atlassian.com/plugins/jira-chronos/cloud/overview')}
-          >
-            View on Marketplace
-          </HelpText>
-        </MainColumn>
-
-        <MetaColumn>
-          <StatisticsColumn
-            youLoggedToday={youLoggedToday}
-            youLoggedTotal={youLoggedTotal}
-            loggedTotal={loggedTotal}
+      <MainColumn>
+        <Flex column style={{ width: '100%' }}>
+          <StatisticsRow
+            estimate={report.estimate}
+            remaining={report.remaining}
           />
+          <ProgressBar
+            loggedTotal={report.loggedTotal}
+            remaining={report.remaining}
+          />
+        </Flex>
 
-          {/* CLOCK */}
-          <ClockMetaItem>
-            <BorderLeft color="white" />
-            <Clock />
-            <div />
-          </ClockMetaItem>
+        <CTAArea>
+          <Heading>
+            View reports and calculate salaries in Chronos Timesheets
+          </Heading>
+          <CTAButton
+            onClick={openURLInBrowser(`http://${host}/plugins/servlet/ac/jira-chronos/api-page-jira`)}
+          >
+            Open plugin
+          </CTAButton>
+          <ChronosTimesheetsScreenshot />
+        </CTAArea>
 
-          {/* NEWSPAPER DESCRIPTION */}
-          <ChronosDescriptionMetaItem>
-            <BorderLeft color="white" />
-            <ChronosDescription>
-              <b>Chronos Timesheets</b> is our solution
-              for viewing worklog report. Watch what
-              your team is busy with, make printable
-              invoices, calculate salaries, check what
-              you’ve spent time on during last week.
+        <HelpText
+          onClick={openURLInBrowser('https://marketplace.atlassian.com/plugins/jira-chronos/cloud/overview')}
+        >
+          View on Marketplace
+        </HelpText>
+      </MainColumn>
+
+      <MetaColumn>
+        <StatisticsColumn
+          youLoggedToday={report.youLoggedToday}
+          youLoggedTotal={report.youLoggedTotal}
+          loggedTotal={report.loggedTotal}
+        />
+
+        {/* CLOCK */}
+        <ClockMetaItem>
+          <BorderLeft color="white" />
+          <Clock />
+          <div />
+        </ClockMetaItem>
+
+        {/* NEWSPAPER DESCRIPTION */}
+        <ChronosDescriptionMetaItem>
+          <BorderLeft color="white" />
+          <ChronosDescription>
+            <b>Chronos Timesheets</b> is our solution
+            for viewing worklog report. Watch what
+            your team is busy with, make printable
+            invoices, calculate salaries, check what
+            you’ve spent time on during last week.
 
 
-              <br />
-              <br />
-              Rich filtering criterias, reports are available
-              in Calendar and Timeline views.
-              It’s really fast and responsive. Try it.
+            <br />
+            <br />
+            Rich filtering criterias, reports are available
+            in Calendar and Timeline views.
+            It’s really fast and responsive. Try it.
 
-              <br />
-              <br />
-              <LearnMoreLink
-                onClick={openURLInBrowser('https://marketplace.atlassian.com/plugins/jira-chronos/cloud/overview')}
-              >Learn more →
-              </LearnMoreLink>
-            </ChronosDescription>
-          </ChronosDescriptionMetaItem>
+            <br />
+            <br />
+            <LearnMoreLink
+              onClick={openURLInBrowser('https://marketplace.atlassian.com/plugins/jira-chronos/cloud/overview')}
+            >Learn more →
+            </LearnMoreLink>
+          </ChronosDescription>
+        </ChronosDescriptionMetaItem>
 
-          {/* ATLASSIAN LOGO */}
-          <AtlassianLogoMetaItem>
-            <BorderLeft color="#FFAB00" />
-            <AtlassianLogo />
-            <div />
-          </AtlassianLogoMetaItem>
+        {/* ATLASSIAN LOGO */}
+        <AtlassianLogoMetaItem>
+          <BorderLeft color="#FFAB00" />
+          <AtlassianLogo />
+          <div />
+        </AtlassianLogoMetaItem>
 
-        </MetaColumn>
+      </MetaColumn>
 
-      </ReportTabContainer>
-    </Flex>
-  );
-};
+    </ReportTabContainer>
+  </Flex>;
 
 function mapStateToProps(state) {
   return {
-    selectedIssue: getSelectedIssue(state),
-    selfKey: getSelfKey(state),
-    host: getHost(state),
+    report: getSelectedIssueReport(state),
+    host: getUiState('host')(state),
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({}, dispatch);
-}
+const connector: Connector<{}, Props> = connect(
+  mapStateToProps,
+  dispatch => ({ dispatch }),
+);
 
-export default connect(mapStateToProps, mapDispatchToProps)(IssueReport);
+export default connector(IssueReport);

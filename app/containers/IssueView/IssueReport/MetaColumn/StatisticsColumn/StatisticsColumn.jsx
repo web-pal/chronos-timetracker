@@ -1,11 +1,26 @@
 // @flow
 import React from 'react';
-import { stj } from 'time-util';
-import type { StatelessFunctionalComponent, Node } from 'react';
-import { Flex } from 'components';
+import type {
+  StatelessFunctionalComponent,
+  Node,
+} from 'react';
 
-import { MetaItem } from './styled';
-import { MetaItemName, MetaItemValue, BorderLeft } from '../../styled';
+import {
+  stj,
+} from 'time-util';
+import {
+  Flex,
+} from 'components';
+
+import {
+  MetaItem,
+} from './styled';
+import {
+  MetaItemName,
+  MetaItemValue,
+  BorderLeft,
+} from '../../styled';
+
 
 type Props = {
   youLoggedToday: number,

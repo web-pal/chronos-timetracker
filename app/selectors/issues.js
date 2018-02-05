@@ -1,194 +1,319 @@
 // @flow
-import { createSelector } from 'reselect';
+import {
+  createSelector,
+} from 'reselect';
 import moment from 'moment';
-import groupBy from 'lodash.groupby';
-import filter from 'lodash.filter';
-
-import { getUserData } from './profile';
+import * as R from 'ramda';
 
 import type {
-  IssuesState,
-  IssueFilters,
-  IssuesMap,
-  IssueTypesMap,
-  IssueStatusesMap,
-  Issue,
-  IssueTransition,
-  IssueComment,
   Id,
-} from '../types';
+  State,
+  IndexedIds,
+  IssuesResources,
+  Issue,
+  WorklogsResources,
+  Worklog,
+  IssuesFieldsState,
+  IssuesFieldsResources,
+  ProjectsResources,
+  Project,
+  BoardsResources,
+  Board,
+} from 'types';
 
-export const getIssuesIds =
-  ({ issues }: { issues: IssuesState }): Array<Id> => issues.allIds;
+import {
+  getResourceIds,
+  getResourceMap,
+  getResourceMappedList,
+} from './resources';
+import {
+  getUiState,
+} from './ui';
+import {
+  getUserData,
+  getSelfKey,
+} from './profile';
 
-export const getIssuesMap =
-  ({ issues }: { issues: IssuesState }): IssuesMap => issues.byId;
-
-export const getEpicsIds =
-  ({ issues }: { issues: IssuesState }): Array<Id> => issues.epicsIds;
-
-export const getEpicsMap =
-  ({ issues }: { issues: IssuesState }): IssuesMap => issues.epicsById;
-
-export const getAllIssues = createSelector(
-  [getIssuesIds, getIssuesMap],
-  (ids, map) => ids.map(id => map[id]),
-);
-
-export const getIssueTypesIds =
-  ({ issues }: { issues: IssuesState }): Array<Id> => issues.issueTypesIds;
-
-export const getIssueTypesMap =
-  ({ issues }: { issues: IssuesState }): IssueTypesMap => issues.issueTypesById;
-
-export const getIssueStatusesIds =
-  ({ issues }: { issues: IssuesState }): Array<Id> => issues.issueStatusesIds;
-
-export const getIssueStatusesMap =
-  ({ issues }: { issues: IssuesState }): IssueStatusesMap => issues.issueStatusesById;
-
-export const getFoundIssueIds =
-  ({ issues }: { issues: IssuesState }): Array<Id> => issues.foundIds;
-
-export const getIssueTypes = createSelector(
-  [getIssueTypesIds, getIssueTypesMap],
-  (ids, map) => ids.map(id => map[id]),
-);
-
-export const getIssueStatuses = createSelector(
-  [getIssueStatusesIds, getIssueStatusesMap],
-  (ids, map) => ids.map(id => map[id]),
-);
 
 export const getSidebarIssues = createSelector(
-  [getAllIssues, getFoundIssueIds, getIssuesMap],
-  (allItems, foundIds, map) => {
-    if (foundIds.length > 0) {
-      return foundIds.map(id => map[id]);
-    }
-    return allItems;
-  },
+  [
+    getResourceIds('issues', 'filterIssuesIndexed'),
+    getResourceMap('issues'),
+  ],
+  (
+    indexedIds: IndexedIds,
+    map: IssuesResources,
+  ) =>
+    Object.keys(indexedIds).reduce((acc, index) => {
+      const id = indexedIds[index].toString();
+      acc[index] = map[id];
+      return acc;
+    }, {}),
 );
 
-export const getRecentIssueIds =
-  ({ issues }: { issues: IssuesState }): Array<Id> => issues.recentIds;
-
-export const getRecentIssuesTotalCount = createSelector(
-  [getRecentIssueIds],
-  ids => ids.length,
-);
+const worklogSorter = (a, b) => {
+  if (moment(a.started).isAfter(moment(b.started))) return -1;
+  if (moment(a.started).isBefore(moment(b.started))) return 1;
+  return 0;
+};
 
 export const getRecentIssues = createSelector(
-  [getRecentIssueIds, getIssuesMap],
-  (ids, map) => ids.map(id => map[id]),
-);
-
-export const getRecentItems = createSelector(
-  [getRecentIssues, getIssuesMap, getUserData],
-  (map, iMap, self) => {
+  [
+    getResourceMappedList('issues', 'recentIssues'),
+    getResourceMap('issues'),
+    getResourceMap('worklogs'),
+    getUserData,
+  ],
+  (
+    issues: Array<Issue>,
+    issuesMap: IssuesResources,
+    worklogsMap: WorklogsResources,
+    self: any,
+  ) => {
     const selfKey = self ? self.key : '';
-    const recentWorklogs =
-      map
+    const worklogsIds =
+      issues
         .reduce(
-          (worklogs, value) => worklogs.concat(value.fields.worklog.worklogs),
+          (worklogs, issue) => worklogs.concat(
+            issue.fields.worklogs,
+          ),
           [],
-        ).map(w => ({ ...w, issue: iMap[w.issueId] }));
+        );
+    const worklogs = worklogsIds.map(id => ({
+      ...worklogsMap[id],
+      issue: issuesMap[worklogsMap[id].issueId],
+    }));
     const recentWorklogsFiltered =
-      filter(
-        recentWorklogs,
+      worklogs.filter(
         w =>
           moment(w.started).isSameOrAfter(moment().subtract(4, 'weeks')) &&
           w.author.key === selfKey,
-      );
+      ).sort(worklogSorter);
     const grouped =
-      groupBy(recentWorklogsFiltered, value => moment(value.started).startOf('day').format());
+      R.groupBy(
+        value => moment(value.started).startOf('day').format(),
+        recentWorklogsFiltered,
+      );
     return grouped;
   },
 );
 
-export const getIssuesFetching =
-  ({ issues }: { issues: IssuesState }): boolean => issues.meta.fetching;
-
-export const getRecentIssuesFetching =
-  ({ issues }: { issues: IssuesState }): boolean => issues.meta.recentFetching;
-
-export const getIssuesSearching =
-  ({ issues }: { issues: IssuesState }): boolean => issues.meta.searching;
-
-export const getIssuesTotalCount =
-  ({ issues }: { issues: IssuesState }): number => (issues.meta.totalCount > 0
-    ? issues.meta.totalCount
-    : 0);
-
-export const getSelectedIssueId =
-  ({ issues }: { issues: IssuesState }): Id | null => issues.meta.selectedIssueId;
-
-export const getTrackingIssueId =
-  ({ issues }: { issues: IssuesState }): Id | null => issues.meta.trackingIssueId;
-
-export const getIssuesSearchValue =
-  ({ issues }: { issues: IssuesState }): string => issues.meta.searchValue;
-
-export const getSelectedIssue =
-  ({ issues }: { issues: IssuesState }): Issue | null => issues.meta.selectedIssue;
-
-export const getTrackingIssue =
-  ({ issues }: { issues: IssuesState }): Issue | null => issues.meta.trackingIssue;
-
-export const getIssueFilters =
-  ({ issues }: { issues: IssuesState }): IssueFilters => issues.meta.filters;
-
-export const getFiltersApplied = createSelector(
-  [getIssueFilters],
-  filters => (!!filters.type.length || !!filters.status.length || !!filters.assignee.length),
+export const getEditWorklog = createSelector(
+  [
+    getResourceMap('worklogs'),
+    getUiState('editWorklogId'),
+  ],
+  (
+    worklogsMap: WorklogsResources,
+    worklogId: Id,
+  ) => (worklogsMap[worklogId] ? worklogsMap[worklogId] : null),
 );
 
-export const getAvailableTransitions =
-  ({ issues }: { issues: IssuesState }): Array<IssueTransition> => issues.meta.availableTransitions;
+export const getSelectedIssue = createSelector(
+  [
+    getResourceMap('issues'),
+    getUiState('selectedIssueId'),
+  ],
+  (
+    issuesMap: IssuesResources,
+    issueId: Id,
+  ) => (issuesMap[issueId] ? issuesMap[issueId] : null),
+);
 
-export const getAvailableTransitionsFetching =
-  ({ issues }: { issues: IssuesState }): boolean => issues.meta.availableTransitionsFetching;
-
-export const getComments =
-  ({ issues }: { issues: IssuesState }): Array<IssueComment> => issues.meta.comments;
-
-export const getCommentsFetching =
-  ({ issues }: { issues: IssuesState }): boolean => issues.meta.commentsFetching;
-
-export const getCommentsAdding =
-  ({ issues }: { issues: IssuesState }): boolean => issues.meta.commentsAdding;
-
-export const getFieldIdByName =
-  ({ issues }: { issues: IssuesState }, fieldName: string): string | null => {
-    const { fields } = issues.meta;
-    if (fields) {
-      const found = fields.find(f => f.name === fieldName);
-      if (found) {
-        return found.id;
-      }
-      return null;
-    }
-    return null;
-  };
-
-export const getIssueEpic = createSelector(
+export const getSelectedIssueWorklogs = createSelector(
   [
     getSelectedIssue,
-    getEpicsMap,
-    state => getFieldIdByName(state, 'Epic Link'),
-    state => getFieldIdByName(state, 'Epic Name'),
-    state => getFieldIdByName(state, 'Epic Color'),
+    getResourceMap('worklogs'),
   ],
-  (issue, map, epicLinkFieldId, epicNameFieldId, epicColorFieldId) => {
-    if (Object.keys(map).length && issue) {
-      const epic = map[issue.fields[epicLinkFieldId]];
-      if (epic) {
-        epic.fields.epicColor = epic.fields[epicColorFieldId];
-        epic.fields.epicName = epic.fields[epicNameFieldId];
-        return epic;
+  (
+    issue: Issue,
+    worklogsMap: WorklogsResources,
+  ) => (
+    issue ?
+      issue.fields.worklogs.map(id => worklogsMap[id]).sort(worklogSorter) :
+      []
+  ),
+);
+
+export const getIssueWorklogs = (issueId: Id) => (state: State) => {
+  const worklogsMap = getResourceMap('worklogs')(state);
+  const issuesMap = getResourceMap('issues')(state);
+  const issue: Issue = issuesMap[issueId];
+  if (issue) {
+    return (
+      issue.fields.worklogs
+        .map(id => worklogsMap[id])
+        .sort(worklogSorter)
+    );
+  }
+  return [];
+};
+
+export const getTrackingIssue = createSelector(
+  [
+    getResourceMap('issues'),
+    getUiState('trackingIssueId'),
+  ],
+  (
+    issuesMap: IssuesResources,
+    issueId: Id,
+  ) => (issuesMap[issueId] ? issuesMap[issueId] : null),
+);
+
+
+export const getFieldIdByName =
+  (fieldName: string) =>
+    ({
+      issuesFields,
+    }: {
+      issuesFields: IssuesFieldsState,
+    }) => {
+      const fields = issuesFields.lists.allFields.map(id => issuesFields.resources[id]);
+      const field = fields.find(f => f.name === fieldName);
+      if (!field) {
+        return null;
       }
-      return null;
+      return field.id;
+    };
+
+export const getSelectedIssueEpic = createSelector(
+  [
+    getResourceMap('issues'),
+    getResourceMappedList('issues', 'epicIssues'),
+    getResourceMap('issuesFields'),
+    getUiState('selectedIssueId'),
+    getFieldIdByName('Epic Link'),
+    getFieldIdByName('Epic Name'),
+    getFieldIdByName('Epic Color'),
+  ],
+  (
+    issuesMap: IssuesResources,
+    epics: Array<Issue>,
+    fieldsMap: IssuesFieldsResources,
+    issueId: Id,
+    epicLinkFieldId: Id | null,
+    epicNameFieldId: Id | null,
+    epicColorFieldId: Id | null,
+  ) => {
+    const issue = issuesMap[issueId];
+    const epicKey = issue.fields[epicLinkFieldId];
+    if (epicKey) {
+      const epic = epics.find(e => e.key === epicKey);
+      if (epic) {
+        return {
+          ...epic,
+          color: epic.fields[epicColorFieldId],
+          name: epic.fields[epicNameFieldId],
+        };
+      }
     }
     return null;
+  },
+);
+
+
+export const getSelectedIssueReport = createSelector(
+  [
+    getSelectedIssue,
+    getSelectedIssueWorklogs,
+    getSelfKey,
+  ],
+  (
+    issue: Issue,
+    worklogs: Array<Worklog>,
+    selfKey: Id | null,
+  ) => {
+    const timespent = issue.fields.timespent || 0;
+    const remaining = issue.fields.timeestimate || 0;
+    const estimate = remaining - timespent < 0 ? 0 : remaining - timespent;
+
+    const loggedTotal = worklogs.reduce((v, w) => v + w.timeSpentSeconds, 0);
+    const yourWorklogs = worklogs.filter(w => w.author.key === selfKey);
+    const youLoggedTotal = yourWorklogs.reduce((v, w) => v + w.timeSpentSeconds, 0);
+    const yourWorklogsToday = yourWorklogs.filter(w => moment(w.updated).isSameOrAfter(moment().startOf('day')));
+    const youLoggedToday = yourWorklogsToday.reduce((v, w) => v + w.timeSpentSeconds, 0);
+
+    return {
+      timespent,
+      remaining,
+      estimate,
+      loggedTotal,
+      yourWorklogs,
+      youLoggedTotal,
+      yourWorklogsToday,
+      youLoggedToday,
+    };
+  },
+);
+
+export const getIssuesSourceOptions = createSelector(
+  [
+    getResourceMappedList('projects', 'allProjects'),
+    getResourceMappedList('boards', 'allBoards'),
+  ],
+  (
+    projects: Array<Project>,
+    boards: Array<Board>,
+  ) => [
+    {
+      heading: 'Projects',
+      items: projects.map(project =>
+        ({ value: project.id, content: project.name, meta: { project } })),
+    },
+    {
+      heading: 'Boards',
+      items: boards.map(board =>
+        ({ value: board.id, content: board.name, meta: { board } })),
+    },
+  ],
+);
+
+export const getIssuesSourceSelectedOption = createSelector(
+  [
+    getUiState('issuesSourceType'),
+    getUiState('issuesSourceId'),
+    getResourceMap('projects'),
+    getResourceMap('boards'),
+  ],
+  (
+    type: string,
+    id: Id,
+    projectsMap: ProjectsResources,
+    boardsMap: BoardsResources,
+  ) => {
+    if (!id) {
+      return null;
+    }
+    switch (type) {
+      case 'project': {
+        const project = projectsMap[id];
+        if (!project) {
+          return null;
+        }
+        return {
+          value: project.id,
+          content: project.name,
+          meta: {
+            project,
+          },
+        };
+      }
+      case 'kanban':
+      case 'scrum': {
+        const board = boardsMap[id];
+        if (!board) {
+          return null;
+        }
+        return {
+          value: board.id,
+          content: board.name,
+          meta: {
+            board,
+          },
+        };
+      }
+      default:
+        return null;
+    }
   },
 );

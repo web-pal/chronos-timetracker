@@ -1,363 +1,180 @@
 // @flow
-import { types } from 'actions';
-import type { ReduxFormAction } from './reduxFormActions';
+
+import type {
+  Store as ReduxStore,
+  Dispatch as ReduxDispatch,
+} from 'redux';
+
+import type {
+  UiAction,
+  UiState,
+} from './ui';
+
+import type {
+  SettingsAction,
+  SettingsState,
+} from './settings';
+
+import type {
+  TimerAction,
+  TimerState,
+} from './timer';
+
+import type {
+  AuthAction,
+} from './auth';
 
 import type {
   ProfileAction,
+  ProfileState,
 } from './profile';
 
 import type {
-  WorklogAction,
+  ResourcesAction,
+} from './resources';
+
+import type {
+  ProjectsAction,
+} from './projects';
+
+import type {
+  IssuesAction,
+} from './issues';
+
+import type {
+  IssuesFieldsState,
+} from './issuesFields';
+
+import type {
+  IssuesTypesState,
+} from './issuesTypes';
+
+import type {
+  IssuesCommentsState,
+} from './issuesComments';
+
+import type {
+  IssuesStatusesState,
+} from './issuesStatuses';
+
+import type {
+  WorklogsAction,
 } from './worklogs';
 
 import type {
+  SprintsAction,
+} from './sprints';
+
+
+export type {
   UiAction,
-} from './ui';
-
-import type {
-  SettingsAction,
-} from './settings';
-
-import type {
-  IssuesAction,
-} from './issues';
-
-export type Id = string;
-
-export type FilterOption = {
-  id: Id | null,
-  iconUrl?: string,
-  name: string,
-  isChecked?: boolean,
-};
-
-
-export type CriteriaFilterName = 'Type' | 'Status' | 'Assignee';
-
-export type CriteriaFilter = {
-  name: CriteriaFilterName,
-  key: string,
-  options: Array<FilterOption>,
-  showIcons: boolean,
-};
-
-export type CriteriaFilters = Array<CriteriaFilter>;
-
-export type SelectOption = {
-  value: string | number,
-  label: string,
-  meta: any,
-};
-
-export type Action = {
-  type: string,
-  meta?: any,
-  payload?: any,
-  error?: any
-};
-
-export type ClearAllReducersAction = { type: typeof types.___CLEAR_ALL_REDUCERS___ };
-
-export type ClearAllReducers = {
-  (): ClearAllReducersAction
-};
-
-export type AnyAction =
-    ProfileAction
-  | UiAction
-  | SettingsAction
-  | ReduxFormAction
-  | ClearAllReducersAction
-  | IssuesAction
-  | WorklogAction
-  | Action;
-
-export interface ErrorObj {
-  name?: string,
-  message?: string,
-}
-
-export type {
-  Settings,
-  LocalDesktopSettings,
-  SettingsTab,
-  SettingsState,
-  FillSettingsAction,
-  FillSettings,
-  FillLocalDesktopSettingsAction,
-  FillLocalDesktopSettings,
-  SetLocalDesktopSettingAction,
-  SetLocalDesktopSetting,
-  SetSettingsModalTabAction,
-  SetSettingsModalTab,
-  RequestLocalDesktopSettings,
-  RequestLocalDesktopSettingsAction,
-  SettingsAction,
-} from './settings';
-
-export type {
-  AuthFormStep,
-  SidebarType,
-  TabLabel,
-  UpdateInfo,
-  LogLevel,
-  LogLevels,
-  FlagsArray,
-  FlagAction,
-  FlagType,
   UiState,
-  SetAuthFormStepAction,
-  SetAuthFormStep,
-  SetSidebarTypeAction,
-  SetSidebarType,
-  SetIssueViewTabAction,
-  SetIssueViewTab,
-  SetUpdateCheckRunningAction,
-  SetUpdateCheckRunning,
-  SetUpdateAvailableAction,
-  SetUpdateAvailable,
-  CheckForUpdatesRequestAction,
-  CheckForUpdatesRequest,
-  InstallUpdateRequestAction,
-  InstallUpdateRequest,
-  SetSidebarFiltersOpenAction,
-  SetSidebarFiltersOpen,
-  SetSettingsModalOpenAction,
-  SetSettingsModalOpen,
-  SetSupportModalOpenAction,
-  SetSupportModalOpen,
-  SetAboutModalOpenAction,
-  SetAboutModalOpen,
-  SetAlertModalOpenAction,
-  SetAlertModalOpen,
-  SetConfirmDeleteWorklogModalOpenAction,
-  SetConfirmDeleteWorklogModalOpen,
-  SetWorklogModalOpenAction,
-  SetWorklogModalOpen,
-  SetEditWorklogModalOpenAction,
-  SetEditWorklogModalOpen,
-  SetUpdateFetchingAction,
-  SetUpdateFetching,
-  RemoveFlagAction,
-  RemoveFlag,
-  AddFlagAction,
-  AddFlag,
-  SetScreenshotsAlowedAction,
-  SetScreenshotsAlowed,
-  ConfirmDeleteWorklogAction,
-  ConfirmDeleteWorklog,
-  UiAction,
 } from './ui';
 
 export type {
-  ApplicationRole,
-  Group,
-  User,
-  ChronosBackendUserData,
-  LoginError,
-  ProfileState,
-  AuthFormData,
-  oAuthData,
-  LoginRequestAction,
-  LoginRequest,
-  LoginOAuthRequestAction,
-  LoginOAuthRequest,
-  DenyOAuthAction,
-  DenyOAuth,
-  AcceptOAuthAction,
-  AcceptOAuth,
-  CheckJWTRequestAction,
-  CheckJWTRequest,
-  LogoutRequestAction,
-  LogoutRequest,
-  SetAuthorizedAction,
-  SetAuthorized,
-  ThrowLoginErrorAction,
-  ThrowLoginError,
-  FillUserDataAction,
-  FillUserData,
-  SetHostAction,
-  SetHost,
-  SetLoginFetchingAction,
-  SetLoginFetching,
-  SetIsPaidUserAction,
-  SetIsPaidUser,
-  ProfileAction,
-} from './profile';
+  SettingsAction,
+  SettingsState,
+} from './settings';
 
 export type {
-  RegisteredField,
-  FormState,
-  State,
-} from './redux';
-
-export type {
-  Project,
-  ProjectType,
-  Board,
-  Sprint,
-  ProjectsMap,
-  BoardsMap,
-  SprintsMap,
-  ProjectsMeta,
-  ProjectsState,
-  FetchProjectsRequestAction,
-  FetchProjectsRequest,
-  SetProjectsFetchingAction,
-  SetProjectsFetching,
-  SelectProjectAction,
-  SelectProject,
-  SelectSprintAction,
-  SelectSprint,
-  ProjectsAction,
-  FillProjectsAction,
-  FillProjects,
-  FillBoardsAction,
-  FillBoards,
-  FillSprintsAction,
-  FillSprints,
-} from './projects';
-
-export type {
-  Screenshot,
-  Issue,
-  IssueType,
-  IssueField,
-  IssueStatus,
-  IssuesMap,
-  IssueTypesMap,
-  IssueStatusesMap,
-  IssueFilters,
-  IssueTransition,
-  IssueComment,
-  IssuesMeta,
-  IssuesState,
-  FetchIssuesRequestAction,
-  FetchIssuesRequest,
-  FillIssuesAction,
-  FillIssues,
-  FillRecentIssueIdsAction,
-  FillRecentIssueIds,
-  FillFoundIssueIdsAction,
-  FillFoundIssueIds,
-  FillIssueTypesAction,
-  FillIssueTypes,
-  FillIssueStatusesAction,
-  FillIssueStatuses,
-  AddFoundIssueIdsAction,
-  AddFoundIssueIds,
-  AddIssuesAction,
-  AddIssues,
-  ClearIssuesAction,
-  ClearIssues,
-  SetIssuesFetchingAction,
-  SetIssuesFetching,
-  SetRecentIssuesFetchingAction,
-  SetRecentIssuesFetching,
-  SetIssuesTotalCountAction,
-  SetIssuesTotalCount,
-  SelectIssueAction,
-  SelectIssue,
-  SetTrackingIssueAction,
-  SetTrackingIssue,
-  SetIssuesSearchValueAction,
-  SetIssuesSearchValue,
-  SetIssuesFilterAction,
-  SetIssuesFilter,
-  AddWorklogToIssueAction,
-  AddWorklogToIssue,
-  DeleteWorklogFromIssueAction,
-  DeleteWorklogFromIssue,
-  FillAvailableTransitionsAction,
-  FillAvailableTransitions,
-  SetAvailableTransitionsFethchingAction,
-  SetAvailableTransitionsFethching,
-  TransitionIssueRequestAction,
-  TransitionIssueRequest,
-  FillCommentsAction,
-  FillComments,
-  SetCommentsFetchingAction,
-  SetCommentsFetching,
-  CommentRequestAction,
-  CommentRequest,
-  SetCommentsAddingAction,
-  SetCommentsAdding,
-  SetIssueStatusAction,
-  SetIssueStatus,
-  AssignIssueRequestAction,
-  AssignIssueRequest,
-  SetIssueAssigneeAction,
-  SetIssueAssignee,
-  FillIssueFieldsAction,
-  FillIssueFields,
-  FillEpicsAction,
-  FillEpics,
-  IssuesAction,
-} from './issues';
-
-export type {
-  Idle,
-  TimerState,
-  TickAction,
-  Tick,
-  StartTimerAction,
-  StartTimer,
-  StopTimerAction,
-  StopTimer,
-  StopTimerRequestAction,
-  StopTimerRequest,
-  SetIdleStateAction,
-  SetIdleState,
-  SetLastScreenshotTimeAction,
-  SetLastScreenshotTime,
-  ResetTimerAction,
-  ResetTimer,
-  AddScreenshotAction,
-  AddScreenshot,
-  SetScreenshotPeriodsAction,
-  SetScreenshotPeriods,
-  AddIdleTimeAction,
-  AddIdleTime,
-  DismissIdleTimeAction,
-  DismissIdleTime,
   TimerAction,
+  TimerState,
 } from './timer';
 
 export type {
-  ManualWorklogData,
+  AuthAction,
+} from './auth';
+
+export type {
+  ProfileAction,
+  ProfileState,
+  User,
+} from './profile';
+
+export type {
+  ResourcesAction,
+} from './resources';
+
+export type {
+  ProjectsAction,
+  ProjectsResources,
+  Project,
+} from './projects';
+
+export type {
+  BoardsResources,
+  Board,
+} from './boards';
+
+export type {
+  IssuesAction,
+  IssuesResources,
+  Issue,
+} from './issues';
+
+export type {
+  IssuesFieldsState,
+  IssuesFieldsResources,
+  IssueField,
+} from './issuesFields';
+
+export type {
+  IssuesTypesState,
+  IssuesTypesResources,
+  IssueType,
+} from './issuesTypes';
+
+export type {
+  IssuesCommentsState,
+  IssuesCommentsResources,
+  IssueComment,
+} from './issuesComments';
+
+export type {
+  IssuesStatusesState,
+  IssuesStatusesResources,
+  IssueStatus,
+} from './issuesStatuses';
+
+export type {
+  WorklogsAction,
+  WorklogsResources,
   Worklog,
-  WorklogsMap,
-  WorklogsMeta,
-  WorklogsState,
-  FillWorklogsAction,
-  FillWorklogs,
-  AddWorklogsAction,
-  AddWorklogs,
-  ClearWorklogsAction,
-  ClearWorklogs,
-  FillRecentWorklogIdsAction,
-  FillRecentWorklogIds,
-  AddRecentWorklogIdsAction,
-  AddRecentWorklogIds,
-  SetWorklogsFetchingAction,
-  SetWorklogsFetching,
-  SetEditWorklogFetchingAction,
-  SetEditWorklogFetching,
-  SetWorklogCommentAction,
-  SetWorklogComment,
-  SelectWorklogAction,
-  SelectWorklog,
-  SetTemporaryWorklogIdAction,
-  SetTemporaryWorklogId,
-  AddManualWorklogRequestAction,
-  AddManualWorklogRequest,
-  DeleteWorklogRequestAction,
-  DeleteWorklogRequest,
-  EditWorklogRequestAction,
-  EditWorklogRequest,
-  SetEditingWorklogAction,
-  SetEditingWorklog,
-  ConfirmEditWorklogAction,
-  ConfirmEditWorklog,
-  WorklogAction,
 } from './worklogs';
+
+export type {
+  SprintsAction,
+  SprintsResources,
+  Sprint,
+} from './sprints';
+
+export type Id = string | number;
+
+export type IndexedIds = {
+  [Id]: number,
+}
+
+export type Action =
+  UiAction |
+  SettingsAction |
+  TimerAction |
+  AuthAction |
+  ProfileAction |
+  ResourcesAction |
+  ProjectsAction |
+  IssuesAction |
+  WorklogsAction |
+  SprintsAction;
+
+export type State =
+  UiState &
+  SettingsState &
+  TimerState &
+  ProfileState &
+  IssuesFieldsState &
+  IssuesTypesState &
+  IssuesCommentsState &
+  IssuesStatusesState;
+
+export type Store = ReduxStore<State, Action>;
+export type Dispatch = ReduxDispatch<Action>;

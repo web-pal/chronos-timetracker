@@ -1,7 +1,10 @@
 // @flow
-import jira from '../jiraClient';
 
-import type { Id } from '../../types';
+import type {
+  Id,
+} from 'types';
+
+import jira from '../jiraClient';
 
 const requiredFields: Array<string> = [
   'issuetype',
@@ -22,11 +25,11 @@ const requiredFields: Array<string> = [
   'components',
 ];
 
-export function getIssueTransitions(issueId: string): Promise<*> {
+export function getIssueTransitions(issueId: Id): Promise<*> {
   return jira.client.issue.getTransitions({ issueId });
 }
 
-export function transitionIssue(issueId: string, transitionId: string): Promise<*> {
+export function transitionIssue(issueId: Id, transitionId: Id): Promise<*> {
   return jira.client.issue.transitionIssue({
     issueId,
     transition: transitionId,
@@ -38,35 +41,30 @@ export function fetchEpics(): Promise<*> {
   return jira.client.search.search({ jql, maxResults: 1000, startAt: 0 });
 }
 
-type fetchIssuesParams = {
-  startIndex: number,
-  stopIndex: number,
-  jql: string,
-  epicLinkFieldId?: string | null,
-  projectId: string,
-  projectType: string,
-};
-
 export function fetchIssues({
   startIndex,
   stopIndex,
   jql,
-  epicLinkFieldId,
-  projectId,
-  projectType,
-}: fetchIssuesParams): Promise<*> {
-  const api = projectType === 'project'
-    ? opts => jira.client.search.search(opts)
-    : opts => jira.client.board.getIssuesForBoard({ ...opts, boardId: projectId });
-  let newRequiredFields = requiredFields;
-  if (epicLinkFieldId) {
-    newRequiredFields = [...requiredFields, epicLinkFieldId];
-  }
+  additionalFields = [],
+  boardId,
+}: {
+  startIndex: number,
+  stopIndex: number,
+  jql: string,
+  additionalFields: Array<string>,
+  boardId?: number | string | null,
+}): Promise<*> {
+  const api = boardId ?
+    opts => jira.client.board.getIssuesForBoard({ ...opts, boardId }) :
+    opts => jira.client.search.search(opts);
   return api({
     jql,
     maxResults: (stopIndex - startIndex) + 1,
     startAt: startIndex,
-    fields: newRequiredFields,
+    fields: [
+      ...requiredFields,
+      ...additionalFields,
+    ],
     expand: ['renderedFields'],
   });
 }
@@ -77,6 +75,14 @@ export function fetchIssue(issueId: string): Promise<*> {
     fields: requiredFields,
   });
 }
+
+export function fetchIssueByKey(issueKey: string): Promise<*> {
+  return jira.client.issue.getIssue({
+    issueKey,
+    fields: requiredFields,
+  });
+}
+
 
 export function fetchRecentIssues({
   projectId,
@@ -118,7 +124,7 @@ export function fetchIssueFields(): Promise<*> {
   return jira.client.field.getAllFields();
 }
 
-export function fetchIssueComments(issueId: string): Promise<*> {
+export function fetchIssueComments(issueId: Id): Promise<*> {
   return jira.client.issue.getComments({ issueId });
 }
 
@@ -126,7 +132,7 @@ export function addComment({
   issueId,
   comment,
 }: {
-  issueId: string,
+  issueId: Id,
   comment: {
     body: string,
   }
@@ -137,7 +143,7 @@ export function addComment({
 export function getIssuesMetadata(projectId: Id | null): Promise<*> {
   const opts = {};
   if (projectId) {
-    opts.projectIds = [projectId];
+    opts.projectIds = projectId;
   }
   return jira.client.issue.getCreateMetadata(opts);
 }

@@ -1,109 +1,69 @@
 // @flow
-import { createSelector } from 'reselect';
-import type { ProjectsState, ProjectsMap, SprintsMap, BoardsMap, Id } from '../types';
+import {
+  createSelector,
+} from 'reselect';
 
-export const getProjectsIds =
-  ({ projects } : { projects: ProjectsState }): Array<Id> => projects.allIds;
+import type {
+  Id,
+  BoardsResources,
+  Board,
+  SprintsResources,
+  Project,
+} from 'types';
 
-export const getProjectsMap =
-  ({ projects } : { projects: ProjectsState }): ProjectsMap => projects.byId;
+import {
+  getResourceMap,
+  getResourceMappedList,
+} from './resources';
+import {
+  getUiState,
+} from './ui';
 
-export const getSprintsIds =
-  ({ projects } : { projects: ProjectsState }): Array<Id> => projects.allSprints;
 
-export const getSprintsMap =
-  ({ projects } : { projects: ProjectsState }): SprintsMap => projects.sprintsById;
-
-export const getBoardsIds =
-  ({ projects } : { projects: ProjectsState }): Array<Id> => projects.allBoards;
-
-export const getBoardsMap =
-  ({ projects } : { projects: ProjectsState }): BoardsMap => projects.boardsById;
-
-export const getProjects = createSelector(
-  [getProjectsIds, getProjectsMap],
-  (ids, map) => {
-    const projects = [];
-    ids.forEach(id => projects.push(map[id]));
-    return projects;
-  },
-);
-
-export const getSprints = createSelector(
-  [getSprintsIds, getSprintsMap],
-  (ids, map) => {
-    const sprints = [];
-    ids.forEach(id => sprints.push(map[id]));
-    return sprints;
-  },
-);
-
-export const getBoards = createSelector(
-  [getBoardsIds, getBoardsMap],
-  (ids, map) => {
-    const boards = [];
-    ids.forEach(id => boards.push(map[id]));
-    return boards;
-  },
-);
-
-export const getProjectsFetching =
-  ({ projects } : { projects: ProjectsState }): boolean => projects.meta.fetching;
-
-export const getSprintsFetching =
-  ({ projects } : { projects: ProjectsState }): boolean => projects.meta.sprintsFetching;
-
-export const getSelectedBoardId =
-  ({ projects } : { projects: ProjectsState }): Id | null =>
-    (projects.meta.selectedProjectType !== 'project' ? projects.meta.selectedProjectId : null);
-
-export const getSelectedProjectId =
-  ({ projects } : { projects: ProjectsState }): Id | null => projects.meta.selectedProjectId;
-
-export const getSelectedProjectType =
-  ({ projects } : { projects: ProjectsState }): Id | null => projects.meta.selectedProjectType;
-
-export const getSelectedSprintId =
-  ({ projects } : { projects: ProjectsState }): Id | null => projects.meta.selectedSprintId;
-
-export const getSelectedProject = createSelector(
-  [getSelectedProjectId, getProjectsMap],
-  (id, map) => (id ? map[id] : null) || null,
-);
-
-export const getSelectedBoard = createSelector(
-  [getSelectedBoardId, getBoardsMap],
-  (id, map) => (id ? map[id] : null) || null,
-);
-
-export const getSelectedProjectOption = createSelector(
-  [getSelectedProject, getSelectedBoard],
-  (project, board) => {
-    if (project) {
-      return ({ value: project.id, content: project.name, meta: { project } });
+export const getCurrentProjectId = createSelector(
+  [
+    getUiState('issuesSourceId'),
+    getUiState('issuesSourceType'),
+    getUiState('issuesSprintId'),
+    getResourceMap('boards'),
+    getResourceMap('sprints'),
+  ],
+  (
+    issuesSourceId: Id,
+    issuesSourceType: string,
+    issuesSprintId: Id,
+    boardsMap: BoardsResources,
+    sprintsMap: SprintsResources,
+  ) => {
+    let projectId = issuesSourceId;
+    if (issuesSourceId && issuesSourceType === 'kanban') {
+      const board = boardsMap[issuesSourceId];
+      if (board) {
+        projectId = board.location.projectId; // eslint-disable-line
+      }
     }
-    if (board) {
-      return ({ value: board.id, content: board.name, meta: { board } });
+    if (issuesSprintId && issuesSourceType === 'scrum') {
+      const sprint = sprintsMap[issuesSprintId];
+      if (sprint) {
+        const board = boardsMap[sprint.originBoardId];
+        if (board) {
+          projectId = board.location.projectId; // eslint-disable-line
+        }
+      }
     }
-    return null;
+    return projectId;
   },
-);
-
-export const getSelectedSprint = createSelector(
-  [getSelectedSprintId, getSprintsMap],
-  (id, map) => (id ? map[id] : null),
-);
-
-export const getSelectedSprintOption = createSelector(
-  [getSelectedSprint],
-  sprint => (
-    sprint ? ({ value: sprint.id, content: sprint.name, meta: { sprint } }) : null
-  ),
 );
 
 export const getProjectsOptions = createSelector(
-  [getProjects, getBoards],
-  (projects, boards) => [
+  [
+    getResourceMappedList('projects', 'allProjects'),
+    getResourceMappedList('boards', 'allBoards'),
+  ],
+  (
+    projects: Array<Project>,
+    boards: Array<Board>,
+  ) => [
     {
       heading: 'Projects',
       items: projects.map(project =>
@@ -115,13 +75,4 @@ export const getProjectsOptions = createSelector(
         ({ value: board.id, content: board.name, meta: { board } })),
     },
   ],
-);
-
-export const getSprintsOptions = createSelector(
-  [getSprints],
-  sprints => [{
-    heading: 'Sprints',
-    items: sprints.map(sprint =>
-      ({ value: sprint.id, content: sprint.name, meta: { sprint } })),
-  }],
 );

@@ -22,6 +22,7 @@ let mainWindow;
 let tray;
 let menu;
 let authWindow;
+let authJiraBrowserRequestsCallbackIsSet = false;
 let shouldQuit = process.platform !== 'darwin';
 
 global.appDir = appDir;
@@ -247,10 +248,44 @@ function showScreenPreview() {
   });
 }
 
+function authJiraBrowserRequests({
+  username,
+  password,
+  host,
+}) {
+  // Just in case
+  if (!authJiraBrowserRequestsCallbackIsSet) {
+    authJiraBrowserRequestsCallbackIsSet = true;
+    const filter = {
+      urls: [
+        '*://atlassian.net/*',
+        '*://atlassian.com/*',
+        '*://atlassian.io/*',
+        '*://cloudfront.net/*',
+        `*://${host}/*`,
+      ],
+    };
+    // Basic auth for jira links(media in renderedFields)
+    session.defaultSession.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
+      details.requestHeaders['Authorization'] = // eslint-disable-line
+        `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
+      callback({
+        cancel: false,
+        requestHeaders: details.requestHeaders,
+      });
+    });
+  }
+}
+
 ipcMain.on('store-credentials', (event, credentials) => {
-  const { username, password } = credentials;
+  const { username, password, host } = credentials;
   keytar.setPassword('Chronos', username, password);
   event.returnValue = true; // eslint-disable-line no-param-reassign
+  authJiraBrowserRequests({
+    username,
+    password,
+    host,
+  });
 });
 
 ipcMain.on('get-credentials', (event, { username, host }) => {
@@ -262,20 +297,10 @@ ipcMain.on('get-credentials', (event, { username, host }) => {
           password,
         };
         event.returnValue = credentials; // eslint-disable-line no-param-reassign
-        const filter = {
-          urls: [
-            '*://atlassian.net',
-            `*//${host}`,
-          ],
-        };
-        // Basic auth for jira links(media in renderedFields)
-        session.defaultSession.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
-          details.requestHeaders['Authorization'] = // eslint-disable-line
-            `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
-          callback({
-            cancel: false,
-            requestHeaders: details.requestHeaders,
-          });
+        authJiraBrowserRequests({
+          username,
+          password,
+          host,
         });
       },
     );
@@ -328,6 +353,52 @@ ipcMain.on('select-issue', (event, issueKey) => {
   tray.setContextMenu(menu);
 });
 
+ipcMain.on('open-create-issue-window', (event, url) => {
+  let createIssueWindow = new BrowserWindow({
+    parent: mainWindow,
+    modal: true,
+    useContentSize: true,
+    closable: true,
+    center: true,
+    title: 'Chronos',
+    webPreferences: {
+      nodeIntegration: false,
+      devTools: true,
+    },
+  });
+  createIssueWindow.loadURL(url);
+  createIssueWindow.once('ready-to-show', () => {
+    if (createIssueWindow) {
+      createIssueWindow.show();
+    }
+  });
+
+  createIssueWindow.webContents.on('dom-ready', () => {
+    createIssueWindow.webContents.executeJavaScript(`
+      var sidebar = document.getElementById('navigation-app');
+      var cancel = document.getElementById('issue-create-cancel');
+      if (sidebar) {
+        sidebar.parentNode.removeChild(sidebar);
+      }
+      if (cancel) {
+        cancel.addEventListener('click', function (event) {
+          window.close();
+        });
+      }
+    `);
+  });
+  createIssueWindow.webContents.on('did-get-redirect-request', (ev, fromUrl, newUrl) => {
+    if (fromUrl.includes('CreateIssueDetails.jspa')) {
+      const issueKey = newUrl.split('/').pop();
+      mainWindow.webContents.send('newIssue', issueKey);
+      createIssueWindow.close();
+    }
+  });
+  createIssueWindow.on('close', () => {
+    createIssueWindow = null;
+  }, false);
+});
+
 ipcMain.on('oauth-response', (event, text) => {
   if (mainWindow && authWindow) {
     try {
@@ -346,7 +417,6 @@ ipcMain.on('oauth-denied', () => {
     authWindow.close();
   }
 });
-
 
 ipcMain.on('open-oauth-url', (event, url) => {
   authWindow = new BrowserWindow({

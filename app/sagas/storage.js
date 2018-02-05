@@ -1,22 +1,29 @@
 // @flow
-import { select, call } from 'redux-saga/effects';
+import {
+  select,
+  call,
+} from 'redux-saga/effects';
 import storage from 'electron-json-storage';
-import { getHost } from 'selectors';
 
-type StorageKeys =
-  'lastProjectSelected'
-  | 'lastProjectSelectedType'
-  | 'localDesktopSettings'
-  | 'desktop_tracker_jwt';
+import {
+  getUiState,
+  getUserData,
+} from 'selectors';
 
-const prefixedKeys: Array<StorageKeys> = ['lastProjectSelected', 'lastProjectSelectedType'];
+
+const prefixedKeys = [
+  'issuesSourceId',
+  'issuesSourceType',
+  'issuesSprintId',
+  'issuesFilters',
+];
 
 export const storageGetPromise = (key: string): Promise<mixed> => new Promise((resolve) => {
   storage.get(key, (err, data) => {
     if (err) {
       throw new Error(`Error getting from storage: ${err}`);
     }
-    if (Object.keys(data).length === 0) {
+    if (!data || (typeof data === 'object' && Object.keys(data).length === 0)) {
       resolve(null);
     } else {
       resolve(data);
@@ -43,40 +50,43 @@ export const storageRemovePromise = (key: string): Promise<void> => new Promise(
 });
 
 export function* getFromStorage(key: string): Generator<*, mixed, *> {
-  const host: URL | null = yield select(getHost);
+  const host: URL | null = yield select(getUiState('host'));
+  const userData = yield select(getUserData);
   // $FlowFixMe: array methods buggy with Enums
-  if (prefixedKeys.includes(key) && !host) {
+  if (prefixedKeys.includes(key) && !host && !userData) {
     throw new Error('Need to fill host before getting prefixed keys from storage');
   }
   const data = yield call(
     storageGetPromise,
     // $FlowFixMe: array methods buggy with Enums
-    prefixedKeys.includes(key) ? `${host.hostname}_${key}` : key,
+    prefixedKeys.includes(key) ? `${host}_${userData.accountId}_${key}` : key,
   );
   return data;
 }
 
 export function* setToStorage(key: string, data: *): Generator<*, Promise<void>, *> {
-  const host: URL | null = yield select(getHost);
+  const host: URL | null = yield select(getUiState('host'));
+  const userData = yield select(getUserData);
   // $FlowFixMe: array methods buggy with Enums
-  if (prefixedKeys.includes(key) && !host) {
+  if (prefixedKeys.includes(key) && !host && !userData) {
     throw new Error('Can\'t set prefixed variable to storage if no host provided');
   }
   return storageSetPromise(
     // $FlowFixMe: array methods buggy with Enums
-    prefixedKeys.includes(key) ? `${host.hostname}_${key}` : key,
+    prefixedKeys.includes(key) ? `${host}_${userData.accountId}_${key}` : key,
     data,
   );
 }
 
 export function* removeFromStorage(key: string): Generator<*, Promise<void>, *> {
-  const host: URL | null = yield select(getHost);
+  const host: URL | null = yield select(getUiState('host'));
+  const userData = yield select(getUserData);
   // $FlowFixMe: array methods buggy with Enums
-  if (prefixedKeys.includes(key) && !host) {
+  if (prefixedKeys.includes(key) && !host && !userData) {
     throw new Error('Can\'t remove prefixed variable from storage if no host provided');
   }
   return storageRemovePromise(
     // $FlowFixMe: array methods buggy with Enums
-    prefixedKeys.includes(key) ? `${host.hostname}_${key}` : key,
+    prefixedKeys.includes(key) ? `${host}_${userData.accountId}_${key}` : key,
   );
 }

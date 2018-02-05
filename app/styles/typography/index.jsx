@@ -1,6 +1,5 @@
 import styled from 'styled-components2';
 
-// A fantastico response at EuroSummit
 export const H800 = styled.span`
   font-weight: 500;
   font-size: 29px;
@@ -10,7 +9,6 @@ export const H800 = styled.span`
   // margin-bottom: 40px;
 `;
 
-// Welcome to the Research Operations monthly!
 export const H700 = styled.span`
   font-weight: 500;
   font-size: 24px;
@@ -20,7 +18,6 @@ export const H700 = styled.span`
   // margin-bottom: 28px;
 `;
 
-// Guidelenes and assets
 export const H600 = styled.span`
   font-weight: 500;
   font-size: 20px;
@@ -30,7 +27,6 @@ export const H600 = styled.span`
   // margin-bottom: 28px;
 `;
 
-// All blog articles
 export const H500 = styled.span`
   font-weight: 500;
   font-size: 16px;
@@ -40,7 +36,6 @@ export const H500 = styled.span`
   // margin-bottom: 24px;
 `;
 
-// Learn how to contribute
 export const H400 = styled.span`
   font-weight: 600;
   font-size: 14px;
@@ -50,7 +45,6 @@ export const H400 = styled.span`
   // margin-bottom: 16px;
 `;
 
-// Our missions, as a team
 export const H300 = styled.span`
   font-weight: 600;
   font-size: 12px;
@@ -59,7 +53,6 @@ export const H300 = styled.span`
   // margin-bottom: 12px;
 `;
 
-// Add people
 export const H200 = styled.span`
   font-weight: 600;
   font-size: 12px;
@@ -68,7 +61,6 @@ export const H200 = styled.span`
   // margin-bottom: 12px;
 `;
 
-// PAGES
 export const H100 = styled.span`
   font-weight: 500;
   font-size: 11px;

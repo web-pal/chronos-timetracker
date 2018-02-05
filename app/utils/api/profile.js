@@ -1,5 +1,5 @@
 // @flow
-import { apiUrl } from '../config';
+import config from 'config';
 import jira from '../jiraClient';
 import { getHeaders } from './helper';
 import type { oAuthData } from '../../types';
@@ -36,7 +36,7 @@ export function checkUserPlan({
 }: {
   host: string,
 }): Promise<*> {
-  return fetch(`${apiUrl}/desktop-tracker/check-user-plan`, {
+  return fetch(`${config.apiUrl}/desktop-tracker/check-user-plan`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -68,16 +68,15 @@ export function chronosBackendAuth({
   username: string,
   password: string,
 }): Promise<*> {
-  return fetch(`${apiUrl}/desktop-tracker/authenticate`, {
+  return fetch(`${config.apiUrl}/desktop-tracker/authenticate`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
       type: 'basic_auth',
-      baseUrl: host.hostname,
-      username,
-      password,
+      baseUrl: host,
+      basicToken: Buffer.from(`${username}:${password}`).toString('base64'),
     }),
   })
     .then((res) => {
@@ -97,7 +96,7 @@ export function chronosBackendOAuth({
   token: string,
   token_secret: string,
 }): Promise<*> {
-  return fetch(`${apiUrl}/desktop-tracker/authenticate`, {
+  return fetch(`${config.apiUrl}/desktop-tracker/authenticate`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -144,7 +143,7 @@ export function getOAuthToken(options: { oauth: oAuthData, host: string }): Prom
 }
 
 export async function chronosBackendGetJiraCredentials(): Promise<*> {
-  const url: string = `${apiUrl}/desktop-tracker/authenticate`;
+  const url: string = `${config.apiUrl}/desktop-tracker/authenticate`;
   return fetch(url, {
     headers: await getHeaders(),
   })
@@ -157,7 +156,7 @@ export async function chronosBackendGetJiraCredentials(): Promise<*> {
 }
 
 export function getDataForOAuth(baseUrl: string): Promise<*> {
-  const url: string = `${apiUrl}/desktop-tracker/getDataForOAuth?baseUrl=${baseUrl}`;
+  const url: string = `${config.apiUrl}/desktop-tracker/getDataForOAuth?baseUrl=${baseUrl}`;
   return fetch(url, {
     headers: {
       Accept: 'application/json',

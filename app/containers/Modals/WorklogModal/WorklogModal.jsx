@@ -1,20 +1,59 @@
 // @flow
 import React, { Component } from 'react';
-import ModalDialog, { ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
-import FieldTextArea from '@atlaskit/field-text-area';
-import Button, { ButtonGroup } from '@atlaskit/button';
+import moment from 'moment';
+import {
+  connect,
+} from 'react-redux';
+import {
+  getStatus as getResourceStatus,
+} from 'redux-resource';
+
+import type {
+  Connector,
+} from 'react-redux';
+import type {
+  Id,
+  Worklog,
+  Dispatch,
+} from 'types';
+
+import ModalDialog, {
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+} from '@atlaskit/modal-dialog';
+import {
+  FieldTextAreaStateless,
+} from '@atlaskit/field-text-area';
+import TimePicker from 'rc-time-picker';
+import Button, {
+  ButtonGroup,
+} from '@atlaskit/button';
 import CalendarIcon from '@atlaskit/icon/glyph/calendar';
 import EditorCloseIcon from '@atlaskit/icon/glyph/editor/close';
 import Tooltip from '@atlaskit/tooltip';
 import Spinner from '@atlaskit/spinner';
-import TimePicker from 'rc-time-picker';
-import moment from 'moment';
-import { ModalContentContainer } from 'styles/modals';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { Flex, Calendar, TextField } from 'components';
-import { uiActions, worklogsActions } from 'actions';
-import { getWorklogModalOpen, getEditWorklogFetching } from 'selectors';
+
+import {
+  ModalContentContainer,
+} from 'styles/modals';
+
+import {
+  uiActions,
+  worklogsActions,
+} from 'actions';
+import {
+  getWorklogModalOpen,
+  getModalState,
+  getUiState,
+  getEditWorklog,
+} from 'selectors';
+
+import {
+  Flex,
+  Calendar,
+  TextField,
+} from 'components';
 
 import {
   InputLabel,
@@ -23,21 +62,21 @@ import {
   InputExample,
 } from './styled';
 
-import type { SetWorklogModalOpen, AddManualWorklogRequest } from '../../../types';
 
 type Props = {
   isOpen: boolean,
-  fetching: boolean,
-  setWorklogModalOpen: SetWorklogModalOpen,
-  addManualWorklogRequest: AddManualWorklogRequest,
+  saveInProcess: boolean,
+  issueId: Id,
+  worklog: Worklog,
+  dispatch: Dispatch,
 };
 
 type State = {
   calendarOpened: boolean,
-  date: mixed,
+  date: any,
   startTime: any,
   comment: string,
-  totalSpent: string,
+  timeSpent: string,
   jiraTimeError: string | null,
 };
 
@@ -47,29 +86,53 @@ class WorklogModal extends Component<Props, State> {
     date: moment().format('MM/DD/YYYY'),
     startTime: moment(),
     comment: '',
-    totalSpent: '20m',
+    timeSpent: '20m',
     jiraTimeError: null,
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.isOpen && !this.props.isOpen) {
+      if (nextProps.worklog) {
+        this.setState({
+          date: moment(nextProps.worklog.started).format('MM/DD/YYYYY'),
+          timeSpent: nextProps.worklog.timeSpent,
+          startTime: moment(nextProps.worklog.started),
+          comment: nextProps.worklog.comment,
+        });
+      } else {
+        this.setState({ timeSpent: '' });
+        this.setDateAndTimeToNow();
+      }
       setTimeout(() => {
-        if (this.comment) this.comment.focus();
-      }, 10);
+        if (this.timeInput) {
+          this.timeInput.focus(); // eslint-disable-line
+        }
+      }, 50);
     }
+    if (!nextProps.isOpen && this.props.isOpen) {
+      this.setState({
+        comment: '',
+      });
+    }
+  }
+
+  setDateAndTimeToNow = () => {
+    const now = moment();
+    this.setState({ startTime: now });
+    this.setState({ date: now.format('MM/DD/YYYY') });
   }
 
   handleTimeChange = label => (value) => {
     this.setState({ [label]: value });
   }
 
-  handleTotalSpentChange = (e) => {
+  handleTimeSpentChange = (e) => {
     const jiraTime = e.target.value || '';
     const isValid = this.checkIfJiraTime(jiraTime);
     if (isValid) {
-      this.setState({ totalSpent: jiraTime, jiraTimeError: null });
+      this.setState({ timeSpent: jiraTime, jiraTimeError: null });
     } else {
-      this.setState({ totalSpent: jiraTime, jiraTimeError: 'invalid format' });
+      this.setState({ timeSpent: jiraTime, jiraTimeError: 'invalid format' });
     }
   }
 
@@ -81,44 +144,61 @@ class WorklogModal extends Component<Props, State> {
   }
 
   render() {
-    const { isOpen, setWorklogModalOpen, fetching }: Props = this.props;
+    const {
+      isOpen,
+      issueId,
+      worklog,
+      saveInProcess,
+      dispatch,
+    }: Props = this.props;
     const {
       calendarOpened,
       date,
       startTime,
       comment,
-      totalSpent,
+      timeSpent,
       jiraTimeError,
     }: State = this.state;
 
     return isOpen && (
       <ModalDialog
-        onClose={() => setWorklogModalOpen(false)}
+        onClose={() => {
+          dispatch(uiActions.setModalState('worklog', false));
+          dispatch(uiActions.setUiState('editWorklogId', null));
+        }}
         footer={() => (
           <ModalFooter>
             <Flex row style={{ justifyContent: 'flex-end', width: '100%' }}>
               <ButtonGroup>
                 <Button
                   appearance="primary"
-                  disabled={fetching}
+                  disabled={saveInProcess}
                   onClick={() => {
-                    this.props.addManualWorklogRequest({
+                    dispatch(worklogsActions.saveWorklogRequest({
+                      worklogId: worklog ? worklog.id : null,
+                      issueId,
                       startTime: startTime.set({
                         year: date.split('/')[2],
                         month: parseInt(date.split('/')[0], 10) - 1,
                         date: date.split('/')[1],
                       }),
-                      totalSpent,
+                      timeSpent,
                       comment,
                       date,
-                    });
+                    }));
                     this.setState({ comment: '' });
                   }}
-                  iconAfter={fetching ? <Spinner invertColor /> : null}
+                  iconAfter={saveInProcess ? <Spinner invertColor /> : null}
                 >
                   Log work
                 </Button>
-                <Button appearance="subtle" onClick={() => setWorklogModalOpen(false)}>
+                <Button
+                  appearance="subtle"
+                  onClick={() => {
+                    dispatch(uiActions.setModalState('worklog', false));
+                    dispatch(uiActions.setUiState('editWorklogId', null));
+                  }}
+                >
                   Cancel
                 </Button>
               </ButtonGroup>
@@ -127,7 +207,9 @@ class WorklogModal extends Component<Props, State> {
         )}
         header={() => (
           <ModalHeader>
-            <ModalTitle>Add worklog</ModalTitle>
+            <ModalTitle>
+              {`${this.props.worklog ? 'Edit' : 'Add'} worklog`}
+            </ModalTitle>
           </ModalHeader>
         )}
       >
@@ -137,10 +219,13 @@ class WorklogModal extends Component<Props, State> {
           <InputLabel style={{ marginTop: 0 }}>Time spent</InputLabel>
           <Flex row alignCenter>
             <TextField
-              value={totalSpent}
-              onChange={this.handleTotalSpentChange}
+              value={timeSpent}
+              onChange={this.handleTimeSpentChange}
               isLabelHidden
               isInvalid={!!jiraTimeError}
+              ref={(ref) => {
+                this.timeInput = ref; // eslint-disable-line
+              }}
             />
             <InputExample>(eg. 1d 12h 30m)</InputExample>
           </Flex>
@@ -180,9 +265,20 @@ class WorklogModal extends Component<Props, State> {
           </Tooltip>
 
           {calendarOpened &&
-            <CalendarContainer onClickOutside={() => this.setState({ calendarOpened: false })}>
+            <CalendarContainer
+              onClickOutside={() => {
+                this.setState({
+                  calendarOpened: false,
+                });
+              }}
+            >
               <Calendar
-                onUpdate={value => this.setState({ date: value, calendarOpened: false })}
+                onUpdate={(newDate) => {
+                  this.setState({
+                    date: newDate,
+                    calendarOpened: false,
+                  });
+                }}
               />
             </CalendarContainer>
           }
@@ -201,12 +297,11 @@ class WorklogModal extends Component<Props, State> {
           </Flex>
 
           {/* COMMENT */}
-          <FieldTextArea
+          <FieldTextAreaStateless
             shouldFitContainer
             label="Worklog comment"
             value={comment}
             onChange={ev => this.setState({ comment: ev.target.value })}
-            ref={(c) => { this.comment = c; }}
           />
         </ModalContentContainer>
       </ModalDialog>
@@ -216,13 +311,19 @@ class WorklogModal extends Component<Props, State> {
 
 function mapStateToProps(state) {
   return {
-    isOpen: getWorklogModalOpen(state),
-    fetching: getEditWorklogFetching(state),
+    isOpen: getModalState('worklog')(state),
+    issueId: getUiState('worklogFormIssueId')(state),
+    worklog: getEditWorklog(state),
+    saveInProcess: getResourceStatus(
+      state,
+      'worklogs.requests.saveWorklog.status',
+    ).pending,
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ ...uiActions, ...worklogsActions }, dispatch);
-}
+const connector: Connector<{}, Props> = connect(
+  mapStateToProps,
+  dispatch => ({ dispatch }),
+);
 
-export default connect(mapStateToProps, mapDispatchToProps)(WorklogModal);
+export default connector(WorklogModal);

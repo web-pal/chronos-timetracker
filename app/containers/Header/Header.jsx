@@ -1,59 +1,73 @@
 // @flow
 import React from 'react';
-import type { StatelessFunctionalComponent, Node } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import DropdownMenu, { DropdownItemGroup, DropdownItem } from '@atlaskit/dropdown-menu';
-import { cogIcon } from 'data/svg';
-import { Flex } from 'components';
 import {
-  profileActions,
+  connect,
+} from 'react-redux';
+import {
+  shell,
+} from 'electron';
+import {
+  getStatus as getResourceStatus,
+} from 'redux-resource';
+
+import type {
+  StatelessFunctionalComponent,
+  Node,
+} from 'react';
+import type {
+  Connector,
+} from 'react-redux';
+import type {
+  User,
+  Dispatch,
+} from 'types';
+
+
+import DropdownMenu, {
+  DropdownItemGroup,
+  DropdownItem,
+} from '@atlaskit/dropdown-menu';
+
+import {
   authActions,
   uiActions,
   settingsActions,
+  issuesActions,
 } from 'actions';
-import { shell } from 'electron';
 import {
   getUserData,
-  getHost,
-  getUpdateAvailable,
-  getUpdateFetching,
+  getUiState,
 } from 'selectors';
-
 import {
-  trackMixpanel,
-} from '../../utils/stat';
+  cogIcon,
+  refreshWhite,
+} from 'data/svg';
+import config from 'config';
 
 import {
   HeaderContainer,
-  Name,
+  ProfileContainer,
+  IconsContainer,
   ProfileInfo,
   SettingsIcon,
   ProfilePicture,
-  Team,
+  ProfileName,
+  ProfileTeam,
   DropdownSeparator,
   UpdateAvailableBadge,
   DropdownLogoutItem,
   DropdownUpdateItem,
+  RefreshIcon,
 } from './styled';
 
-import type {
-  LogoutRequest,
-  User,
-  UpdateInfo,
-  SetSettingsModalOpen,
-  SetSettingsModalTab,
-} from '../../types';
 
 type Props = {
   userData: User,
-  host: URL,
-  updateAvailable: UpdateInfo,
+  host: string,
+  updateAvailable: string,
   updateFetching: boolean,
-
-  logoutRequest: LogoutRequest,
-  setSettingsModalOpen: SetSettingsModalOpen,
-  setSettingsModalTab: SetSettingsModalTab,
+  issuesFetching: boolean,
+  dispatch: Dispatch,
 };
 
 const Header: StatelessFunctionalComponent<Props> = ({
@@ -61,80 +75,109 @@ const Header: StatelessFunctionalComponent<Props> = ({
   host,
   updateAvailable,
   updateFetching,
-  logoutRequest,
-  setSettingsModalOpen,
-  setSettingsModalTab,
+  issuesFetching,
+  dispatch,
 }: Props): Node =>
   <HeaderContainer className="webkit-drag">
-    <Flex row alignCenter>
-      <ProfilePicture src={userData.avatarUrls['48x48']} alt="" />
+    <ProfileContainer>
+      <ProfilePicture
+        src={userData.avatarUrls['48x48']}
+        alt="User avatar"
+      />
       <ProfileInfo>
-        <Name>{userData.displayName}</Name>
-        <Team>{host}</Team>
+        <ProfileName>
+          {userData.displayName}
+        </ProfileName>
+        <ProfileTeam>
+          {host}
+        </ProfileTeam>
       </ProfileInfo>
-    </Flex>
-    <Flex row style={{ position: 'relative' }}>
+    </ProfileContainer>
+
+    <IconsContainer>
+      <RefreshIcon
+        src={refreshWhite}
+        onClick={() => {
+          if (!issuesFetching) {
+            dispatch(issuesActions.refetchIssuesRequest());
+          }
+        }}
+        alt="Refresh"
+      />
       {updateAvailable &&
         <UpdateAvailableBadge />
       }
       <DropdownMenu
-        trigger={<SettingsIcon src={cogIcon} alt="" />}
         triggerType="default"
         position="bottom right"
+        trigger={
+          <SettingsIcon
+            src={cogIcon}
+            alt="Settings"
+          />
+        }
       >
         <DropdownItemGroup>
           <DropdownItem
             onClick={() => {
-              trackMixpanel('Opened Settings');
-              setSettingsModalOpen(true);
+              dispatch(uiActions.setModalState('settings', true));
             }}
           >
             Settings
           </DropdownItem>
           <DropdownItem
-            onClick={() =>
-              shell.openExternal('https://web-pal.atlassian.net/servicedesk/customer/portal/2')
-            }
+            onClick={() => shell.openExternal(config.supportLink)}
           >
             Support and feedback
           </DropdownItem>
+          <DropdownItem
+            onClick={() => shell.openExternal(config.githubLink)}
+          >
+            Github
+          </DropdownItem>
           <DropdownSeparator />
+
           {updateAvailable && !updateFetching && [
             <DropdownUpdateItem
               onClick={() => {
-                trackMixpanel('Clicked "Install Update"', { upcomingVersion: updateAvailable });
-                setSettingsModalOpen(true);
-                setSettingsModalTab('Updates');
+                dispatch(uiActions.setModalState('settings', true));
+                dispatch(settingsActions.setSettingsModalTab('Updates'));
               }}
             >
               {updateAvailable} is out! Update now.
             </DropdownUpdateItem>,
             <DropdownSeparator />,
           ]}
-          <DropdownLogoutItem onClick={logoutRequest}>
+
+          <DropdownLogoutItem
+            onClick={() => {
+              dispatch(authActions.logoutRequest());
+            }}
+          >
             Logout
           </DropdownLogoutItem>
         </DropdownItemGroup>
       </DropdownMenu>
-    </Flex>
+    </IconsContainer>
   </HeaderContainer>;
+
 
 function mapStateToProps(state) {
   return {
     userData: getUserData(state),
-    host: getHost(state),
-    updateAvailable: getUpdateAvailable(state),
-    updateFetching: getUpdateFetching(state),
+    host: getUiState('host')(state),
+    updateAvailable: getUiState('updateAvailable')(state),
+    updateFetching: getUiState('updateFetching')(state),
+    issuesFetching: getResourceStatus(
+      state,
+      'issues.requests.filterIssues.status',
+    ).pending,
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    ...profileActions,
-    ...authActions,
-    ...uiActions,
-    ...settingsActions,
-  }, dispatch);
-}
+const connector: Connector<{}, Props> = connect(
+  mapStateToProps,
+  dispatch => ({ dispatch }),
+);
 
-export default connect(mapStateToProps, mapDispatchToProps)(Header);
+export default connector(Header);

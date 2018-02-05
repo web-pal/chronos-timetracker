@@ -1,4 +1,5 @@
 import styled from 'styled-components2';
+import styledOld from 'styled-components';
 import FieldTextArea from '@atlaskit/field-text-area';
 
 export const ActivitySection = styled.div`
@@ -23,7 +24,7 @@ export const Actions = styled.div`
   justify-content: flex-end;
 `;
 
-export const AddCommentInput = styled(FieldTextArea)`
+export const AddCommentInput = styledOld(FieldTextArea)`
   transition: all 0.1s ease;
   box-sizing: border-box;
   background-color: #F4F5F7;

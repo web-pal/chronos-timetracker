@@ -1,124 +1,103 @@
 // @flow
-import { types } from 'actions';
-import type { Action, UiState } from '../types';
+import {
+  actionTypes,
+} from 'actions';
+import type {
+  Action,
+  UiState,
+} from 'types';
+
 
 const initialState: UiState = {
+  initializeInProcess: false,
+  authorized: false,
   authFormStep: 1,
+  loginError: null,
+  loginRequestInProcess: false,
+  host: null,
+  protocol: null,
+  isPaidUser: false,
+
+  updateCheckRunning: false,
+  updateFetching: false,
+  updateAvailable: null,
+
   sidebarType: 'all',
   issueViewTab: 'Details',
-  initializeInProcess: false,
-  updateCheckRunning: false,
-  updateAvailable: null,
-  updateFetching: false,
-  sidebarFiltersOpen: false,
-  settingsModalOpen: false,
-  supportModalOpen: false,
-  aboutModalOpen: false,
-  alertModalOpen: false,
-  confirmDeleteWorklogModalOpen: false,
-  worklogModalOpen: false,
-  editWorklogModalOpen: false,
-  flags: [],
+  issueViewWorklogsScrollToIndex: 0,
+  issuesSearch: '',
+  issuesFilters: {
+    type: [],
+    status: [],
+    assignee: [],
+  },
+
+  selectedWorklogId: null,
+  deleteWorklogId: null,
+  editWorklogId: null,
+  worklogFormIssueId: null,
+  worklogComment: '',
+
+  selectedIssueId: null,
+  issuesSourceType: null,
+  issuesSourceId: null,
+  issuesSprintId: null,
+
   screenshotsAllowed: false,
+  sidebarFiltersIsOpen: false,
+  filterStatusesIsFetched: false,
+  commentAdding: false,
+
+  modalState: {
+    alert: false,
+    confirmDeleteWorklog: false,
+    settings: false,
+    worklog: false,
+  },
+
+  flags: [],
 };
 
-export default function ui(state: UiState = initialState, action: Action) {
+export default function ui(
+  state: UiState = initialState,
+  action: Action,
+) {
   switch (action.type) {
-    case types.SET_INITIALIZE_PROCESS:
+    case actionTypes.SET_UI_STATE:
       return {
         ...state,
-        initializeInProcess: action.payload,
+        [action.payload.key]: action.payload.value,
       };
-    case types.SET_AUTH_FORM_STEP:
+    case actionTypes.SET_MODAL_STATE:
       return {
         ...state,
-        authFormStep: action.payload,
+        modalState: {
+          ...state.modalState,
+          [action.payload.modalName]: action.payload.state,
+        },
       };
-    case types.SET_SIDEBAR_TYPE:
+    case actionTypes.SET_ISSUES_FILTER:
       return {
         ...state,
-        sidebarType: action.payload,
+        issuesFilters: {
+          ...state.issuesFilters,
+          [action.filterType]: action.value,
+        },
       };
-    case types.SET_ISSUE_VIEW_TAB:
+    case actionTypes.ADD_FLAG:
       return {
         ...state,
-        issueViewTab: action.payload,
+        flags: [action.payload, ...state.flags],
       };
-    case types.SET_UPDATE_CHECK_RUNNING:
+    case actionTypes.DELETE_FLAG: {
+      const { id } = action;
       return {
         ...state,
-        updateCheckRunning: action.payload,
+        flags: state.flags.filter(f => f.id !== id),
       };
-    case types.SET_UPDATE_AVAILABLE:
-      return {
-        ...state,
-        updateAvailable: action.payload,
-      };
-    case types.SET_UPDATE_FETCHING:
-      return {
-        ...state,
-        updateFetching: action.payload,
-      };
-    case types.SET_SIDEBAR_FILTERS_OPEN:
-      return {
-        ...state,
-        sidebarFiltersOpen: action.payload,
-      };
-    case types.SET_SETTINGS_MODAL_OPEN:
-      return {
-        ...state,
-        settingsModalOpen: action.payload,
-      };
-    case types.SET_SUPPORT_MODAL_OPEN:
-      return {
-        ...state,
-        supportModalOpen: action.payload,
-      };
-    case types.SET_ABOUT_MODAL_OPEN:
-      return {
-        ...state,
-        aboutModalOpen: action.payload,
-      };
-    case types.SET_ALERT_MODAL_OPEN:
-      return {
-        ...state,
-        alertModalOpen: action.payload,
-      };
-    case types.SET_CONFIRM_DELETE_WORKLOG_MODAL_OPEN:
-      return {
-        ...state,
-        confirmDeleteWorklogModalOpen: action.payload,
-      };
-    case types.SET_WORKLOG_MODAL_OPEN:
-      return {
-        ...state,
-        worklogModalOpen: action.payload,
-      };
-    case types.SET_EDIT_WORKLOG_MODAL_OPEN:
-      return {
-        ...state,
-        editWorklogModalOpen: action.payload,
-      };
-    case types.REMOVE_FLAG:
-      return {
-        ...state,
-        flags: state.flags.slice(1),
-      };
-    case types.ADD_FLAG:
-      return {
-        ...state,
-        flags: [...state.flags, {
-          ...action.payload,
-          id: state.flags.length,
-        }],
-      };
-    case types.___CLEAR_ALL_REDUCERS___:
+    }
+    case actionTypes.__CLEAR_ALL_REDUCERS__:
       return initialState;
-    case types.SET_SCREENSHOTS_ALLOWED:
-      return {
-        ...state,
-        screenshotsAllowed: action.payload,
-      };
     default:
       return state;
   }

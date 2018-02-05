@@ -1,22 +1,34 @@
+// @flow
 import {
   call,
-  take,
   put,
+  takeEvery,
   select,
 } from 'redux-saga/effects';
-import * as Api from 'api';
-import { remote } from 'electron';
-import Raven from 'raven-js';
-import { types, settingsActions, uiActions } from 'actions';
-import { getLocalDesktopSettings } from 'selectors';
-import { infoLog } from './ui';
+import {
+  remote,
+} from 'electron';
 
+import * as Api from 'api';
+
+import {
+  actionTypes,
+  uiActions,
+} from 'actions';
+import {
+  getSettingsState,
+} from 'selectors';
+
+import {
+  infoLog,
+  throwError,
+} from './ui';
 import {
   setToStorage,
 } from './storage';
 
 
-export function* getSettings() {
+export function* getSettings(): Generator<*, *, *> {
   try {
     yield call(
       infoLog,
@@ -28,40 +40,52 @@ export function* getSettings() {
       'got backend settings',
       payload,
     );
-    yield put(settingsActions.fillSettings(payload));
+    // yield put(settingsActions.fillSettings(payload));
   } catch (err) {
-    Raven.captureException(err);
+    yield call(throwError, err);
   }
 }
 
-export function* watchLocalDesktopSettingsChange() {
-  while (true) {
-    const { payload, meta } = yield take(types.SET_LOCAL_DESKTOP_SETTING);
+export function* onChangeLocalDesktopSettings({
+  settingName,
+  value,
+}: {
+  settingName: string,
+  value: any,
+}): Generator<*, *, *> {
+  try {
     yield call(
       infoLog,
       'set local desktop setting request',
       {
-        key: meta,
-        payload,
+        value,
+        settingName,
       },
     );
-    if (meta === 'trayShowTimer' && !payload) {
+    if (settingName === 'trayShowTimer' && !value) {
       remote.getGlobal('tray').setTitle('');
     }
-    if (meta === 'updateChannel') {
+    if (settingName === 'updateChannel') {
       yield call(
         infoLog,
-        `switched updateChannel to ${payload}, checking for updates...`,
+        `switched updateChannel to ${value}, checking for updates...`,
       );
       yield put(uiActions.checkForUpdatesRequest());
     }
-    const newLocalSettings = yield select(getLocalDesktopSettings);
-    newLocalSettings[meta] = payload;
+    const newLocalSettings = yield select(getSettingsState('localDesktopSettings'));
     yield call(
-      infoLog,
-      'new local desktop settings = ',
-      newLocalSettings,
+      setToStorage,
+      'localDesktopSettings',
+      {
+        ...newLocalSettings,
+        [settingName]: value,
+      },
     );
-    yield call(setToStorage, 'localDesktopSettings', newLocalSettings);
+  } catch (err) {
+    yield call(throwError, err);
   }
+}
+
+export function* watchLocalDesktopSettingsChange(): Generator<*, *, *> {
+  yield takeEvery(actionTypes.SET_LOCAL_DESKTOP_SETTING, onChangeLocalDesktopSettings);
 }

@@ -1,15 +1,34 @@
 // @flow
 import React from 'react';
-import type { StatelessFunctionalComponent, Node } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { getSelectedIssue, getIssueEpic } from 'selectors';
-import { Flex } from 'components';
-import { getStatusColor, getEpicColor } from 'jiraColors-util';
+import {
+  connect,
+} from 'react-redux';
+
+import type {
+  StatelessFunctionalComponent,
+  Node,
+} from 'react';
+import type {
+  Connector,
+} from 'react-redux';
+import type {
+  Issue,
+} from 'types';
+
+
+import {
+  getSelectedIssue,
+  getSelectedIssueEpic,
+} from 'selectors';
+import {
+  Flex,
+} from 'components';
+import {
+  getStatusColor,
+  getEpicColor,
+} from 'jiraColors-util';
 import ReactMarkdown from 'react-markdown';
 
-// import IssueAttachments from './IssueAttachments';
-import type { Issue } from '../../../types';
 import {
   IssueDetailsContainer,
   DetailsLabel,
@@ -27,7 +46,10 @@ type Props = {
   epic: Issue,
 }
 
-const IssueDetails: StatelessFunctionalComponent<Props> = ({ issue, epic }: Props): Node => {
+const IssueDetails: StatelessFunctionalComponent<Props> = ({
+  issue,
+  epic,
+}: Props): Node => {
   const {
     versions,
     fixVersions,
@@ -143,9 +165,9 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({ issue, epic }: Prop
             <DetailsValue>
               {epic ?
                 <IssueLabel
-                  backgroundColor={getEpicColor(epic.fields.epicColor)}
+                  backgroundColor={getEpicColor(epic.color)}
                 >
-                  {epic.fields.epicName}
+                  {epic.name}
                 </IssueLabel> :
                 'none'
               }
@@ -177,9 +199,6 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({ issue, epic }: Prop
           : <ReactMarkdown source={issue.fields.description || '*No description*'} />
         }
       </DescriptionSectionHeader>
-      {
-        /* TODO <IssueAttachments /> */
-      }
     </IssueDetailsContainer>
   );
 };
@@ -187,12 +206,13 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({ issue, epic }: Prop
 function mapStateToProps(state) {
   return {
     issue: getSelectedIssue(state),
-    epic: getIssueEpic(state),
+    epic: getSelectedIssueEpic(state),
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({}, dispatch);
-}
+const connector: Connector<{}, Props> = connect(
+  mapStateToProps,
+  dispatch => ({ dispatch }),
+);
 
-export default connect(mapStateToProps, mapDispatchToProps)(IssueDetails);
+export default connector(IssueDetails);

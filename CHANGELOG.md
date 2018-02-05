@@ -1,3 +1,44 @@
+<a name="2.5.0"></a>
+# [2.5.0](https://github.com/web-pal/chronos-timetracker/compare/v2.4.7...v2.5.0) (2018-02-05)
+
+
+### Bug Fixes
+
+* **Authorization:** filter on onBeforeSendHeaders ([4b901c1](https://github.com/web-pal/chronos-timetracker/commit/4b901c1))
+* **Authorization:** jira browser auth in first login ([0fae182](https://github.com/web-pal/chronos-timetracker/commit/0fae182))
+* **Tracking:** clear worklogComment after save worklog ([74b8353](https://github.com/web-pal/chronos-timetracker/commit/74b8353)), closes [#56](https://github.com/web-pal/chronos-timetracker/issues/56)
+* focus on just added worklog ([e14a128](https://github.com/web-pal/chronos-timetracker/commit/e14a128))
+* recentIssues ([6c6dd3e](https://github.com/web-pal/chronos-timetracker/commit/6c6dd3e))
+* refetch issues after transition done ([4339550](https://github.com/web-pal/chronos-timetracker/commit/4339550))
+* remember issues filter ([e0e2dc7](https://github.com/web-pal/chronos-timetracker/commit/e0e2dc7)), closes [#18](https://github.com/web-pal/chronos-timetracker/issues/18)
+* save timer before quit app ([ed8136c](https://github.com/web-pal/chronos-timetracker/commit/ed8136c))
+* turn on mixpanel ([94c4ada](https://github.com/web-pal/chronos-timetracker/commit/94c4ada))
+* white bg for NoWorklogsContainer ([93e514d](https://github.com/web-pal/chronos-timetracker/commit/93e514d))
+
+
+### Features
+
+* linux auto-updates ([cd47fd1](https://github.com/web-pal/chronos-timetracker/commit/cd47fd1))
+* update electron-updater ([38e0e78](https://github.com/web-pal/chronos-timetracker/commit/38e0e78))
+
+
+
+<a name="2.4.7"></a>
+## [2.4.7](https://github.com/web-pal/chronos-timetracker/compare/v2.4.6...v2.4.7) (2018-01-19)
+
+
+### Bug Fixes
+
+* **Authorization:** jira browser auth in first login ([0fae182](https://github.com/web-pal/chronos-timetracker/commit/0fae182))
+* turn on mixpanel ([94c4ada](https://github.com/web-pal/chronos-timetracker/commit/94c4ada))
+
+
+### Features
+
+* linux auto-updates ([cd47fd1](https://github.com/web-pal/chronos-timetracker/commit/cd47fd1))
+
+
+
 <a name="2.4.6"></a>
 ## [2.4.6](https://github.com/web-pal/chronos-timetracker/compare/v2.4.4...v2.4.6) (2018-01-18)
 

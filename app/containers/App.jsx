@@ -1,14 +1,18 @@
 // @flow
 import React from 'react';
-import { connect } from 'react-redux';
-import { getAuthorized } from 'selectors';
-import Spinner from '@atlaskit/spinner';
+import {
+  connect,
+} from 'react-redux';
 
 import type {
   Node,
   StatelessFunctionalComponent,
 } from 'react';
 
+import Spinner from '@atlaskit/spinner';
+import {
+  getUiState,
+} from 'selectors';
 import {
   MaxHeight,
   AppWrapper,
@@ -17,7 +21,6 @@ import {
 import AuthForm from './AuthForm';
 import Main from './Main';
 
-import type { State } from '../types';
 
 type Props = {
   isAuthorized: boolean,
@@ -40,10 +43,10 @@ const App: StatelessFunctionalComponent<Props> = (props: Props): Node => (
   </AppWrapper>
 );
 
-function mapStateToProps(state: State): Props {
+function mapStateToProps(state): Props {
   return {
-    isAuthorized: getAuthorized(state),
-    initializeInProcess: state.ui.initializeInProcess,
+    isAuthorized: getUiState('authorized')(state),
+    initializeInProcess: getUiState('initializeInProcess')(state),
   };
 }
 

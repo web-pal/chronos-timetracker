@@ -6,6 +6,7 @@ export const avatarIcon = require('./avatar.svg');
 export const cogIcon = require('./cog.svg');
 
 export const refresh = require('./refresh.svg');
+export const refreshWhite = require('./refresh-white.svg');
 export const danger = require('./danger.svg');
 export const filter = require('./filter.svg');
 export const filterBlue = require('./filter-blue.svg');

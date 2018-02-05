@@ -1,18 +1,41 @@
 // @flow
 import React from 'react';
-import type { StatelessFunctionalComponent, Node } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { getTimerTime, getTrackingIssue, getScreenshotsAllowed } from 'selectors';
-import { issuesActions, timerActions } from 'actions';
-import { Flex } from 'components';
-import { CSSTransitionGroup } from 'react-transition-group';
 import moment from 'moment';
+import {
+  connect,
+} from 'react-redux';
+
+import type {
+  StatelessFunctionalComponent,
+  Node,
+} from 'react';
+import type {
+  Connector,
+} from 'react-redux';
+import type {
+  Issue,
+  Dispatch,
+} from 'types';
+
+import {
+  getUiState,
+  getTrackingIssue,
+  getTimerState,
+} from 'selectors';
+import {
+  timerActions,
+  uiActions,
+} from 'actions';
+import {
+  Flex,
+} from 'components';
+import {
+  Transition,
+} from 'react-transition-group';
 import CameraIcon from '@atlaskit/icon/glyph/camera';
 import Tooltip from '@atlaskit/tooltip';
 
-import WorklogEditDialog from './WorklogEditDialog';
-import type { Issue, SelectIssue, StopTimerRequest } from '../../../types';
+import WorklogCommentDialog from './WorklogCommentDialog';
 import {
   IssueName,
   Dot,
@@ -21,13 +44,14 @@ import {
   Container,
 } from './styled';
 
+
 type Props = {
   time: number,
   screenshotUploading: boolean,
   screenshotsAllowed: boolean,
   trackingIssue: Issue,
-  selectIssue: SelectIssue,
-  stopTimerRequest: StopTimerRequest,
+  worklogComment: string,
+  dispatch: Dispatch,
 }
 
 function addLeadingZero(s: number): string {
@@ -47,26 +71,34 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
   screenshotUploading,
   screenshotsAllowed,
   trackingIssue,
-  selectIssue,
-  stopTimerRequest,
+  worklogComment,
+  dispatch,
 }: Props): Node => (
-  <CSSTransitionGroup
-    transitionName="tracking-bar"
-    transitionAppear
-    transitionAppearTimeout={250}
-    transitionEnter={false}
-    transitionLeave={false}
+  <Transition
+    appear
+    timeout={250}
+    enter={false}
+    expit={false}
   >
     <Container>
       <Flex row alignCenter>
-        <WorklogEditDialog />
+        <WorklogCommentDialog
+          comment={worklogComment}
+          onSetComment={(comment) => {
+            dispatch(uiActions.setUiState('worklogComment', comment));
+          }}
+        />
         {screenshotsAllowed &&
           <div style={{ marginLeft: 10 }}>
             <Tooltip
               description="Screenshots are enabled"
               position="bottom"
             >
-              <CameraIcon size="large" primaryColor="white" label="Screenshots on" />
+              <CameraIcon
+                size="large"
+                primaryColor="white"
+                label="Screenshots on"
+              />
             </Tooltip>
           </div>
         }
@@ -74,8 +106,10 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
       <Flex row alignCenter>
         <IssueName
           onClick={() => {
-            selectIssue(trackingIssue);
-            // jumpToTrackingIssue();
+            dispatch(uiActions.setUiState(
+              'selectedIssueId',
+              trackingIssue.id,
+            ));
           }}
         >
           {trackingIssue.key}
@@ -93,30 +127,34 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
               'Currently app in process of uploading screenshot, wait few seconds please',
             );
           } else {
-            stopTimerRequest();
+            dispatch(timerActions.stopTimerRequest());
           }
         }}
       >
         <StopButton
           alt="stop"
-          onClick={() => stopTimerRequest()}
+          onClick={() => {
+            dispatch(timerActions.stopTimerRequest());
+          }}
         />
       </div>
     </Container>
-  </CSSTransitionGroup>
+  </Transition>
 );
 
 function mapStateToProps(state) {
   return {
-    time: getTimerTime(state),
+    time: getTimerState('time')(state),
     screenshotUploading: false,
-    screenshotsAllowed: getScreenshotsAllowed(state),
+    screenshotsAllowed: false,
     trackingIssue: getTrackingIssue(state),
+    worklogComment: getUiState('worklogComment')(state),
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ ...issuesActions, ...timerActions }, dispatch);
-}
+const connector: Connector<{}, Props> = connect(
+  mapStateToProps,
+  dispatch => ({ dispatch }),
+);
 
-export default connect(mapStateToProps, mapDispatchToProps)(TrackingBar);
+export default connector(TrackingBar);
