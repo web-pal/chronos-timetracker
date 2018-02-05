@@ -32,6 +32,7 @@ import {
 import {
   issuesActions,
   sprintsActions,
+  resourcesActions,
   uiActions,
 } from 'actions';
 
@@ -74,9 +75,17 @@ const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
         dispatch(uiActions.setUiState('issuesSourceId', item.value));
         dispatch(uiActions.setUiState('issuesSourceType', type));
         if (type === 'scrum') {
+          dispatch(resourcesActions.clearResourceList({
+            resourceName: 'issues',
+            list: 'recentIssues',
+          }));
           dispatch(sprintsActions.fetchSprintsRequest());
         } else if (item.value) {
           dispatch(uiActions.setUiState('filterStatusesIsFetched', false));
+          dispatch(resourcesActions.clearResourceList({
+            resourceName: 'issues',
+            list: 'recentIssues',
+          }));
           dispatch(issuesActions.refetchIssuesRequest());
         }
       }}
