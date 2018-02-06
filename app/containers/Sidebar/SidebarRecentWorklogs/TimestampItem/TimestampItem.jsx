@@ -5,6 +5,7 @@ import type {
   StatelessFunctionalComponent,
   Node,
 } from 'react';
+import type Moment from 'moment';
 import type {
   Worklog,
 } from 'types';
@@ -19,7 +20,7 @@ import {
 
 
 type Props = {
-  date: any,
+  date: Moment,
   worklogs: Array<Worklog>,
 };
 

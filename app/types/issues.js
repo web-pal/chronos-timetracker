@@ -2,8 +2,8 @@
 import * as actionTypes from '../actions/actionTypes/issues';
 import type {
   Id,
+  IssueField,
 } from './';
-
 
 export type IssuesAction =
   {|
@@ -41,7 +41,13 @@ export type IssuesAction =
     issueId: number | string,
   |};
 
-export type Issue = any;
+export type Issue = {
+  expand?: string,
+  id: string,
+  self: string,
+  key: string,
+  fields: IssueField,
+};
 
 export type IssuesResources = {
   [Id]: Issue,

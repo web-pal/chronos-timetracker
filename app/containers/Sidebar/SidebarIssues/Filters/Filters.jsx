@@ -16,6 +16,7 @@ import type {
 } from 'react-redux';
 import type {
   Dispatch,
+  Filter,
 } from 'types';
 
 import Button, {
@@ -50,8 +51,8 @@ import FilterOption from './FilterOption';
 
 
 type Props = {
-  filters: any,
-  options: any,
+  filters: Filter,
+  options: Array<any>,
   issuesCount: number,
   issuesFetching: boolean,
   optionsFetching: boolean,

@@ -9,7 +9,8 @@ export const IssueContainer = styled.div`
   flex-direction: column;
   cursor: pointer;
 
-  height: 80px;
+  height: 100%;
+  box-sizing: border-box;
   padding: 10px 20px;
   border-bottom: 1px solid rgba(151, 151, 151, .35);
   ${props => props.active && `
@@ -37,6 +38,8 @@ export const IssueName = styled.a`
 
 export const IssueDescription = styled.div`
   font-size: 13px;
+  height: 50px;
+  overflow: hidden;
 `;
 
 export const IssueFieldsContainer = styled(Flex).attrs({

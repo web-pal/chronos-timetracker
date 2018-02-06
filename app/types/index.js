@@ -65,7 +65,6 @@ import type {
   SprintsAction,
 } from './sprints';
 
-
 export type {
   UiAction,
   UiState,
@@ -74,6 +73,7 @@ export type {
 export type {
   SettingsAction,
   SettingsState,
+  SettingsGeneral,
 } from './settings';
 
 export type {
@@ -116,6 +116,11 @@ export type {
   IssuesFieldsState,
   IssuesFieldsResources,
   IssueField,
+  Component,
+  Version,
+  IssuePriority,
+  IssueResolution,
+  IssueWorklog,
 } from './issuesFields';
 
 export type {
@@ -137,6 +142,10 @@ export type {
 } from './issuesStatuses';
 
 export type {
+  IssuesReports,
+} from './issuesReports';
+
+export type {
   WorklogsAction,
   WorklogsResources,
   Worklog,
@@ -147,6 +156,18 @@ export type {
   SprintsResources,
   Sprint,
 } from './sprints';
+
+export type {
+  SelectedOption,
+} from './options';
+
+export type {
+  Filter,
+} from './filters';
+
+export type {
+  Epic,
+} from './epics';
 
 export type Id = string | number;
 

@@ -5,7 +5,7 @@ import { InfiniteLoader } from 'react-virtualized';
 import AutosizableList from './AutosizableList';
 
 type Props = {
-  listProps: any
+  listProps: any,
 };
 
 const InfiniteLoadingList = (props: Props) =>

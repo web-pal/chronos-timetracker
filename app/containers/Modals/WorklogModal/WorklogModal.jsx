@@ -16,6 +16,7 @@ import type {
   Worklog,
   Dispatch,
 } from 'types';
+import type Moment from 'moment';
 
 import ModalDialog, {
   ModalFooter,
@@ -73,8 +74,8 @@ type Props = {
 
 type State = {
   calendarOpened: boolean,
-  date: any,
-  startTime: any,
+  date: string,
+  startTime: Moment,
   comment: string,
   timeSpent: string,
   jiraTimeError: string | null,

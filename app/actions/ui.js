@@ -9,7 +9,7 @@ import * as actionTypes from './actionTypes';
 
 export const setUiState = (
   key: string,
-  value: any,
+  value: string,
 ): UiAction => ({
   type: actionTypes.SET_UI_STATE,
   payload: {
