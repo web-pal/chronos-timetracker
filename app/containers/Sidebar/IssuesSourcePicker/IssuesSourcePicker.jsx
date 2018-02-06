@@ -76,12 +76,28 @@ const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
         dispatch(uiActions.setUiState('issuesSourceId', item.value));
         dispatch(uiActions.setUiState('issuesSourceType', type));
         if (type === 'scrum') {
+          dispatch(uiActions.setUiState(
+            'issuesSearch',
+            '',
+          ));
+          dispatch(uiActions.setUiState(
+            'selectedIssueId',
+            null,
+          ));
           dispatch(resourcesActions.clearResourceList({
             resourceName: 'issues',
             list: 'recentIssues',
           }));
           dispatch(sprintsActions.fetchSprintsRequest());
         } else if (item.value) {
+          dispatch(uiActions.setUiState(
+            'issuesSearch',
+            '',
+          ));
+          dispatch(uiActions.setUiState(
+            'selectedIssueId',
+            null,
+          ));
           dispatch(uiActions.setUiState('filterStatusesIsFetched', false));
           dispatch(resourcesActions.clearResourceList({
             resourceName: 'issues',
