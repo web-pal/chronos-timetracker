@@ -1,3 +1,17 @@
+<a name="2.5.1"></a>
+## [2.5.1](https://github.com/web-pal/chronos-timetracker/compare/v2.5.0...v2.5.1) (2018-02-06)
+
+
+### Bug Fixes
+
+* **Browsing Issues:** clear recent list after change project ([c01870d](https://github.com/web-pal/chronos-timetracker/commit/c01870d))
+* **Issue Detail View:** fix issue and timeline styles,add flow types ([#63](https://github.com/web-pal/chronos-timetracker/issues/63)) ([3da49c1](https://github.com/web-pal/chronos-timetracker/commit/3da49c1))
+* **Tracking:** stuch after idle popup ([c5dfb17](https://github.com/web-pal/chronos-timetracker/commit/c5dfb17))
+* linux close window ([dda0fd5](https://github.com/web-pal/chronos-timetracker/commit/dda0fd5))
+* mixpanel throw err ([da491e0](https://github.com/web-pal/chronos-timetracker/commit/da491e0))
+
+
+
 <a name="2.5.0"></a>
 # [2.5.0](https://github.com/web-pal/chronos-timetracker/compare/v2.4.7...v2.5.0) (2018-02-05)
 
