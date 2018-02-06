@@ -1,20 +1,21 @@
 // @flow
 import type {
   SettingsAction,
+  SettingsGeneral,
 } from 'types';
 
 import * as types from './actionTypes';
 
 
 export const fillLocalDesktopSettings = (
-  payload: any,
+  payload: SettingsGeneral,
 ): SettingsAction => ({
   type: types.FILL_LOCAL_DESKTOP_SETTINGS,
   payload,
 });
 
 export const setLocalDesktopSetting = (
-  value: any,
+  value: boolean,
   settingName: string,
 ): SettingsAction => ({
   type: types.SET_LOCAL_DESKTOP_SETTING,

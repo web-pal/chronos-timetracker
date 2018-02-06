@@ -68,7 +68,7 @@ export const getRecentIssues = createSelector(
     issues: Array<Issue>,
     issuesMap: IssuesResources,
     worklogsMap: WorklogsResources,
-    self: any,
+    self: string,
   ) => {
     const selfKey = self ? self.key : '';
     const worklogsIds =

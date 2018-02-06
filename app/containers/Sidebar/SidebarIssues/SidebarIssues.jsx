@@ -63,7 +63,7 @@ type Props = {
     stopIndex: number,
   }) => void,
   saveOnRowsRenderedFunction: (Function) => void,
-  registerInfiniteNode: any,
+  registerInfiniteNode: () => void,
   dispatch: Dispatch,
 };
 

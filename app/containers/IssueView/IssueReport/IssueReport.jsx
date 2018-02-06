@@ -12,6 +12,9 @@ import type {
 import type {
   Connector,
 } from 'react-redux';
+import type {
+  IssuesReports,
+} from 'types';
 
 import {
   Flex,
@@ -51,7 +54,7 @@ import {
 
 type Props = {
   host: string,
-  report: any,
+  report: IssuesReports,
 };
 
 const IssueReport: StatelessFunctionalComponent<Props> = ({

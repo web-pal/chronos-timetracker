@@ -45,7 +45,7 @@ const {
 type Props = {
   channel: string,
   updateCheckRunning: boolean,
-  updateAvailable: any,
+  updateAvailable: string,
   updateFetching: boolean,
   setChannel: (channel: string) => void,
   onUpdateClick: () => void,

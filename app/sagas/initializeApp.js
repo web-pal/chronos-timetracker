@@ -50,6 +50,9 @@ import {
   trackMixpanel,
   incrementMixpanel,
 } from '../utils/stat';
+import {
+  version,
+} from '../package.json';
 
 
 function identifyInSentryAndMixpanel(host: string, userData: any): void {
@@ -57,6 +60,7 @@ function identifyInSentryAndMixpanel(host: string, userData: any): void {
     mixpanel.identify((`${host} - ${userData.emailAddress}`));
     mixpanel.people.set({
       host,
+      version,
       locale: userData.locale,
       $timezone: userData.timeZone,
       $name: userData.displayName,
@@ -207,7 +211,7 @@ function* getInitializeAppData(): Generator<*, *, *> {
     basicAuthCredentials;
 
   return {
-    tryLogin: authType === 'OAuth' || basicAuthDataExist,
+    tryLogin: authType === 'OAuth' || (basicAuthDataExist && basicAuthCredentials.password),
     authType,
     authData,
   };
@@ -233,10 +237,10 @@ export function* initializeApp(): Generator<*, *, *> {
         },
       );
     }
+    trackMixpanel('Application was initialized');
+    incrementMixpanel('Initialize', 1);
   } catch (err) {
     yield call(throwError, err);
   }
-  trackMixpanel('Application was initialized');
-  incrementMixpanel('Initialize', 1);
   yield put(uiActions.setUiState('initializeInProcess', false));
 }

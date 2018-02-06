@@ -16,7 +16,7 @@ import {
 
 
 type Props = {
-  tabs: any,
+  tabs: Array<string>,
   currentTab: string,
   onTabClick: (tab: string) => void,
 }

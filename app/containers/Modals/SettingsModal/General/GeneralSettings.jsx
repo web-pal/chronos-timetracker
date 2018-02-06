@@ -18,6 +18,10 @@ import {
   Flex,
 } from 'components';
 
+import type {
+  SettingsGeneral,
+} from 'types';
+
 import {
   SettingsSectionContent,
   ContentLabel,
@@ -25,9 +29,9 @@ import {
 
 
 type Props = {
-  settings: any,
+  settings: SettingsGeneral,
   setTraySettings: {
-    (value: boolean): any,
+    (value: boolean): boolean,
   }
 }
 

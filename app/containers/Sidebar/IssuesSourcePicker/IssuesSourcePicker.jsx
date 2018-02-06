@@ -16,6 +16,7 @@ import type {
 } from 'react-redux';
 import type {
   Dispatch,
+  SelectedOption,
 } from 'types';
 
 import {
@@ -32,6 +33,7 @@ import {
 import {
   issuesActions,
   sprintsActions,
+  resourcesActions,
   uiActions,
 } from 'actions';
 
@@ -43,7 +45,7 @@ import {
 type Props = {
   options: Array<any>,
   sprintsOptions: Array<any>,
-  selectedOption: any,
+  selectedOption: SelectedOption,
   selectedSprintOption: any,
   projectsFetching: boolean,
   sprintsFetching: boolean,
@@ -74,9 +76,17 @@ const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
         dispatch(uiActions.setUiState('issuesSourceId', item.value));
         dispatch(uiActions.setUiState('issuesSourceType', type));
         if (type === 'scrum') {
+          dispatch(resourcesActions.clearResourceList({
+            resourceName: 'issues',
+            list: 'recentIssues',
+          }));
           dispatch(sprintsActions.fetchSprintsRequest());
         } else if (item.value) {
           dispatch(uiActions.setUiState('filterStatusesIsFetched', false));
+          dispatch(resourcesActions.clearResourceList({
+            resourceName: 'issues',
+            list: 'recentIssues',
+          }));
           dispatch(issuesActions.refetchIssuesRequest());
         }
       }}

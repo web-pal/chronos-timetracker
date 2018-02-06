@@ -10,7 +10,17 @@ export type SprintsAction =
     type: typeof actionTypes.FETCH_SPRINTS_REQUEST,
   |};
 
-export type Sprint = any;
+export type Sprint = {
+  id: number,
+  self: string,
+  state: string,
+  name: string,
+  startDate: string,
+  endDate: string,
+  completeDate: string,
+  originBoardId: number,
+  goal: string,
+};
 
 export type SprintsResources = {
   [Id]: Sprint,

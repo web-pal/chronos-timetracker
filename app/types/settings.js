@@ -26,4 +26,13 @@ export type SettingsState = {|
   modalTab: 'General' | 'Notifications' | 'Updates',
   screenshotsEnabledUsers: Array<any>,
   localDesktopSettings: any,
-|}
+|};
+
+export type SettingsGeneral = {
+  autoCheckForUpdates: boolean,
+  nativeNotifications: boolean,
+  screenshotPreviewTime: number,
+  showScreenshotPreview: boolean,
+  trayShowTimer: boolean,
+  updateChannel: string,
+};

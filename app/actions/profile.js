@@ -1,13 +1,14 @@
 // @flow
 import type {
   ProfileAction,
+  User,
 } from 'types';
 
 import * as actionTypes from './actionTypes';
 
 
 export const fillUserData = (
-  payload: any,
+  payload: User,
 ): ProfileAction => ({
   type: actionTypes.FILL_USER_DATA,
   payload,

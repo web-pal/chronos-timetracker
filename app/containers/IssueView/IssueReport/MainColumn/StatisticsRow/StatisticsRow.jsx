@@ -22,8 +22,8 @@ import {
 
 
 type Props = {
-  estimate: any,
-  remaining: any,
+  estimate: number,
+  remaining: number,
 };
 
 const StatisticsRow: StatelessFunctionalComponent<Props> = ({

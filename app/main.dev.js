@@ -391,10 +391,12 @@ ipcMain.on('open-create-issue-window', (event, url) => {
     if (fromUrl.includes('CreateIssueDetails.jspa')) {
       const issueKey = newUrl.split('/').pop();
       mainWindow.webContents.send('newIssue', issueKey);
-      createIssueWindow.close();
+      createIssueWindow.webContents.executeJavaScript(`
+        window.close();
+      `);
     }
   });
-  createIssueWindow.on('close', () => {
+  createIssueWindow.on('closed', () => {
     createIssueWindow = null;
   }, false);
 });

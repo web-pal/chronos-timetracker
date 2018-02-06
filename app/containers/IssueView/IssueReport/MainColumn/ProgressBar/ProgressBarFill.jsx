@@ -18,7 +18,7 @@ type Props = {
   label: string,
   width: number,
   color: string,
-  time: any,
+  time: string,
   style: any,
 };
 

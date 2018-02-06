@@ -47,12 +47,14 @@ export function fetchIssues({
   jql,
   additionalFields = [],
   boardId,
+  timeout = 8000,
 }: {
   startIndex: number,
   stopIndex: number,
   jql: string,
   additionalFields: Array<string>,
   boardId?: number | string | null,
+  timeout: number,
 }): Promise<*> {
   const api = boardId ?
     opts => jira.client.board.getIssuesForBoard({ ...opts, boardId }) :
@@ -65,6 +67,7 @@ export function fetchIssues({
       ...requiredFields,
       ...additionalFields,
     ],
+    timeout,
     expand: ['renderedFields'],
   });
 }

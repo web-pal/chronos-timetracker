@@ -47,7 +47,6 @@ import {
   uploadScreenshot,
   rejectScreenshot,
   takeScreenshot,
-  cleanExcessScreenshotPeriods,
 } from './screenshots';
 import createIpcChannel from './ipc';
 
@@ -382,7 +381,7 @@ export function* watchKeepIdleTime(): Generator<*, *, *> {
     const { getGlobal } = remote;
     const { idleDetails } = getGlobal('sharedObj');
     yield put(timerActions.addIdleTime(idleDetails));
-    yield call(cleanExcessScreenshotPeriods);
+    // yield call(cleanExcessScreenshotPeriods);
   }
 }
 
