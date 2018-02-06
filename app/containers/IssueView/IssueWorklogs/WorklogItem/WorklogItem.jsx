@@ -36,7 +36,7 @@ const isEdited = (worklog: Worklog) => (
 
 
 type Props = {
-  style: Object,
+  style: any,
   worklog: Worklog,
   selected: boolean,
   issueKey: string,

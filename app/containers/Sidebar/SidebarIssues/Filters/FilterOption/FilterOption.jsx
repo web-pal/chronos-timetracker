@@ -18,7 +18,7 @@ import {
 
 
 type Props = {
-  option: Object,
+  option: any,
   onChange: (id: string, isChecked: boolean) => {},
   showIcons: boolean,
   isChecked: boolean,

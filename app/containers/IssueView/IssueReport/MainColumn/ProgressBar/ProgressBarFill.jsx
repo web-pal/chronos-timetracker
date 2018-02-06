@@ -19,7 +19,7 @@ type Props = {
   width: number,
   color: string,
   time: string,
-  style: {},
+  style: any,
 };
 
 // eslint-disable-next-line
@@ -30,7 +30,7 @@ const ProgressBarFillContainer: StatelessFunctionalComponent<Props> = ({
   color,
   time,
   style,
-}: Props): Node =>  (
+}: Props): Node => (
   <ProgressBarItem width={width} style={style}>
     <Time isHighlighted={name === 'you-logged-today'}>{time}</Time>
     <ProgressBarFill color={color} />
