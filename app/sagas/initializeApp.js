@@ -50,6 +50,9 @@ import {
   trackMixpanel,
   incrementMixpanel,
 } from '../utils/stat';
+import {
+  version,
+} from '../package.json';
 
 
 function identifyInSentryAndMixpanel(host: string, userData: any): void {
@@ -57,6 +60,7 @@ function identifyInSentryAndMixpanel(host: string, userData: any): void {
     mixpanel.identify((`${host} - ${userData.emailAddress}`));
     mixpanel.people.set({
       host,
+      version,
       locale: userData.locale,
       $timezone: userData.timeZone,
       $name: userData.displayName,
