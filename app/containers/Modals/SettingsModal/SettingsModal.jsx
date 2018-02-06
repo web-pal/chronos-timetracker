@@ -13,6 +13,7 @@ import type {
 } from 'react-redux';
 import type {
   Dispatch,
+  SettingsGeneral,
 } from 'types';
 
 import ModalDialog, {
@@ -53,9 +54,9 @@ import {
 type Props = {
   isOpen: boolean,
   tab: string,
-  settings: any,
+  settings: SettingsGeneral,
   updateCheckRunning: boolean,
-  updateAvailable: any,
+  updateAvailable: string,
   updateFetching: boolean,
   dispatch: Dispatch,
 }

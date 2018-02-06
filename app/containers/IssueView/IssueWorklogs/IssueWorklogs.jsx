@@ -73,7 +73,7 @@ const IssueWorklogs: StatelessFunctionalComponent<Props> = ({
         listProps={{
           rowCount: worklogs.length,
           rowHeight: 120,
-          rowRenderer: ({ index, key, style }: { index: number, key: string, style: any }) => {
+          rowRenderer: ({ index, key, style }: { index: number, key: string, style: Object }) => {
             const worklog = worklogs[index];
             return (
               <WorklogItem

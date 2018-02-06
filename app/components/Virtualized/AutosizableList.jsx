@@ -3,7 +3,7 @@ import React from 'react';
 import { AutoSizer, List } from 'react-virtualized';
 
 type Props = {
-  listProps: any,
+  listProps: Object,
   autoSized?: boolean,
 };
 

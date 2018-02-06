@@ -8,6 +8,8 @@ import {
 import Flag from '@atlaskit/flag';
 import RecentIcon from '@atlaskit/icon/glyph/recent';
 
+import type Moment from 'moment';
+
 import {
   stj,
 } from 'time-util';
@@ -24,7 +26,7 @@ const {
 
 type State = {
   idleTime: number,
-  date: any,
+  date: Moment,
 };
 
 class IdlePopup extends Component<{}, State> {

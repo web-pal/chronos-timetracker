@@ -22,7 +22,7 @@ export const setResourceMeta = ({
   meta,
   resourceName,
 }: {|
-  meta: any,
+  meta: Object,
   resourceName: string,
 |}): ResourcesAction => ({
   type: actionTypes.SET_RESOURCES_META,

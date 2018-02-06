@@ -44,7 +44,7 @@ const ProgressBar: StatelessFunctionalComponent<Props> = ({
       label="Logged"
       color="#B2D4FF"
       time={stj(loggedTotal)}
-      style={{ alignItems: 'flex-end' }}
+      style={(remaining === 0) ? { alignItems: 'flex-end' } : { alignItems: 'flex-start' }}
     />
   </ProgressBarContainer>
 );

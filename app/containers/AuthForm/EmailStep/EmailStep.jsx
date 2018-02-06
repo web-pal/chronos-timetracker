@@ -34,7 +34,7 @@ type Props = {
   loginError: string,
   onContinue: () => void,
   isActiveStep: boolean,
-  onBack: () => any,
+  onBack: () => void,
   loginRequestInProcess: boolean,
   isPaidUser: boolean,
 } & FormProps

@@ -64,7 +64,6 @@ const WorklogItem: StatelessFunctionalComponent<Props> = ({
           />
         </Tooltip>
         <IssueKey>{issue.key}</IssueKey>
-        <IssueKey>{issue.key}</IssueKey>
         {(issue.comment && issue.comment !== '') &&
           <Tooltip
             description={issue.comment || 'No comment'}

@@ -5,6 +5,9 @@ import type {
   StatelessFunctionalComponent,
   Node,
 } from 'react';
+import type {
+  SettingsGeneral,
+} from 'types';
 
 import {
   AkFieldRadioGroup as RadioButtonGroup,
@@ -26,8 +29,8 @@ import {
 
 
 type Props = {
-  settings: any,
-  onChangeSetting: (value: any, settingName: string) => void,
+  settings: SettingsGeneral,
+  onChangeSetting: (value: boolean, settingName: string) => void,
 }
 
 const NotificationsSettings: StatelessFunctionalComponent<Props> = ({

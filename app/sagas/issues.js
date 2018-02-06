@@ -128,7 +128,7 @@ function buildJQLQuery({
   const jql = [
     (projectId && `project = ${projectId}`),
     (sprintId && `sprint = ${sprintId}`),
-    (worklogAuthor && `worklogAuthor = ${worklogAuthor}`),
+    (worklogAuthor && `worklogAuthor = "${worklogAuthor}"`),
     (type.length && `issueType in (${type.join(',')})`),
     (status.length && `status in (${status.join(',')})`),
     (assignee.length && mapAssignee(assignee[0])),

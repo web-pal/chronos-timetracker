@@ -16,6 +16,7 @@ import type {
 } from 'react-redux';
 import type {
   Dispatch,
+  SelectedOption,
 } from 'types';
 
 import {
@@ -41,9 +42,9 @@ import {
 
 
 type Props = {
-  options: Array<any>,
-  sprintsOptions: Array<any>,
-  selectedOption: any,
+  options: Array<Object>,
+  sprintsOptions: Array<Object>,
+  selectedOption: SelectedOption,
   selectedSprintOption: any,
   projectsFetching: boolean,
   sprintsFetching: boolean,

@@ -52,7 +52,7 @@ moment.locale('en', {
 
 
 type Props = {
-  recentIssues: any,
+  recentIssues: Object,
   selectedWorklogId: Id | null,
   currentIssueViewTab: string,
   issuesFetching: boolean,
