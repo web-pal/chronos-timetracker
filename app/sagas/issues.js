@@ -176,12 +176,14 @@ export function* fetchIssues({
     stopIndex,
     resolve,
   },
+  tryCount = 0,
 }: {
   payload: {
     startIndex: number,
     stopIndex: number,
     resolve: null | () => void,
   },
+  tryCount: number,
 }): Generator<*, *, *> {
   const actions = createActionCreators('read', {
     resourceName: 'issues',
@@ -227,6 +229,7 @@ export function* fetchIssues({
           jql,
           boardId: issuesSourceType !== 'project' ? issuesSourceId : null,
           additionalFields: epicLinkFieldId ? [epicLinkFieldId] : [],
+          timeout: tryCount ? 8000 : 3000,
         },
       ) :
       {
@@ -257,12 +260,19 @@ export function* fetchIssues({
       resolve();
     }
   } catch (err) {
-    yield put(resourcesActions.setResourceMeta({
-      resourceName: 'issues',
-      meta: {
-        filterIssuesTotalCount: 0,
-      },
-    }));
+    if (err.code === 'ETIMEDOUT' && !tryCount) {
+      yield fork(
+        fetchIssues,
+        {
+          tryCount: tryCount + 1,
+          payload: {
+            startIndex,
+            stopIndex,
+            resolve,
+          },
+        },
+      );
+    }
     yield put(actions.succeeded({
       resources: [],
     }));

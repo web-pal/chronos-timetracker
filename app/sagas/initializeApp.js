@@ -207,7 +207,7 @@ function* getInitializeAppData(): Generator<*, *, *> {
     basicAuthCredentials;
 
   return {
-    tryLogin: authType === 'OAuth' || (basicAuthDataExist && basicAuthDataExist.password),
+    tryLogin: authType === 'OAuth' || (basicAuthDataExist && basicAuthCredentials.password),
     authType,
     authData,
   };
