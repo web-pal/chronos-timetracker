@@ -42,8 +42,8 @@ import {
 
 
 type Props = {
-  options: Array<Object>,
-  sprintsOptions: Array<Object>,
+  options: Array<any>,
+  sprintsOptions: Array<any>,
   selectedOption: SelectedOption,
   selectedSprintOption: any,
   projectsFetching: boolean,

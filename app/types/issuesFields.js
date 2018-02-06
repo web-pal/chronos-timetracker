@@ -58,7 +58,7 @@ export type IssueField = {
   duedate: string | null,
   environment: string | null,
   epic: Epic,
-  issuelinks: Array<Object>,
+  issuelinks: Array<any>,
   lastViewed: string | null,
   project: Project,
   reporter: User,
@@ -72,7 +72,7 @@ export type IssueField = {
   worklog: IssueWorklog,
   assignee: User | null,
   status: IssueStatus,
-  subtasks: Array<Object>,
+  subtasks: Array<any>,
   updated: string,
   votes: {
     hasVoted: boolean,

@@ -52,7 +52,7 @@ import FilterOption from './FilterOption';
 
 type Props = {
   filters: Filter,
-  options: Array<Object>,
+  options: Array<any>,
   issuesCount: number,
   issuesFetching: boolean,
   optionsFetching: boolean,

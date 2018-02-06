@@ -32,7 +32,7 @@ import NotificationAllIcon from '@atlaskit/icon/glyph/notification-all';
 
 
 type Props = {
-  flags: Array<Object>,
+  flags: Array<any>,
   dispatch: Dispatch,
 }
 

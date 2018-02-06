@@ -6,6 +6,6 @@ export type IssuesReports = {
   timespent: number,
   youLoggedToday: number,
   youLoggedTotal: number,
-  yourWorklogs: Array<Object>,
-  yourWorklogsToday: Array<Object>,
+  yourWorklogs: Array<any>,
+  yourWorklogsToday: Array<any>,
 };
