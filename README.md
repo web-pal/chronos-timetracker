@@ -53,6 +53,7 @@ You can download compiled versions of Chronos-timetracker for Mac OS X, Linux an
 * [react][react] - A JavaScript library for building user interfaces
 * [redux][redux] - Is a predictable state container for JavaScript apps
 * [redux-saga][redux-saga] - An alternative side effect model for Redux apps
+* [redux-resource][redux-resource] - Resource management for Redux
 * [flowtype][flowtype] - Is a static type checker for JavaScript
 * [reselect][reselect] - Selector library for Redux
 * [recompose][recompose] - A React utility belt for function components and higher-order components.
@@ -97,6 +98,7 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 [redux]: http://redux.js.org
 [recompose]: https://github.com/acdlite/recompose
 [redux-saga]: https://github.com/redux-saga/redux-saga
+[redux-resource]: https://github.com/jmeas/redux-resource
 [reselect]: https://github.com/reactjs/reselect
 [styled-components]: https://www.styled-components.com
 [flowtype]: https://flow.org/
