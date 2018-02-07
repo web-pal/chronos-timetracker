@@ -109,7 +109,7 @@ export function* notify({
   icon?: string,
   resourceName? : string,
   request?: string,
-  spinnerTitle: string,
+  spinnerTitle?: string,
 }): Generator<*, void, *> {
   const newFlag = {
     id: uuidv4(),

@@ -22,7 +22,6 @@ import {
 import {
   types,
   uiActions,
-  resourcesActions,
 } from 'actions';
 import {
   getResourceMap,
@@ -32,9 +31,6 @@ import {
   trackMixpanel,
   incrementMixpanel,
 } from '../utils/stat';
-import {
-  fetchRecentIssues,
-} from './issues';
 import {
   getFromStorage,
   setToStorage,
@@ -114,7 +110,16 @@ export function* saveWorklog({
     if (!worklogId) {
       yield put(issuesA.pending());
     }
-
+    yield put(uiActions.setModalState(
+      'worklog',
+      false,
+    ));
+    yield fork(notify, {
+      resourceName: 'worklogs',
+      request: 'saveWorklog',
+      spinnerTitle: worklogId ? 'Edit worklog' : 'Add worklog',
+      title: worklogId ? 'Successfully edited worklog' : 'Successfully added worklog',
+    });
     const started = moment(startTime).utc().format().replace('Z', '.000+0000');
     const timeSpentSeconds = timeSpentInSeconds || jts(timeSpent);
     if (timeSpentSeconds < 60) {
@@ -170,13 +175,6 @@ export function* saveWorklog({
     yield fork(scrollToIndexRequest, {
       issueId,
       worklogId: worklog.id,
-    });
-    yield put(uiActions.setModalState(
-      'worklog',
-      false,
-    ));
-    yield call(notify, {
-      title: worklogId ? 'Successfully edited worklog' : 'Successfully added worklog',
     });
     incrementMixpanel('Logged time(seconds)', timeSpentSeconds);
     trackMixpanel(
@@ -277,6 +275,12 @@ export function* deleteWorklog({
   try {
     yield put(worklogsA.pending());
     yield put(issuesA.pending());
+    yield fork(notify, {
+      resourceName: 'worklogs',
+      request: 'deleteWorklog',
+      spinnerTitle: 'Delete worklog',
+      title: 'Successfully deleted worklog',
+    });
 
     const worklogsMap = yield select(getResourceMap('worklogs'));
     const issuesMap = yield select(getResourceMap('issues'));
@@ -307,9 +311,6 @@ export function* deleteWorklog({
       }],
     }));
     yield call(infoLog, 'worklog deleted', worklog);
-    yield fork(notify, {
-      title: 'Successfully deleted worklog',
-    });
     trackMixpanel('Worklog deleted');
   } catch (err) {
     yield fork(notify, {

@@ -588,10 +588,6 @@ function getNewIssueChannelListener(channel) {
         const issue = yield call(Api.fetchIssueByKey, issueKey);
         yield put(actions.pending());
         yield fork(notify, {
-          resourceName: 'issues',
-          request: 'createIssue',
-          spinnerTitle: 'Saving',
-          description: '',
           title: `${issue.key} was created`,
         });
         issue.fields.worklogs = [];
