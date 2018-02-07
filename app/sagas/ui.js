@@ -132,11 +132,13 @@ function* onUiChange({
   try {
     if (key === 'issuesSourceType') {
       yield call(setToStorage, key, value);
+      yield put(uiActions.setUiState('issuesSearch', ''));
       if (value === 'scrum') {
         yield put(sprintsActions.fetchSprintsRequest());
       }
     }
     if (['issuesSourceId', 'issuesSprintId'].includes(key)) {
+      yield put(uiActions.setUiState('issuesSearch', ''));
       yield call(setToStorage, key, value);
     }
     if (key === 'selectedIssueId') {
