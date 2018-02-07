@@ -175,11 +175,9 @@ export function* saveWorklog({
       'worklog',
       false,
     ));
-    yield call(
-      notify,
-      '',
-      worklogId ? 'Successfully edited worklog' : 'Successfully added worklog',
-    );
+    yield call(notify, {
+      title: worklogId ? 'Successfully edited worklog' : 'Successfully added worklog',
+    });
     incrementMixpanel('Logged time(seconds)', timeSpentSeconds);
     trackMixpanel(
       `Worklog uploaded (${isAuto ? 'Automatic' : 'Manual'})`,
@@ -256,7 +254,9 @@ export function* uploadWorklog(options: any): Generator<*, *, *> {
       },
     });
     */
-    yield call(notify, '', 'Failed to upload worklog');
+    yield fork(notify, {
+      title: 'Failed to upload worklog',
+    });
     yield call(throwError, err);
   }
 }
@@ -307,10 +307,14 @@ export function* deleteWorklog({
       }],
     }));
     yield call(infoLog, 'worklog deleted', worklog);
-    yield call(notify, '', 'Successfully deleted worklog');
+    yield fork(notify, {
+      title: 'Successfully deleted worklog',
+    });
     trackMixpanel('Worklog deleted');
   } catch (err) {
-    yield call(notify, '', 'Failed to delete worklog');
+    yield fork(notify, {
+      title: 'Failed to delete worklog',
+    });
     yield call(throwError, err);
   }
 }

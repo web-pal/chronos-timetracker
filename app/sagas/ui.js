@@ -92,20 +92,32 @@ function* autoDeleteFlag(id) {
   yield put(uiActions.deleteFlag(id));
 }
 
-export function* notify(
-  message: string = '',
-  title: string = '',
-  actions: Array<any> = [],
-  level: string = 'normal',
-  icon: string = 'bellIcon',
-): Generator<*, void, *> {
+export function* notify({
+  description = '',
+  title = '',
+  actions = [],
+  appearance = 'normal',
+  icon = 'bellIcon',
+  resourceName,
+  request,
+}: {
+  description?: string,
+  title?: string,
+  actions?: Array<any>,
+  appearance?: string,
+  icon?: string,
+  resourceName? : string,
+  request?: string,
+}): Generator<*, void, *> {
   const newFlag = {
     id: uuidv4(),
     title,
     actions,
-    appearance: level,
-    description: message,
+    appearance,
+    description,
     icon,
+    resourceName,
+    request,
   };
   yield put(uiActions.addFlag(newFlag));
   if (!actions.length) {

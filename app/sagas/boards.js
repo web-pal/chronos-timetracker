@@ -2,6 +2,7 @@
 import {
   put,
   call,
+  fork,
 } from 'redux-saga/effects';
 
 import createActionCreators from 'redux-resource-action-creators';
@@ -40,7 +41,10 @@ export function* fetchBoards(): Generator<*, void, *> {
           onClick: openURLInBrowser(helpUrl),
         },
       ];
-      yield call(notify, '', 'Can not load boards', flagActions);
+      yield fork(notify, {
+        title: 'Can not load boards',
+        actions: flagActions,
+      });
     }
   }
 }
