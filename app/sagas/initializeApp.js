@@ -111,11 +111,12 @@ export function* initialConfigureApp({
   let settings = yield call(getFromStorage, 'localDesktopSettings');
   if (!settings || !Object.keys(settings).length) {
     settings = {
+      autoCheckForUpdates: true,
+      nativeNotifications: true,
       showScreenshotPreview: true,
       screenshotPreviewTime: 15,
-      nativeNotifications: true,
+      trayShowTimer: true,
       updateChannel: 'stable',
-      autoCheckForUpdates: true,
     };
     yield call(
       setToStorage,
@@ -240,6 +241,7 @@ export function* initializeApp(): Generator<*, *, *> {
     trackMixpanel('Application was initialized');
     incrementMixpanel('Initialize', 1);
   } catch (err) {
+    yield put(uiActions.setUiState('authorized', false));
     yield call(throwError, err);
   }
   yield put(uiActions.setUiState('initializeInProcess', false));

@@ -63,6 +63,21 @@ export function* fetchProjectStatuses(): Generator<*, *, *> {
       yield put(statusesActions.pending());
 
       const metadata = yield call(Api.getIssuesMetadata, projectId);
+      // Some users have strange metada response, it needs to detect issue
+      if (
+        !metadata ||
+        !metadata.projects ||
+        !metadata.projects[0] ||
+        !metadata.projects[0].issuetypes
+      ) {
+        Raven.captureMessage('Issue types empty!', {
+          level: 'error',
+          extra: {
+            metadata,
+            projectId,
+          },
+        });
+      }
       const issuesTypes = metadata.projects[0].issuetypes;
 
       const statusesResponse = yield call(Api.fetchProjectStatuses, projectId);
@@ -82,6 +97,13 @@ export function* fetchProjectStatuses(): Generator<*, *, *> {
       yield put(uiActions.setUiState('filterStatusesIsFetched', true));
     }
   } catch (err) {
+    yield put(typesActions.succeeded({
+      resources: [],
+    }));
+    yield put(statusesActions.succeeded({
+      resources: [],
+    }));
+    yield put(uiActions.setUiState('filterStatusesIsFetched', true));
     yield call(throwError, err);
   }
 }

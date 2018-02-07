@@ -11,6 +11,7 @@ import {
   takeEvery,
   cancel,
 } from 'redux-saga/effects';
+import Raven from 'raven-js';
 import createActionCreators from 'redux-resource-action-creators';
 
 import * as Api from 'api';
@@ -57,28 +58,39 @@ export function transformFilterValue(value: string): string {
 }
 
 /* eslint-disable */
-const normalizeIssues = issues =>
-  issues.reduce((acc, issue) => {
-    acc.entities.worklogs =
-      issue.fields.worklog.worklogs.reduce(
-        (wacc, worklog) => {
-          wacc[worklog.id] = worklog;
-          return wacc;
-        },
-        acc.entities.worklogs,
-      )
-    issue.fields.worklogs = issue.fields.worklog.worklogs.map(w => w.id);
-    delete issue.fields.worklog;
-    acc.entities.issues[issue.id] = issue;
-    acc.result.push(issue.id);
-    return acc;
-  }, {
-    entities: {
-      issues: {},
-      worklogs: {},
-    },
-    result: [],
-  });
+const normalizeIssues = issues => {
+  try {
+    return issues.reduce((acc, issue) => {
+      acc.entities.worklogs =
+        issue.fields.worklog.worklogs.reduce(
+          (wacc, worklog) => {
+            wacc[worklog.id] = worklog;
+            return wacc;
+          },
+          acc.entities.worklogs,
+        )
+      issue.fields.worklogs = issue.fields.worklog.worklogs.map(w => w.id);
+      delete issue.fields.worklog;
+      acc.entities.issues[issue.id] = issue;
+      acc.result.push(issue.id);
+      return acc;
+    }, {
+      entities: {
+        issues: {},
+        worklogs: {},
+      },
+      result: [],
+    });
+  } catch (err) {
+    Raven.captureMessage('normalizedIssues error!', {
+      level: 'error',
+      extra: {
+        issues,
+      },
+    });
+    throw err;
+  }
+}
 /* eslint-enable */
 
 function mapAssignee(assigneeId: string) {
@@ -139,35 +151,45 @@ function buildJQLQuery({
 }
 
 function* fetchAdditionalWorklogsForIssues(issues) {
-  const incompleteIssues = issues.filter(issue => issue.fields.worklog.total > 20);
-  if (incompleteIssues.length) {
-    yield call(
-      infoLog,
-      'found issues lacking worklogs',
-      incompleteIssues,
-    );
-    const {
-      additionalIssuesArr,
-    } = yield call(getAdditionalWorklogsForIssues, incompleteIssues);
-    yield call(
-      infoLog,
-      'getAdditionalWorklogsForIssues response:',
-      additionalIssuesArr,
-    );
+  try {
+    const incompleteIssues = issues.filter(issue => issue.fields.worklog.total > 20);
+    if (incompleteIssues.length) {
+      yield call(
+        infoLog,
+        'found issues lacking worklogs',
+        incompleteIssues,
+      );
+      const {
+        additionalIssuesArr,
+      } = yield call(getAdditionalWorklogsForIssues, incompleteIssues);
+      yield call(
+        infoLog,
+        'getAdditionalWorklogsForIssues response:',
+        additionalIssuesArr,
+      );
 
-    const withAdditionalWorklogs = [
-      ...issues,
-      ...additionalIssuesArr,
-    ];
-    yield call(
-      infoLog,
-      'filled issues with lacking worklogs: ',
-      withAdditionalWorklogs,
-    );
-    trackMixpanel('Additional worklogs was fetched');
-    return withAdditionalWorklogs;
+      const withAdditionalWorklogs = [
+        ...issues,
+        ...additionalIssuesArr,
+      ];
+      yield call(
+        infoLog,
+        'filled issues with lacking worklogs: ',
+        withAdditionalWorklogs,
+      );
+      trackMixpanel('Additional worklogs was fetched');
+      return withAdditionalWorklogs;
+    }
+    return issues;
+  } catch (err) {
+    Raven.captureMessage('Fetch additional worklog issue', {
+      level: 'error',
+      extra: {
+        issues,
+      },
+    });
+    throw err;
   }
-  return issues;
 }
 
 export function* fetchIssues({

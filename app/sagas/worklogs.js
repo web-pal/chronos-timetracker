@@ -167,11 +167,6 @@ export function* saveWorklog({
       'selectedWorklogId',
       worklog.id,
     ));
-    yield put(resourcesActions.clearResourceList({
-      resourceName: 'issues',
-      list: 'recentIssues',
-    }));
-    yield fork(fetchRecentIssues);
     yield fork(scrollToIndexRequest, {
       issueId,
       worklogId: worklog.id,
