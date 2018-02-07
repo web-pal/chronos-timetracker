@@ -100,6 +100,7 @@ export function* notify({
   icon = 'bellIcon',
   resourceName,
   request,
+  spinnerTitle = '',
 }: {
   description?: string,
   title?: string,
@@ -108,6 +109,7 @@ export function* notify({
   icon?: string,
   resourceName? : string,
   request?: string,
+  spinnerTitle: string,
 }): Generator<*, void, *> {
   const newFlag = {
     id: uuidv4(),
@@ -118,6 +120,7 @@ export function* notify({
     icon,
     resourceName,
     request,
+    spinnerTitle,
   };
   yield put(uiActions.addFlag(newFlag));
   if (!actions.length) {

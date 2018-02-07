@@ -451,6 +451,7 @@ export function* transitionIssue({
     yield fork(notify, {
       resourceName: 'issues',
       request: 'updateIssue',
+      spinnerTitle: 'Please wait',
       description: '',
       title: `Moved issue ${issue.key} to ${transition.to.name}`,
     });
@@ -583,9 +584,16 @@ function getNewIssueChannelListener(channel) {
         request: 'createIssue',
       });
       try {
-        yield put(actions.pending());
         const issueKey = payload[0];
         const issue = yield call(Api.fetchIssueByKey, issueKey);
+        yield put(actions.pending());
+        yield fork(notify, {
+          resourceName: 'issues',
+          request: 'createIssue',
+          spinnerTitle: 'Saving',
+          description: '',
+          title: `${issue.key} was created`,
+        });
         issue.fields.worklogs = [];
         yield put(actions.succeeded({
           resources: [issue],
@@ -595,9 +603,6 @@ function getNewIssueChannelListener(channel) {
           issue.id,
         ));
         yield fork(refetchIssues, false);
-        yield fork(notify, {
-          title: `${issue.key} was created`,
-        });
         trackMixpanel('New issue was created');
       } catch (err) {
         yield call(throwError, err);

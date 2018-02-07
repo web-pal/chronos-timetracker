@@ -14,13 +14,10 @@ import type {
 import type {
   Connector,
 } from 'react-redux';
-import type {
-  Dispatch,
-} from 'types';
 
 type Props = {
-  flags: Array<any>,
-  dispatch: Dispatch,
+  pending: boolean,
+  render: (pending: boolean) => Node,
 }
 
 const FlagHoc: StatelessFunctionalComponent<Props> = ({
