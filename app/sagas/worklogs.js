@@ -22,7 +22,6 @@ import {
 import {
   types,
   uiActions,
-  resourcesActions,
 } from 'actions';
 import {
   getResourceMap,
@@ -32,9 +31,6 @@ import {
   trackMixpanel,
   incrementMixpanel,
 } from '../utils/stat';
-import {
-  fetchRecentIssues,
-} from './issues';
 import {
   getFromStorage,
   setToStorage,
@@ -114,7 +110,16 @@ export function* saveWorklog({
     if (!worklogId) {
       yield put(issuesA.pending());
     }
-
+    yield put(uiActions.setModalState(
+      'worklog',
+      false,
+    ));
+    yield fork(notify, {
+      resourceName: 'worklogs',
+      request: 'saveWorklog',
+      spinnerTitle: worklogId ? 'Edit worklog' : 'Add worklog',
+      title: worklogId ? 'Successfully edited worklog' : 'Successfully added worklog',
+    });
     const started = moment(startTime).utc().format().replace('Z', '.000+0000');
     const timeSpentSeconds = timeSpentInSeconds || jts(timeSpent);
     if (timeSpentSeconds < 60) {
@@ -171,15 +176,6 @@ export function* saveWorklog({
       issueId,
       worklogId: worklog.id,
     });
-    yield put(uiActions.setModalState(
-      'worklog',
-      false,
-    ));
-    yield call(
-      notify,
-      '',
-      worklogId ? 'Successfully edited worklog' : 'Successfully added worklog',
-    );
     incrementMixpanel('Logged time(seconds)', timeSpentSeconds);
     trackMixpanel(
       `Worklog uploaded (${isAuto ? 'Automatic' : 'Manual'})`,
@@ -192,6 +188,18 @@ export function* saveWorklog({
     yield call(throwError, err);
   }
   return null;
+}
+
+export function* chronosBackendUploadWorklog(options: any): Generator<*, *, *> {
+  try {
+    const jwt = yield call(getFromStorage, 'desktop_tracker_jwt');
+    if (!jwt) {
+      throw new Error('Attempt to upload worklog on chronos backend!');
+    }
+    yield call(Api.chronosBackendUploadWorklog, options);
+  } catch (err) {
+    yield call(throwError, err);
+  }
 }
 
 export function* uploadWorklog(options: any): Generator<*, *, *> {
@@ -237,7 +245,7 @@ export function* uploadWorklog(options: any): Generator<*, *, *> {
       activity,
       keepedIdles,
     };
-    yield call(Api.chronosBackendUploadWorklog, backendUploadOptions);
+    yield fork(chronosBackendUploadWorklog, backendUploadOptions);
     yield call(
       infoLog,
       'worklog uploaded',
@@ -256,7 +264,9 @@ export function* uploadWorklog(options: any): Generator<*, *, *> {
       },
     });
     */
-    yield call(notify, '', 'Failed to upload worklog');
+    yield fork(notify, {
+      title: 'Failed to upload worklog',
+    });
     yield call(throwError, err);
   }
 }
@@ -277,6 +287,12 @@ export function* deleteWorklog({
   try {
     yield put(worklogsA.pending());
     yield put(issuesA.pending());
+    yield fork(notify, {
+      resourceName: 'worklogs',
+      request: 'deleteWorklog',
+      spinnerTitle: 'Delete worklog',
+      title: 'Successfully deleted worklog',
+    });
 
     const worklogsMap = yield select(getResourceMap('worklogs'));
     const issuesMap = yield select(getResourceMap('issues'));
@@ -307,10 +323,11 @@ export function* deleteWorklog({
       }],
     }));
     yield call(infoLog, 'worklog deleted', worklog);
-    yield call(notify, '', 'Successfully deleted worklog');
     trackMixpanel('Worklog deleted');
   } catch (err) {
-    yield call(notify, '', 'Failed to delete worklog');
+    yield fork(notify, {
+      title: 'Failed to delete worklog',
+    });
     yield call(throwError, err);
   }
 }

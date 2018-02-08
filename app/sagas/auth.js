@@ -10,6 +10,7 @@ import {
   ipcRenderer,
   remote,
 } from 'electron';
+import Raven from 'raven-js';
 
 import * as Api from 'api';
 
@@ -59,6 +60,45 @@ export function transformValidHost(host: string): URL {
   }
 }
 
+export function* chronosBackendAuth({
+  host,
+  username,
+  password,
+  port,
+  protocol,
+  pathPrefix,
+}: {
+  host: string,
+  username: string,
+  password: string,
+  port: string,
+  protocol: string,
+  pathPrefix: string,
+}): Generator<*, void, *> {
+  try {
+    const {
+      token,
+    } = yield call(
+      Api.chronosBackendAuth,
+      {
+        host,
+        username,
+        password,
+        port,
+        protocol,
+        pathPrefix,
+      },
+    );
+    yield call(
+      setToStorage,
+      'desktop_tracker_jwt',
+      token,
+    );
+  } catch (err) {
+    yield call(throwError, err);
+  }
+}
+
 export function* basicAuthLoginForm(): Generator<*, void, *> {
   while (true) {
     try {
@@ -78,15 +118,25 @@ export function* basicAuthLoginForm(): Generator<*, void, *> {
           path_prefix: host.pathname,
         },
       );
-      const {
-        token,
-      } = yield call(
-        Api.chronosBackendAuth,
-        {
-          ...payload,
-          host: host.hostname,
-        },
-      );
+      // Test request for check auth
+      const userData = yield call(Api.jiraProfile);
+      if (!userData.self || !userData.active) {
+        Raven.captureMessage('Strange auth response!', {
+          level: 'error',
+          extra: {
+            userData,
+          },
+        });
+        throw new Error('Strange auth response!');
+      }
+      yield fork(chronosBackendAuth, {
+        username: payload.username,
+        password: payload.password,
+        host: host.hostname,
+        protocol,
+        port: host.port,
+        pathPrefix: host.pathname,
+      });
       yield call(
         setToStorage,
         'jira_credentials',
@@ -94,11 +144,6 @@ export function* basicAuthLoginForm(): Generator<*, void, *> {
           username: payload.username,
           host: payload.host,
         },
-      );
-      yield call(
-        setToStorage,
-        'desktop_tracker_jwt',
-        token,
       );
       yield call(
         initialConfigureApp,

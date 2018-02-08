@@ -4,6 +4,7 @@ import {
   call,
   select,
   takeLatest,
+  fork,
 } from 'redux-saga/effects';
 import Raven from 'raven-js';
 import createActionCreators from 'redux-resource-action-creators';
@@ -37,7 +38,9 @@ export function* fetchProjects(): Generator<*, *, *> {
       resources: projects,
     }));
   } catch (err) {
-    yield call(notify, '', 'Failed to load projects, check your permissions');
+    yield fork(notify, {
+      title: 'Failed to load projects, check your permissions',
+    });
     yield call(throwError, err);
   }
 }

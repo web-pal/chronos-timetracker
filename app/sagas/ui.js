@@ -92,20 +92,35 @@ function* autoDeleteFlag(id) {
   yield put(uiActions.deleteFlag(id));
 }
 
-export function* notify(
-  message: string = '',
-  title: string = '',
-  actions: Array<any> = [],
-  level: string = 'normal',
-  icon: string = 'bellIcon',
-): Generator<*, void, *> {
+export function* notify({
+  description = '',
+  title = '',
+  actions = [],
+  appearance = 'normal',
+  icon = 'bellIcon',
+  resourceName,
+  request,
+  spinnerTitle = '',
+}: {
+  description?: string,
+  title?: string,
+  actions?: Array<any>,
+  appearance?: string,
+  icon?: string,
+  resourceName? : string,
+  request?: string,
+  spinnerTitle?: string,
+}): Generator<*, void, *> {
   const newFlag = {
     id: uuidv4(),
     title,
     actions,
-    appearance: level,
-    description: message,
+    appearance,
+    description,
     icon,
+    resourceName,
+    request,
+    spinnerTitle,
   };
   yield put(uiActions.addFlag(newFlag));
   if (!actions.length) {
@@ -143,10 +158,6 @@ function* onUiChange({
     }
     if (key === 'selectedIssueId') {
       yield fork(issueSelectFlow, value);
-      trackMixpanel('Issue was selected');
-    }
-    if (key === 'selectedWorklogId') {
-      trackMixpanel('Worklog was selected');
     }
     if (key === 'sidebarType') {
       yield fork(onSidebarChange, value);
