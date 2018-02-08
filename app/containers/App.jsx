@@ -8,6 +8,9 @@ import type {
   Node,
   StatelessFunctionalComponent,
 } from 'react';
+import type {
+  Connector,
+} from 'react-redux';
 
 import Spinner from '@atlaskit/spinner';
 import {
@@ -50,4 +53,9 @@ function mapStateToProps(state): Props {
   };
 }
 
-export default connect(mapStateToProps)(App);
+const connector: Connector<{}, Props> = connect(
+  mapStateToProps,
+  dispatch => ({ dispatch }),
+);
+
+export default connector(App);

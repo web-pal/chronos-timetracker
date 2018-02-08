@@ -30,9 +30,7 @@ import {
 
 type Props = {
   settings: SettingsGeneral,
-  setTraySettings: {
-    (value: boolean): boolean,
-  }
+  setTraySettings: (value: any) => void,
 }
 
 const GeneralSettings: StatelessFunctionalComponent<Props> = ({

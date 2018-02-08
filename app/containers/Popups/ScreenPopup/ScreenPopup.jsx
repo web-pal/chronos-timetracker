@@ -45,7 +45,7 @@ export default class ScreenPopup extends Component<{}, State> {
     this.timer = setInterval(() => this.tick(), 1000);
   }
 
-  timer = 0;
+  timer: IntervalID;
 
   tick = () => {
     const { maxTime, currentTime } = this.state;

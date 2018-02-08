@@ -5,6 +5,6 @@ export function fetchProjects(): Promise<*> {
   return jira.client.project.getAllProjects();
 }
 
-export function fetchProjectStatuses(projectIdOrKey): Promise<*> {
+export function fetchProjectStatuses(projectIdOrKey: number | string): Promise<*> {
   return jira.client.project.getStatuses({ projectIdOrKey });
 }

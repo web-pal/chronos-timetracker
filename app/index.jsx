@@ -1,4 +1,3 @@
-// @flow
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
@@ -40,6 +39,7 @@ render(
 );
 
 if (module.hot) {
+  // $FlowFixMe
   module.hot.accept('./containers/App', () => {
     const App = require('./containers/App'); // eslint-disable-line
     render(

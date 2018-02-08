@@ -6,7 +6,6 @@ import {
 import {
   reduxForm,
   formValueSelector,
-  FormProps,
 } from 'redux-form';
 
 import type {
@@ -16,6 +15,9 @@ import type {
 import type {
   Connector,
 } from 'react-redux';
+import type {
+  FormProps,
+} from 'redux-form';
 import type {
   Dispatch,
 } from 'types';
@@ -89,7 +91,9 @@ const AuthForm: StatelessFunctionalComponent<Props> = ({
             dispatch(authActions.loginRequest(data));
           })}
           loginError={loginError}
-          onBack={() => dispatch(uiActions.setUiState('authFormStep', 1))}
+          onBack={() => {
+            dispatch(uiActions.setUiState('authFormStep', 1));
+          }}
           onJiraClick={() => {
             if (host !== null && host.length) {
               dispatch(authActions.loginOAuthRequest(host));

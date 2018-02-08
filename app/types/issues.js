@@ -47,6 +47,7 @@ export type Issue = {
   self: string,
   key: string,
   fields: IssueField,
+  renderedFields: any,
 };
 
 export type IssuesResources = {

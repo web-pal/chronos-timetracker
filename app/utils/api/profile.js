@@ -1,8 +1,10 @@
 // @flow
 import config from 'config';
 import jira from '../jiraClient';
-import { getHeaders } from './helper';
-import type { oAuthData } from '../../types';
+import {
+  getHeaders,
+} from './helper';
+
 
 export function jiraProfile(): Promise<*> {
   return jira.client.myself.getMyself()
@@ -74,12 +76,6 @@ export function chronosBackendAuth({
   protocol: string,
   pathPrefix: string,
 }): Promise<*> {
-  const urlComponents = [
-    `${protocol}://`,
-    host,
-    port ? `:${port}` : '',
-    '/rest/api/2/myself',
-  ];
   return fetch(`${config.apiUrl}/desktop-tracker/authenticate`, {
     method: 'POST',
     headers: {
@@ -106,7 +102,7 @@ export function chronosBackendAuth({
 export function chronosBackendOAuth({
   baseUrl,
   token,
-  token_secret,
+  token_secret, // eslint-disable-line
 }: {
   baseUrl: string,
   token: string,
@@ -144,7 +140,7 @@ export function getOAuthUrl(options: any): Promise<*> {
     );
 }
 
-export function getOAuthToken(options: { oauth: oAuthData, host: string }): Promise<*> {
+export function getOAuthToken(options: { oauth: any, host: string }): Promise<*> {
   return new Promise((resolve) => {
     jira.getOAuthToken(options, (err, res) => {
       if (err) {

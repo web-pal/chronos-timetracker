@@ -10,18 +10,14 @@ import {
 } from './styled';
 
 type Props = {
-  input: FieldProps.input,
   autoFocus: boolean,
   type: string,
   placeholder: string,
-};
+} & FieldProps;
 
 
 class Input extends Component<Props> {
-  constructor(props) {
-    super(props);
-    this.input = null;
-  }
+  input = null;
 
   render() {
     const {
