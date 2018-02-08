@@ -1,3 +1,18 @@
+<a name="2.5.3"></a>
+## [2.5.3](https://github.com/web-pal/chronos-timetracker/compare/v2.5.2...v2.5.3) (2018-02-08)
+
+
+### Bug Fixes
+
+* **Authorization:** jira server auth fix ([667c77e](https://github.com/web-pal/chronos-timetracker/commit/667c77e))
+
+
+### Features
+
+* notification on delete, edit, add worklog ([f4a381f](https://github.com/web-pal/chronos-timetracker/commit/f4a381f))
+
+
+
 <a name="2.5.2"></a>
 ## [2.5.2](https://github.com/web-pal/chronos-timetracker/compare/v2.5.1...v2.5.2) (2018-02-07)
 
