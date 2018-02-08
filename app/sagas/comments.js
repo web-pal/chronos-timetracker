@@ -4,11 +4,11 @@ import {
   select,
   put,
   takeEvery,
+  fork,
 } from 'redux-saga/effects';
 import {
   getStatus as getResourceStatus,
 } from 'redux-resource';
-import Raven from 'raven-js';
 import createActionCreators from 'redux-resource-action-creators';
 
 import * as Api from 'api';
@@ -88,7 +88,9 @@ export function* addIssueComment({
     yield put(uiActions.setUiState('commentAdding', false));
   } catch (err) {
     yield put(uiActions.setUiState('commentAdding', false));
-    yield call(notify, '', 'failed to add comment');
+    yield fork(notify, {
+      title: 'failed to add comment',
+    });
     yield call(throwError, err);
   }
 }

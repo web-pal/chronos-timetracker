@@ -54,7 +54,7 @@ export function fetchIssues({
   jql: string,
   additionalFields: Array<string>,
   boardId?: number | string | null,
-  timeout: number,
+  timeout?: number,
 }): Promise<*> {
   const api = boardId ?
     opts => jira.client.board.getIssuesForBoard({ ...opts, boardId }) :

@@ -29,6 +29,9 @@ import {
 
 import EditorWarningIcon from '@atlaskit/icon/glyph/editor/warning';
 import NotificationAllIcon from '@atlaskit/icon/glyph/notification-all';
+import SpinnerContainer from './SpinnerContainer';
+
+import FlagHoc from './FlagHoc';
 
 
 type Props = {
@@ -52,10 +55,19 @@ const FlagsContainer: StatelessFunctionalComponent<Props> = ({
     }}
   >
     {flags.map(flag => (
-      <Flag
+      <FlagHoc
         key={flag.id}
-        {...flag}
-        icon={getIcon(flag.icon)}
+        resourceName={flag.resourceName}
+        request={flag.request}
+        render={pending =>
+          <Flag
+            title={pending ? <SpinnerContainer spinnerTitle={flag.spinnerTitle} /> : flag.title}
+            actions={flag.actions}
+            appearance={flag.appearance}
+            description={flag.description}
+            icon={getIcon(flag.icon)}
+          />
+        }
       />
     ))}
   </FlagGroup>
