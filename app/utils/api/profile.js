@@ -63,11 +63,23 @@ export function chronosBackendAuth({
   host,
   username,
   password,
+  port = '',
+  protocol = 'https',
+  pathPrefix = '/',
 }: {
-  host: URL,
+  host: string,
   username: string,
   password: string,
+  port: string,
+  protocol: string,
+  pathPrefix: string,
 }): Promise<*> {
+  const urlComponents = [
+    `${protocol}://`,
+    host,
+    port ? `:${port}` : '',
+    '/rest/api/2/myself',
+  ];
   return fetch(`${config.apiUrl}/desktop-tracker/authenticate`, {
     method: 'POST',
     headers: {
@@ -76,6 +88,10 @@ export function chronosBackendAuth({
     body: JSON.stringify({
       type: 'basic_auth',
       baseUrl: host,
+      host,
+      port,
+      protocol,
+      pathPrefix,
       basicToken: Buffer.from(`${username}:${password}`).toString('base64'),
     }),
   })

@@ -262,9 +262,11 @@ function authJiraBrowserRequests({
         '*://atlassian.com/*',
         '*://atlassian.io/*',
         '*://cloudfront.net/*',
-        `*://${host}/*`,
       ],
     };
+    if (host) {
+      filter.urls.push(`*://${host}/*`);
+    }
     // Basic auth for jira links(media in renderedFields)
     session.defaultSession.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
       details.requestHeaders['Authorization'] = // eslint-disable-line

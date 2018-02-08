@@ -158,10 +158,6 @@ function* onUiChange({
     }
     if (key === 'selectedIssueId') {
       yield fork(issueSelectFlow, value);
-      trackMixpanel('Issue was selected');
-    }
-    if (key === 'selectedWorklogId') {
-      trackMixpanel('Worklog was selected');
     }
     if (key === 'sidebarType') {
       yield fork(onSidebarChange, value);

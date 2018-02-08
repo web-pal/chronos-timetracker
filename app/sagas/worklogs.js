@@ -190,6 +190,18 @@ export function* saveWorklog({
   return null;
 }
 
+export function* chronosBackendUploadWorklog(options: any): Generator<*, *, *> {
+  try {
+    const jwt = yield call(getFromStorage, 'desktop_tracker_jwt');
+    if (!jwt) {
+      throw new Error('Attempt to upload worklog on chronos backend!');
+    }
+    yield call(Api.chronosBackendUploadWorklog, options);
+  } catch (err) {
+    yield call(throwError, err);
+  }
+}
+
 export function* uploadWorklog(options: any): Generator<*, *, *> {
   try {
     yield call(
@@ -233,7 +245,7 @@ export function* uploadWorklog(options: any): Generator<*, *, *> {
       activity,
       keepedIdles,
     };
-    yield call(Api.chronosBackendUploadWorklog, backendUploadOptions);
+    yield fork(chronosBackendUploadWorklog, backendUploadOptions);
     yield call(
       infoLog,
       'worklog uploaded',
