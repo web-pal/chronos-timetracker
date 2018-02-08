@@ -114,21 +114,23 @@ function* watchUpdateDownloaded(): Generator<*, *, *> {
     yield put(uiActions.setUiState('updateFetching', false));
     const { getGlobal } = remote;
     yield call(delay, 500);
-    updateDownloaded = true;
-    trackMixpanel('Update installed');
-    incrementMixpanel('Update installed', 1);
-    if (window.confirm('New version is available. Do you like to install it now?')) {
-      const { running, uploading } = getGlobal('sharedObj');
-      if (uploading) {
-        window.alert('Currently app in process of saving worklog, wait few seconds and restart app');
-      } else {
-        if (running) { // eslint-disable-line
-          if (window.confirm('Tracking in progress, save worklog before restart?')) {
-            yield put(timerActions.stopTimerRequest());
-          }
+    if (!updateDownloaded) {
+      updateDownloaded = true;
+      trackMixpanel('Update installed');
+      incrementMixpanel('Update installed', 1);
+      if (window.confirm('New version is available. Do you like to install it now?')) {
+        const { running, uploading } = getGlobal('sharedObj');
+        if (uploading) {
+          window.alert('Currently app in process of saving worklog, wait few seconds and restart app');
         } else {
-          ipcRenderer.send('set-should-quit');
-          autoUpdater.quitAndInstall();
+          if (running) { // eslint-disable-line
+            if (window.confirm('Tracking in progress, save worklog before restart?')) {
+              yield put(timerActions.stopTimerRequest());
+            }
+          } else {
+            ipcRenderer.send('set-should-quit');
+            autoUpdater.quitAndInstall();
+          }
         }
       }
     }
