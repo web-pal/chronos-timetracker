@@ -70,6 +70,7 @@ export type IssueField = {
   timeestimate: number | null,
   versions: Array<Version>,
   worklog: IssueWorklog,
+  worklogs: Array<Id>,
   assignee: User | null,
   status: IssueStatus,
   subtasks: Array<any>,

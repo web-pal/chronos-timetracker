@@ -15,7 +15,7 @@ export const fillLocalDesktopSettings = (
 });
 
 export const setLocalDesktopSetting = (
-  value: boolean,
+  value: any,
   settingName: string,
 ): SettingsAction => ({
   type: types.SET_LOCAL_DESKTOP_SETTING,

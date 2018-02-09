@@ -73,7 +73,7 @@ export function* infoLog(...argw: any): Generator<*, void, *> {
   }
 }
 
-export function* throwError(err: mixed): Generator<*, void, *> {
+export function* throwError(err: any): Generator<*, void, *> {
   yield call(console.error, err);
   Raven.captureException(err);
 }
@@ -81,7 +81,9 @@ export function* throwError(err: mixed): Generator<*, void, *> {
 
 /* eslint-disable */
 function uuidv4() {
+  // $FlowFixMe
   return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+    // $FlowFixMe
     (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
   )
 }

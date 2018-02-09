@@ -1,5 +1,5 @@
 [ignore]
-<PROJECT_ROOT>/node_modules/*
+<PROJECT_ROOT>/node_modules/*(?!redux-form)
 <PROJECT_ROOT>/app/main.prod.js
 <PROJECT_ROOT>/app/main.prod.js.map
 <PROJECT_ROOT>/app/dist/.*
@@ -23,6 +23,9 @@ module.name_mapper='^types$' -> '<PROJECT_ROOT>/app/types/'
 module.name_mapper='^components$' -> '<PROJECT_ROOT>/app/components/'
 module.name_mapper='^selectors$' -> '<PROJECT_ROOT>/app/selectors/'
 module.name_mapper='^styles$' -> '<PROJECT_ROOT>/app/styles/'
+module.name_mapper='^styles/typography$' -> '<PROJECT_ROOT>/app/styles/typography/'
+module.name_mapper='^styles/modals$' -> '<PROJECT_ROOT>/app/styles/modals/'
+module.name_mapper='^styles/buttons$' -> '<PROJECT_ROOT>/app/styles/buttons/'
 
 module.name_mapper='^api$' -> '<PROJECT_ROOT>/app/utils/api/'
 module.name_mapper='^config$' -> '<PROJECT_ROOT>/app/config/'
@@ -36,3 +39,4 @@ module.name_mapper='^normalize-util$' -> '<PROJECT_ROOT>/app/utils/normalize-uti
 module.name_mapper='^screenshot-util$' -> '<PROJECT_ROOT>/app/utils/screenshot-util/'
 module.name_mapper='^time-util$' -> '<PROJECT_ROOT>/app/utils/time-util/'
 module.name_mapper='^timer-helper$' -> '<PROJECT_ROOT>/app/utils/timer-helper/'
+module.name_mapper='^styled-components2$' -> '<PROJECT_ROOT>/app/styled-components.min.js'

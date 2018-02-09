@@ -43,7 +43,10 @@ import {
 
 type Props = {
   issue: Issue,
-  epic: Issue,
+  epic: Issue & {
+    color: string,
+    name: string,
+  },
 }
 
 const IssueDetails: StatelessFunctionalComponent<Props> = ({

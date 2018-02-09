@@ -1,5 +1,4 @@
 // @flow
-import React from 'react';
 import {
   connect,
 } from 'react-redux';
@@ -15,9 +14,12 @@ import type {
   Connector,
 } from 'react-redux';
 
+
 type Props = {
   pending: boolean,
   render: (pending: boolean) => Node,
+  resourceName: string,
+  request: string,
 }
 
 const FlagHoc: StatelessFunctionalComponent<Props> = ({
@@ -39,7 +41,11 @@ function mapStateToProps(state, props) {
   };
 }
 
-const connector: Connector<{}, Props> = connect(
+const connector: Connector<{
+  render: (pending: boolean) => Node,
+  resourceName: string,
+  request: string,
+}, Props> = connect(
   mapStateToProps,
   dispatch => ({ dispatch }),
 );

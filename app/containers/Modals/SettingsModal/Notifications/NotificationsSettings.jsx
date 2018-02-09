@@ -30,7 +30,7 @@ import {
 
 type Props = {
   settings: SettingsGeneral,
-  onChangeSetting: (value: boolean, settingName: string) => void,
+  onChangeSetting: (value: any, settingName: string) => void,
 }
 
 const NotificationsSettings: StatelessFunctionalComponent<Props> = ({

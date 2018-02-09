@@ -1,11 +1,17 @@
 // @flow
-import { shell } from 'electron';
-import type { Issue, Project, Worklog } from '../../types';
+import {
+  shell,
+} from 'electron';
+import type {
+  Issue,
+  Project,
+  Worklog,
+} from 'types';
 
 export function openIssueInBrowser(issue: Issue): { (ev: SyntheticMouseEvent<any>): void } {
   return (ev: SyntheticMouseEvent<any>) => {
     ev.preventDefault();
-    const urlArr: string = issue.self.split('/');
+    const urlArr = issue.self.split('/');
     shell.openExternal(`${urlArr[0]}//${urlArr[2]}/browse/${issue.key}`);
   };
 }

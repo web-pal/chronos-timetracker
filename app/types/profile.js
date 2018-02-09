@@ -34,5 +34,5 @@ export type ProfileAction =
   |};
 
 export type ProfileState = {|
-  userData: User,
+  userData: User | null,
 |};

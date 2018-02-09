@@ -19,7 +19,7 @@ import {
 
 type Props = {
   option: any,
-  onChange: (id: string, isChecked: boolean) => {},
+  onChange: (id: string, isChecked: boolean) => void,
   showIcons: boolean,
   isChecked: boolean,
 }

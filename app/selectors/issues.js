@@ -68,7 +68,7 @@ export const getRecentIssues = createSelector(
     issues: Array<Issue>,
     issuesMap: IssuesResources,
     worklogsMap: WorklogsResources,
-    self: string,
+    self: any,
   ) => {
     const selfKey = self ? self.key : '';
     const worklogsIds =
@@ -122,6 +122,7 @@ export const getSelectedIssue = createSelector(
 
 export const getSelectedIssueWorklogs = createSelector(
   [
+    // $FlowFixMe
     getSelectedIssue,
     getResourceMap('worklogs'),
   ],
@@ -196,15 +197,17 @@ export const getSelectedIssueEpic = createSelector(
     epicColorFieldId: Id | null,
   ) => {
     const issue = issuesMap[issueId];
-    const epicKey = issue.fields[epicLinkFieldId];
-    if (epicKey) {
-      const epic = epics.find(e => e.key === epicKey);
-      if (epic) {
-        return {
-          ...epic,
-          color: epic.fields[epicColorFieldId],
-          name: epic.fields[epicNameFieldId],
-        };
+    if (epicLinkFieldId) {
+      const epicKey = issue.fields[epicLinkFieldId];
+      if (epicKey && epicColorFieldId && epicNameFieldId) {
+        const epic = epics.find(e => e.key === epicKey);
+        if (epic) {
+          return {
+            ...epic,
+            color: epic.fields[epicColorFieldId],
+            name: epic.fields[epicNameFieldId],
+          };
+        }
       }
     }
     return null;
@@ -214,6 +217,7 @@ export const getSelectedIssueEpic = createSelector(
 
 export const getSelectedIssueReport = createSelector(
   [
+    // $FlowFixMe
     getSelectedIssue,
     getSelectedIssueWorklogs,
     getSelfKey,
@@ -258,7 +262,7 @@ export const getIssuesSourceOptions = createSelector(
     {
       heading: 'Projects',
       items: projects.map(project =>
-        ({ value: project.id, content: project.name, meta: { project } })),
+        ({ value: project.id, content: `${project.name}(${project.key})`, meta: { project } })),
     },
     {
       heading: 'Boards',

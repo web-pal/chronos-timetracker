@@ -44,7 +44,6 @@ import {
   worklogsActions,
 } from 'actions';
 import {
-  getWorklogModalOpen,
   getModalState,
   getUiState,
   getEditWorklog,
@@ -76,7 +75,7 @@ type State = {
   calendarOpened: boolean,
   date: string,
   startTime: Moment,
-  comment: string,
+  comment: string | null,
   timeSpent: string,
   jiraTimeError: string | null,
 };
@@ -106,7 +105,7 @@ class WorklogModal extends Component<Props, State> {
       }
       setTimeout(() => {
         if (this.timeInput) {
-          this.timeInput.focus(); // eslint-disable-line
+          this.timeInput.focus();
         }
       }, 50);
     }
@@ -122,6 +121,8 @@ class WorklogModal extends Component<Props, State> {
     this.setState({ startTime: now });
     this.setState({ date: now.format('MM/DD/YYYY') });
   }
+
+  timeInput: any;
 
   handleTimeChange = label => (value) => {
     this.setState({ [label]: value });
@@ -179,9 +180,9 @@ class WorklogModal extends Component<Props, State> {
                       worklogId: worklog ? worklog.id : null,
                       issueId,
                       startTime: startTime.set({
-                        year: date.split('/')[2],
+                        year: parseInt(date.split('/')[2], 10),
                         month: parseInt(date.split('/')[0], 10) - 1,
-                        date: date.split('/')[1],
+                        date: parseInt(date.split('/')[1], 10),
                       }),
                       timeSpent,
                       comment,

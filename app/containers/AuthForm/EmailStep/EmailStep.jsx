@@ -2,8 +2,12 @@
 import React, { Component } from 'react';
 import {
   Field,
+} from 'redux-form';
+
+import type {
   FormProps,
 } from 'redux-form';
+
 import Spinner from '@atlaskit/spinner';
 import Button from '@atlaskit/button';
 
