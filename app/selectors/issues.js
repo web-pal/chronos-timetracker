@@ -262,7 +262,7 @@ export const getIssuesSourceOptions = createSelector(
     {
       heading: 'Projects',
       items: projects.map(project =>
-        ({ value: project.id, content: project.name, meta: { project } })),
+        ({ value: project.id, content: `${project.name}(${project.key})`, meta: { project } })),
     },
     {
       heading: 'Boards',

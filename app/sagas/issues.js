@@ -295,6 +295,12 @@ export function* fetchIssues({
         },
       );
     }
+    yield put(resourcesActions.setResourceMeta({
+      resourceName: 'issues',
+      meta: {
+        filterIssuesTotalCount: 0,
+      },
+    }));
     yield put(actions.succeeded({
       resources: [],
     }));

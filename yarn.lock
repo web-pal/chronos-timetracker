@@ -31,10 +31,10 @@
   resolved "https://registry.yarnpkg.com/7zip/-/7zip-0.0.6.tgz#9cafb171af82329490353b4816f03347aa150a30"
 
 "@atlaskit/blanket@^4.0.7":
-  version "4.0.7"
-  resolved "https://registry.yarnpkg.com/@atlaskit/blanket/-/blanket-4.0.7.tgz#0c1a124f4d6133de0a51bd9162a525d8dfc3f8d8"
+  version "4.0.8"
+  resolved "https://registry.yarnpkg.com/@atlaskit/blanket/-/blanket-4.0.8.tgz#268dd2dd414789e25441fd546f375a4aa132a85c"
   dependencies:
-    "@atlaskit/theme" "^2.3.1"
+    "@atlaskit/theme" "^2.3.3"
     styled-components "^1.4.6"
 
 "@atlaskit/button@6.3.1":
@@ -46,10 +46,10 @@
     styled-components "^1.4.6"
 
 "@atlaskit/button@^6.3.0", "@atlaskit/button@^6.3.1":
-  version "6.4.0"
-  resolved "https://registry.yarnpkg.com/@atlaskit/button/-/button-6.4.0.tgz#8f0611e14b9dde35bbaae50e075711ca7222274d"
+  version "6.4.1"
+  resolved "https://registry.yarnpkg.com/@atlaskit/button/-/button-6.4.1.tgz#384d3de7be3a29daa1445a30c185d9e1de37704e"
   dependencies:
-    "@atlaskit/theme" "^2.3.1"
+    "@atlaskit/theme" "^2.3.3"
     babel-runtime "^6.26.0"
     styled-components "^1.4.6"
 
@@ -92,22 +92,22 @@
     uuid "^3.1.0"
 
 "@atlaskit/droplist@^4.11.3":
-  version "4.11.6"
-  resolved "https://registry.yarnpkg.com/@atlaskit/droplist/-/droplist-4.11.6.tgz#f7559fce92d61ad940c879d0899926a5f03294a3"
+  version "4.11.8"
+  resolved "https://registry.yarnpkg.com/@atlaskit/droplist/-/droplist-4.11.8.tgz#3bf8221b1ac3d967ec6886ce961b303a4e402904"
   dependencies:
-    "@atlaskit/icon" "^10.1.3"
-    "@atlaskit/item" "^4.2.3"
-    "@atlaskit/layer" "^2.5.3"
-    "@atlaskit/spinner" "^4.0.0"
-    "@atlaskit/theme" "^2.0.1"
-    "@atlaskit/tooltip" "^8.0.1"
+    "@atlaskit/icon" "^10.9.1"
+    "@atlaskit/item" "^4.2.11"
+    "@atlaskit/layer" "^2.7.1"
+    "@atlaskit/spinner" "^4.1.4"
+    "@atlaskit/theme" "^2.3.3"
+    "@atlaskit/tooltip" "^8.3.1"
     babel-runtime "^6.26.0"
     classnames "^2.2.5"
     keycode "^2.1.7"
     prop-types "^15.5.10"
     styled-components "^1.4.6"
 
-"@atlaskit/field-base@8.1.9", "@atlaskit/field-base@^8.1.7", "@atlaskit/field-base@^8.1.9":
+"@atlaskit/field-base@8.1.9":
   version "8.1.9"
   resolved "https://registry.yarnpkg.com/@atlaskit/field-base/-/field-base-8.1.9.tgz#7d7898353124e35e566d168be1a2c72662936282"
   dependencies:
@@ -115,6 +115,17 @@
     "@atlaskit/inline-dialog" "^5.1.2"
     "@atlaskit/spinner" "^4.1.1"
     "@atlaskit/theme" "^2.3.1"
+    babel-runtime "^6.26.0"
+    styled-components "^1.4.6"
+
+"@atlaskit/field-base@^8.1.7", "@atlaskit/field-base@^8.1.9":
+  version "8.1.10"
+  resolved "https://registry.yarnpkg.com/@atlaskit/field-base/-/field-base-8.1.10.tgz#9530d6f7ac4a1b0827e9550bdb4ff6cde7e0c658"
+  dependencies:
+    "@atlaskit/icon" "^10.9.1"
+    "@atlaskit/inline-dialog" "^5.2.1"
+    "@atlaskit/spinner" "^4.1.4"
+    "@atlaskit/theme" "^2.3.3"
     babel-runtime "^6.26.0"
     styled-components "^1.4.6"
 
@@ -162,21 +173,29 @@
     styled-components "^1.4.6"
     uuid "^3.1.0"
 
-"@atlaskit/icon@^10.1.3", "@atlaskit/icon@^10.7.0", "@atlaskit/icon@^10.7.1":
-  version "10.9.0"
-  resolved "https://registry.yarnpkg.com/@atlaskit/icon/-/icon-10.9.0.tgz#9eb9e843a00cf81f7d592c228dad0fc11a0ee431"
+"@atlaskit/icon@^10.7.0", "@atlaskit/icon@^10.7.1", "@atlaskit/icon@^10.9.1":
+  version "10.9.1"
+  resolved "https://registry.yarnpkg.com/@atlaskit/icon/-/icon-10.9.1.tgz#19bb5b2473c4029938d63c877b8d4782f417c23a"
   dependencies:
-    "@atlaskit/theme" "^2.3.1"
+    "@atlaskit/theme" "^2.3.3"
     babel-runtime "^6.26.0"
     styled-components "^1.4.6"
     uuid "^3.1.0"
 
-"@atlaskit/inline-dialog@5.2.0", "@atlaskit/inline-dialog@^5.1.2":
+"@atlaskit/inline-dialog@5.2.0":
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/@atlaskit/inline-dialog/-/inline-dialog-5.2.0.tgz#7c814c894365bef8376e59b5bd9e5afaf5a84006"
   dependencies:
     "@atlaskit/layer" "^2.7.0"
     "@atlaskit/theme" "^2.3.1"
+    styled-components "^1.4.6"
+
+"@atlaskit/inline-dialog@^5.1.2", "@atlaskit/inline-dialog@^5.2.1":
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/@atlaskit/inline-dialog/-/inline-dialog-5.2.1.tgz#ddc1e283f91e7969c8f8203a82efc7babe67cbc6"
+  dependencies:
+    "@atlaskit/layer" "^2.7.1"
+    "@atlaskit/theme" "^2.3.3"
     styled-components "^1.4.6"
 
 "@atlaskit/inline-edit@4.5.14":
@@ -199,19 +218,19 @@
     keycode "^2.1.7"
     styled-components "^1.4.6"
 
-"@atlaskit/item@^4.2.3", "@atlaskit/item@^4.2.9":
-  version "4.2.10"
-  resolved "https://registry.yarnpkg.com/@atlaskit/item/-/item-4.2.10.tgz#cda794de46aeba52b89eed82ec8064681d7ab4b3"
+"@atlaskit/item@^4.2.11", "@atlaskit/item@^4.2.9":
+  version "4.2.11"
+  resolved "https://registry.yarnpkg.com/@atlaskit/item/-/item-4.2.11.tgz#5b59759ff9ae6805bc031b7e517f5f38b126be8a"
   dependencies:
-    "@atlaskit/theme" "^2.3.1"
+    "@atlaskit/theme" "^2.3.3"
     prop-types "^15.5.10"
     react-addons-text-content "^0.0.4"
     styled-components "^1.4.6"
     uuid "^3.1.0"
 
-"@atlaskit/layer-manager@^2.6.0", "@atlaskit/layer-manager@^2.7.1", "@atlaskit/layer-manager@^2.7.2":
-  version "2.7.2"
-  resolved "https://registry.yarnpkg.com/@atlaskit/layer-manager/-/layer-manager-2.7.2.tgz#e42358fa36849b1e97832d266587221f5bbdbf4a"
+"@atlaskit/layer-manager@^2.6.0", "@atlaskit/layer-manager@^2.7.1", "@atlaskit/layer-manager@^2.7.2", "@atlaskit/layer-manager@^2.7.3":
+  version "2.7.3"
+  resolved "https://registry.yarnpkg.com/@atlaskit/layer-manager/-/layer-manager-2.7.3.tgz#310c867f4a0541392b1097c86c00036c0d2482d9"
   dependencies:
     focusin "^2.0.0"
     prop-types "^15.5.10"
@@ -219,9 +238,9 @@
     styled-components "^1.4.6"
     tabbable "^1.1.0"
 
-"@atlaskit/layer@^2.5.3", "@atlaskit/layer@^2.7.0":
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/@atlaskit/layer/-/layer-2.7.0.tgz#0686528a8e0648afdc0eefd5801727d74486a5bc"
+"@atlaskit/layer@^2.7.0", "@atlaskit/layer@^2.7.1":
+  version "2.7.1"
+  resolved "https://registry.yarnpkg.com/@atlaskit/layer/-/layer-2.7.1.tgz#463edac4f8c7e143c402cff53b839ad54987173f"
   dependencies:
     styled-components "^1.4.6"
 
@@ -263,18 +282,18 @@
     react-transition-group "^2.2.1"
     styled-components "^1.4.6"
 
-"@atlaskit/spinner@^4.0.0", "@atlaskit/spinner@^4.1.0", "@atlaskit/spinner@^4.1.1":
-  version "4.1.3"
-  resolved "https://registry.yarnpkg.com/@atlaskit/spinner/-/spinner-4.1.3.tgz#199436088ce2bc385205252fd6378b00a1502396"
+"@atlaskit/spinner@^4.1.0", "@atlaskit/spinner@^4.1.1", "@atlaskit/spinner@^4.1.4":
+  version "4.1.4"
+  resolved "https://registry.yarnpkg.com/@atlaskit/spinner/-/spinner-4.1.4.tgz#34f895bf7e178ade335d3b24535014f2b434b679"
   dependencies:
-    "@atlaskit/theme" "^2.3.1"
+    "@atlaskit/theme" "^2.3.3"
     babel-runtime "^6.26.0"
     react-transition-group "^2.2.1"
     styled-components "^1.4.6"
 
-"@atlaskit/theme@^2.0.1", "@atlaskit/theme@^2.3.0", "@atlaskit/theme@^2.3.1", "@atlaskit/theme@^2.3.2":
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/@atlaskit/theme/-/theme-2.3.2.tgz#5a9d1854d1b6b73564563cd5b04d49a9e07c9e42"
+"@atlaskit/theme@^2.3.0", "@atlaskit/theme@^2.3.1", "@atlaskit/theme@^2.3.3":
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/@atlaskit/theme/-/theme-2.3.3.tgz#f5713314435a78e0c5316a536e3ba41522948d9a"
   dependencies:
     prop-types "^15.5.10"
     styled-components "^1.4.6"
@@ -289,12 +308,12 @@
     react-transition-group "^2.2.1"
     styled-components "^1.4.6"
 
-"@atlaskit/tooltip@^8.0.1":
-  version "8.3.0"
-  resolved "https://registry.yarnpkg.com/@atlaskit/tooltip/-/tooltip-8.3.0.tgz#9e9b563b232edbbe1da386a253f07a00154386cf"
+"@atlaskit/tooltip@^8.3.1":
+  version "8.3.1"
+  resolved "https://registry.yarnpkg.com/@atlaskit/tooltip/-/tooltip-8.3.1.tgz#5ceca6ce4ab12ad61c45effc88edda504fe31f00"
   dependencies:
-    "@atlaskit/layer-manager" "^2.6.0"
-    "@atlaskit/theme" "^2.3.2"
+    "@atlaskit/layer-manager" "^2.7.3"
+    "@atlaskit/theme" "^2.3.3"
     react-deprecate "^0.1.0"
     react-transition-group "^2.2.1"
     styled-components "^1.4.6"
@@ -370,8 +389,8 @@
     to-fast-properties "^2.0.0"
 
 "@types/node@^7.0.18":
-  version "7.0.52"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.52.tgz#8990d3350375542b0c21a83cd0331e6a8fc86716"
+  version "7.0.53"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.53.tgz#3465ada7e6f0f762f761779fcb4f041e795755cd"
 
 JSONStream@^1.0.4:
   version "1.3.2"
@@ -1722,8 +1741,8 @@ boxen@^1.2.1:
     widest-line "^2.0.0"
 
 brace-expansion@^1.1.7:
-  version "1.1.8"
-  resolved "https://registry.yarnpkg.com/brace-expansion/-/brace-expansion-1.1.8.tgz#c07b211c7c952ec1f8efd51a77ef0d1d3990a292"
+  version "1.1.9"
+  resolved "https://registry.yarnpkg.com/brace-expansion/-/brace-expansion-1.1.9.tgz#acdc7dde0e939fb3b32fe933336573e2a7dc2b7c"
   dependencies:
     balanced-match "^1.0.0"
     concat-map "0.0.1"
@@ -2002,12 +2021,12 @@ caniuse-api@^1.5.2:
     lodash.uniq "^4.5.0"
 
 caniuse-db@^1.0.30000529, caniuse-db@^1.0.30000634, caniuse-db@^1.0.30000639:
-  version "1.0.30000803"
-  resolved "https://registry.yarnpkg.com/caniuse-db/-/caniuse-db-1.0.30000803.tgz#3e8d2baf56c2fd5a59c82e227928a0dc2c26702d"
+  version "1.0.30000805"
+  resolved "https://registry.yarnpkg.com/caniuse-db/-/caniuse-db-1.0.30000805.tgz#8f1ad9264c835989b5055dd9b009513ce6d95338"
 
 caniuse-lite@^1.0.30000792:
-  version "1.0.30000803"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000803.tgz#9939c37149d38d5f4540430490d240c03106a0f5"
+  version "1.0.30000805"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000805.tgz#83a5f21ead01486e67bccca6fae5dca7cde496de"
 
 capture-stack-trace@^1.0.0:
   version "1.0.0"
@@ -2106,8 +2125,8 @@ chokidar@^1.7.0:
     fsevents "^1.0.0"
 
 chokidar@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-2.0.0.tgz#6686313c541d3274b2a5c01233342037948c911b"
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-2.0.1.tgz#6e67e9998fe10e8f651e975ca62460456ff8e297"
   dependencies:
     anymatch "^2.0.0"
     async-each "^1.0.0"
@@ -2119,6 +2138,7 @@ chokidar@^2.0.0:
     normalize-path "^2.1.1"
     path-is-absolute "^1.0.0"
     readdirp "^2.0.0"
+    upath "1.0.0"
   optionalDependencies:
     fsevents "^1.0.0"
 
@@ -2308,8 +2328,8 @@ commander@2.6.0:
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.6.0.tgz#9df7e52fb2a0cb0fb89058ee80c3104225f37e1d"
 
 commander@^2.11.0, commander@^2.13.0, commander@^2.9.0:
-  version "2.14.0"
-  resolved "https://registry.yarnpkg.com/commander/-/commander-2.14.0.tgz#7b25325963e6aace20d3a9285b09379b0c2208b5"
+  version "2.14.1"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-2.14.1.tgz#2235123e37af8ca3c65df45b026dbd357b01b9aa"
 
 commitizen@2.9.6:
   version "2.9.6"
@@ -3125,8 +3145,8 @@ dot-prop@^4.1.0:
     is-obj "^1.0.0"
 
 dotenv-expand@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/dotenv-expand/-/dotenv-expand-4.0.1.tgz#68fddc1561814e0a10964111057ff138ced7d7a8"
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/dotenv-expand/-/dotenv-expand-4.2.0.tgz#def1f1ca5d6059d24a766e587942c21106ce1275"
 
 dotenv@^4.0.0:
   version "4.0.0"
@@ -3310,8 +3330,8 @@ electron-publish@19.55.2:
     mime "^2.2.0"
 
 electron-to-chromium@^1.2.7, electron-to-chromium@^1.3.30:
-  version "1.3.32"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.32.tgz#11d0684c0840e003c4be8928f8ac5f35dbc2b4e6"
+  version "1.3.33"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.33.tgz#bf00703d62a7c65238136578c352d6c5c042a545"
 
 electron-updater@2.20.1:
   version "2.20.1"
@@ -5381,7 +5401,7 @@ isurl@^1.0.0-alpha5:
 
 "jira-connector@github:web-pal/jira-connector":
   version "2.6.0"
-  resolved "https://codeload.github.com/web-pal/jira-connector/tar.gz/3f6f5752c91dac8356f34695b10074446282c942"
+  resolved "https://codeload.github.com/web-pal/jira-connector/tar.gz/107d89a0879620fb0a709dc5f775f16c84a09116"
   dependencies:
     oauth "^0.9.12"
     request "^2.83.0"
@@ -5768,6 +5788,10 @@ lodash.uniq@^4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
 
+lodash@3.x:
+  version "3.10.1"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
+
 lodash@4.17.2:
   version "4.17.2"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.2.tgz#34a3055babe04ce42467b607d700072c7ff6bf42"
@@ -6034,8 +6058,8 @@ minimist@~0.0.1:
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-0.0.10.tgz#de3f98543dbf96082be48ad1a0c7cda836301dcf"
 
 mixin-deep@^1.2.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/mixin-deep/-/mixin-deep-1.3.0.tgz#47a8732ba97799457c8c1eca28f95132d7e8150a"
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/mixin-deep/-/mixin-deep-1.3.1.tgz#a49e7268dce1a0d9698e45326c5626df3543d0fe"
   dependencies:
     for-in "^1.0.2"
     is-extendable "^1.0.1"
@@ -7554,9 +7578,13 @@ redux-resource-plugins@2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/redux-resource-plugins/-/redux-resource-plugins-2.1.0.tgz#e5ccc778d9db6d8fc2deef523da7090f8d4c9e8a"
 
-redux-resource@2.4.0, redux-resource@^2.0.0:
+redux-resource@2.4.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/redux-resource/-/redux-resource-2.4.0.tgz#9d132e2921f1ae77d8794d7c87fe16f47d237a08"
+
+redux-resource@^2.0.0:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/redux-resource/-/redux-resource-2.4.1.tgz#cd12b45112ac9dc5ed42ffcb2f98ffd70fd81751"
 
 redux-saga@0.16.0:
   version "0.16.0"
@@ -8852,6 +8880,10 @@ undefsafe@^2.0.1:
   dependencies:
     debug "^2.2.0"
 
+underscore.string@2.3.x:
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/underscore.string/-/underscore.string-2.3.3.tgz#71c08bf6b428b1133f37e78fa3a21c82f7329b0d"
+
 underscore@~1.4.4:
   version "1.4.4"
   resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.4.4.tgz#61a6a32010622afa07963bf325203cf12239d604"
@@ -8957,6 +8989,13 @@ unzip@^0.1.11:
     pullstream ">= 0.4.1 < 1"
     readable-stream "~1.0.31"
     setimmediate ">= 1.0.1 < 2"
+
+upath@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/upath/-/upath-1.0.0.tgz#b4706b9461ca8473adf89133d235689ca17f3656"
+  dependencies:
+    lodash "3.x"
+    underscore.string "2.3.x"
 
 update-notifier@^2.3.0:
   version "2.3.0"
