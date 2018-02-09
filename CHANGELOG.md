@@ -1,3 +1,21 @@
+<a name="2.5.4"></a>
+## [2.5.4](https://github.com/web-pal/chronos-timetracker/compare/v2.5.3...v2.5.4) (2018-02-09)
+
+
+### Bug Fixes
+
+* mention about update only once ([e01d7d6](https://github.com/web-pal/chronos-timetracker/commit/e01d7d6))
+* **Authorization:** remove unsecure request on chronos backend ([ee43fdc](https://github.com/web-pal/chronos-timetracker/commit/ee43fdc))
+* **Browsing Issues:** fetch additionaly project info for boards in rare case ([85d9d41](https://github.com/web-pal/chronos-timetracker/commit/85d9d41)), closes [#68](https://github.com/web-pal/chronos-timetracker/issues/68)
+
+
+### Features
+
+* env vars in docker container ([d3210ad](https://github.com/web-pal/chronos-timetracker/commit/d3210ad))
+* **Browsing Issues:** ability to search projects by key ([ff30566](https://github.com/web-pal/chronos-timetracker/commit/ff30566)), closes [#67](https://github.com/web-pal/chronos-timetracker/issues/67)
+
+
+
 <a name="2.5.3"></a>
 ## [2.5.3](https://github.com/web-pal/chronos-timetracker/compare/v2.5.2...v2.5.3) (2018-02-08)
 
