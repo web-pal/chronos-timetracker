@@ -209,6 +209,7 @@ export function* uploadWorklog(options: any): Generator<*, *, *> {
       'started uploading worklog with options:',
       options,
     );
+    /*
     const {
       issueId,
       comment,
@@ -218,6 +219,10 @@ export function* uploadWorklog(options: any): Generator<*, *, *> {
       screenshots,
       activity,
       keepedIdles,
+    } = options;
+    */
+    const {
+      timeSpentInSeconds,
     } = options;
     const startTime = moment()
       .subtract({ seconds: timeSpentInSeconds })
@@ -234,6 +239,7 @@ export function* uploadWorklog(options: any): Generator<*, *, *> {
     });
     yield put(uiActions.setUiState('worklogComment', ''));
 
+    /*
     const backendUploadOptions = {
       worklogId: worklog.id,
       issueId,
@@ -246,6 +252,7 @@ export function* uploadWorklog(options: any): Generator<*, *, *> {
       keepedIdles,
     };
     yield fork(chronosBackendUploadWorklog, backendUploadOptions);
+    */
     yield call(
       infoLog,
       'worklog uploaded',

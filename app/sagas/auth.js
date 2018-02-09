@@ -129,6 +129,7 @@ export function* basicAuthLoginForm(): Generator<*, void, *> {
         });
         throw new Error('Strange auth response!');
       }
+      /*
       yield fork(chronosBackendAuth, {
         username: payload.username,
         password: payload.password,
@@ -137,6 +138,7 @@ export function* basicAuthLoginForm(): Generator<*, void, *> {
         port: host.port,
         pathPrefix: host.pathname,
       });
+      */
       yield call(
         setToStorage,
         'jira_credentials',
