@@ -34,6 +34,7 @@ import {
 } from 'selectors';
 import {
   IssueItemPlaceholder,
+  ErrorBoundary,
 } from 'components';
 import {
   issuesActions,
@@ -127,22 +128,24 @@ const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
                   const item: ?Issue = issues[index];
                   return (
                     <div style={style} key={key}>
-                      {item ?
-                        <IssueItem
-                          issue={item}
-                          active={selectedIssueId === item.id}
-                          tracking={trackingIssueId === item.id}
-                          selectIssue={(issueId) => {
-                            dispatch(
-                              uiActions.setUiState('selectedIssueId', issueId),
-                            );
-                            dispatch(
-                              uiActions.setUiState('selectedWorklogId', null),
-                            );
-                          }}
-                        /> :
-                        <IssueItemPlaceholder />
-                      }
+                      <ErrorBoundary debugData={item}>
+                        {item ?
+                          <IssueItem
+                            issue={item}
+                            active={selectedIssueId === item.id}
+                            tracking={trackingIssueId === item.id}
+                            selectIssue={(issueId) => {
+                              dispatch(
+                                uiActions.setUiState('selectedIssueId', issueId),
+                              );
+                              dispatch(
+                                uiActions.setUiState('selectedWorklogId', null),
+                              );
+                            }}
+                          /> :
+                          <IssueItemPlaceholder />
+                        }
+                      </ErrorBoundary>
                     </div>
                   );
                 }}

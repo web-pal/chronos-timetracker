@@ -68,31 +68,37 @@ const IssueItem: StatelessFunctionalComponent<Props> = ({
       {issue.fields.summary}
     </IssueDescription>
     <IssueFieldsContainer>
-      <Tooltip
-        description={issue.fields.issuetype.name}
-        position="bottom"
-      >
-        <IssueType
-          type={issue.fields.issuetype.name}
-          src={issue.fields.issuetype.iconUrl}
-          alt="type"
-        />
-      </Tooltip>
-      <Tooltip
-        description={issue.fields.priority.name}
-        position="bottom"
-      >
-        <IssuePriority
-          priority={issue.fields.priority.name}
-          src={issue.fields.priority.iconUrl}
-          alt="priority"
-        />
-      </Tooltip>
-      <IssueLabel
-        backgroundColor={getStatusColor(issue.fields.status.statusCategory.colorName)}
-      >
-        {issue.fields.status.name.toUpperCase()}
-      </IssueLabel>
+      {issue.fields.issuetype &&
+        <Tooltip
+          description={issue.fields.issuetype.name}
+          position="bottom"
+        >
+          <IssueType
+            type={issue.fields.issuetype.name}
+            src={issue.fields.issuetype.iconUrl}
+            alt="type"
+          />
+        </Tooltip>
+      }
+      {issue.fields.priority &&
+        <Tooltip
+          description={issue.fields.priority.name}
+          position="bottom"
+        >
+          <IssuePriority
+            priority={issue.fields.priority.name}
+            src={issue.fields.priority.iconUrl}
+            alt="priority"
+          />
+        </Tooltip>
+      }
+      {issue.fields.status &&
+        <IssueLabel
+          backgroundColor={getStatusColor(issue.fields.status.statusCategory.colorName)}
+        >
+          {issue.fields.status.name.toUpperCase()}
+        </IssueLabel>
+      }
     </IssueFieldsContainer>
   </IssueContainer>;
 

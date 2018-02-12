@@ -21,6 +21,9 @@ import {
   AppWrapper,
   FullPageSpinner,
 } from 'styles';
+import {
+  ErrorBoundary,
+} from 'components';
 import AuthForm from './AuthForm';
 import Main from './Main';
 
@@ -31,19 +34,25 @@ type Props = {
 };
 
 const App: StatelessFunctionalComponent<Props> = (props: Props): Node => (
-  <AppWrapper>
-    {props.initializeInProcess ?
-      <FullPageSpinner>
-        <Spinner size="xlarge" />
-      </FullPageSpinner> :
-      <MaxHeight>
-        {props.isAuthorized ?
-          <Main /> :
-          <AuthForm />
-        }
-      </MaxHeight>
-    }
-  </AppWrapper>
+  <ErrorBoundary
+    debugData={{
+      props,
+    }}
+  >
+    <AppWrapper>
+      {props.initializeInProcess ?
+        <FullPageSpinner>
+          <Spinner size="xlarge" />
+        </FullPageSpinner> :
+        <MaxHeight>
+          {props.isAuthorized ?
+            <Main /> :
+            <AuthForm />
+          }
+        </MaxHeight>
+      }
+    </AppWrapper>
+  </ErrorBoundary>
 );
 
 function mapStateToProps(state): Props {

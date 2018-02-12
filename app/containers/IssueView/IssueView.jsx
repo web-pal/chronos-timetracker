@@ -19,9 +19,11 @@ import type {
 import {
   getUiState,
   getTimerState,
+  getSelectedIssue,
 } from 'selectors';
 import {
   IssueViewPlaceholder,
+  ErrorBoundary,
 } from 'components';
 import {
   uiActions,
@@ -44,6 +46,7 @@ import IssueViewTabs from './IssueViewTabs';
 
 type Props = {
   selectedIssueId: Id | null,
+  issueForDebug: any,
   currentTab: string,
   timerRunning: boolean,
   dispatch: Dispatch,
@@ -58,48 +61,58 @@ const tabs = [
 
 const IssueView: StatelessFunctionalComponent<Props> = ({
   selectedIssueId,
+  issueForDebug,
   currentTab,
   timerRunning,
   dispatch,
 }: Props): Node => (selectedIssueId
   ? (
-    <IssueViewContainer column>
-      {timerRunning &&
-        <TrackingBar />
-      }
-      <IssueContainer>
-        <IssueViewHeader />
-        <IssueViewTabs
-          onTabClick={(tab) => {
-            dispatch(uiActions.setUiState('issueViewTab', tab));
-          }}
-          currentTab={currentTab}
-          tabs={tabs}
-        />
-        <IssueViewTabContainer>
-          {(() => {
-            switch (currentTab) {
-              case 'Details':
-                return <IssueDetails />;
-              case 'Comments':
-                return <IssueComments />;
-              case 'Worklogs':
-                return <IssueWorklogs />;
-              case 'Reports':
-                return <IssueWorklogs />;
-              default:
-                return <IssueReport />;
-            }
-          })()}
-        </IssueViewTabContainer>
-      </IssueContainer>
-    </IssueViewContainer>
+    <ErrorBoundary
+      debugData={{
+        selectedIssueId,
+        currentTab,
+        issueForDebug,
+      }}
+    >
+      <IssueViewContainer column>
+        {timerRunning &&
+          <TrackingBar />
+        }
+        <IssueContainer>
+          <IssueViewHeader />
+          <IssueViewTabs
+            onTabClick={(tab) => {
+              dispatch(uiActions.setUiState('issueViewTab', tab));
+            }}
+            currentTab={currentTab}
+            tabs={tabs}
+          />
+          <IssueViewTabContainer>
+            {(() => {
+              switch (currentTab) {
+                case 'Details':
+                  return <IssueDetails />;
+                case 'Comments':
+                  return <IssueComments />;
+                case 'Worklogs':
+                  return <IssueWorklogs />;
+                case 'Reports':
+                  return <IssueWorklogs />;
+                default:
+                  return <IssueReport />;
+              }
+            })()}
+          </IssueViewTabContainer>
+        </IssueContainer>
+      </IssueViewContainer>
+    </ErrorBoundary>
   )
   : <IssueViewPlaceholder />);
 
 function mapStateToProps(state) {
   return {
     selectedIssueId: getUiState('selectedIssueId')(state),
+    issueForDebug: getSelectedIssue(state),
     currentTab: getUiState('issueViewTab')(state),
     timerRunning: getTimerState('running')(state),
   };

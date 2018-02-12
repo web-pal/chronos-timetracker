@@ -1,3 +1,4 @@
+// @flow
 export Flex from './Flex';
 export {
   AutosizableList,
@@ -9,6 +10,7 @@ export {
   IssueViewPlaceholder,
   RecentItemsPlaceholder,
 } from './Placeholders';
+export ErrorBoundary from './ErrorBoundary';
 export Img from './Img';
 export Calendar from './Calendar';
 export TextField from './TextField';
