@@ -576,6 +576,9 @@ export function* fetchEpics(): Generator<*, void, *> {
     }));
     yield call(infoLog, 'got epics', issues);
   } catch (err) {
+    yield put(actions.succeeded({
+      resources: [],
+    }));
     yield call(throwError, err);
   }
 }
