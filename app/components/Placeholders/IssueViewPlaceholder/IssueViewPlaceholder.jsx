@@ -12,7 +12,7 @@ import {
 const IssueViewPlaceholder = () => (
   <IssueViewPlaceholderContainer>
     <NoIssuesImage src={tasks} alt="Not found" />
-    <Title>Start your tracking expirience!</Title>
+    <Title>Start your tracking experience!</Title>
     <Subtitle>Select issue from the left in order to start tracking</Subtitle>
   </IssueViewPlaceholderContainer>
 );
