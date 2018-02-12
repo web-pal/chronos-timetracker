@@ -15,7 +15,7 @@ const prefixedKeys = [
   'issuesSourceId',
   'issuesSourceType',
   'issuesSprintId',
-  'issuesFilters',
+  'issuesFiltersBySourceId',
 ];
 
 export const storageGetPromise = (key: string): Promise<mixed> => new Promise((resolve) => {
