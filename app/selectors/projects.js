@@ -39,7 +39,7 @@ export const getCurrentProjectId = createSelector(
     if (issuesSourceId && issuesSourceType === 'kanban') {
       const board = boardsMap[issuesSourceId];
       if (board) {
-        projectId = board.location.projectId; // eslint-disable-line
+        projectId = board.location ? board.location.projectId : null; // eslint-disable-line
       }
     }
     if (issuesSprintId && issuesSourceType === 'scrum') {
@@ -47,7 +47,7 @@ export const getCurrentProjectId = createSelector(
       if (sprint) {
         const board = boardsMap[sprint.originBoardId];
         if (board) {
-          projectId = board.location.projectId; // eslint-disable-line
+          projectId = board.location ? board.location.projectId : null; // eslint-disable-line
         }
       }
     }

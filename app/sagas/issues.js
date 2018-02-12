@@ -242,7 +242,7 @@ export function* fetchIssues({
       sprintId: issuesSourceType === 'scrum' ? issuesSprintId : null,
     });
 
-    const response = jql.length ?
+    const response = (jql.length || (issuesSourceType !== 'project' && issuesSourceId)) ?
       yield call(
         Api.fetchIssues,
         {

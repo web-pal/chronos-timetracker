@@ -20,6 +20,70 @@ import {
 } from './ui';
 
 
+// For cases when server don't send total
+function* fetchAllBoardsWithoutTotal({
+  startAt = 0,
+  maxResults = 50,
+}: {
+  startAt: number,
+  maxResults: number,
+}): Generator<*, *, *> {
+  const response = yield call(
+    Api.fetchBoards,
+    {
+      startAt,
+      maxResults,
+    },
+  );
+  if (response.isLast) {
+    return [response];
+  }
+  const responses = yield call(
+    fetchAllBoardsWithoutTotal,
+    {
+      startAt: startAt + response.values.length,
+      maxResults,
+    },
+  );
+  return [response, ...responses];
+}
+
+function* fetchAllBoards({
+  startAt = 0,
+  maxResults = 50,
+}: {
+  startAt: number,
+  maxResults: number,
+}): Generator<*, void, *> {
+  const response = yield call(
+    Api.fetchBoards,
+    {
+      startAt,
+      maxResults,
+    },
+  );
+  if (!response.isLast) {
+    const additionalBoards =
+      // Some servers do not send total
+      response.total ?
+        yield all(
+          Array.from(Array(Math.ceil(response.total / maxResults)).keys()).map(
+            i =>
+              call(Api.fetchBoards, {
+                startAt: (i + 1) * maxResults,
+                maxResults,
+              }),
+          ),
+        ) :
+        yield call(fetchAllBoardsWithoutTotal, {
+          startAt: maxResults,
+          maxResults,
+        });
+    return [...response.values].concat(...additionalBoards.map(b => b.values));
+  }
+  return response.values;
+}
+
 export function* fetchBoards(): Generator<*, void, *> {
   try {
     const actions = createActionCreators('read', {
@@ -28,15 +92,26 @@ export function* fetchBoards(): Generator<*, void, *> {
       list: 'allBoards',
     });
     yield put(actions.pending());
-    const response = yield call(Api.fetchAllBoards);
-    const boardsWithoutProjects = response.values.filter(b => !b.location);
+    const boards = yield call(
+      fetchAllBoards,
+      {
+        startAt: 0,
+        maxResults: 50,
+      },
+    );
+    const boardsWithoutProjects = boards.filter(b => !b.location);
     // In some jira servers boards without location(project), so we have to fetch it additionaly
     const projects = yield all(boardsWithoutProjects.map(b => call(Api.fetchBoardProjects, b.id)));
     try {
       yield put(actions.succeeded({
-        resources: response.values.map(
+        resources: boards.map(
           (b, index) => (
-            projects[index] ?
+            (
+              projects[index] &&
+              projects[index].values &&
+              projects[index].values[0] &&
+              projects[index].values[0].id
+            ) ?
               {
                 ...b,
                 location: {
@@ -52,7 +127,7 @@ export function* fetchBoards(): Generator<*, void, *> {
       Raven.captureMessage('Boards structure error!', {
         level: 'error',
         extra: {
-          boards: response,
+          boards,
           projects,
         },
       });

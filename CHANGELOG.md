@@ -1,3 +1,13 @@
+<a name="2.5.7"></a>
+## [2.5.7](https://github.com/web-pal/chronos-timetracker/compare/v2.5.5...v2.5.7) (2018-02-12)
+
+
+### Bug Fixes
+
+* **Browsing Issues:** fetch additional boards ([6d23249](https://github.com/web-pal/chronos-timetracker/commit/6d23249)), closes [#69](https://github.com/web-pal/chronos-timetracker/issues/69) [#70](https://github.com/web-pal/chronos-timetracker/issues/70)
+
+
+
 <a name="2.5.4"></a>
 ## [2.5.4](https://github.com/web-pal/chronos-timetracker/compare/v2.5.3...v2.5.4) (2018-02-09)
 
