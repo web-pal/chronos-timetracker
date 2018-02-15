@@ -18,7 +18,6 @@ import {
 import Header from '../Header';
 import Sidebar from '../Sidebar';
 import IssueView from '../IssueView';
-import FlagsContainer from '../FlagsContainer';
 import {
   MainContainer,
   LeftContainer,
@@ -40,7 +39,6 @@ const Main: StatelessFunctionalComponent<Props> = (): Node =>
       </LeftContainer>
       <IssueView />
 
-      <FlagsContainer />
       <AlertModal />
       <SettingsModal />
       <WorklogModal />

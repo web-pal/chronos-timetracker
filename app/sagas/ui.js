@@ -103,6 +103,8 @@ export function* notify({
   resourceName,
   request,
   spinnerTitle = '',
+  type,
+  autoDelete = true,
 }: {
   description?: string,
   title?: string,
@@ -112,6 +114,8 @@ export function* notify({
   resourceName? : string,
   request?: string,
   spinnerTitle?: string,
+  type?: string,
+  autoDelete?: boolean,
 }): Generator<*, void, *> {
   const newFlag = {
     id: uuidv4(),
@@ -123,9 +127,10 @@ export function* notify({
     resourceName,
     request,
     spinnerTitle,
+    type,
   };
   yield put(uiActions.addFlag(newFlag));
-  if (!actions.length) {
+  if (autoDelete) {
     yield fork(autoDeleteFlag, newFlag.id);
   }
 }

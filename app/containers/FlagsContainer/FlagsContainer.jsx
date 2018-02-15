@@ -27,6 +27,10 @@ import {
   FlagGroup,
 } from '@atlaskit/flag';
 
+import {
+  Code,
+} from 'styles/typography';
+
 import EditorWarningIcon from '@atlaskit/icon/glyph/editor/warning';
 import NotificationAllIcon from '@atlaskit/icon/glyph/notification-all';
 import SpinnerContainer from './SpinnerContainer';
@@ -59,15 +63,55 @@ const FlagsContainer: StatelessFunctionalComponent<Props> = ({
         key={flag.id}
         resourceName={flag.resourceName}
         request={flag.request}
-        render={pending =>
-          <Flag
-            title={pending ? <SpinnerContainer spinnerTitle={flag.spinnerTitle} /> : flag.title}
-            actions={flag.actions}
-            appearance={flag.appearance}
-            description={flag.description}
-            icon={getIcon(flag.icon)}
-          />
-        }
+        render={(pending) => {
+          switch (flag.type) {
+            case 'libSecretError':
+              return (
+                <Flag
+                  title="libsecret error!"
+                  appearance="normal"
+                  icon={getIcon('errorIcon')}
+                  actions={[
+                    {
+                      content: 'Got it!',
+                      onClick: () => {
+                        dispatch(uiActions.deleteFlag(flag.id));
+                      },
+                    },
+                  ]}
+                  description={
+                    <div>
+                      <div>
+                        <p>
+                          Currently this app uses <Code>libsecret</Code> so you
+                          may need to install it.
+                        </p>
+                        <ul style={{ padding: 0 }}>
+                          <li>Debian/Ubuntu: <Code>sudo apt-get install libsecret-1-0</Code></li>
+                          <li>Red Hat-based: <Code>sudo yum install libsecret</Code></li>
+                          <li>Arch Linux: <Code>sudo pacman -Sy libsecret</Code></li>
+                        </ul>
+                      </div>
+                    </div>
+                  }
+                />
+              );
+            default:
+              return (
+                <Flag
+                  title={
+                    pending ?
+                      <SpinnerContainer spinnerTitle={flag.spinnerTitle} /> :
+                      flag.title
+                  }
+                  actions={flag.actions}
+                  appearance={flag.appearance}
+                  description={flag.description}
+                  icon={getIcon(flag.icon)}
+                />
+              );
+          }
+        }}
       />
     ))}
   </FlagGroup>
