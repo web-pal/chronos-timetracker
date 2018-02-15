@@ -43,6 +43,7 @@ import {
 import {
   throwError,
   infoLog,
+  notify,
 } from './ui';
 
 import jira from '../utils/jiraClient';
@@ -172,14 +173,39 @@ function* getInitializeAppData(): Generator<*, *, *> {
     basicAuthCredentials.protocol = host.protocol.slice(0, -1);
     basicAuthCredentials.port = host.port;
     basicAuthCredentials.path_prefix = host.pathname;
-    const passwordManagerCredentials = ipcRenderer.sendSync(
+    const {
+      credentials,
+      error,
+    } = ipcRenderer.sendSync(
       'get-credentials',
       {
         username: basicAuthCredentials.username,
         host: host.hostname,
       },
     );
-    basicAuthCredentials.password = passwordManagerCredentials.password;
+    if (error) {
+      Raven.captureMessage('keytar error!', {
+        level: 'error',
+        extra: {
+          error: error.err,
+        },
+      });
+      yield call(
+        throwError,
+        error.err,
+      );
+      if (error.platform === 'linux') {
+        yield fork(
+          notify,
+          {
+            type: 'libSecretError',
+            autoDelete: false,
+          },
+        );
+      }
+    } else {
+      basicAuthCredentials.password = credentials.password;
+    }
   }
 
   const jwt = yield call(
@@ -241,8 +267,9 @@ export function* initializeApp(): Generator<*, *, *> {
     trackMixpanel('Application was initialized');
     incrementMixpanel('Initialize', 1);
   } catch (err) {
-    yield put(uiActions.setUiState('authorized', false));
     yield call(throwError, err);
+    yield put(uiActions.setUiState('authorized', false));
+  } finally {
+    yield put(uiActions.setUiState('initializeInProcess', false));
   }
-  yield put(uiActions.setUiState('initializeInProcess', false));
 }

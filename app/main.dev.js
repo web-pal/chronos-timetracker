@@ -280,32 +280,56 @@ function authJiraBrowserRequests({
 }
 
 ipcMain.on('store-credentials', (event, credentials) => {
-  const { username, password, host } = credentials;
-  keytar.setPassword('Chronos', username, password);
-  event.returnValue = true; // eslint-disable-line no-param-reassign
-  authJiraBrowserRequests({
-    username,
-    password,
-    host,
-  });
+  try {
+    const {
+      username,
+      password,
+      host,
+    } = credentials;
+    keytar.setPassword(
+      'Chronos',
+      username,
+      password,
+    );
+    event.returnValue = true; // eslint-disable-line no-param-reassign
+    authJiraBrowserRequests({
+      username,
+      password,
+      host,
+    });
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 ipcMain.on('get-credentials', (event, { username, host }) => {
-  keytar.getPassword('Chronos', username)
-    .then(
-      (password) => {
-        const credentials = {
-          username,
-          password,
-        };
-        event.returnValue = credentials; // eslint-disable-line no-param-reassign
-        authJiraBrowserRequests({
-          username,
-          password,
-          host,
-        });
+  try {
+    keytar.getPassword('Chronos', username)
+      .then(
+        (password) => {
+          const credentials = {
+            username,
+            password,
+          };
+          event.returnValue = { // eslint-disable-line no-param-reassign
+            credentials,
+          };
+          authJiraBrowserRequests({
+            username,
+            password,
+            host,
+          });
+        },
+      );
+  } catch (err) {
+    console.error(err);
+    event.returnValue = { // eslint-disable-line no-param-reassign
+      error: {
+        err,
+        platform: process.platform,
       },
-    );
+    };
+  }
 });
 
 ipcMain.on('start-timer', () => {

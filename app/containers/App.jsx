@@ -26,6 +26,7 @@ import {
 } from 'components';
 import AuthForm from './AuthForm';
 import Main from './Main';
+import FlagsContainer from './FlagsContainer';
 
 
 type Props = {
@@ -51,6 +52,7 @@ const App: StatelessFunctionalComponent<Props> = (props: Props): Node => (
           }
         </MaxHeight>
       }
+      <FlagsContainer />
     </AppWrapper>
   </ErrorBoundary>
 );

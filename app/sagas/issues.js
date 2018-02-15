@@ -61,15 +61,16 @@ export function transformFilterValue(value: string): string {
 const normalizeIssues = issues => {
   try {
     return issues.reduce((acc, issue) => {
+      const worklogs = issue.fields.worklog ? issue.fields.worklog.worklogs : [];
       acc.entities.worklogs =
-        issue.fields.worklog.worklogs.reduce(
+        worklogs.reduce(
           (wacc, worklog) => {
             wacc[worklog.id] = worklog;
             return wacc;
           },
           acc.entities.worklogs,
         )
-      issue.fields.worklogs = issue.fields.worklog.worklogs.map(w => w.id);
+      issue.fields.worklogs = worklogs.map(w => w.id);
       delete issue.fields.worklog;
       acc.entities.issues[issue.id] = issue;
       acc.result.push(issue.id);
@@ -188,7 +189,8 @@ function* fetchAdditionalWorklogsForIssues(issues) {
         issues,
       },
     });
-    throw err;
+    yield call(throwError, err);
+    return issues;
   }
 }
 

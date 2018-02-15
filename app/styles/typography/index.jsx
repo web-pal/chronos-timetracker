@@ -82,3 +82,10 @@ export const Link = styled.a`
   }
 `;
 
+export const Code = styled.code`
+  padding: 0.2em 0.4em;
+  font-size: 85%;
+  background-color: rgba(27,31,35,0.05);
+  font-family: "SFMono-Regular",Consolas,"Liberation Mono",Menlo,Courier,monospace;
+`;
+

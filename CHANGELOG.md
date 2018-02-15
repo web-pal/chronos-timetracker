@@ -1,3 +1,18 @@
+<a name="2.5.9"></a>
+## [2.5.9](https://github.com/web-pal/chronos-timetracker/compare/v2.5.7...v2.5.9) (2018-02-15)
+
+
+### Bug Fixes
+
+* **Authorization:** show linux error about libsecret ([aa26939](https://github.com/web-pal/chronos-timetracker/commit/aa26939)), closes [#70](https://github.com/web-pal/chronos-timetracker/issues/70)
+* getPassword ([4dc66db](https://github.com/web-pal/chronos-timetracker/commit/4dc66db))
+* **Browsing Issues:** do not clear issues if they don't have worklog object ([fe0685f](https://github.com/web-pal/chronos-timetracker/commit/fe0685f))
+* **Browsing Issues:** normalize issues without worklog object ([ebe345a](https://github.com/web-pal/chronos-timetracker/commit/ebe345a))
+* **Browsing Issues:** try to fetch statyses even if no issestypes ([116c963](https://github.com/web-pal/chronos-timetracker/commit/116c963))
+* **Issue Detail View:** detailsView without required fields ([ce9613d](https://github.com/web-pal/chronos-timetracker/commit/ce9613d))
+
+
+
 <a name="2.5.7"></a>
 ## [2.5.7](https://github.com/web-pal/chronos-timetracker/compare/v2.5.5...v2.5.7) (2018-02-12)
 
