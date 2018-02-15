@@ -188,7 +188,8 @@ function* fetchAdditionalWorklogsForIssues(issues) {
         issues,
       },
     });
-    throw err;
+    yield call(throwError, err);
+    return issues;
   }
 }
 
