@@ -80,10 +80,17 @@ export function* fetchProjectStatuses(): Generator<*, *, *> {
             projectId,
           },
         });
+      } else {
+        const issuesTypes = metadata.projects[0].issuetypes;
+        yield put(typesActions.succeeded({
+          resources: issuesTypes,
+        }));
       }
-      const issuesTypes = metadata.projects[0].issuetypes;
 
-      const statusesResponse = yield call(Api.fetchProjectStatuses, projectId);
+      const statusesResponse = yield call(
+        Api.fetchProjectStatuses,
+        projectId,
+      );
       const statuses = [].concat(...statusesResponse.map(s => s.statuses));
       const uniqueStatuses =
         statuses.reduce((acc, s) => {
@@ -91,9 +98,6 @@ export function* fetchProjectStatuses(): Generator<*, *, *> {
           return acc;
         }, {});
 
-      yield put(typesActions.succeeded({
-        resources: issuesTypes,
-      }));
       yield put(statusesActions.succeeded({
         resources: Object.keys(uniqueStatuses).map(id => uniqueStatuses[id]),
       }));
