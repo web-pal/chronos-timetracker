@@ -56,8 +56,12 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
   const {
     versions,
     fixVersions,
+    issuetype,
+    priority,
     components,
+    status,
     labels,
+    reporter,
     resolution,
   } = issue.fields;
   return (
@@ -70,11 +74,16 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
               Type:
             </DetailsLabel>
             <DetailsValue>
-              <IssueType
-                src={issue.fields.issuetype.iconUrl}
-                alt={issue.fields.issuetype.name}
-              />
-              {issue.fields.issuetype.name}
+              {issuetype ?
+                <div>
+                  <IssueType
+                    src={issuetype.iconUrl}
+                    alt={issuetype.name}
+                  />
+                  {issuetype.name}
+                </div> :
+                'None'
+              }
             </DetailsValue>
           </Flex>
 
@@ -83,11 +92,16 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
               Priority:
             </DetailsLabel>
             <DetailsValue>
-              <IssuePriority
-                src={issue.fields.priority.iconUrl}
-                alt={issue.fields.priority.name}
-              />
-              {issue.fields.priority.name}
+              {priority ?
+                <div>
+                  <IssuePriority
+                    src={priority.iconUrl}
+                    alt={priority.name}
+                  />
+                  {priority.name}
+                </div> :
+                'None'
+              }
             </DetailsValue>
           </Flex>
 
@@ -96,8 +110,13 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
               Affects Version/s:
             </DetailsLabel>
             <DetailsValue>
-              {versions.length === 0 && 'None'}
-              {versions.map(v => <a href="#version" key={v.id}>{v.name}</a>)}
+              {versions ?
+                <div>
+                  {versions.length === 0 && 'None'}
+                  {versions.map(v => <a href="#version" key={v.id}>{v.name}</a>)}
+                </div> :
+                'None'
+              }
             </DetailsValue>
           </Flex>
 
@@ -106,8 +125,13 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
               Component/s:
             </DetailsLabel>
             <DetailsValue>
-              {components.length === 0 && 'None'}
-              {components.map(v => <a href="#component" key={v.id}>{v.name}</a>)}
+              {components ?
+                <div>
+                  {components.length === 0 && 'None'}
+                  {components.map(v => <a href="#component" key={v.id}>{v.name}</a>)}
+                </div> :
+                'None'
+              }
             </DetailsValue>
           </Flex>
 
@@ -115,12 +139,17 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
             <DetailsLabel>
               Labels/s:
             </DetailsLabel>
-            {labels.length === 0 &&
-              <DetailsValue>
-                None
-              </DetailsValue>
+            {labels ?
+              <div>
+                {labels.length === 0 &&
+                  <DetailsValue>
+                    None
+                  </DetailsValue>
+                }
+                {labels.map(v => <Label key={v}>{v}</Label>)}
+              </div> :
+              'None'
             }
-            {labels.map(v => <Label key={v}>{v}</Label>)}
           </Flex>
 
         </DetailsColumn>
@@ -130,35 +159,48 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
             <DetailsLabel>
               Status:
             </DetailsLabel>
-            <DetailsValue style={{ maxWidth: 'calc(100% - 50px)' }}>
-              <IssueLabel
-                backgroundColor={getStatusColor(issue.fields.status.statusCategory.colorName)}
-              >
-                {issue.fields.status.name.toUpperCase()}
-              </IssueLabel>
-            </DetailsValue>
+            {status ?
+              <DetailsValue style={{ maxWidth: 'calc(100% - 50px)' }}>
+                <IssueLabel
+                  backgroundColor={getStatusColor(status.statusCategory.colorName)}
+                >
+                  {status.name.toUpperCase()}
+                </IssueLabel>
+              </DetailsValue> :
+              'None'
+            }
           </Flex>
 
           <Flex row spaceBetween>
             <DetailsLabel>
               Resolution:
             </DetailsLabel>
-            <DetailsValue>
-              {resolution === null
-                ? 'Unresolved'
-                : resolution.name
-              }
-            </DetailsValue>
+            {resolution ?
+              <div>
+                <DetailsValue>
+                  {resolution === null
+                    ? 'Unresolved'
+                    : resolution.name
+                  }
+                </DetailsValue>
+              </div> :
+              'None'
+            }
           </Flex>
 
           <Flex row spaceBetween>
             <DetailsLabel>
               Fix Version/s:
             </DetailsLabel>
-            <DetailsValue>
-              {fixVersions.length === 0 && 'None'}
-              {fixVersions.map(v => <a href="#version" key={v.id}>{v.name}</a>)}
-            </DetailsValue>
+            {fixVersions ?
+              <div>
+                <DetailsValue>
+                  {fixVersions.length === 0 && 'None'}
+                  {fixVersions.map(v => <a href="#version" key={v.id}>{v.name}</a>)}
+                </DetailsValue>
+              </div> :
+              'None'
+            }
           </Flex>
 
           <Flex row spaceBetween>
@@ -172,7 +214,7 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
                 >
                   {epic.name}
                 </IssueLabel> :
-                'none'
+                'None'
               }
             </DetailsValue>
           </Flex>
@@ -182,7 +224,10 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
               Reporter:
             </DetailsLabel>
             <DetailsValue>
-              {issue.fields.reporter.displayName}
+              {reporter ?
+                reporter.displayName :
+                'None'
+              }
             </DetailsValue>
           </Flex>
 
@@ -193,13 +238,15 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
         <strong>
           Description
         </strong>
-        {issue.renderedFields
-          ? <div
+        {issue.renderedFields ?
+          <div
             dangerouslySetInnerHTML={{
               __html: issue.renderedFields.description,
             }}
+          /> :
+          <ReactMarkdown
+            source={issue.fields.description || '*No description*'}
           />
-          : <ReactMarkdown source={issue.fields.description || '*No description*'} />
         }
       </DescriptionSectionHeader>
     </IssueDetailsContainer>
