@@ -394,12 +394,6 @@ export function* refetchIssues(debouncing: boolean): Generator<*, void, *> {
         filterIssuesTotalCount: 10,
       },
     }));
-    yield put(resourcesActions.setResourceMeta({
-      resourceName: 'issues',
-      meta: {
-        refetchFilterIssuesMarker: true,
-      },
-    }));
 
     const sidebarType = yield select(getUiState('sidebarType'));
     if (sidebarType === 'recent') {
@@ -643,7 +637,9 @@ export function* watchAssignIssueRequest(): Generator<*, *, *> {
 export function* watchReFetchIssuesRequest(): Generator<*, *, *> {
   let task;
   while (true) {
-    const { debouncing } = yield take(actionTypes.REFETCH_ISSUES_REQUEST);
+    const {
+      debouncing,
+    } = yield take(actionTypes.REFETCH_ISSUES_REQUEST);
     if (task) {
       yield cancel(task);
     }
