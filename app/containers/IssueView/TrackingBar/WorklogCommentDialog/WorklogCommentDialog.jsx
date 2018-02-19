@@ -2,13 +2,20 @@
 import React, { PureComponent } from 'react';
 
 import InlineDialog from '@atlaskit/inline-dialog';
+import SingleLineTextInput from '@atlaskit/input';
+
+import type {
+  Issue,
+  RemainingEstimate,
+} from 'types';
+
 import {
   InlineEditStateless,
 } from '@atlaskit/inline-edit';
-import SingleLineTextInput from '@atlaskit/input';
 
 import {
   Flex,
+  RemainingEstimatePicker,
 } from 'components';
 
 import {
@@ -18,8 +25,15 @@ import {
 
 
 type Props = {
+  issue: Issue,
   comment: string | null,
+  remainingEstimateValue: RemainingEstimate,
+  remainingEstimateNewValue: string,
+  remainingEstimateReduceByValue: string,
   onSetComment: (comment: string) => void,
+  onRemainingEstimateChange: Function,
+  onRemainingEstimateNewChange: Function,
+  onRemainingEstimateReduceByChange: Function,
 };
 
 type State = {
@@ -64,7 +78,7 @@ class WorklogCommentDialog extends PureComponent<Props, State> {
   };
 
   renderDialog = () => (
-    <div className="worklog-edit-popup" style={{ width: 300 }}>
+    <div className="worklog-edit-popup" style={{ width: 350 }}>
       <h5>Edit worklog</h5>
       <Flex column>
         <InlineEditStateless
@@ -91,6 +105,15 @@ class WorklogCommentDialog extends PureComponent<Props, State> {
           onEditRequested={this.enterEditingMode}
           onConfirm={this.onConfirm}
           onCancel={this.onCancel}
+        />
+        <RemainingEstimatePicker
+          issue={this.props.issue}
+          value={this.props.remainingEstimateValue}
+          onChange={this.props.onRemainingEstimateChange}
+          onReduceByChange={this.props.onRemainingEstimateReduceByChange}
+          onNewChange={this.props.onRemainingEstimateNewChange}
+          newValue={this.props.remainingEstimateNewValue}
+          reduceByValue={this.props.remainingEstimateReduceByValue}
         />
       </Flex>
     </div>

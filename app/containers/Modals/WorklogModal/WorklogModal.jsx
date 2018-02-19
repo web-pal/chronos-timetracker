@@ -1,13 +1,18 @@
 // @flow
 import React, { Component } from 'react';
 import moment from 'moment';
+import type Moment from 'moment';
+import CalendarIcon from '@atlaskit/icon/glyph/calendar';
+import EditorCloseIcon from '@atlaskit/icon/glyph/editor/close';
+import Tooltip from '@atlaskit/tooltip';
+import Spinner from '@atlaskit/spinner';
 import {
   connect,
 } from 'react-redux';
 import {
   getStatus as getResourceStatus,
+  getResources,
 } from 'redux-resource';
-
 import type {
   Connector,
 } from 'react-redux';
@@ -15,9 +20,8 @@ import type {
   Id,
   Worklog,
   Dispatch,
+  Issue,
 } from 'types';
-import type Moment from 'moment';
-
 import ModalDialog, {
   ModalFooter,
   ModalHeader,
@@ -30,10 +34,6 @@ import TimePicker from 'rc-time-picker';
 import Button, {
   ButtonGroup,
 } from '@atlaskit/button';
-import CalendarIcon from '@atlaskit/icon/glyph/calendar';
-import EditorCloseIcon from '@atlaskit/icon/glyph/editor/close';
-import Tooltip from '@atlaskit/tooltip';
-import Spinner from '@atlaskit/spinner';
 
 import {
   ModalContentContainer,
@@ -53,6 +53,7 @@ import {
   Flex,
   Calendar,
   TextField,
+  RemainingEstimatePicker,
 } from 'components';
 
 import {
@@ -62,11 +63,11 @@ import {
   InputExample,
 } from './styled';
 
-
 type Props = {
   isOpen: boolean,
   saveInProcess: boolean,
   issueId: Id,
+  issue: Issue,
   worklog: Worklog,
   dispatch: Dispatch,
 };
@@ -78,6 +79,9 @@ type State = {
   comment: string | null,
   timeSpent: string,
   jiraTimeError: string | null,
+  remainingEstimateValue: 'new' | 'leave' | 'manual' | 'auto',
+  remainingEstimateSetTo: string,
+  remainingEstimateReduceBy: string,
 };
 
 class WorklogModal extends Component<Props, State> {
@@ -88,6 +92,9 @@ class WorklogModal extends Component<Props, State> {
     comment: '',
     timeSpent: '20m',
     jiraTimeError: null,
+    remainingEstimateValue: 'auto',
+    remainingEstimateSetTo: '',
+    remainingEstimateReduceBy: '',
   }
 
   componentWillReceiveProps(nextProps) {
@@ -152,13 +159,18 @@ class WorklogModal extends Component<Props, State> {
       worklog,
       saveInProcess,
       dispatch,
+      issue,
     }: Props = this.props;
+
     const {
       calendarOpened,
       date,
       startTime,
       comment,
       timeSpent,
+      remainingEstimateValue,
+      remainingEstimateSetTo,
+      remainingEstimateReduceBy,
       jiraTimeError,
     }: State = this.state;
 
@@ -184,6 +196,9 @@ class WorklogModal extends Component<Props, State> {
                         month: parseInt(date.split('/')[0], 10) - 1,
                         date: parseInt(date.split('/')[1], 10),
                       }),
+                      adjustEstimate: remainingEstimateValue,
+                      newEstimate: remainingEstimateSetTo,
+                      reduceBy: remainingEstimateReduceBy,
                       timeSpent,
                       comment,
                       date,
@@ -298,6 +313,17 @@ class WorklogModal extends Component<Props, State> {
             />
           </Flex>
 
+          {/* ESTIMATE */}
+          <RemainingEstimatePicker
+            issue={issue}
+            value={remainingEstimateValue}
+            onChange={value => this.setState({ remainingEstimateValue: value })}
+            onReduceByChange={value => this.setState({ remainingEstimateReduceBy: value })}
+            onNewChange={value => this.setState({ remainingEstimateSetTo: value })}
+            newValue={remainingEstimateSetTo}
+            reduceByValue={remainingEstimateReduceBy}
+          />
+
           {/* COMMENT */}
           <FieldTextAreaStateless
             shouldFitContainer
@@ -312,9 +338,11 @@ class WorklogModal extends Component<Props, State> {
 }
 
 function mapStateToProps(state) {
+  const issueId = getUiState('worklogFormIssueId')(state);
   return {
+    issueId,
     isOpen: getModalState('worklog')(state),
-    issueId: getUiState('worklogFormIssueId')(state),
+    issue: getResources(state.issues, [issueId])[0],
     worklog: getEditWorklog(state),
     saveInProcess: getResourceStatus(
       state,

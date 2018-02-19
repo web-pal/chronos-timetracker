@@ -18,6 +18,15 @@ export const setUiState = (
   },
 });
 
+export const resetUiState = (
+  keys: Array<string>,
+): UiAction => ({
+  type: actionTypes.RESET_UI_STATE,
+  payload: {
+    keys,
+  },
+});
+
 export const setModalState = (
   modalName: string,
   state: boolean,

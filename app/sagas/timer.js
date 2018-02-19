@@ -21,7 +21,7 @@ import NanoTimer from 'nanotimer';
 import config from 'config';
 import {
   randomPeriods,
-  calculateActivity,
+  /* calculateActivity, */
 } from 'timer-helper';
 
 import {
@@ -224,17 +224,17 @@ function* stopTimer(channel, timerInstance) {
     const timeSpentInSeconds = yield select(getTimerState('time'));
     const comment = yield select(getUiState('worklogComment'));
     const screenshots = yield select(getTimerState('screenshots'));
-    const keepedIdles = yield select(getTimerState('keepedIdles'));
-    const idles = yield select(getTimerState('idles'));
+    /* const keepedIdles = yield select(getTimerState('keepedIdles')); */
+    /* const idles = yield select(getTimerState('idles')); */
     const screenshotsPeriod = yield select(getSettingsState('screenshotsPeriod'));
     const worklogType = null;
-    const activity = calculateActivity({
+    /* const activity = calculateActivity({
       currentIdleList: idles.map(idle => idle.to - idle.from),
       timeSpentInSeconds,
       screenshotsPeriod,
       firstPeriodInMinute: 1,
       secondsToMinutesGrid: 1,
-    });
+    }); */
     //
     yield put(timerActions.resetTimer());
     // yield put(worklogsActions.setTemporaryWorklogId(null));
@@ -246,8 +246,8 @@ function* stopTimer(channel, timerInstance) {
         screenshotsPeriod,
         worklogType,
         screenshots,
-        activity,
-        keepedIdles,
+        /* activity, */
+        /* keepedIdles, */
       });
     }
     remote.getGlobal('sharedObj').uploading = false;

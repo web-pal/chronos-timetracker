@@ -66,6 +66,7 @@ import type {
 } from './sprints';
 
 export type {
+  RemainingEstimate,
   UiAction,
   UiState,
 } from './ui';
@@ -174,6 +175,7 @@ export type Id = string | number;
 export type IndexedIds = {
   [Id]: number,
 }
+
 
 export type Action =
   UiAction |

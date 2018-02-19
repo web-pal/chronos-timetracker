@@ -25,6 +25,7 @@ import {
 } from 'actions';
 import {
   getResourceMap,
+  getUiState,
 } from 'selectors';
 
 import {
@@ -90,6 +91,9 @@ export function* saveWorklog({
     worklogId,
     comment,
     startTime,
+    adjustEstimate,
+    newEstimate,
+    reduceBy,
     timeSpent,
     timeSpentInSeconds,
     isAuto = true,
@@ -132,13 +136,17 @@ export function* saveWorklog({
     const jiraUploadOptions = {
       worklogId,
       issueId,
-      adjustEstimate: 'auto',
+      adjustEstimate,
       worklog: {
         started,
         timeSpentSeconds,
         comment,
       },
     };
+
+    if (adjustEstimate === 'new') jiraUploadOptions.newEstimate = newEstimate;
+    if (adjustEstimate === 'manual') jiraUploadOptions.reduceBy = reduceBy;
+
     const worklog = yield call(
       worklogId ? Api.updateWorklog : Api.addWorklog,
       jiraUploadOptions,
@@ -230,14 +238,27 @@ export function* uploadWorklog(options: any): Generator<*, *, *> {
       .format()
       .replace('Z', '.000+0000');
 
+    const adjustEstimate = yield select(getUiState('remainingEstimateValue'));
+    const newEstimate = yield select(getUiState('remainingEstimateNewValue'));
+    const reduceBy = yield select(getUiState('remainingEstimateReduceByValue'));
+
     const worklog = yield call(saveWorklog, {
       payload: {
         ...options,
+        adjustEstimate,
+        newEstimate,
+        reduceBy,
         startTime,
         isAuto: true,
       },
     });
-    yield put(uiActions.setUiState('worklogComment', ''));
+
+    yield put(uiActions.resetUiState([
+      'worklogComment',
+      'remainingEstimateValue',
+      'remainingEstimateNewValue',
+      'remainingEstimateReduceByValue',
+    ]));
 
     /*
     const backendUploadOptions = {
