@@ -273,8 +273,6 @@ export function* uploadWorklog(options: any): Generator<*, *, *> {
 
     yield put(actions.pending());
 
-    issue.fields.worklogs = [];
-
     yield put(actions.succeeded({
       resources: [issue],
     }));
