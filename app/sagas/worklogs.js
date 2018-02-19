@@ -231,6 +231,7 @@ export function* uploadWorklog(options: any): Generator<*, *, *> {
     */
     const {
       timeSpentInSeconds,
+      issueKey,
     } = options;
     const startTime = moment()
       .subtract({ seconds: timeSpentInSeconds })
@@ -253,12 +254,30 @@ export function* uploadWorklog(options: any): Generator<*, *, *> {
       },
     });
 
+    // reset ui state
     yield put(uiActions.resetUiState([
       'worklogComment',
       'remainingEstimateValue',
       'remainingEstimateNewValue',
       'remainingEstimateReduceByValue',
     ]));
+
+    // refetch tracked issue
+
+    const actions = createActionCreators('update', {
+      resourceName: 'issues',
+      request: 'updateIssue',
+    });
+
+    const issue = yield call(Api.fetchIssueByKey, issueKey);
+
+    yield put(actions.pending());
+
+    issue.fields.worklogs = [];
+
+    yield put(actions.succeeded({
+      resources: [issue],
+    }));
 
     /*
     const backendUploadOptions = {

@@ -34,6 +34,7 @@ import {
   getTimerState,
   getSettingsState,
   getUiState,
+  getTrackingIssue,
 } from 'selectors';
 
 import {
@@ -220,7 +221,9 @@ function* stopTimer(channel, timerInstance) {
     yield call(ipcRenderer.send, 'stop-timer');
     channel.close();
     yield cancel(timerInstance);
-    const issueId = yield select(getUiState('trackingIssueId'));
+    const issue = yield select(getTrackingIssue);
+    const issueId = issue.id;
+    const issueKey = issue.key;
     const timeSpentInSeconds = yield select(getTimerState('time'));
     const comment = yield select(getUiState('worklogComment'));
     const screenshots = yield select(getTimerState('screenshots'));
@@ -241,6 +244,7 @@ function* stopTimer(channel, timerInstance) {
     if (timeSpentInSeconds >= 60) {
       yield call(uploadWorklog, {
         issueId,
+        issueKey,
         comment,
         timeSpentInSeconds,
         screenshotsPeriod,
