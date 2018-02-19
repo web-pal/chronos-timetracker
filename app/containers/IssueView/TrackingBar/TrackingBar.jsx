@@ -15,6 +15,7 @@ import type {
 import type {
   Issue,
   Dispatch,
+  RemainingEstimate,
 } from 'types';
 
 import {
@@ -51,6 +52,9 @@ type Props = {
   screenshotsAllowed: boolean,
   trackingIssue: Issue,
   worklogComment: string,
+  remainingEstimateValue: RemainingEstimate,
+  remainingEstimateNewValue: string,
+  remainingEstimateReduceByValue: string,
   dispatch: Dispatch,
 }
 
@@ -72,6 +76,9 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
   screenshotsAllowed,
   trackingIssue,
   worklogComment,
+  remainingEstimateValue,
+  remainingEstimateNewValue,
+  remainingEstimateReduceByValue,
   dispatch,
 }: Props): Node => (
   <Transition
@@ -84,8 +91,21 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
       <Flex row alignCenter>
         <WorklogCommentDialog
           comment={worklogComment}
+          remainingEstimateValue={remainingEstimateValue}
+          remainingEstimateNewValue={remainingEstimateNewValue}
+          remainingEstimateReduceByValue={remainingEstimateReduceByValue}
+          issue={trackingIssue}
           onSetComment={(comment) => {
             dispatch(uiActions.setUiState('worklogComment', comment));
+          }}
+          onRemainingEstimateChange={(value) => {
+            dispatch(uiActions.setUiState('remainingEstimateValue', value));
+          }}
+          onRemainingEstimateNewChange={(value) => {
+            dispatch(uiActions.setUiState('remainingEstimateNewValue', value));
+          }}
+          onRemainingEstimateReduceByChange={(value) => {
+            dispatch(uiActions.setUiState('remainingEstimateReduceByValue', value));
           }}
         />
         {screenshotsAllowed &&
@@ -149,6 +169,9 @@ function mapStateToProps(state) {
     screenshotsAllowed: false,
     trackingIssue: getTrackingIssue(state),
     worklogComment: getUiState('worklogComment')(state),
+    remainingEstimateValue: getUiState('remainingEstimateValue')(state),
+    remainingEstimateNewValue: getUiState('remainingEstimateNewValue')(state),
+    remainingEstimateReduceByValue: getUiState('remainingEstimateReduceByValue')(state),
   };
 }
 
