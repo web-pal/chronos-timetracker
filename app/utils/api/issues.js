@@ -128,7 +128,7 @@ export function fetchIssueFields(): Promise<*> {
 }
 
 export function fetchIssueComments(issueId: Id): Promise<*> {
-  return jira.client.issue.getComments({ issueId });
+  return jira.client.issue.getComments({ issueId, expand: ['renderedBody'] });
 }
 
 export function addComment({

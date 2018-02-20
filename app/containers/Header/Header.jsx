@@ -163,6 +163,8 @@ const Header: StatelessFunctionalComponent<Props> = ({
 
 
 function mapStateToProps(state) {
+  const sidebarType = getUiState('sidebarType')(state);
+  const request = sidebarType === 'recent' ? 'recentIssues' : 'filterIssues';
   return {
     userData: getUserData(state),
     host: getUiState('host')(state),
@@ -170,7 +172,7 @@ function mapStateToProps(state) {
     updateFetching: getUiState('updateFetching')(state),
     issuesFetching: getResourceStatus(
       state,
-      'issues.requests.filterIssues.status',
+      `issues.requests.${request}.status`,
     ).pending,
   };
 }

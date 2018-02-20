@@ -80,6 +80,7 @@ class IssueComments extends Component<Props, State> {
       selectedIssueId,
       dispatch,
     }: Props = this.props;
+    console.log(comments);
     return (
       <ActivitySection>
         <Flex column>
@@ -112,10 +113,20 @@ class IssueComments extends Component<Props, State> {
                 </Flex>
                 <Flex column>
                   <CommentBody>
-                    <ReactMarkdown
-                      softBreak="br"
-                      source={comment.body}
-                    />
+                    {comment.renderedBody
+                      ? (
+                        <div
+                          dangerouslySetInnerHTML={{
+                            __html: comment.renderedBody,
+                          }}
+                        />
+                      ) : (
+                        <ReactMarkdown
+                          softBreak="br"
+                          source={comment.body}
+                        />
+                      )
+                    }
                   </CommentBody>
                 </Flex>
               </Commentd>

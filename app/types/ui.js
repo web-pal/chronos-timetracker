@@ -14,6 +14,12 @@ export type UiAction =
     |},
   |} |
   {|
+    type: typeof actionTypes.RESET_UI_STATE,
+    payload: {|
+      keys: Array<string>,
+    |},
+  |} |
+  {|
     type: typeof actionTypes.SET_MODAL_STATE,
     payload: {|
       modalName: string,
@@ -45,6 +51,8 @@ export type UiAction =
     type: typeof actionTypes.INSTALL_UPDATE_REQUEST,
   |};
 
+export type RemainingEstimate = 'auto' | 'new' | 'manual' | 'leave';
+
 export type UiState = {|
   initializeInProcess: boolean,
   authorized: boolean,
@@ -74,6 +82,9 @@ export type UiState = {|
   editWorklogId: Id | null,
   worklogFormIssueId: Id | null,
   worklogComment: string,
+  remainingEstimateValue: RemainingEstimate,
+  remainingEstimateNewValue: string,
+  remainingEstimateReduceByValue: string,
 
   selectedIssueId: Id | null,
   issuesSourceType: string | null,

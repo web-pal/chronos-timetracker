@@ -6,6 +6,9 @@ import type {
   Action,
   UiState,
 } from 'types';
+import {
+  mapObjIndexed as mapObj,
+} from 'ramda';
 
 
 const initialState: UiState = {
@@ -37,6 +40,9 @@ const initialState: UiState = {
   editWorklogId: null,
   worklogFormIssueId: null,
   worklogComment: '',
+  remainingEstimateValue: 'auto',
+  remainingEstimateNewValue: '',
+  remainingEstimateReduceByValue: '',
 
   selectedIssueId: null,
   issuesSourceType: null,
@@ -68,6 +74,9 @@ export default function ui(
         ...state,
         [action.payload.key]: action.payload.value,
       };
+    case actionTypes.RESET_UI_STATE:
+      // $FlowFixMe
+      return mapObj((v, k) => (action.payload.keys.includes(k) ? initialState[k] : v), state);
     case actionTypes.SET_MODAL_STATE:
       return {
         ...state,
