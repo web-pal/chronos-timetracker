@@ -158,11 +158,12 @@ export function* saveWorklog({
     if (!worklogId) {
       const issuesMap = yield select(getResourceMap('issues'));
       const issue = issuesMap[issueId];
+      const updatedIssue = yield call(Api.fetchIssueByKey, issue.key);
       yield put(issuesA.succeeded({
         resources: [{
-          ...issue,
+          ...updatedIssue,
           fields: {
-            ...issue.fields,
+            ...updatedIssue.fields,
             worklogs: [worklog.id, ...issue.fields.worklogs],
           },
         }],
@@ -231,7 +232,6 @@ export function* uploadWorklog(options: any): Generator<*, *, *> {
     */
     const {
       timeSpentInSeconds,
-      issueKey,
     } = options;
     const startTime = moment()
       .subtract({ seconds: timeSpentInSeconds })
@@ -261,21 +261,6 @@ export function* uploadWorklog(options: any): Generator<*, *, *> {
       'remainingEstimateNewValue',
       'remainingEstimateReduceByValue',
     ]));
-
-    // refetch tracked issue
-
-    const actions = createActionCreators('update', {
-      resourceName: 'issues',
-      request: 'updateIssue',
-    });
-
-    const issue = yield call(Api.fetchIssueByKey, issueKey);
-
-    yield put(actions.pending());
-
-    yield put(actions.succeeded({
-      resources: [issue],
-    }));
 
     /*
     const backendUploadOptions = {

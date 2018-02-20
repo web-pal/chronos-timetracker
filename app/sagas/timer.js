@@ -223,7 +223,6 @@ function* stopTimer(channel, timerInstance) {
     yield cancel(timerInstance);
     const issue = yield select(getTrackingIssue);
     const issueId = issue.id;
-    const issueKey = issue.key;
     const timeSpentInSeconds = yield select(getTimerState('time'));
     const comment = yield select(getUiState('worklogComment'));
     const screenshots = yield select(getTimerState('screenshots'));
@@ -244,7 +243,6 @@ function* stopTimer(channel, timerInstance) {
     if (timeSpentInSeconds >= 60) {
       yield call(uploadWorklog, {
         issueId,
-        issueKey,
         comment,
         timeSpentInSeconds,
         screenshotsPeriod,
