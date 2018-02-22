@@ -1,5 +1,5 @@
-// flow-typed signature: 6877535662f8f2dcaa96120afd5f2cf9
-// flow-typed version: eb9be801d7/socket.io-client_v2.x.x/flow_>=v0.34.x
+// flow-typed signature: 6a4651587c6acd69738be321bb34d341
+// flow-typed version: f75fc39aee/socket.io-client_v2.x.x/flow_>=v0.34.x
 
 declare module "socket.io-client" {
   declare type Callback = (...args: mixed[]) => void;
@@ -12,6 +12,7 @@ declare module "socket.io-client" {
     reconnectionDelayMax: number,
     randomizationFactor: number,
     timeout: number,
+    transports: ("polling" | "websocket")[],
     autoConnect: boolean,
     query: { [string]: string },
     parser: any
