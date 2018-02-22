@@ -1,3 +1,13 @@
+<a name="2.5.12"></a>
+## [2.5.12](https://github.com/web-pal/chronos-timetracker/compare/v2.5.11...v2.5.12) (2018-02-22)
+
+
+### Bug Fixes
+
+* **Browsing Issues:** getProjectsForBoard is not a function, because of wrong jira-connector version ([79cf991](https://github.com/web-pal/chronos-timetracker/commit/79cf991))
+
+
+
 <a name="2.5.11"></a>
 ## [2.5.11](https://github.com/web-pal/chronos-timetracker/compare/v2.5.9...v2.5.11) (2018-02-20)
 
