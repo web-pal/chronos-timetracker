@@ -393,6 +393,7 @@ ipcMain.on('open-create-issue-window', (event, url) => {
     },
   });
   createIssueWindow.loadURL(url);
+  // createIssueWindow.mainWindow.openDevTools();
   createIssueWindow.once('ready-to-show', () => {
     if (createIssueWindow) {
       createIssueWindow.show();
@@ -417,9 +418,7 @@ ipcMain.on('open-create-issue-window', (event, url) => {
     if (fromUrl.includes('CreateIssueDetails.jspa')) {
       const issueKey = newUrl.split('/').pop();
       mainWindow.webContents.send('newIssue', issueKey);
-      createIssueWindow.webContents.executeJavaScript(`
-        window.close();
-      `);
+      createIssueWindow.destroy();
     }
   });
   createIssueWindow.on('closed', () => {
