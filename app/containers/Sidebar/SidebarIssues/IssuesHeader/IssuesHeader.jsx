@@ -24,6 +24,7 @@ import {
   uiActions,
 } from 'actions';
 import {
+  getCurrentProjectKey,
   getCurrentProjectId,
   getUiState,
 } from 'selectors';
@@ -43,6 +44,7 @@ type Props = {
   filterStatusesIsFetched: boolean,
   sidebarFiltersIsOpen: boolean,
   filtersApplied: boolean,
+  currentProjectKey: string,
   currentProjectId: string,
   host: string,
   protocol: string,
@@ -54,6 +56,7 @@ const IssuesHeader: StatelessFunctionalComponent<Props> = ({
   filterStatusesIsFetched,
   sidebarFiltersIsOpen,
   filtersApplied,
+  currentProjectKey,
   currentProjectId,
   host,
   protocol,
@@ -84,7 +87,10 @@ const IssuesHeader: StatelessFunctionalComponent<Props> = ({
           onClick={() => {
             ipcRenderer.send(
               'open-create-issue-window',
-              `${protocol}://${host}/secure/CreateIssue.jspa?pid=${currentProjectId}`,
+              {
+                projectId: currentProjectId,
+                url: `${protocol}://${host}/projects/${currentProjectKey}/issues`,
+              },
             );
           }}
         />
@@ -115,6 +121,7 @@ function mapStateToProps(state) {
     host: getUiState('host')(state),
     protocol: getUiState('protocol')(state),
     currentProjectId: getCurrentProjectId(state),
+    currentProjectKey: getCurrentProjectKey(state),
     searchValue: getUiState('issuesSearch')(state),
     sidebarFiltersIsOpen: getUiState('sidebarFiltersIsOpen')(state),
     filterStatusesIsFetched: getUiState('filterStatusesIsFetched')(state),

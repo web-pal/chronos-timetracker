@@ -580,35 +580,37 @@ export function* fetchEpics(): Generator<*, void, *> {
   }
 }
 
+function* onNewIssue(issueKey): Generator<*, *, *> {
+  const actions = createActionCreators('create', {
+    resourceName: 'issues',
+    request: 'createIssue',
+  });
+  try {
+    const issue = yield call(Api.fetchIssueByKey, issueKey);
+    yield put(actions.pending());
+    yield fork(notify, {
+      title: `${issue.key} was created`,
+    });
+    issue.fields.worklogs = [];
+    yield put(actions.succeeded({
+      resources: [issue],
+    }));
+    yield put(uiActions.setUiState(
+      'selectedIssueId',
+      issue.id,
+    ));
+    yield fork(refetchIssues, false);
+    trackMixpanel('New issue was created');
+  } catch (err) {
+    yield call(throwError, err);
+  }
+}
 
 function getNewIssueChannelListener(channel) {
   return function* listenNewIssue() {
     while (true) {
       const { payload } = yield take(channel);
-      const actions = createActionCreators('create', {
-        resourceName: 'issues',
-        request: 'createIssue',
-      });
-      try {
-        const issueKey = payload[0];
-        const issue = yield call(Api.fetchIssueByKey, issueKey);
-        yield put(actions.pending());
-        yield fork(notify, {
-          title: `${issue.key} was created`,
-        });
-        issue.fields.worklogs = [];
-        yield put(actions.succeeded({
-          resources: [issue],
-        }));
-        yield put(uiActions.setUiState(
-          'selectedIssueId',
-          issue.id,
-        ));
-        yield fork(refetchIssues, false);
-        trackMixpanel('New issue was created');
-      } catch (err) {
-        yield call(throwError, err);
-      }
+      yield fork(onNewIssue, payload[0]);
     }
   };
 }

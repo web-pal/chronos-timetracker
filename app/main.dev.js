@@ -379,7 +379,13 @@ ipcMain.on('select-issue', (event, issueKey) => {
   tray.setContextMenu(menu);
 });
 
-ipcMain.on('open-create-issue-window', (event, url) => {
+ipcMain.on('issue-created', (event, issues) => {
+  issues.forEach(({ issueKey }) => {
+    mainWindow.webContents.send('newIssue', issueKey);
+  });
+});
+
+ipcMain.on('open-create-issue-window', (event, { url, projectId }) => {
   let createIssueWindow = new BrowserWindow({
     parent: mainWindow,
     modal: true,
@@ -389,37 +395,40 @@ ipcMain.on('open-create-issue-window', (event, url) => {
     title: 'Chronos',
     webPreferences: {
       nodeIntegration: false,
+      preload: path.join(__dirname, 'preload.js'),
       devTools: true,
     },
   });
   createIssueWindow.loadURL(url);
-  // createIssueWindow.mainWindow.openDevTools();
+  createIssueWindow.openDevTools();
   createIssueWindow.once('ready-to-show', () => {
     if (createIssueWindow) {
       createIssueWindow.show();
     }
   });
-
   createIssueWindow.webContents.on('dom-ready', () => {
     createIssueWindow.webContents.executeJavaScript(`
-      var sidebar = document.getElementById('navigation-app');
-      var cancel = document.getElementById('issue-create-cancel');
-      if (sidebar) {
-        sidebar.parentNode.removeChild(sidebar);
-      }
-      if (cancel) {
-        cancel.addEventListener('click', function (event) {
+      document.getElementById('page').style.display = 'none';
+      var issueForm = JIRA.Forms
+        .createCreateIssueForm({pid: ${projectId}})
+        .bind('sessionComplete', function(ev, issues) {
+          ipcRenderer.send('issue-created', issues);
           window.close();
+        })
+        .asDialog({
+          windowTitle: 'Create Issue',
         });
-      }
+      issueForm.show();
+      var timerId = setInterval(function() {
+        if (issueForm.$buttonContainer) {
+          var cancel = issueForm.$buttonContainer[0].getElementsByClassName('cancel');
+          cancel[0].addEventListener('click', function (event) {
+            window.close();
+          });
+          clearInterval(timerId);
+        }
+      }, 1000);
     `);
-  });
-  createIssueWindow.webContents.on('did-get-redirect-request', (ev, fromUrl, newUrl) => {
-    if (fromUrl.includes('CreateIssueDetails.jspa')) {
-      const issueKey = newUrl.split('/').pop();
-      mainWindow.webContents.send('newIssue', issueKey);
-      createIssueWindow.destroy();
-    }
   });
   createIssueWindow.on('closed', () => {
     createIssueWindow = null;
