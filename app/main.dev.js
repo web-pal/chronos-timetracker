@@ -385,8 +385,59 @@ ipcMain.on('issue-created', (event, issues) => {
   });
 });
 
-ipcMain.on('open-create-issue-window', (event, { url, projectId }) => {
+ipcMain.on('open-create-issue-window', (
+  event,
+  {
+    url,
+    projectId,
+  },
+) => {
   let createIssueWindow = new BrowserWindow({
+    backgroundColor: 'white',
+    parent: mainWindow,
+    modal: true,
+    useContentSize: true,
+    closable: true,
+    center: true,
+    title: 'Chronos',
+    webPreferences: {
+      devTools: true,
+    },
+  });
+  createIssueWindow.loadURL(`file://${__dirname}/issueForm.html`);
+  createIssueWindow.webContents.on('did-finish-load', () => {
+    createIssueWindow.webContents.send(
+      'url',
+      {
+        url,
+        projectId,
+      },
+    );
+  });
+  createIssueWindow.openDevTools();
+  createIssueWindow.on('closed', () => {
+    createIssueWindow = null;
+  }, false);
+  ipcMain.once('page-fully-loaded', () => {
+    if (createIssueWindow) {
+      createIssueWindow.webContents.send('page-fully-loaded');
+    }
+  });
+  ipcMain.once('close-page', () => {
+    if (createIssueWindow) {
+      createIssueWindow.close();
+    }
+  });
+});
+
+ipcMain.on('open-edit-issue-window', (
+  event,
+  {
+    url,
+    issueId,
+  },
+) => {
+  let editIssueWindow = new BrowserWindow({
     parent: mainWindow,
     modal: true,
     useContentSize: true,
@@ -399,24 +450,19 @@ ipcMain.on('open-create-issue-window', (event, { url, projectId }) => {
       devTools: true,
     },
   });
-  createIssueWindow.loadURL(url);
-  createIssueWindow.openDevTools();
-  createIssueWindow.once('ready-to-show', () => {
-    if (createIssueWindow) {
-      createIssueWindow.show();
-    }
-  });
-  createIssueWindow.webContents.on('dom-ready', () => {
-    createIssueWindow.webContents.executeJavaScript(`
+  editIssueWindow.loadURL(url);
+  editIssueWindow.openDevTools();
+  editIssueWindow.webContents.on('dom-ready', () => {
+    editIssueWindow.webContents.executeJavaScript(`
       document.getElementById('page').style.display = 'none';
       var issueForm = JIRA.Forms
-        .createCreateIssueForm({pid: ${projectId}})
+        .createEditIssueForm({ issueId: ${issueId} })
         .bind('sessionComplete', function(ev, issues) {
           ipcRenderer.send('issue-created', issues);
           window.close();
         })
         .asDialog({
-          windowTitle: 'Create Issue',
+          windowTitle: 'Edit Issue',
         });
       issueForm.show();
       var timerId = setInterval(function() {
@@ -430,8 +476,8 @@ ipcMain.on('open-create-issue-window', (event, { url, projectId }) => {
       }, 1000);
     `);
   });
-  createIssueWindow.on('closed', () => {
-    createIssueWindow = null;
+  editIssueWindow.on('closed', () => {
+    editIssueWindow = null;
   }, false);
 });
 

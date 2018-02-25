@@ -6,6 +6,9 @@ import {
 import {
   getStatus as getResourceStatus,
 } from 'redux-resource';
+import {
+  ipcRenderer,
+} from 'electron';
 
 import type {
   StatelessFunctionalComponent,
@@ -34,6 +37,7 @@ import Button, {
 } from '@atlaskit/button';
 import Spinner from '@atlaskit/spinner';
 import {
+  getUiState,
   getTimerState,
   getSelectedIssue,
   getSelfKey,
@@ -71,6 +75,8 @@ type Props = {
   transitionsIsFetching: boolean,
   issueTransitions: Array<IssueStatus>,
   selfKey: string,
+  host: string,
+  protocol: string,
   dispatch: Dispatch,
 };
 
@@ -80,6 +86,8 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
   transitionsIsFetching,
   issueTransitions,
   selfKey,
+  host,
+  protocol,
   dispatch,
 }: Props):Node => (
   <IssueViewHeaderContainer>
@@ -197,6 +205,19 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
             Assign to me
           </Button>
         }
+        <Button
+          onClick={() => {
+            ipcRenderer.send(
+              'open-edit-issue-window',
+              {
+                issueId: selectedIssue.id,
+                url: `${protocol}://${host}/browse/${selectedIssue.key}`,
+              },
+            );
+          }}
+        >
+          Edit
+        </Button>
       </ButtonGroup>
     </Flex>
   </IssueViewHeaderContainer>
@@ -204,6 +225,8 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
 
 function mapStateToProps(state) {
   return {
+    host: getUiState('host')(state),
+    protocol: getUiState('protocol')(state),
     selectedIssue: getSelectedIssue(state),
     timerRunning: getTimerState('running')(state),
     issueTransitions: getResourceMappedList(
