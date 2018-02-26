@@ -55,6 +55,17 @@ export const getCurrentProjectId = createSelector(
   },
 );
 
+export const getCurrentProjectKey = createSelector(
+  [
+    getCurrentProjectId,
+    getResourceMap('projects'),
+  ],
+  (
+    projectId,
+    projects,
+  ) => (projects[projectId] ? projects[projectId].key : ''),
+);
+
 export const getProjectsOptions = createSelector(
   [
     getResourceMappedList('projects', 'allProjects'),

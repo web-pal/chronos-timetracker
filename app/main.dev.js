@@ -379,8 +379,65 @@ ipcMain.on('select-issue', (event, issueKey) => {
   tray.setContextMenu(menu);
 });
 
-ipcMain.on('open-create-issue-window', (event, url) => {
+ipcMain.on('issue-created', (event, issues) => {
+  issues.forEach(({ issueKey }) => {
+    mainWindow.webContents.send('newIssue', issueKey);
+  });
+});
+
+ipcMain.on('open-create-issue-window', (
+  event,
+  {
+    url,
+    projectId,
+  },
+) => {
   let createIssueWindow = new BrowserWindow({
+    backgroundColor: 'white',
+    parent: mainWindow,
+    modal: true,
+    useContentSize: true,
+    closable: true,
+    center: true,
+    title: 'Chronos',
+    webPreferences: {
+      devTools: true,
+    },
+  });
+  createIssueWindow.loadURL(`file://${__dirname}/issueForm.html`);
+  createIssueWindow.webContents.on('did-finish-load', () => {
+    createIssueWindow.webContents.send(
+      'url',
+      {
+        url,
+        projectId,
+      },
+    );
+  });
+  createIssueWindow.openDevTools();
+  createIssueWindow.on('closed', () => {
+    createIssueWindow = null;
+  }, false);
+  ipcMain.once('page-fully-loaded', () => {
+    if (createIssueWindow) {
+      createIssueWindow.webContents.send('page-fully-loaded');
+    }
+  });
+  ipcMain.once('close-page', () => {
+    if (createIssueWindow) {
+      createIssueWindow.close();
+    }
+  });
+});
+
+ipcMain.on('open-edit-issue-window', (
+  event,
+  {
+    url,
+    issueId,
+  },
+) => {
+  let editIssueWindow = new BrowserWindow({
     parent: mainWindow,
     modal: true,
     useContentSize: true,
@@ -389,41 +446,38 @@ ipcMain.on('open-create-issue-window', (event, url) => {
     title: 'Chronos',
     webPreferences: {
       nodeIntegration: false,
+      preload: path.join(__dirname, 'preload.js'),
       devTools: true,
     },
   });
-  createIssueWindow.loadURL(url);
-  createIssueWindow.once('ready-to-show', () => {
-    if (createIssueWindow) {
-      createIssueWindow.show();
-    }
-  });
-
-  createIssueWindow.webContents.on('dom-ready', () => {
-    createIssueWindow.webContents.executeJavaScript(`
-      var sidebar = document.getElementById('navigation-app');
-      var cancel = document.getElementById('issue-create-cancel');
-      if (sidebar) {
-        sidebar.parentNode.removeChild(sidebar);
-      }
-      if (cancel) {
-        cancel.addEventListener('click', function (event) {
+  editIssueWindow.loadURL(url);
+  editIssueWindow.openDevTools();
+  editIssueWindow.webContents.on('dom-ready', () => {
+    editIssueWindow.webContents.executeJavaScript(`
+      document.getElementById('page').style.display = 'none';
+      var issueForm = JIRA.Forms
+        .createEditIssueForm({ issueId: ${issueId} })
+        .bind('sessionComplete', function(ev, issues) {
+          ipcRenderer.send('issue-created', issues);
           window.close();
+        })
+        .asDialog({
+          windowTitle: 'Edit Issue',
         });
-      }
+      issueForm.show();
+      var timerId = setInterval(function() {
+        if (issueForm.$buttonContainer) {
+          var cancel = issueForm.$buttonContainer[0].getElementsByClassName('cancel');
+          cancel[0].addEventListener('click', function (event) {
+            window.close();
+          });
+          clearInterval(timerId);
+        }
+      }, 1000);
     `);
   });
-  createIssueWindow.webContents.on('did-get-redirect-request', (ev, fromUrl, newUrl) => {
-    if (fromUrl.includes('CreateIssueDetails.jspa')) {
-      const issueKey = newUrl.split('/').pop();
-      mainWindow.webContents.send('newIssue', issueKey);
-      createIssueWindow.webContents.executeJavaScript(`
-        window.close();
-      `);
-    }
-  });
-  createIssueWindow.on('closed', () => {
-    createIssueWindow = null;
+  editIssueWindow.on('closed', () => {
+    editIssueWindow = null;
   }, false);
 });
 
