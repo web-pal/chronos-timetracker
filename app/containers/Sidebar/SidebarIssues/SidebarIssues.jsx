@@ -91,7 +91,6 @@ const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
       rowCount={totalCount}
       ref={registerInfiniteNode}
       minimumBatchSize={50}
-      threshold={20}
       loadMoreRows={({ startIndex, stopIndex }) =>
         new Promise((resolve) => {
           dispatch(issuesActions.fetchIssuesRequest({
@@ -129,7 +128,7 @@ const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
                   return (
                     <div style={style} key={key}>
                       <ErrorBoundary debugData={item}>
-                        {item ?
+                        {(item && item !== 'pending') ?
                           <IssueItem
                             issue={item}
                             active={selectedIssueId === item.id}

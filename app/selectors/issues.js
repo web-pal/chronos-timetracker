@@ -46,7 +46,7 @@ export const getSidebarIssues = createSelector(
   ) =>
     Object.keys(indexedIds).reduce((acc, index) => {
       const id = indexedIds[index].toString();
-      acc[index] = map[id];
+      acc[index] = id === 'pending' ? id : map[id];
       return acc;
     }, {}),
 );

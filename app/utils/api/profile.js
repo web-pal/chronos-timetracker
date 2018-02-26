@@ -184,3 +184,14 @@ export function getDataForOAuth(baseUrl: string): Promise<*> {
       },
     );
 }
+
+export function getPermissions(
+  opts: {
+    issueId?: string | number,
+    projectId?: string | number,
+    issueKey?: string | number,
+    projectKey?: string | number,
+  },
+): Promise<*> {
+  return jira.client.myPermissions.getMyPermissions(opts);
+}

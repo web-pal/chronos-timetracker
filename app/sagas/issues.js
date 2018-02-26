@@ -27,6 +27,7 @@ import {
   getUiState,
   getCurrentProjectId,
   getResourceItemBydId,
+  getResourceMeta,
 } from 'selectors';
 import {
   uiActions,
@@ -214,6 +215,7 @@ export function* fetchIssues({
     request: 'filterIssues',
     list: 'filterIssues',
     startIndex,
+    stopIndex,
     indexedList: true,
     mergeListIds: true,
   });
@@ -388,10 +390,22 @@ export function* refetchIssues(debouncing: boolean): Generator<*, void, *> {
       resourceName: 'issues',
       list: 'filterIssues',
     }));
+    const currentTotalCount = yield select(getResourceMeta(
+      'issues',
+      'filterIssuesTotalCount',
+    ));
+    if (!currentTotalCount) {
+      yield put(resourcesActions.setResourceMeta({
+        resourceName: 'issues',
+        meta: {
+          filterIssuesTotalCount: 10,
+        },
+      }));
+    }
     yield put(resourcesActions.setResourceMeta({
       resourceName: 'issues',
       meta: {
-        filterIssuesTotalCount: 10,
+        refetchFilterIssuesMarker: true,
       },
     }));
     yield put(resourcesActions.setResourceMeta({
@@ -480,7 +494,6 @@ export function* transitionIssue({
       }],
     }));
     yield fork(getIssueTransitions, issueId);
-    yield fork(refetchIssues, false);
 
     trackMixpanel('Transition of an issue was done');
   } catch (err) {
@@ -491,9 +504,27 @@ export function* transitionIssue({
   }
 }
 
+export function* getIssuePermissions(issueId: string | number): Generator<*, void, *> {
+  try {
+    const {
+      permissions,
+    } = yield call(Api.getPermissions, { issueId });
+    yield put(resourcesActions.setResourceMeta({
+      resourceName: 'issues',
+      resources: [issueId],
+      meta: {
+        permissions,
+      },
+    }));
+  } catch (err) {
+    yield call(throwError, err);
+  }
+}
+
 export function* issueSelectFlow(issueId: string | number): Generator<*, *, *> {
   yield fork(getIssueTransitions, issueId);
   yield fork(getIssueComments, issueId);
+  // yield fork(getIssuePermissions, issueId);
 }
 
 export function* assignIssue({
@@ -605,7 +636,6 @@ function* onNewIssue(issueKey): Generator<*, *, *> {
       'selectedIssueId',
       issue.id,
     ));
-    yield fork(refetchIssues, false);
     trackMixpanel('New issue was created');
   } catch (err) {
     yield call(throwError, err);

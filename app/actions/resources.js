@@ -21,11 +21,14 @@ export const clearResourceList = ({
 export const setResourceMeta = ({
   meta,
   resourceName,
+  resources,
 }: {|
   meta: any,
   resourceName: string,
+  resources?: Array<string | number>,
 |}): ResourcesAction => ({
   type: actionTypes.SET_RESOURCES_META,
   meta,
   resourceName,
+  resources,
 });

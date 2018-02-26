@@ -1,4 +1,3 @@
-// @flow
 import React, { Component } from 'react';
 import {
   ipcRenderer,
@@ -22,30 +21,47 @@ class IssueForm extends Component<{}, any> {
   componentDidMount() {
     ipcRenderer.on('url', this.onLoadUrl);
     ipcRenderer.on('page-fully-loaded', () => {
-      document.getElementById('root').style.display = 'none';
+      setTimeout(() => {
+        this.setState({
+          show: false,
+        });
+        document.getElementById('root').style.display = 'none';
+      }, 500);
     });
   }
 
+  componentWillUnmount() {
+    ipcRenderer.removeListener('url', this.onLoadUrl);
+  }
+
   onLoadUrl = (
-    ev, {
+    ev,
+    {
       url,
       projectId,
-  }) => {
+      issueId,
+    },
+  ) => {
     const webview = document.createElement('webview');
     webview.setAttribute('preload', './preload.js');
     webview.style.height = '100%';
     webview.addEventListener('did-finish-load', () => {
-      // webview.openDevTools()
+      if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === true) {
+        webview.openDevTools();
+      }
       webview.executeJavaScript(`
         document.getElementById('page').style.display = 'none';
         var issueForm = JIRA.Forms
-          .createCreateIssueForm({pid: ${projectId}})
+          ${issueId ?
+        `.createEditIssueForm({ issueId: ${issueId} })` :
+        `.createCreateIssueForm({ pid: ${projectId} })`
+          }
           .bind('sessionComplete', function(ev, issues) {
             ipcRenderer.send('issue-created', issues);
             ipcRenderer.send('close-page');
           })
           .asDialog({
-            windowTitle: 'Create Issue',
+            windowTitle: ${issueId ? '"Edit issue"' : '"Create Issue"'}
           });
         issueForm.show();
         var timerId = setInterval(function() {
@@ -55,23 +71,20 @@ class IssueForm extends Component<{}, any> {
               ipcRenderer.send('close-page');
             });
             clearInterval(timerId);
-            ipcRenderer.send('page-fully-loaded');
+            document.getElementById('qf-field-picker-trigger').remove();
             var forRemove = document.getElementsByClassName('aui-blanket');
             forRemove[0].remove();
             var formBody = issueForm.$form.children()[0];
             var jiraDialog = issueForm.$popup[0];
             formBody.style.maxHeight = (parseInt(formBody.style.maxHeight.replace('px', ''), 10) + 120).toString() + 'px';
             jiraDialog.style.marginTop = (parseInt(jiraDialog.style.marginTop.replace('px', ''), 10) - 65).toString() + 'px';
+            ipcRenderer.send('page-fully-loaded');
           }
         }, 500);
       `);
     });
     webview.src = url;
     document.getElementById('forWebview').appendChild(webview);
-  }
-
- componentWillUnMount() {
-    ipcRenderer.removeListener('url', this.onLoadUrl);
   }
 
   render() {
@@ -89,4 +102,3 @@ class IssueForm extends Component<{}, any> {
 }
 
 export default IssueForm;
-

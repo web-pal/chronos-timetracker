@@ -86,7 +86,7 @@ const IssuesHeader: StatelessFunctionalComponent<Props> = ({
           size="medium"
           onClick={() => {
             ipcRenderer.send(
-              'open-create-issue-window',
+              'open-issue-window',
               {
                 projectId: currentProjectId,
                 url: `${protocol}://${host}/projects/${currentProjectKey}/issues`,

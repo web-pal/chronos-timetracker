@@ -9,6 +9,7 @@ import {
 import {
   ipcRenderer,
 } from 'electron';
+import * as R from 'ramda';
 
 import type {
   StatelessFunctionalComponent,
@@ -224,11 +225,12 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
 );
 
 function mapStateToProps(state) {
+  const selectedIssue = getSelectedIssue(state);
   return {
     host: getUiState('host')(state),
     protocol: getUiState('protocol')(state),
-    selectedIssue: getSelectedIssue(state),
     timerRunning: getTimerState('running')(state),
+    selectedIssue,
     issueTransitions: getResourceMappedList(
       'issuesStatuses',
       'issueTransitions',

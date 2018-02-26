@@ -48,7 +48,7 @@ export default merge.smart(baseConfig, {
       path.join(__dirname, 'app/idlePopup.jsx'),
     ],
     issueForm: [
-      // 'react-hot-loader/patch',
+      'react-hot-loader/patch',
       path.join(__dirname, 'app/issueForm.jsx'),
     ],
   },
