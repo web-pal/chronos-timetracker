@@ -21,7 +21,6 @@ let mainWindow;
 let tray;
 let menu;
 let authWindow;
-let authJiraBrowserRequestsCallbackIsSet = false;
 let shouldQuit = process.platform !== 'darwin';
 
 global.appDir = appDir;
@@ -251,30 +250,26 @@ function authJiraBrowserRequests({
   password,
   host,
 }) {
-  // Just in case
-  if (!authJiraBrowserRequestsCallbackIsSet) {
-    authJiraBrowserRequestsCallbackIsSet = true;
-    const filter = {
-      urls: [
-        '*://atlassian.net/*',
-        '*://atlassian.com/*',
-        '*://atlassian.io/*',
-        '*://cloudfront.net/*',
-      ],
-    };
-    if (host) {
-      filter.urls.push(`*://${host}/*`);
-    }
-    // Basic auth for jira links(media in renderedFields)
-    session.defaultSession.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
-      details.requestHeaders['Authorization'] = // eslint-disable-line
-        `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
-      callback({
-        cancel: false,
-        requestHeaders: details.requestHeaders,
-      });
-    });
+  const filter = {
+    urls: [
+      '*://atlassian.net/*',
+      '*://atlassian.com/*',
+      '*://atlassian.io/*',
+      '*://cloudfront.net/*',
+    ],
+  };
+  if (host) {
+    filter.urls.push(`*://${host}/*`);
   }
+  // Basic auth for jira links(media in renderedFields)
+  session.defaultSession.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
+    details.requestHeaders['Authorization'] = // eslint-disable-line
+      `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
+    callback({
+      cancel: false,
+      requestHeaders: details.requestHeaders,
+    });
+  });
 }
 
 ipcMain.on('store-credentials', (event, credentials) => {
@@ -418,7 +413,6 @@ ipcMain.on('open-issue-window', (
       },
     );
   });
-  createIssueWindow.openDevTools();
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === true) {
     createIssueWindow.openDevTools();
   }

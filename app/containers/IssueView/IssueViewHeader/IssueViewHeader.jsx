@@ -164,52 +164,59 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
         >
           Log work
         </Button>
-        <div style={{ width: 10 }} />
-        <DropdownMenu
-          trigger="Workflow"
-          triggerType="button"
-          shouldFlip={false}
-          position="bottom left"
-          shouldFitContainer
+        <div
+          style={{ marginLeft: '10px' }}
         >
-          <DropdownItemGroup>
-            {transitionsIsFetching &&
-              <DropdownItem>
-                <Flex row justifyCenter>
-                  <Spinner />
-                </Flex>
-              </DropdownItem>
-            }
-            {!transitionsIsFetching && issueTransitions.map(t =>
-              <DropdownItem
-                key={t.id}
-                onClick={() => {
-                  dispatch(issuesActions.transitionIssueRequest(
-                    t.id,
-                    selectedIssue.id,
-                  ));
-                }}
-              >
-                {t.name}
-              </DropdownItem>)
-            }
-          </DropdownItemGroup>
-        </DropdownMenu>
-        <div style={{ width: 10 }} />
+          <DropdownMenu
+            trigger="Workflow"
+            triggerType="button"
+            shouldFlip={false}
+            position="bottom left"
+            shouldFitContainer
+          >
+            <DropdownItemGroup>
+              {transitionsIsFetching &&
+                <DropdownItem>
+                  <Flex row justifyCenter>
+                    <Spinner />
+                  </Flex>
+                </DropdownItem>
+              }
+              {!transitionsIsFetching && issueTransitions.map(t =>
+                <DropdownItem
+                  key={t.id}
+                  onClick={() => {
+                    dispatch(issuesActions.transitionIssueRequest(
+                      t.id,
+                      selectedIssue.id,
+                    ));
+                  }}
+                >
+                  {t.name}
+                </DropdownItem>)
+              }
+            </DropdownItemGroup>
+          </DropdownMenu>
+        </div>
         {(selectedIssue.fields.assignee === null ||
           selectedIssue.fields.assignee.key !== selfKey) &&
-          <Button
-            onClick={() => {
-              dispatch(issuesActions.assignIssueRequest(
-                selectedIssue.id,
-              ));
-            }}
+          <div
+            style={{ marginLeft: '10px' }}
           >
-            Assign to me
-          </Button>
+            <Button
+              onClick={() => {
+                dispatch(issuesActions.assignIssueRequest(
+                  selectedIssue.id,
+                ));
+              }}
+            >
+              Assign to me
+            </Button>
+          </div>
         }
-        <div>
-          <div style={{ width: 10 }} />
+        <div
+          style={{ marginLeft: '10px' }}
+        >
           <Button
             isDisabled={!allowEdit}
             onClick={() => {
