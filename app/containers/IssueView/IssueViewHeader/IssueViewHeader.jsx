@@ -9,7 +9,6 @@ import {
 import {
   ipcRenderer,
 } from 'electron';
-import * as R from 'ramda';
 
 import type {
   StatelessFunctionalComponent,
@@ -43,6 +42,7 @@ import {
   getSelectedIssue,
   getSelfKey,
   getResourceMappedList,
+  getResourceMeta,
 } from 'selectors';
 
 import {
@@ -73,6 +73,7 @@ import {
 type Props = {
   selectedIssue: Issue,
   timerRunning: boolean,
+  allowEdit: boolean,
   transitionsIsFetching: boolean,
   issueTransitions: Array<IssueStatus>,
   selfKey: string,
@@ -84,6 +85,7 @@ type Props = {
 const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
   selectedIssue,
   timerRunning,
+  allowEdit,
   transitionsIsFetching,
   issueTransitions,
   selfKey,
@@ -206,19 +208,23 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
             Assign to me
           </Button>
         }
-        <Button
-          onClick={() => {
-            ipcRenderer.send(
-              'open-edit-issue-window',
-              {
-                issueId: selectedIssue.id,
-                url: `${protocol}://${host}/browse/${selectedIssue.key}`,
-              },
-            );
-          }}
-        >
-          Edit
-        </Button>
+        <div>
+          <div style={{ width: 10 }} />
+          <Button
+            isDisabled={!allowEdit}
+            onClick={() => {
+              ipcRenderer.send(
+                'open-issue-window',
+                {
+                  url: `${protocol}://${host}/browse/${selectedIssue.key}`,
+                  issueId: selectedIssue.id,
+                },
+              );
+            }}
+          >
+            Edit
+          </Button>
+        </div>
       </ButtonGroup>
     </Flex>
   </IssueViewHeaderContainer>
@@ -226,11 +232,17 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
 
 function mapStateToProps(state) {
   const selectedIssue = getSelectedIssue(state);
+  let allowEdit = false;
+  if (selectedIssue) {
+    const issueMeta = getResourceMeta('issues', selectedIssue.id)(state);
+    allowEdit = issueMeta.permissions ? issueMeta.permissions.EDIT_ISSUE.havePermission : false;
+  }
   return {
     host: getUiState('host')(state),
     protocol: getUiState('protocol')(state),
     timerRunning: getTimerState('running')(state),
     selectedIssue,
+    allowEdit,
     issueTransitions: getResourceMappedList(
       'issuesStatuses',
       'issueTransitions',

@@ -57,7 +57,10 @@ class IssueForm extends Component<{}, any> {
         `.createCreateIssueForm({ pid: ${projectId} })`
           }
           .bind('sessionComplete', function(ev, issues) {
-            ipcRenderer.send('issue-created', issues);
+            ${issueId ?
+            `ipcRenderer.send("issue-refetch", "${issueId}");` :
+            'ipcRenderer.send("issue-created", issues);'
+            }
             ipcRenderer.send('close-page');
           })
           .asDialog({

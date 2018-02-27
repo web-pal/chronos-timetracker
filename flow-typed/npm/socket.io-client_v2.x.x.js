@@ -1,8 +1,8 @@
-// flow-typed signature: 6a4651587c6acd69738be321bb34d341
-// flow-typed version: f75fc39aee/socket.io-client_v2.x.x/flow_>=v0.34.x
+// flow-typed signature: 1eed102f1f3f03ab47e98615df15dfd3
+// flow-typed version: 51b71b47ea/socket.io-client_v2.x.x/flow_>=v0.34.x
 
 declare module "socket.io-client" {
-  declare type Callback = (...args: mixed[]) => void;
+  declare type Callback = (...args: any[]) => void;
 
   declare type ManagerOptions = $Shape<{
     path: string,
@@ -53,8 +53,8 @@ declare module "socket.io-client" {
     constructor(io: Manager, nsp: string, opts?: SocketOptions): Socket;
     open(): Socket;
     connect(): Socket;
-    send(...args: mixed[]): Socket;
-    emit(event: string, ...args: mixed[]): Socket; // overrides Emitter#emit
+    send(...args: any[]): Socket;
+    emit(event: string, ...args: any[]): Socket; // overrides Emitter#emit
     close(): Socket;
     disconnect(): Socket;
     compress(boolean): Socket;

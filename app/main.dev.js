@@ -383,6 +383,10 @@ ipcMain.on('issue-created', (event, issues) => {
   });
 });
 
+ipcMain.on('issue-refetch', (event, issueId) => {
+  mainWindow.webContents.send('reFetchIssue', issueId);
+});
+
 ipcMain.on('open-issue-window', (
   event,
   {

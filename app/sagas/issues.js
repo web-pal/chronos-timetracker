@@ -26,7 +26,7 @@ import {
   getResourceMap,
   getUiState,
   getCurrentProjectId,
-  getResourceItemBydId,
+  getResourceItemById,
   getResourceMeta,
 } from 'selectors';
 import {
@@ -467,8 +467,8 @@ export function* transitionIssue({
     request: 'updateIssue',
   });
   try {
-    const issue = yield select(getResourceItemBydId('issues', issueId));
-    const transition = yield select(getResourceItemBydId('issuesStatuses', transitionId));
+    const issue = yield select(getResourceItemById('issues', issueId));
+    const transition = yield select(getResourceItemById('issuesStatuses', transitionId));
 
     yield put(issuesA.pending());
     yield fork(notify, {
@@ -524,7 +524,7 @@ export function* getIssuePermissions(issueId: string | number): Generator<*, voi
 export function* issueSelectFlow(issueId: string | number): Generator<*, *, *> {
   yield fork(getIssueTransitions, issueId);
   yield fork(getIssueComments, issueId);
-  // yield fork(getIssuePermissions, issueId);
+  yield fork(getIssuePermissions, issueId);
 }
 
 export function* assignIssue({
@@ -539,7 +539,7 @@ export function* assignIssue({
   try {
     yield put(issuesA.pending());
 
-    const issue = yield select(getResourceItemBydId('issues', issueId));
+    const issue = yield select(getResourceItemById('issues', issueId));
     const userData = yield select(getUserData);
 
     yield call(
@@ -636,7 +636,33 @@ function* onNewIssue(issueKey): Generator<*, *, *> {
       'selectedIssueId',
       issue.id,
     ));
+    yield fork(refetchIssues, false);
     trackMixpanel('New issue was created');
+  } catch (err) {
+    yield call(throwError, err);
+  }
+}
+
+function* reFetchIssue(issueId): Generator<*, *, *> {
+  const actions = createActionCreators('update', {
+    resourceName: 'issues',
+    resources: [issueId],
+  });
+  try {
+    yield put(actions.pending());
+    const prevIssue = yield select(getResourceItemById('issues', issueId));
+    const issue = yield call(Api.fetchIssue, issueId);
+    yield fork(notify, {
+      title: `${issue.key} was updated`,
+    });
+    issue.fields.worklogs = prevIssue.fields.worklogs;
+    yield put(actions.succeeded({
+      resources: [issue],
+    }));
+    yield put(uiActions.setUiState(
+      'selectedIssueId',
+      issue.id,
+    ));
   } catch (err) {
     yield call(throwError, err);
   }
@@ -651,9 +677,23 @@ function getNewIssueChannelListener(channel) {
   };
 }
 
+function getReFetchIssueChannelListener(channel) {
+  return function* listenReFetchIssue() {
+    while (true) {
+      const { payload } = yield take(channel);
+      yield fork(reFetchIssue, payload[0]);
+    }
+  };
+}
+
 export function* createIpcNewIssueListener(): Generator<*, *, *> {
   const newIssueChannel = yield call(createIpcChannel, 'newIssue');
   yield fork(getNewIssueChannelListener(newIssueChannel));
+}
+
+export function* createIpcReFetchIssueListener(): Generator<*, *, *> {
+  const reFetchIssueChannel = yield call(createIpcChannel, 'reFetchIssue');
+  yield fork(getReFetchIssueChannelListener(reFetchIssueChannel));
 }
 
 export function* watchFetchIssuesRequest(): Generator<*, *, *> {
