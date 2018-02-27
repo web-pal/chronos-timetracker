@@ -26,7 +26,8 @@ import {
   getResourceMap,
   getUiState,
   getCurrentProjectId,
-  getResourceItemBydId,
+  getResourceItemById,
+  getResourceMeta,
 } from 'selectors';
 import {
   uiActions,
@@ -214,6 +215,7 @@ export function* fetchIssues({
     request: 'filterIssues',
     list: 'filterIssues',
     startIndex,
+    stopIndex,
     indexedList: true,
     mergeListIds: true,
   });
@@ -388,10 +390,28 @@ export function* refetchIssues(debouncing: boolean): Generator<*, void, *> {
       resourceName: 'issues',
       list: 'filterIssues',
     }));
+    const currentTotalCount = yield select(getResourceMeta(
+      'issues',
+      'filterIssuesTotalCount',
+    ));
+    if (!currentTotalCount) {
+      yield put(resourcesActions.setResourceMeta({
+        resourceName: 'issues',
+        meta: {
+          filterIssuesTotalCount: 10,
+        },
+      }));
+    }
     yield put(resourcesActions.setResourceMeta({
       resourceName: 'issues',
       meta: {
-        filterIssuesTotalCount: 10,
+        refetchFilterIssuesMarker: true,
+      },
+    }));
+    yield put(resourcesActions.setResourceMeta({
+      resourceName: 'issues',
+      meta: {
+        refetchFilterIssuesMarker: true,
       },
     }));
 
@@ -447,8 +467,8 @@ export function* transitionIssue({
     request: 'updateIssue',
   });
   try {
-    const issue = yield select(getResourceItemBydId('issues', issueId));
-    const transition = yield select(getResourceItemBydId('issuesStatuses', transitionId));
+    const issue = yield select(getResourceItemById('issues', issueId));
+    const transition = yield select(getResourceItemById('issuesStatuses', transitionId));
 
     yield put(issuesA.pending());
     yield fork(notify, {
@@ -474,7 +494,6 @@ export function* transitionIssue({
       }],
     }));
     yield fork(getIssueTransitions, issueId);
-    yield fork(refetchIssues, false);
 
     trackMixpanel('Transition of an issue was done');
   } catch (err) {
@@ -485,9 +504,27 @@ export function* transitionIssue({
   }
 }
 
+export function* getIssuePermissions(issueId: string | number): Generator<*, void, *> {
+  try {
+    const {
+      permissions,
+    } = yield call(Api.getPermissions, { issueId });
+    yield put(resourcesActions.setResourceMeta({
+      resourceName: 'issues',
+      resources: [issueId],
+      meta: {
+        permissions,
+      },
+    }));
+  } catch (err) {
+    yield call(throwError, err);
+  }
+}
+
 export function* issueSelectFlow(issueId: string | number): Generator<*, *, *> {
   yield fork(getIssueTransitions, issueId);
   yield fork(getIssueComments, issueId);
+  yield fork(getIssuePermissions, issueId);
 }
 
 export function* assignIssue({
@@ -502,7 +539,7 @@ export function* assignIssue({
   try {
     yield put(issuesA.pending());
 
-    const issue = yield select(getResourceItemBydId('issues', issueId));
+    const issue = yield select(getResourceItemById('issues', issueId));
     const userData = yield select(getUserData);
 
     yield call(
@@ -580,35 +617,71 @@ export function* fetchEpics(): Generator<*, void, *> {
   }
 }
 
+function* onNewIssue(issueKey): Generator<*, *, *> {
+  const actions = createActionCreators('create', {
+    resourceName: 'issues',
+    request: 'createIssue',
+  });
+  try {
+    const issue = yield call(Api.fetchIssueByKey, issueKey);
+    yield put(actions.pending());
+    yield fork(notify, {
+      title: `${issue.key} was created`,
+    });
+    issue.fields.worklogs = [];
+    yield put(actions.succeeded({
+      resources: [issue],
+    }));
+    yield put(uiActions.setUiState(
+      'selectedIssueId',
+      issue.id,
+    ));
+    yield fork(refetchIssues, false);
+    trackMixpanel('New issue was created');
+  } catch (err) {
+    yield call(throwError, err);
+  }
+}
+
+function* reFetchIssue(issueId): Generator<*, *, *> {
+  const actions = createActionCreators('update', {
+    resourceName: 'issues',
+    resources: [issueId],
+  });
+  try {
+    yield put(actions.pending());
+    const prevIssue = yield select(getResourceItemById('issues', issueId));
+    const issue = yield call(Api.fetchIssue, issueId);
+    yield fork(notify, {
+      title: `${issue.key} was updated`,
+    });
+    issue.fields.worklogs = prevIssue.fields.worklogs;
+    yield put(actions.succeeded({
+      resources: [issue],
+    }));
+    yield put(uiActions.setUiState(
+      'selectedIssueId',
+      issue.id,
+    ));
+  } catch (err) {
+    yield call(throwError, err);
+  }
+}
 
 function getNewIssueChannelListener(channel) {
   return function* listenNewIssue() {
     while (true) {
       const { payload } = yield take(channel);
-      const actions = createActionCreators('create', {
-        resourceName: 'issues',
-        request: 'createIssue',
-      });
-      try {
-        const issueKey = payload[0];
-        const issue = yield call(Api.fetchIssueByKey, issueKey);
-        yield put(actions.pending());
-        yield fork(notify, {
-          title: `${issue.key} was created`,
-        });
-        issue.fields.worklogs = [];
-        yield put(actions.succeeded({
-          resources: [issue],
-        }));
-        yield put(uiActions.setUiState(
-          'selectedIssueId',
-          issue.id,
-        ));
-        yield fork(refetchIssues, false);
-        trackMixpanel('New issue was created');
-      } catch (err) {
-        yield call(throwError, err);
-      }
+      yield fork(onNewIssue, payload[0]);
+    }
+  };
+}
+
+function getReFetchIssueChannelListener(channel) {
+  return function* listenReFetchIssue() {
+    while (true) {
+      const { payload } = yield take(channel);
+      yield fork(reFetchIssue, payload[0]);
     }
   };
 }
@@ -616,6 +689,11 @@ function getNewIssueChannelListener(channel) {
 export function* createIpcNewIssueListener(): Generator<*, *, *> {
   const newIssueChannel = yield call(createIpcChannel, 'newIssue');
   yield fork(getNewIssueChannelListener(newIssueChannel));
+}
+
+export function* createIpcReFetchIssueListener(): Generator<*, *, *> {
+  const reFetchIssueChannel = yield call(createIpcChannel, 'reFetchIssue');
+  yield fork(getReFetchIssueChannelListener(reFetchIssueChannel));
 }
 
 export function* watchFetchIssuesRequest(): Generator<*, *, *> {
@@ -637,9 +715,7 @@ export function* watchAssignIssueRequest(): Generator<*, *, *> {
 export function* watchReFetchIssuesRequest(): Generator<*, *, *> {
   let task;
   while (true) {
-    const {
-      debouncing,
-    } = yield take(actionTypes.REFETCH_ISSUES_REQUEST);
+    const { debouncing } = yield take(actionTypes.REFETCH_ISSUES_REQUEST);
     if (task) {
       yield cancel(task);
     }

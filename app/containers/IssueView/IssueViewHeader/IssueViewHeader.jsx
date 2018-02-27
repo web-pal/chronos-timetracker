@@ -6,6 +6,9 @@ import {
 import {
   getStatus as getResourceStatus,
 } from 'redux-resource';
+import {
+  ipcRenderer,
+} from 'electron';
 
 import type {
   StatelessFunctionalComponent,
@@ -34,10 +37,12 @@ import Button, {
 } from '@atlaskit/button';
 import Spinner from '@atlaskit/spinner';
 import {
+  getUiState,
   getTimerState,
   getSelectedIssue,
   getSelfKey,
   getResourceMappedList,
+  getResourceMeta,
 } from 'selectors';
 
 import {
@@ -68,18 +73,24 @@ import {
 type Props = {
   selectedIssue: Issue,
   timerRunning: boolean,
+  allowEdit: boolean,
   transitionsIsFetching: boolean,
   issueTransitions: Array<IssueStatus>,
   selfKey: string,
+  host: string,
+  protocol: string,
   dispatch: Dispatch,
 };
 
 const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
   selectedIssue,
   timerRunning,
+  allowEdit,
   transitionsIsFetching,
   issueTransitions,
   selfKey,
+  host,
+  protocol,
   dispatch,
 }: Props):Node => (
   <IssueViewHeaderContainer>
@@ -197,15 +208,41 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
             Assign to me
           </Button>
         }
+        <div>
+          <div style={{ width: 10 }} />
+          <Button
+            isDisabled={!allowEdit}
+            onClick={() => {
+              ipcRenderer.send(
+                'open-issue-window',
+                {
+                  url: `${protocol}://${host}/browse/${selectedIssue.key}`,
+                  issueId: selectedIssue.id,
+                },
+              );
+            }}
+          >
+            Edit
+          </Button>
+        </div>
       </ButtonGroup>
     </Flex>
   </IssueViewHeaderContainer>
 );
 
 function mapStateToProps(state) {
+  const selectedIssue = getSelectedIssue(state);
+  let allowEdit = false;
+  if (selectedIssue) {
+    const issueMeta = getResourceMeta('issues', selectedIssue.id)(state);
+    allowEdit = issueMeta.permissions ? issueMeta.permissions.EDIT_ISSUE.havePermission : false;
+  }
   return {
-    selectedIssue: getSelectedIssue(state),
+    host: getUiState('host')(state),
+    protocol: getUiState('protocol')(state),
     timerRunning: getTimerState('running')(state),
+    selectedIssue,
+    allowEdit,
     issueTransitions: getResourceMappedList(
       'issuesStatuses',
       'issueTransitions',

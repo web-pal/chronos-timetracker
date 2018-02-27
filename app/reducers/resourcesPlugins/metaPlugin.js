@@ -1,4 +1,7 @@
 import {
+  setResourceMeta,
+} from 'redux-resource';
+import {
   actionTypes,
 } from 'actions';
 
@@ -9,6 +12,16 @@ const metaPlugin = () =>
       return state;
     }
 
+    if (action.resources) {
+      return {
+        ...state,
+        meta: setResourceMeta({
+          resources: action.resources,
+          meta: state.meta,
+          newMeta: action.meta,
+        }),
+      };
+    }
     return {
       ...state,
       meta: {

@@ -1,4 +1,9 @@
-import { app, Menu, shell, BrowserWindow } from 'electron';
+import {
+  app,
+  Menu,
+  shell,
+  BrowserWindow,
+} from 'electron';
 
 
 export default class MenuBuilder {
@@ -53,7 +58,17 @@ export default class MenuBuilder {
         { label: 'Hide Others', accelerator: 'Command+Shift+H', role: 'hideothers' },
         { label: 'Show All', role: 'unhide' },
         { type: 'separator' },
-        { label: 'Quit', accelerator: 'Command+Q', click: () => app.quit() },
+        {
+          label: 'Quit',
+          accelerator: 'Command+Q',
+          click: (menu, win) => {
+            if (win.id !== 1) {
+              win.close();
+            } else {
+              app.quit();
+            }
+          },
+        },
       ],
     };
     const subMenuEdit = {

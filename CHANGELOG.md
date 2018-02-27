@@ -1,3 +1,21 @@
+<a name="2.5.13"></a>
+## [2.5.13](https://github.com/web-pal/chronos-timetracker/compare/v2.5.12...v2.5.13) (2018-02-27)
+
+
+### Bug Fixes
+
+* new issue window didn't closed on windows ([bc50b17](https://github.com/web-pal/chronos-timetracker/commit/bc50b17))
+* **Browsing Issues:** request timeout + infiniteloader improvment ([e1fd51e](https://github.com/web-pal/chronos-timetracker/commit/e1fd51e))
+
+
+### Features
+
+* new issue modal with Jira JS API ([d313feb](https://github.com/web-pal/chronos-timetracker/commit/d313feb))
+* webview for create new issue ([5ad9555](https://github.com/web-pal/chronos-timetracker/commit/5ad9555))
+* **Issue Detail View:** edit issue ([a31c77a](https://github.com/web-pal/chronos-timetracker/commit/a31c77a))
+
+
+
 <a name="2.5.12"></a>
 ## [2.5.12](https://github.com/web-pal/chronos-timetracker/compare/v2.5.11...v2.5.12) (2018-02-22)
 

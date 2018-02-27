@@ -8,5 +8,5 @@ render(
   <div id="root">
     <IdlePopup />
   </div>,
-  document.getElementById('root') || document.createElement('div'),
+  document.getElementById('root'),
 );

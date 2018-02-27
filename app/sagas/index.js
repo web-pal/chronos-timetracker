@@ -42,6 +42,7 @@ export default function* rootSaga(): Generator<*, void, *> {
     fork(issueSagas.watchTransitionIssueRequest),
     fork(issueSagas.watchAssignIssueRequest),
     fork(issueSagas.createIpcNewIssueListener),
+    fork(issueSagas.createIpcReFetchIssueListener),
 
     // issuesComments
     fork(commentsSagas.watchIssueCommentRequest),

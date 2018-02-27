@@ -13,7 +13,6 @@ import {
   session,
 } from 'electron';
 import notifier from 'node-notifier';
-import fs from 'fs';
 import MenuBuilder from './menu';
 
 const appDir = app.getPath('userData');
@@ -39,7 +38,6 @@ global.sharedObj = {
   idleTime: 0,
   idleDetails: {},
 };
-
 
 const menuTemplate = [
   {
@@ -202,7 +200,7 @@ function createWindow(callback) {
 
     mainWindow.on('ready-to-show', () => {
       if (mainWindow) {
-        if (process.NODE_ENV === 'development' || process.env.DEBUG_PROD === true) {
+        if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === true) {
           mainWindow.webContents.openDevTools();
         }
         mainWindow.show();
@@ -379,8 +377,26 @@ ipcMain.on('select-issue', (event, issueKey) => {
   tray.setContextMenu(menu);
 });
 
-ipcMain.on('open-create-issue-window', (event, url) => {
+ipcMain.on('issue-created', (event, issues) => {
+  issues.forEach(({ issueKey }) => {
+    mainWindow.webContents.send('newIssue', issueKey);
+  });
+});
+
+ipcMain.on('issue-refetch', (event, issueId) => {
+  mainWindow.webContents.send('reFetchIssue', issueId);
+});
+
+ipcMain.on('open-issue-window', (
+  event,
+  {
+    url,
+    projectId,
+    issueId,
+  },
+) => {
   let createIssueWindow = new BrowserWindow({
+    backgroundColor: 'white',
     parent: mainWindow,
     modal: true,
     useContentSize: true,
@@ -388,43 +404,40 @@ ipcMain.on('open-create-issue-window', (event, url) => {
     center: true,
     title: 'Chronos',
     webPreferences: {
-      nodeIntegration: false,
       devTools: true,
     },
   });
-  createIssueWindow.loadURL(url);
-  createIssueWindow.once('ready-to-show', () => {
-    if (createIssueWindow) {
-      createIssueWindow.show();
-    }
+  createIssueWindow.loadURL(`file://${__dirname}/issueForm.html`);
+  createIssueWindow.webContents.on('did-finish-load', () => {
+    createIssueWindow.webContents.send(
+      'url',
+      {
+        url,
+        projectId,
+        issueId,
+      },
+    );
   });
-
-  createIssueWindow.webContents.on('dom-ready', () => {
-    createIssueWindow.webContents.executeJavaScript(`
-      var sidebar = document.getElementById('navigation-app');
-      var cancel = document.getElementById('issue-create-cancel');
-      if (sidebar) {
-        sidebar.parentNode.removeChild(sidebar);
-      }
-      if (cancel) {
-        cancel.addEventListener('click', function (event) {
-          window.close();
-        });
-      }
-    `);
-  });
-  createIssueWindow.webContents.on('did-get-redirect-request', (ev, fromUrl, newUrl) => {
-    if (fromUrl.includes('CreateIssueDetails.jspa')) {
-      const issueKey = newUrl.split('/').pop();
-      mainWindow.webContents.send('newIssue', issueKey);
-      createIssueWindow.webContents.executeJavaScript(`
-        window.close();
-      `);
-    }
+  createIssueWindow.openDevTools();
+  if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === true) {
+    createIssueWindow.openDevTools();
+  }
+  createIssueWindow.on('unresponsive', () => {
+    createIssueWindow.destroy();
   });
   createIssueWindow.on('closed', () => {
     createIssueWindow = null;
   }, false);
+  ipcMain.once('page-fully-loaded', () => {
+    if (createIssueWindow) {
+      createIssueWindow.webContents.send('page-fully-loaded');
+    }
+  });
+  ipcMain.once('close-page', () => {
+    if (createIssueWindow) {
+      createIssueWindow.close();
+    }
+  });
 });
 
 ipcMain.on('oauth-response', (event, text) => {
@@ -615,27 +628,6 @@ app.on('activate', () => {
 app.on('ready', async () => {
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === true) {
     await installExtensions();
-  }
-
-  try {
-    fs.accessSync(`${appDir}/screens/`, fs.constants.R_OK | fs.constants.W_OK); // eslint-disable-line
-  } catch (err) {
-    fs.mkdirSync(`${appDir}/screens/`);
-  }
-  try {
-    fs.accessSync(`${appDir}/offline_screens/`, fs.constants.R_OK | fs.constants.W_OK); // eslint-disable-line
-  } catch (err) {
-    fs.mkdirSync(`${appDir}/offline_screens/`);
-  }
-  try {
-    fs.accessSync(`${appDir}/current_screenshots/`, fs.constants.R_OK | fs.constants.W_OK); // eslint-disable-line
-  } catch (err) {
-    fs.mkdirSync(`${appDir}/current_screenshots/`);
-  }
-  try {
-    fs.accessSync(`${appDir}/worklogs/`, fs.constants.R_OK | fs.constants.W_OK) // eslint-disable-line
-  } catch (err) {
-    fs.mkdirSync(`${appDir}/worklogs/`);
   }
 
   tray = new Tray(path.join(__dirname, '/assets/images/icon.png'));

@@ -51,6 +51,7 @@ export default merge.smart(baseConfig, {
     main: ['babel-polyfill', './app/index'],
     screenPopup: ['babel-polyfill', './app/screenPopup'],
     idleTimePopup: ['babel-polyfill', './app/idlePopup'],
+    issueForm: ['babel-polyfill', './app/issueForm'],
   },
 
   output: {

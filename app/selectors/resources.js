@@ -47,7 +47,7 @@ export const getResourceMappedList = (
   return resourceSelectors[`${resourceName}${listName}`];
 };
 
-export const getResourceItemBydId = (
+export const getResourceItemById = (
   resourceName: string,
   id: Id,
 ) =>

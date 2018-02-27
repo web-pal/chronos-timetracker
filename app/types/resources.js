@@ -12,4 +12,5 @@ export type ResourcesAction =
     type: typeof actionTypes.SET_RESOURCES_META,
     meta: any,
     resourceName: string,
+    resources?: Array<string | number>,
   |};

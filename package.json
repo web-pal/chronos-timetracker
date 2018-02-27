@@ -1,6 +1,6 @@
 {
   "name": "Chronos",
-  "version": "2.5.12",
+  "version": "2.5.13",
   "description": "Full functionality time tracking software with direct JIRA integration",
   "scripts": {
     "build": "concurrently \"yarn build-main\" \"yarn build-renderer\"",
@@ -42,6 +42,7 @@
       "app.html",
       "idlePopup.html",
       "screenPopup.html",
+      "issueForm.html",
       "assets/images/icon.png",
       "assets/images/icon-active.png",
       "preload.js",
@@ -156,7 +157,7 @@
     "electron-log": "2.2.14",
     "electron-updater": "2.20.1",
     "font-awesome": "4.7.0",
-    "jira-connector": "github:web-pal/jira-connector#107d89a0879620fb0a709dc5f775f16c84a09116",
+    "jira-connector": "github:web-pal/jira-connector#56c56015371481701b7ae6fc2fd64ddf07a13b78",
     "merge-images": "1.0.7",
     "mixpanel-browser": "2.17.0",
     "moment": "2.20.1",

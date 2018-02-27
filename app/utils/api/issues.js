@@ -47,7 +47,6 @@ export function fetchIssues({
   jql,
   additionalFields = [],
   boardId,
-  timeout = 8000,
 }: {
   startIndex: number,
   stopIndex: number,
@@ -67,7 +66,6 @@ export function fetchIssues({
       ...requiredFields,
       ...additionalFields,
     ],
-    timeout,
     expand: ['renderedFields'],
   });
 }
