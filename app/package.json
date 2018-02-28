@@ -1,7 +1,7 @@
 {
   "name": "Chronos",
   "productName": "Chronos",
-  "version": "publish",
+  "version": "2.5.15",
   "description": "Native app for time-tracking fully integrated with JIRA",
   "main": "./main.prod.js",
   "scripts": {
@@ -17,7 +17,7 @@
     "@paulcbetts/system-idle-time": "github:paulcbetts/node-system-idle-time",
     "electron-log": "2.2.14",
     "electron-updater": "2.20.1",
-    "keytar": "^4.0.5",
+    "keytar": "4.1.0",
     "node-notifier": "^5.1.2"
   },
   "devEngines": {

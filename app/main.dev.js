@@ -382,20 +382,13 @@ ipcMain.on('issue-refetch', (event, issueId) => {
   mainWindow.webContents.send('reFetchIssue', issueId);
 });
 
-ipcMain.on('open-issue-window', (
-  event,
-  {
-    url,
-    projectId,
-    issueId,
-  },
-) => {
-  let createIssueWindow = new BrowserWindow({
+ipcMain.on('load-issue-window', (event, url) => {
+  const createIssueWindow = new BrowserWindow({
     backgroundColor: 'white',
     parent: mainWindow,
+    show: false,
     modal: true,
     useContentSize: true,
-    closable: true,
     center: true,
     title: 'Chronos',
     webPreferences: {
@@ -404,32 +397,29 @@ ipcMain.on('open-issue-window', (
   });
   createIssueWindow.loadURL(`file://${__dirname}/issueForm.html`);
   createIssueWindow.webContents.on('did-finish-load', () => {
-    createIssueWindow.webContents.send(
-      'url',
-      {
-        url,
-        projectId,
-        issueId,
-      },
-    );
+    createIssueWindow.webContents.send('url', url);
   });
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === true) {
-    createIssueWindow.openDevTools();
+    // createIssueWindow.openDevTools();
   }
-  createIssueWindow.on('unresponsive', () => {
-    createIssueWindow.destroy();
+  createIssueWindow.on('close', (cEv) => {
+    cEv.preventDefault();
+    createIssueWindow.hide();
   });
-  createIssueWindow.on('closed', () => {
-    createIssueWindow = null;
-  }, false);
-  ipcMain.once('page-fully-loaded', () => {
+  ipcMain.on('page-fully-loaded', () => {
     if (createIssueWindow) {
       createIssueWindow.webContents.send('page-fully-loaded');
     }
   });
-  ipcMain.once('close-page', () => {
+  ipcMain.on('close-issue-window', () => {
     if (createIssueWindow) {
-      createIssueWindow.close();
+      createIssueWindow.hide();
+    }
+  });
+  ipcMain.on('show-issue-window', (ev, opts) => {
+    if (createIssueWindow) {
+      createIssueWindow.webContents.send('showForm', opts);
+      createIssueWindow.show();
     }
   });
 });

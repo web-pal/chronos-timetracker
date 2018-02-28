@@ -63,7 +63,7 @@ export default class MenuBuilder {
           accelerator: 'Command+Q',
           click: (menu, win) => {
             if (win.id !== 1) {
-              win.close();
+              win.hide();
             } else {
               app.quit();
             }

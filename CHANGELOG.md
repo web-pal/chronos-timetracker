@@ -1,3 +1,19 @@
+<a name="2.5.15"></a>
+## [2.5.15](https://github.com/web-pal/chronos-timetracker/compare/v2.5.14...v2.5.15) (2018-02-28)
+
+
+### Bug Fixes
+
+* **Browsing Issues:** issueForm too slow ([23d2765](https://github.com/web-pal/chronos-timetracker/commit/23d2765))
+* version ([124dd08](https://github.com/web-pal/chronos-timetracker/commit/124dd08))
+
+
+### Features
+
+* flow-typing ([e4a26f3](https://github.com/web-pal/chronos-timetracker/commit/e4a26f3))
+
+
+
 <a name="2.5.14"></a>
 ## [2.5.14](https://github.com/web-pal/chronos-timetracker/compare/v2.5.13...v2.5.14) (2018-02-27)
 
