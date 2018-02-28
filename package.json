@@ -1,6 +1,6 @@
 {
   "name": "Chronos",
-  "version": "publish",
+  "version": "2.5.14",
   "description": "Full functionality time tracking software with direct JIRA integration",
   "scripts": {
     "build": "concurrently \"yarn build-main\" \"yarn build-renderer\"",

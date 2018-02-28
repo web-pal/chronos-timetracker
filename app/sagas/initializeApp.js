@@ -97,6 +97,11 @@ export function* initialConfigureApp({
   host: string,
   protocol: string,
 }): Generator<*, *, *> {
+  ipcRenderer.send(
+    'load-issue-window',
+    `${protocol}://${host}/issues`,
+  );
+
   const userData = yield call(Api.jiraProfile);
 
   yield put(profileActions.fillUserData(userData));
