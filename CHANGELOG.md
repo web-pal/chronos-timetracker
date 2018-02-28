@@ -1,3 +1,13 @@
+<a name="2.5.14"></a>
+## [2.5.14](https://github.com/web-pal/chronos-timetracker/compare/v2.5.13...v2.5.14) (2018-02-27)
+
+
+### Bug Fixes
+
+* devtools opened in production ([f5455b5](https://github.com/web-pal/chronos-timetracker/commit/f5455b5))
+
+
+
 <a name="2.5.13"></a>
 ## [2.5.13](https://github.com/web-pal/chronos-timetracker/compare/v2.5.12...v2.5.13) (2018-02-27)
 
