@@ -77,8 +77,6 @@ type Props = {
   transitionsIsFetching: boolean,
   issueTransitions: Array<IssueStatus>,
   selfKey: string,
-  host: string,
-  protocol: string,
   dispatch: Dispatch,
 };
 
@@ -89,8 +87,6 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
   transitionsIsFetching,
   issueTransitions,
   selfKey,
-  host,
-  protocol,
   dispatch,
 }: Props):Node => (
   <IssueViewHeaderContainer>
@@ -221,9 +217,8 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
             isDisabled={!allowEdit}
             onClick={() => {
               ipcRenderer.send(
-                'open-issue-window',
+                'show-issue-window',
                 {
-                  url: `${protocol}://${host}/browse/${selectedIssue.key}`,
                   issueId: selectedIssue.id,
                 },
               );
