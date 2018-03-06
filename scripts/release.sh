@@ -1,6 +1,6 @@
 #!/bin/bash
 
-releaseType=$1
+releaseType=${1:?USAGE: yarn release <releaseType>. ('major', 'premajor', 'minor', 'preminor', 'patch', 'prepatch', 'prerelease')}
 
 version=$(node ./scripts/bumpVersion.js ${releaseType})
 
