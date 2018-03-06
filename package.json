@@ -1,6 +1,6 @@
 {
   "name": "Chronos",
-  "version": "2.5.16-a",
+  "version": "2.5.17",
   "description": "Full functionality time tracking software with direct JIRA integration",
   "scripts": {
     "build": "concurrently \"yarn build-main\" \"yarn build-renderer\"",
@@ -25,6 +25,7 @@
     "package-linux": "yarn build && build --linux",
     "package-all": "yarn build && build -mwl",
     "commit": "git-cz",
+    "release": "sh ./scripts/release.sh",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -k ./app/package.json"
   },
   "author": {
