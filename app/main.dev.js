@@ -250,26 +250,28 @@ function authJiraBrowserRequests({
   password,
   host,
 }) {
-  const filter = {
-    urls: [
-      '*://atlassian.net/*',
-      '*://atlassian.com/*',
-      '*://atlassian.io/*',
-      '*://cloudfront.net/*',
-    ],
-  };
-  if (host) {
-    filter.urls.push(`*://${host}/*`);
-  }
-  // Basic auth for jira links(media in renderedFields)
-  session.defaultSession.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
-    details.requestHeaders['Authorization'] = // eslint-disable-line
-      `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
-    callback({
-      cancel: false,
-      requestHeaders: details.requestHeaders,
+  if (username && password && host) {
+    const filter = {
+      urls: [
+        '*://atlassian.net/*',
+        '*://atlassian.com/*',
+        '*://atlassian.io/*',
+        '*://cloudfront.net/*',
+      ],
+    };
+    if (host) {
+      filter.urls.push(`*://${host}/*`);
+    }
+    // Basic auth for jira links(media in renderedFields)
+    session.defaultSession.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
+      details.requestHeaders['Authorization'] = // eslint-disable-line
+        `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
+      callback({
+        cancel: false,
+        requestHeaders: details.requestHeaders,
+      });
     });
-  });
+  }
 }
 
 ipcMain.on('store-credentials', (event, credentials) => {
@@ -313,9 +315,17 @@ ipcMain.on('get-credentials', (event, { username, host }) => {
             host,
           });
         },
+      ).catch(
+        (err) => {
+          event.returnValue = { // eslint-disable-line no-param-reassign
+            error: {
+              err,
+              platform: process.platform,
+            },
+          };
+        },
       );
   } catch (err) {
-    console.error(err);
     event.returnValue = { // eslint-disable-line no-param-reassign
       error: {
         err,
@@ -400,7 +410,7 @@ ipcMain.on('load-issue-window', (event, url) => {
     createIssueWindow.webContents.send('url', url);
   });
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === true) {
-    // createIssueWindow.openDevTools();
+    createIssueWindow.openDevTools();
   }
   createIssueWindow.on('close', (cEv) => {
     cEv.preventDefault();

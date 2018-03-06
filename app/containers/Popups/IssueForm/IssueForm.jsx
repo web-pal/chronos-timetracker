@@ -43,7 +43,7 @@ class IssueForm extends Component<{}, any> {
 
     webview.addEventListener('did-finish-load', () => {
       if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === true) {
-        // webview.openDevTools();
+        webview.openDevTools();
       }
     });
 
@@ -96,7 +96,10 @@ class IssueForm extends Component<{}, any> {
             ipcRenderer.send('close-issue-window');
           });
           clearInterval(timerId);
-          document.getElementById('qf-field-picker-trigger').remove();
+          var fieldPicker = document.getElementById('qf-field-picker-trigger');
+          if (fieldPicker) {
+            fieldPicker.remove();
+          }
           var forRemove = document.getElementsByClassName('aui-blanket');
           forRemove[0].remove();
           var formBody = issueForm.$form.children()[0];
