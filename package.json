@@ -161,6 +161,7 @@
     "jira-connector": "github:web-pal/jira-connector#56c56015371481701b7ae6fc2fd64ddf07a13b78",
     "keytar": "^4.1.0",
     "merge-images": "1.0.7",
+    "minimist": "^1.2.0",
     "mixpanel-browser": "2.17.0",
     "moment": "2.20.1",
     "moment-duration-format": "2.2.1",
