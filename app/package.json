@@ -1,7 +1,7 @@
 {
   "name": "Chronos",
   "productName": "Chronos",
-  "version": "2.5.16-a",
+  "version": "2.5.17",
   "description": "Native app for time-tracking fully integrated with JIRA",
   "main": "./main.prod.js",
   "scripts": {

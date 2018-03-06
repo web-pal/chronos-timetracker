@@ -1,3 +1,18 @@
+<a name="2.5.17"></a>
+## [2.5.17](https://github.com/web-pal/chronos-timetracker/compare/v2.5.16-a...v2.5.17) (2018-03-06)
+
+
+### Bug Fixes
+
+* can't add issue after first login ([c144fe0](https://github.com/web-pal/chronos-timetracker/commit/c144fe0))
+
+
+### Features
+
+* add/edit issue improvement ([e264f92](https://github.com/web-pal/chronos-timetracker/commit/e264f92))
+
+
+
 <a name="2.5.16-a"></a>
 ## [2.5.16-a](https://github.com/web-pal/chronos-timetracker/compare/v2.5.15...v2.5.16-a) (2018-02-28)
 

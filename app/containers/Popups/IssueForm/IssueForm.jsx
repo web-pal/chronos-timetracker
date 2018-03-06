@@ -85,27 +85,36 @@ class IssueForm extends Component<{}, any> {
           }
           ipcRenderer.send('close-issue-window');
         })
+        .bind('contentRefreshed', function() {
+          try {
+            setTimeout(function() {
+              var formBody = issueForm.$form.children()[0];
+              var jiraDialog = issueForm.$popup[0];
+              formBody.style.maxHeight = (parseInt(formBody.style.maxHeight.replace('px', ''), 10) + 120).toString() + 'px';
+              jiraDialog.style.marginTop = (parseInt(jiraDialog.style.marginTop.replace('px', ''), 10) - 65).toString() + 'px';
+            }, 200);
+          } catch(err) {
+            console.log(err);
+          }
+        })
         .asDialog({
           windowTitle: ${issueId ? '"Edit issue"' : '"Create Issue"'}
         });
+      issueForm.bind('Dialog.show', function() {
+        issueForm.bind('Dialog.hide', function() {
+          ipcRenderer.send('close-issue-window');
+        });
+      });
       issueForm.show();
       var timerId = setInterval(function() {
         if (issueForm.$buttonContainer) {
-          var cancel = issueForm.$buttonContainer[0].getElementsByClassName('cancel');
-          cancel[0].addEventListener('click', function (event) {
-            ipcRenderer.send('close-issue-window');
-          });
           clearInterval(timerId);
-          var fieldPicker = document.getElementById('qf-field-picker-trigger');
-          if (fieldPicker) {
-            fieldPicker.remove();
+          try {
+            var forRemove = document.getElementsByClassName('aui-blanket');
+            forRemove[0].remove();
+          } catch(err) {
+            console.log(err);
           }
-          var forRemove = document.getElementsByClassName('aui-blanket');
-          forRemove[0].remove();
-          var formBody = issueForm.$form.children()[0];
-          var jiraDialog = issueForm.$popup[0];
-          formBody.style.maxHeight = (parseInt(formBody.style.maxHeight.replace('px', ''), 10) + 120).toString() + 'px';
-          jiraDialog.style.marginTop = (parseInt(jiraDialog.style.marginTop.replace('px', ''), 10) - 65).toString() + 'px';
           ipcRenderer.send('page-fully-loaded');
         }
       }, 500);
