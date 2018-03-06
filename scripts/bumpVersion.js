@@ -35,4 +35,4 @@ try {
   process.exit(1);
 }
 
-console.log('version bumped successfully to', pjson.version);
+console.log('chore: bump version to', pjson.version);
