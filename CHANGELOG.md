@@ -1,3 +1,8 @@
+<a name="2.5.18"></a>
+## [2.5.18](https://github.com/web-pal/chronos-timetracker/compare/v2.5.17...v2.5.18) (2018-03-06)
+
+
+
 <a name="2.5.17"></a>
 ## [2.5.17](https://github.com/web-pal/chronos-timetracker/compare/v2.5.16-a...v2.5.17) (2018-03-06)
 
