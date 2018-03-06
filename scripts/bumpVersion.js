@@ -21,18 +21,20 @@ if (!releaseType || !validTypes.includes(releaseType)) {
 pjson.version = semver.inc(version, releaseType);
 pjson2.version = semver.inc(version, releaseType);
 
-try {
-  fs.writeFileSync(path.resolve(__dirname, '../package.json'), JSON.stringify(pjson, null, 2));
-} catch (e) {
-  console.error('failed to write to', path.resolve(__dirname, '../package.json'));
-  process.exit(1);
+if (argv[3] !== '--dry') {
+  try {
+    fs.writeFileSync(path.resolve(__dirname, '../package.json'), JSON.stringify(pjson, null, 2));
+  } catch (e) {
+    console.error('failed to write to', path.resolve(__dirname, '../package.json'));
+    process.exit(1);
+  }
+
+  try {
+    fs.writeFileSync(path.resolve(__dirname, '../app/package.json'), JSON.stringify(pjson2, null, 2));
+  } catch (e) {
+    console.error('failed to write to', path.resolve(__dirname, '../app/package.json'));
+    process.exit(1);
+  }
 }
 
-try {
-  fs.writeFileSync(path.resolve(__dirname, '../app/package.json'), JSON.stringify(pjson, null, 2));
-} catch (e) {
-  console.error('failed to write to', path.resolve(__dirname, '../app/package.json'));
-  process.exit(1);
-}
-
-console.log('chore: bump version to', pjson.version);
+console.log(pjson.version);
