@@ -87,7 +87,7 @@ export const getRecentIssues = createSelector(
       worklogs.filter(
         w =>
           moment(w.started).isSameOrAfter(moment().subtract(4, 'weeks')) &&
-          w.author.key === selfKey,
+          R.path(['author', 'key'], w) === selfKey
       ).sort(worklogSorter);
     const grouped =
       R.groupBy(
@@ -97,6 +97,7 @@ export const getRecentIssues = createSelector(
     return grouped;
   },
 );
+
 
 export const getEditWorklog = createSelector(
   [
@@ -232,7 +233,7 @@ export const getSelectedIssueReport = createSelector(
     const estimate = remaining - timespent < 0 ? 0 : remaining - timespent;
 
     const loggedTotal = worklogs.reduce((v, w) => v + w.timeSpentSeconds, 0);
-    const yourWorklogs = worklogs.filter(w => w.author.key === selfKey);
+    const yourWorklogs = worklogs.filter(w => R.path(['author', 'key'], w) === selfKey);
     const youLoggedTotal = yourWorklogs.reduce((v, w) => v + w.timeSpentSeconds, 0);
     const yourWorklogsToday = yourWorklogs.filter(w => moment(w.updated).isSameOrAfter(moment().startOf('day')));
     const youLoggedToday = yourWorklogsToday.reduce((v, w) => v + w.timeSpentSeconds, 0);
