@@ -142,7 +142,7 @@ function buildJQLQuery({
   const jql = [
     (projectId && `project = ${projectId}`),
     (sprintId && `sprint = ${sprintId}`),
-    (worklogAuthor && `worklogAuthor = "${worklogAuthor}"`),
+    (worklogAuthor && `worklogAuthor = ${worklogAuthor}`),
     (type.length && `issueType in (${type.join(',')})`),
     (status.length && `status in (${status.join(',')})`),
     (assignee.length && mapAssignee(assignee[0])),
@@ -332,11 +332,10 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
 
     const epicLinkFieldId: string | null = yield select(getFieldIdByName('Epic Link'));
 
-    const profile = yield select(getUserData);
     const jql: string = buildJQLQuery({
       projectId: issuesSourceType === 'project' ? issuesSourceId : null,
       sprintId: issuesSourceType === 'scrum' ? issuesSprintId : null,
-      worklogAuthor: profile.key,
+      worklogAuthor: 'currentUser()',
       additionalJQL: 'timespent > 0 AND worklogDate >= "-4w"',
     });
 
@@ -359,6 +358,14 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
         total: 0,
         issues: [],
       };
+    if (response.warningMessages) {
+      Raven.captureMessage('Issues warningMessages!', {
+        level: 'error',
+        extra: {
+          response,
+        },
+      });
+    }
     yield call(
       infoLog,
       'fetchRecentIssues response',

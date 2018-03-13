@@ -1,3 +1,13 @@
+<a name="2.5.20"></a>
+## [2.5.20](https://github.com/web-pal/chronos-timetracker/compare/v2.5.19...v2.5.20) (2018-03-07)
+
+
+### Bug Fixes
+
+* **Browsing Issues:** jql for currentUser() ([dd55198](https://github.com/web-pal/chronos-timetracker/commit/dd55198)), closes [#88](https://github.com/web-pal/chronos-timetracker/issues/88)
+
+
+
 <a name="2.5.19"></a>
 ## [2.5.19](https://github.com/web-pal/chronos-timetracker/compare/v2.5.18...v2.5.19) (2018-03-06)
 
