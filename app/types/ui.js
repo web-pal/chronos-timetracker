@@ -56,6 +56,7 @@ export type RemainingEstimate = 'auto' | 'new' | 'manual' | 'leave';
 export type UiState = {|
   initializeInProcess: boolean,
   authorized: boolean,
+  accounts: Array<{ host: string, username: string }>,
   authFormStep: number,
   loginError: null | string,
   loginRequestInProcess: boolean,
@@ -101,6 +102,7 @@ export type UiState = {|
     confirmDeleteWorklog: boolean,
     settings: boolean,
     worklog: boolean,
+    accounts: boolean,
   |},
 
   flags: Array<any>,
