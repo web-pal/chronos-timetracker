@@ -29,9 +29,10 @@ const FeatureHighlight = ({
   ? (
     <Tooltip
       content={description}
-      onClick={() => dispatch(uiActions.acknowlegdeFeature({ featureId: 'multiAccounts' }))}
     >
-      <FeatureContainer>
+      <FeatureContainer
+        onClick={() => dispatch(uiActions.acknowlegdeFeature({ featureId: 'multiAccounts' }))}
+      >
         {children}
         <Lozenge appearance="new">New</Lozenge>
       </FeatureContainer>

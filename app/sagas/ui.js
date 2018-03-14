@@ -7,7 +7,6 @@ import {
   takeEvery,
   put,
   call,
-  take,
   fork,
   select,
 } from 'redux-saga/effects';
@@ -223,12 +222,13 @@ export function* watchSetIssuesFilter(): Generator<*, *, *> {
 }
 
 export function* newFeaturesFlow(): Generator<*, *, *> {
-  while (true) {
-    const { payload: { featureId } } = yield take(actionTypes.ACKNOWLEDGE_FEATURE);
+  function* flow({ payload: { featureId } }): Generator<*, void, *> {
     let acknowlegdedFeatures = yield call(getFromStorage, 'acknowlegdedFeatures');
     if (!acknowlegdedFeatures) acknowlegdedFeatures = [];
     acknowlegdedFeatures.push(featureId);
     yield call(setToStorage, 'acknowlegdedFeatures', acknowlegdedFeatures);
+    yield call(delay, 10000);
     yield put(uiActions.setUiState('acknowlegdedFeatures', acknowlegdedFeatures));
   }
+  yield takeLatest(actionTypes.ACKNOWLEDGE_FEATURE, flow);
 }
