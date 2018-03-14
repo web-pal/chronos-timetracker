@@ -254,7 +254,7 @@
     styled-components "^1.4.6"
     uuid "^3.1.0"
 
-"@atlaskit/layer-manager@^2.6.0", "@atlaskit/layer-manager@^2.7.1", "@atlaskit/layer-manager@^2.7.2", "@atlaskit/layer-manager@^2.7.4":
+"@atlaskit/layer-manager@^2.7.1", "@atlaskit/layer-manager@^2.7.2", "@atlaskit/layer-manager@^2.7.4":
   version "2.7.4"
   resolved "https://registry.yarnpkg.com/@atlaskit/layer-manager/-/layer-manager-2.7.4.tgz#ad96a1335d7b77db7af8fe4b30ae8171c4febf83"
   dependencies:
@@ -344,17 +344,7 @@
     prop-types "^15.5.10"
     styled-components "^1.4.6"
 
-"@atlaskit/tooltip@8.2.0":
-  version "8.2.0"
-  resolved "https://registry.yarnpkg.com/@atlaskit/tooltip/-/tooltip-8.2.0.tgz#6484f2943d2856903bd4ec1519a459f1dd569d35"
-  dependencies:
-    "@atlaskit/layer-manager" "^2.6.0"
-    "@atlaskit/theme" "^2.3.1"
-    react-deprecate "^0.1.0"
-    react-transition-group "^2.2.1"
-    styled-components "^1.4.6"
-
-"@atlaskit/tooltip@^8.3.2":
+"@atlaskit/tooltip@8.3.2", "@atlaskit/tooltip@^8.3.2":
   version "8.3.2"
   resolved "https://registry.yarnpkg.com/@atlaskit/tooltip/-/tooltip-8.3.2.tgz#ed166fb9f46680e672f2404b310bcf5fd344d8f6"
   dependencies:

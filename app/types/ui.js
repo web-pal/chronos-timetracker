@@ -62,6 +62,7 @@ export type UiState = {|
   initializeInProcess: boolean,
   authorized: boolean,
   accounts: Array<{ host: string, username: string }>,
+  acknowlegdedFeatures: Array<string>,
   authFormStep: number,
   loginError: null | string,
   loginRequestInProcess: boolean,

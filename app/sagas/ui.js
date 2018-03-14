@@ -229,5 +229,6 @@ export function* newFeaturesFlow(): Generator<*, *, *> {
     if (!acknowlegdedFeatures) acknowlegdedFeatures = [];
     acknowlegdedFeatures.push(featureId);
     yield call(setToStorage, 'acknowlegdedFeatures', acknowlegdedFeatures);
+    yield put(uiActions.setUiState('acknowlegdedFeatures', acknowlegdedFeatures));
   }
 }

@@ -17,4 +17,4 @@ export TextField from './TextField';
 export SingleSelect from './SingleSelect';
 export * as ReduxFormComponents from './ReduxFormComponents';
 export RemainingEstimatePicker from './RemainingEstimatePicker';
-export FeatureHighlight from './FeatureHightlight';
+export FeatureHighlight from './FeatureHighlight';

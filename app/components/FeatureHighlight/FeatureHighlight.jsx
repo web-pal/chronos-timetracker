@@ -9,31 +9,32 @@ import Lozenge from '@atlaskit/lozenge';
 import { getUiState } from 'selectors';
 import { uiActions } from 'actions';
 
+import { FeatureContainer } from './styled';
+
 type Props = {
   dispatch: Dispatch,
   children: Node,
   description: string,
-  featuresAcknowleged: Array<string>,
+  acknowlegdedFeatures: Array<string>,
   id: string,
 };
 
 const FeatureHighlight = ({
   dispatch,
-  featuresAcknowleged,
+  acknowlegdedFeatures,
   description,
   children,
   id,
-}: Props) => (!featuresAcknowleged.includes(id)
+}: Props) => (!acknowlegdedFeatures.includes(id)
   ? (
     <Tooltip
       content={description}
-      onMouseOut={() => dispatch(uiActions.acknowlegdeFeature({ featureId: id }))}
-      onBlur={() => dispatch(uiActions.acknowlegdeFeature({ featureId: id }))}
+      onClick={() => dispatch(uiActions.acknowlegdeFeature({ featureId: 'multiAccounts' }))}
     >
-      {children}
-      <Lozenge appearance="new">
-        New
-      </Lozenge>
+      <FeatureContainer>
+        {children}
+        <Lozenge appearance="new">New</Lozenge>
+      </FeatureContainer>
     </Tooltip>
   ) : (
     children
@@ -41,7 +42,7 @@ const FeatureHighlight = ({
 
 const connector = connect(
   state => ({
-    featuresAcknowleged: getUiState('featuresAcknowleged')(state),
+    acknowlegdedFeatures: getUiState('acknowlegdedFeatures')(state),
   }),
   dispatch => ({ dispatch }),
 );

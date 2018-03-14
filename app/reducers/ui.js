@@ -15,6 +15,7 @@ const initialState: UiState = {
   initializeInProcess: false,
   authorized: false,
   accounts: [],
+  acknowlegdedFeatures: [],
   authFormStep: 1,
   loginError: null,
   loginRequestInProcess: false,
