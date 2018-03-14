@@ -7,6 +7,7 @@ import {
   takeEvery,
   put,
   call,
+  take,
   fork,
   select,
 } from 'redux-saga/effects';
@@ -31,6 +32,7 @@ import {
 
 import {
   setToStorage,
+  getFromStorage,
 } from './storage';
 import {
   issueSelectFlow,
@@ -218,4 +220,14 @@ export function* watchSetIssuesFilter(): Generator<*, *, *> {
     actionTypes.SET_ISSUES_FILTER,
     onIssuesFilterChange,
   );
+}
+
+export function* newFeaturesFlow(): Generator<*, *, *> {
+  while (true) {
+    const { payload: { featureId } } = yield take(actionTypes.ACKNOWLEDGE_FEATURE);
+    let acknowlegdedFeatures = yield call(getFromStorage, 'acknowlegdedFeatures');
+    if (!acknowlegdedFeatures) acknowlegdedFeatures = [];
+    acknowlegdedFeatures.push(featureId);
+    yield call(setToStorage, 'acknowlegdedFeatures', acknowlegdedFeatures);
+  }
 }

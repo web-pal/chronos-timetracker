@@ -49,6 +49,11 @@ export type UiAction =
   |} |
   {|
     type: typeof actionTypes.INSTALL_UPDATE_REQUEST,
+  |} | {|
+    type: typeof actionTypes.ACKNOWLEDGE_FEATURE,
+    payload: {
+      featureId: string,
+    },
   |};
 
 export type RemainingEstimate = 'auto' | 'new' | 'manual' | 'leave';
