@@ -45,6 +45,7 @@ import {
   refreshWhite,
 } from 'data/svg';
 import config from 'config';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import EditorAddIcon from '@atlaskit/icon/glyph/editor/add';
 
 import { transformValidHost } from '../../sagas/auth';
@@ -103,7 +104,7 @@ const Header: StatelessFunctionalComponent<Props> = ({
           position="right top"
           trigger={
             <ProfileTeam>
-              {host}
+              {host} <ChevronDownIcon />
             </ProfileTeam>
           }
         >
