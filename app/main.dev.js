@@ -14,10 +14,12 @@ import {
 } from 'electron';
 import notifier from 'node-notifier';
 import MenuBuilder from './menu';
+import config from './config';
 
 const appDir = app.getPath('userData');
 
 let mainWindow;
+let issueWindow;
 let tray;
 let menu;
 let authWindow;
@@ -219,6 +221,9 @@ function createWindow(callback) {
           }
         } else if (process.platform === 'darwin') {
           checkRunning(e);
+          if (shouldQuit) {
+            issueWindow.destroy();
+          }
         }
       }
     });
@@ -393,45 +398,52 @@ ipcMain.on('issue-refetch', (event, issueId) => {
 });
 
 ipcMain.on('load-issue-window', (event, url) => {
-  const createIssueWindow = new BrowserWindow({
-    backgroundColor: 'white',
-    parent: mainWindow,
-    show: false,
-    modal: true,
-    useContentSize: true,
-    center: true,
-    title: 'Chronos',
-    webPreferences: {
-      devTools: true,
-    },
-  });
-  createIssueWindow.loadURL(`file://${__dirname}/issueForm.html`);
-  createIssueWindow.webContents.on('did-finish-load', () => {
-    createIssueWindow.webContents.send('url', url);
-  });
-  if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === true) {
-    createIssueWindow.openDevTools();
+  if (!issueWindow) {
+    issueWindow = new BrowserWindow({
+      backgroundColor: 'white',
+      parent: mainWindow,
+      show: false,
+      modal: true,
+      useContentSize: true,
+      center: true,
+      title: 'Chronos',
+      webPreferences: {
+        devTools: true,
+      },
+    });
+    issueWindow.loadURL(`file://${__dirname}/issueForm.html`);
+    issueWindow.webContents.on('did-finish-load', () => {
+      issueWindow.webContents.send('url', url);
+    });
+    if (
+      config.issueWindowDevTools ||
+      process.env.DEBUG_PROD === true
+    ) {
+      issueWindow.openDevTools();
+    }
+    issueWindow.on('close', (cEv) => {
+      cEv.preventDefault();
+      issueWindow.hide();
+    });
+    ipcMain.on('page-fully-loaded', () => {
+      if (issueWindow) {
+        issueWindow.webContents.send('page-fully-loaded');
+      }
+    });
+    ipcMain.on('close-issue-window', () => {
+      if (issueWindow) {
+        issueWindow.hide();
+      }
+    });
+    ipcMain.on('show-issue-window', (ev, opts) => {
+      if (issueWindow) {
+        issueWindow.webContents.send('showForm', opts);
+        issueWindow.show();
+      }
+    });
+  } else {
+    issueWindow.webContents.send('url', url);
   }
-  createIssueWindow.on('close', (cEv) => {
-    cEv.preventDefault();
-    createIssueWindow.hide();
-  });
-  ipcMain.on('page-fully-loaded', () => {
-    if (createIssueWindow) {
-      createIssueWindow.webContents.send('page-fully-loaded');
-    }
-  });
-  ipcMain.on('close-issue-window', () => {
-    if (createIssueWindow) {
-      createIssueWindow.hide();
-    }
-  });
-  ipcMain.on('show-issue-window', (ev, opts) => {
-    if (createIssueWindow) {
-      createIssueWindow.webContents.send('showForm', opts);
-      createIssueWindow.show();
-    }
-  });
 });
 
 ipcMain.on('oauth-response', (event, text) => {
