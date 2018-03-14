@@ -136,6 +136,7 @@
     "webpack-sentry-plugin": "1.14.1"
   },
   "dependencies": {
+    "@atlaskit/badge": "6.2.2",
     "@atlaskit/button": "6.3.1",
     "@atlaskit/calendar": "3.1.0",
     "@atlaskit/checkbox": "1.2.1",
@@ -148,9 +149,11 @@
     "@atlaskit/inline-dialog": "5.2.0",
     "@atlaskit/inline-edit": "4.5.14",
     "@atlaskit/input": "1.6.3",
+    "@atlaskit/lozenge": "3.5.2",
     "@atlaskit/modal-dialog": "3.3.10",
     "@atlaskit/single-select": "3.2.2",
     "@atlaskit/spinner": "4.1.2",
+    "@atlaskit/tag": "3.1.3",
     "@atlaskit/tooltip": "8.2.0",
     "bufferutil": "3.0.3",
     "calculate-size": "1.1.1",
