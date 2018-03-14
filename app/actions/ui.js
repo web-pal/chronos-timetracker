@@ -78,3 +78,9 @@ export const issueWorklogsScrollToIndexRequest = (
   issueId,
 });
 
+export const acknowlegdeFeature = (payload: {
+  featureId: string,
+}): UiAction => ({
+  type: actionTypes.ACKNOWLEDGE_FEATURE,
+  payload,
+});

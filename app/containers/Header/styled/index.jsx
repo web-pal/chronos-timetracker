@@ -25,8 +25,11 @@ export const ProfileName = styled.span`
   font-size: 16px;
 `;
 
-export const ProfileTeam = styled.span`
-  // cursor: pointer;
+export const ProfileTeam = styled.div`
+  display: flex;
+  line-height: 24px;
+  aling-items: flex-center;
+  cursor: pointer;
 `;
 
 export const DropdownSeparator = styled.div`

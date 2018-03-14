@@ -31,6 +31,7 @@ import {
 
 import {
   setToStorage,
+  getFromStorage,
 } from './storage';
 import {
   issueSelectFlow,
@@ -218,4 +219,16 @@ export function* watchSetIssuesFilter(): Generator<*, *, *> {
     actionTypes.SET_ISSUES_FILTER,
     onIssuesFilterChange,
   );
+}
+
+export function* newFeaturesFlow(): Generator<*, *, *> {
+  function* flow({ payload: { featureId } }): Generator<*, void, *> {
+    let acknowlegdedFeatures = yield call(getFromStorage, 'acknowlegdedFeatures');
+    if (!acknowlegdedFeatures) acknowlegdedFeatures = [];
+    acknowlegdedFeatures.push(featureId);
+    yield call(setToStorage, 'acknowlegdedFeatures', acknowlegdedFeatures);
+    yield call(delay, 10000);
+    yield put(uiActions.setUiState('acknowlegdedFeatures', acknowlegdedFeatures));
+  }
+  yield takeLatest(actionTypes.ACKNOWLEDGE_FEATURE, flow);
 }
