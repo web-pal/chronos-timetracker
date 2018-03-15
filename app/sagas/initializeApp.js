@@ -109,6 +109,10 @@ export function* initialConfigureApp({
   yield call(initializeMixpanel);
   yield call(identifyInSentryAndMixpanel, host, userData);
 
+  let accounts = yield call(getFromStorage, 'accounts');
+  if (!accounts) accounts = [];
+  yield put(uiActions.setUiState('accounts', accounts));
+
   const issuesSourceId: Id | null = yield call(getFromStorage, 'issuesSourceId');
   const issuesSourceType = yield call(getFromStorage, 'issuesSourceType');
   const issuesSprintId: Id | null = yield call(getFromStorage, 'issuesSprintId');
@@ -153,6 +157,7 @@ export function* initialConfigureApp({
       refetchFilterIssuesMarker: false,
     },
   }));
+  yield put(uiActions.setUiState('initializeInProcess', false));
   /*
   const isPaidChronosUser = yield select(getIsPaidUser);
 
@@ -166,7 +171,7 @@ export function* initialConfigureApp({
 function* getInitializeAppData(): Generator<*, *, *> {
   const basicAuthCredentials = yield call(
     getFromStorage,
-    'jira_credentials',
+    'last_used_account',
   );
   const basicAuthDataExist =
     basicAuthCredentials !== null &&
@@ -257,6 +262,11 @@ export function* initializeApp(): Generator<*, *, *> {
       authType,
       authData,
     } = yield call(getInitializeAppData);
+
+    let accounts = yield call(getFromStorage, 'accounts');
+    if (!accounts) accounts = [];
+    yield put(uiActions.setUiState('accounts', accounts));
+
     if (tryLogin) {
       const loginFunc =
         authType === 'OAuth' ? jira.oauth : jira.basicAuth;

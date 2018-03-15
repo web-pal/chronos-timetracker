@@ -17,11 +17,13 @@ import type {
 import type {
   Connector,
 } from 'react-redux';
+import Tag from '@atlaskit/tag';
 import type {
   User,
   Dispatch,
 } from 'types';
 
+import Lozenge from '@atlaskit/lozenge';
 
 import DropdownMenu, {
   DropdownItemGroup,
@@ -43,6 +45,10 @@ import {
   refreshWhite,
 } from 'data/svg';
 import config from 'config';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import EditorAddIcon from '@atlaskit/icon/glyph/editor/add';
+
+import { transformValidHost } from '../../sagas/auth';
 
 import {
   HeaderContainer,
@@ -63,6 +69,10 @@ import {
 
 type Props = {
   userData: User,
+  accounts: Array<{|
+    host: string,
+    username: string,
+  |}>,
   host: string,
   updateAvailable: string,
   updateFetching: boolean,
@@ -72,6 +82,7 @@ type Props = {
 
 const Header: StatelessFunctionalComponent<Props> = ({
   userData,
+  accounts,
   host,
   updateAvailable,
   updateFetching,
@@ -88,9 +99,40 @@ const Header: StatelessFunctionalComponent<Props> = ({
         <ProfileName>
           {userData.displayName}
         </ProfileName>
-        <ProfileTeam>
-          {host}
-        </ProfileTeam>
+        <DropdownMenu
+          triggerType="default"
+          position="right top"
+          trigger={
+            <ProfileTeam>
+              {host} <ChevronDownIcon />
+            </ProfileTeam>
+          }
+        >
+          {accounts.map((ac) => {
+            const isActive = transformValidHost(ac.host).host === host &&
+              (ac.username === userData.emailAddress ||
+                ac.username === userData.key ||
+                ac.username === userData.name);
+            return (
+              <DropdownItem
+                key={`${ac.host}:${ac.username}`}
+                onClick={() => dispatch(authActions.switchAccount(ac))}
+                isDisabled={isActive}
+                elemAfter={isActive && <Lozenge appearance="success">Active</Lozenge>}
+              >
+                <Tag text={ac.host} color="teal" />
+                {ac.username}
+              </DropdownItem>
+            );
+          })}
+          <DropdownItem
+            onClick={() => dispatch(authActions.logoutRequest({ dontForget: true }))}
+          >
+            <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+              <EditorAddIcon /> Add account
+            </span>
+          </DropdownItem>
+        </DropdownMenu>
       </ProfileInfo>
     </ProfileContainer>
 
@@ -168,6 +210,7 @@ function mapStateToProps(state) {
   return {
     userData: getUserData(state),
     host: getUiState('host')(state),
+    accounts: getUiState('accounts')(state),
     updateAvailable: getUiState('updateAvailable')(state),
     updateFetching: getUiState('updateFetching')(state),
     issuesFetching: getResourceStatus(
