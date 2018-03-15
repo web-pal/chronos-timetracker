@@ -286,7 +286,10 @@ export function* fetchIssues({
       resolve();
     }
   } catch (err) {
-    if (err.code === 'ETIMEDOUT' && !tryCount) {
+    if (
+      ['ETIMEDOUT', 'ECONNREFUSED', 'ESOCKETTIMEDOUT'].includes(err.code) &&
+      !tryCount
+    ) {
       yield fork(
         fetchIssues,
         {
