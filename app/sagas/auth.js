@@ -13,6 +13,7 @@ import {
 import Raven from 'raven-js';
 
 import * as Api from 'api';
+import * as R from 'ramda';
 
 import {
   actionTypes,
@@ -115,7 +116,7 @@ function* saveAccount(payload: { host: string, username: string }): Generator<*,
   const { host, username } = payload;
   let accounts = yield call(getFromStorage, 'accounts');
   if (!accounts) accounts = [];
-  if (!accounts.find(ac => ac.host === host && ac.username === username)) {
+  if (!R.find(R.whereEq({ host, username }), accounts)) {
     accounts.push(payload);
     yield call(setToStorage, 'accounts', accounts);
   }
@@ -125,9 +126,9 @@ function* deleteAccount(payload: { host: string, username: string }): Generator<
   const { host, username } = payload;
   let accounts = yield call(getFromStorage, 'accounts');
   if (!accounts) accounts = [];
-  const index = accounts.indexOf(ac => ac.host === host && ac.username === username);
+  const index = R.findIndex(R.whereEq({ host, username }), accounts);
   if (index !== -1) {
-    accounts = accounts.splice(index, 1);
+    accounts = R.without([{ host, username }], accounts);
     yield call(setToStorage, 'accounts', accounts);
   }
 }
