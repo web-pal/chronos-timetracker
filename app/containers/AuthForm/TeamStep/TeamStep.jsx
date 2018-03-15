@@ -29,6 +29,7 @@ import {
 
 type Props = {
   isActiveStep: boolean,
+  accounts: Array<{| host: string, username: string |}>,
   loginError: string,
   dispatch: Function,
   onContinue: () => void,
@@ -57,6 +58,7 @@ class TeamStep extends Component<Props> {
       loginError,
       onContinue,
       dispatch,
+      accounts,
     } = this.props;
     return (
       <ContentInner
@@ -95,9 +97,11 @@ class TeamStep extends Component<Props> {
         <PrimaryButton onClick={onContinue}>
           Continue
         </PrimaryButton>
-        <DefaultButton onClick={() => dispatch(uiActions.setUiState('authFormStep', 0))}>
-          Login to existing account
-        </DefaultButton>
+        {accounts.length > 0 &&
+          <DefaultButton onClick={() => dispatch(uiActions.setUiState('authFormStep', 0))}>
+            Login to existing account
+          </DefaultButton>
+        }
       </ContentInner>
     );
   }

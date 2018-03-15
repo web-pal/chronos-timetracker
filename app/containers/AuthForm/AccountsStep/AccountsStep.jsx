@@ -41,7 +41,7 @@ const AccountsStep = ({
       }
     }}
     isActiveStep={isActiveStep}
-    step={3}
+    step={0}
   >
     <div>
       {accounts.map(ac => (

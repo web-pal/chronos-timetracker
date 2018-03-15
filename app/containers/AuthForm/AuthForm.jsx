@@ -56,6 +56,7 @@ type Props = {
   loginRequestInProcess: boolean,
   loginError: string,
   isPaidUser: boolean,
+  accounts: Array<{| host: string, username: string |}>,
   host: string | null,
   step: number,
   dispatch: Dispatch,
@@ -94,6 +95,7 @@ const AuthForm: StatelessFunctionalComponent<Props> = ({
         }
         <TeamStep
           isActiveStep={step === 1}
+          accounts={accounts}
           onContinue={() => {
             dispatch(
               uiActions.setUiState('authFormStep', 2),
