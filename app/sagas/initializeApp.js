@@ -262,6 +262,11 @@ export function* initializeApp(): Generator<*, *, *> {
       authType,
       authData,
     } = yield call(getInitializeAppData);
+
+    let accounts = yield call(getFromStorage, 'accounts');
+    if (!accounts) accounts = [];
+    yield put(uiActions.setUiState('accounts', accounts));
+
     if (tryLogin) {
       const loginFunc =
         authType === 'OAuth' ? jira.oauth : jira.basicAuth;

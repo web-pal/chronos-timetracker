@@ -42,6 +42,7 @@ import {
 
 import EmailStep from './EmailStep';
 import TeamStep from './TeamStep';
+import AccountsStep from './AccountsStep';
 
 import {
   Hint,
@@ -64,6 +65,7 @@ const AuthForm: StatelessFunctionalComponent<Props> = ({
   loginRequestInProcess,
   loginError,
   isPaidUser,
+  accounts,
   host,
   step,
   handleSubmit,
@@ -76,6 +78,20 @@ const AuthForm: StatelessFunctionalComponent<Props> = ({
         Log in to your account
       </LoginInfo>
       <ContentOuter>
+        {accounts.length > 0 &&
+          <AccountsStep
+            isActiveStep={step === 0}
+            dispatch={dispatch}
+            accounts={accounts}
+            onContinue={handleSubmit((data) => {
+              dispatch(authActions.loginRequest(data));
+            })}
+            loginError={loginError}
+            onBack={() => {
+              dispatch(uiActions.setUiState('authFormStep', 1));
+            }}
+          />
+        }
         <TeamStep
           isActiveStep={step === 1}
           onContinue={() => {
@@ -83,6 +99,7 @@ const AuthForm: StatelessFunctionalComponent<Props> = ({
               uiActions.setUiState('authFormStep', 2),
             );
           }}
+          dispatch={dispatch}
           loginError={loginError}
         />
         <EmailStep
@@ -114,6 +131,7 @@ function mapStateToProps(state) {
   return {
     host: selector(state, 'host'),
     step: getUiState('authFormStep')(state),
+    accounts: getUiState('accounts')(state),
     loginError: getUiState('loginError')(state),
     loginRequestInProcess: getUiState('loginRequestInProcess')(state),
     // Temporary block OAuth

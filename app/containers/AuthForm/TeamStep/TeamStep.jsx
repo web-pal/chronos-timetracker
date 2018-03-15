@@ -8,11 +8,15 @@ import {
   ReduxFormComponents,
 } from 'components';
 import {
+  uiActions,
+} from 'actions';
+import {
   peopleBlue,
 } from 'data/svg';
 import {
   ContentInner,
   PrimaryButton,
+  DefaultButton,
   Form,
   Lock,
   ContentIconContainer,
@@ -26,6 +30,7 @@ import {
 type Props = {
   isActiveStep: boolean,
   loginError: string,
+  dispatch: Function,
   onContinue: () => void,
 }
 
@@ -51,6 +56,7 @@ class TeamStep extends Component<Props> {
       isActiveStep,
       loginError,
       onContinue,
+      dispatch,
     } = this.props;
     return (
       <ContentInner
@@ -89,6 +95,9 @@ class TeamStep extends Component<Props> {
         <PrimaryButton onClick={onContinue}>
           Continue
         </PrimaryButton>
+        <DefaultButton onClick={() => dispatch(uiActions.setUiState('authFormStep', 0))}>
+          Login to existing account
+        </DefaultButton>
       </ContentInner>
     );
   }
