@@ -1,5 +1,5 @@
-// flow-typed signature: 0bfb497b3c0b55eb42ce36e313be23a2
-// flow-typed version: 973a250339/ramda_v0.x.x/flow_>=v0.62.x
+// flow-typed signature: faac0f4abd84249ad0a0cb24383e72d3
+// flow-typed version: 03a0733eae/ramda_v0.x.x/flow_>=v0.62.x
 
 /* eslint-disable no-unused-vars, no-redeclare */
 
@@ -503,18 +503,9 @@ declare module ramda {
   >;
   declare var split: CurriedFunction2<RegExp | string, string, Array<string>>;
   declare var test: CurriedFunction2<RegExp, string, boolean>;
-  declare var startsWith: CurriedFunction2<
-    string | Array<string>,
-    string | Array<string>,
-    boolean
-  >;
-  declare var endsWith: CurriedFunction2<
-    string | Array<string>,
-    string | Array<string>,
-    boolean
-  >;
+  declare var startsWith: CurriedFunction2<string | Array<string>, string, boolean>;
   declare function toLower(a: string): string;
-  declare function toString(x: any): string;
+  declare function toString(a: any): string;
   declare function toUpper(a: string): string;
   declare function trim(a: string): string;
 
@@ -885,10 +876,7 @@ declare module ramda {
     ...rest: Array<void>
   ): (xs: T) => T;
 
-  declare function sortWith<V, T: Array<V>>(
-    fns: Array<(a: V, b: V) => number>,
-    xs: T
-  ): T;
+  declare function sortWith<V, T: Array<V>>(fns: Array<(a: V, b: V) => number>, xs: T): T;
   declare function sortWith<V, T: Array<V>>(
     fns: Array<(a: V, b: V) => number>,
     ...rest: Array<void>
@@ -992,6 +980,10 @@ declare module ramda {
 
   declare function length<T>(xs: Array<T>): number;
 
+  declare function mergeAll(
+    objs: Array<{ [key: string]: any }>
+  ): { [key: string]: any };
+
   declare function reverse<T, V: Array<T> | string>(xs: V): V;
 
   declare type Reduce = (<A, B>(
@@ -1064,43 +1056,6 @@ declare module ramda {
   ): (xs: Array<B>) => A;
   declare function reduceRight<A, B>(
     fn: (elem: B, acc: A) => A,
-    init: A,
-    xs: Array<B>
-  ): A;
-
-  declare function reduceWhile<A, B>(
-    pred: (acc: A, curr: B) => boolean,
-    ...rest: Array<void>
-  ): ((
-    fn: (a: A, b: B) => A,
-    ...rest: Array<void>
-  ) => (
-    init: A,
-    ...rest: Array<void>
-  ) => (
-    xs: Array<B>
-  ) => A &
-    ((
-      fn: (a: A, b: B) => A,
-      ...rest: Array<void>
-    ) => (init: A, xs: Array<B>) => A)) &
-    ((
-      fn: (a: A, b: B) => A,
-      init: A,
-      ...rest: Array<void>
-    ) => (xs: Array<B>) => A) &
-    ((fn: (a: A, b: B) => A, init: A, xs: Array<B>) => A);
-
-  declare function reduceWhile<A, B>(
-    pred: (acc: A, curr: B) => boolean,
-    fn: (a: A, b: B) => A,
-    ...rest: Array<void>
-  ): ((init: A, ...rest: Array<void>) => (xs: Array<B>) => A) &
-    ((init: A, xs: Array<B>) => A);
-
-  declare function reduceWhile<A, B>(
-    fn: (acc: A, curr: B) => boolean,
-    fn: (a: A, b: B) => A,
     init: A,
     xs: Array<B>
   ): A;
@@ -1264,24 +1219,6 @@ declare module ramda {
 
   declare function identical<T>(x: T, ...rest: Array<void>): (y: T) => boolean;
   declare function identical<T>(x: T, y: T): boolean;
-
-  declare function innerJoin<A, B>(
-    pred: (a: A, b: B) => boolean,
-    ...rest: Array<void>
-  ): (
-    a: Array<A>,
-    ...rest: Array<void>
-  ) => (b: Array<B>) => Array<A> & ((a: Array<A>, b: Array<B>) => Array<A>);
-  declare function innerJoin<A, B>(
-    pred: (a: A, b: B) => boolean,
-    a: Array<A>,
-    ...rest: Array<void>
-  ): (b: Array<B>) => Array<A>;
-  declare function innerJoin<A, B>(
-    pred: (a: A, b: B) => boolean,
-    a: Array<A>,
-    b: Array<B>
-  ): Array<A>;
 
   declare function intersection<T>(x: Array<T>, y: Array<T>): Array<T>;
   declare function intersection<T>(x: Array<T>): (y: Array<T>) => Array<T>;
@@ -1465,21 +1402,12 @@ declare module ramda {
 
   declare function keys(o: Object): Array<string>;
 
-  declare type Lens = <T, V>(x: T) => V;
-
-  declare function lens<T, U, V>(
-    getter: (s: T) => U,
-    setter: (a: U, s: T) => V
-  ): Lens;
-  declare function lens<T, U, V>(
-    getter: (s: T) => U
-  ): (setter: (a: U, s: T) => V) => Lens;
-
-  declare function lensIndex(n: number): Lens;
-
-  declare function lensPath(a: Array<string | number>): Lens;
-
-  declare function lensProp(str: string): Lens;
+  /* TODO
+  lens
+  lensIndex
+  lensPath
+  lensProp
+  */
 
   declare function mapObjIndexed<A, B>(
     fn: (val: A, key: string, o: Object) => B,
@@ -1490,70 +1418,78 @@ declare module ramda {
     ...args: Array<void>
   ): (o: { [key: string]: A }) => { [key: string]: B };
 
-  declare type Merge = (<A, B>(a: A, b: B) => A & B) &
-    (<A, B>(a: A, ...rest: Array<void>) => (b: B) => A & B);
-
-  declare var merge: Merge;
+  declare function merge<A, B>(o1: A, ...rest: Array<void>): (o2: B) => A & B;
+  declare function merge<A, B>(o1: A, o2: B): A & B;
 
   declare function mergeAll<T>(
     os: Array<{ [k: string]: T }>
   ): { [k: string]: T };
 
-  declare var mergeDeepLeft: Merge;
-
-  declare var mergeDeepRight: (<A, B>(a: A, b: B) => B & A) &
-    (<A, B>(a: A, ...rest: Array<void>) => (b: B) => B & A);
-
-  declare type MergeWith = (<A: { [k: string]: T }, B: { [k: string]: T }, T>(
-    fn: (a: T, b: T) => T,
-    a: A,
-    b: B
-  ) => A & B) &
-    (<A, B, T>(
-      fn: (a: T, b: T) => T,
-      ...rest: Array<void>
-    ) => (a: A, ...rest: Array<void>) => (b: B) => A & B) &
-    (<A, B, T>(
-      fn: (a: T, b: T) => T,
-      ...rest: Array<void>
-    ) => (a: A, b: B) => A & B) &
-    (<A, B, T>(
-      fn: (a: T, b: T) => T,
-      a: A,
-      ...rest: Array<void>
-    ) => (b: B) => A & B);
-
-  declare type MergeWithKey = (<
-    S: string,
+  declare function mergeWith<
+    T,
+    S,
+    R,
     A: { [k: string]: T },
-    B: { [k: string]: T },
-    T
+    B: { [k: string]: S }
   >(
-    fn: (s: S, a: T, b: T) => T,
-    a: A,
-    b: B
-  ) => A & B) &
-    (<S: string, A: { [k: string]: T }, B: { [k: string]: T }, T>(
-      fn: (s: S, a: T, b: T) => T,
-      ...rest: Array<void>
-    ) => (a: A, b: B) => A & B) &
-    (<S: string, A: { [k: string]: T }, B: { [k: string]: T }, T>(
-      fn: (s: S, a: T, b: T) => T,
-      ...rest: Array<void>
-    ) => (a: A, ...rest: Array<void>) => (b: B) => A & B) &
-    (<S: string, A: { [k: string]: T }, B: { [k: string]: T }, T>(
-      fn: (s: S, a: T, b: T) => T,
-      a: A,
-      ...rest: Array<void>
-    ) => (b: B) => A & B);
+    fn: (v1: T, v2: S) => R
+  ): ((o1: A, ...rest: Array<void>) => (o2: B) => A & B) &
+    ((o1: A, o2: B) => A & B);
+  declare function mergeWith<
+    T,
+    S,
+    R,
+    A: { [k: string]: T },
+    B: { [k: string]: S }
+  >(
+    fn: (v1: T, v2: S) => R,
+    o1: A,
+    o2: B
+  ): A & B;
+  declare function mergeWith<
+    T,
+    S,
+    R,
+    A: { [k: string]: T },
+    B: { [k: string]: S }
+  >(
+    fn: (v1: T, v2: S) => R,
+    o1: A,
+    ...rest: Array<void>
+  ): (o2: B) => A & B;
 
-  declare var mergeDeepWith: MergeWith;
-
-  declare var mergeDeepWithKey: MergeWithKey;
-
-  declare var mergeWith: MergeWith;
-
-  declare var mergeWithKey: MergeWithKey;
+  declare function mergeWithKey<
+    T,
+    S,
+    R,
+    A: { [k: string]: T },
+    B: { [k: string]: S }
+  >(
+    fn: (key: $Keys<A & B>, v1: T, v2: S) => R
+  ): ((o1: A, ...rest: Array<void>) => (o2: B) => A & B) &
+    ((o1: A, o2: B) => A & B);
+  declare function mergeWithKey<
+    T,
+    S,
+    R,
+    A: { [k: string]: T },
+    B: { [k: string]: S }
+  >(
+    fn: (key: $Keys<A & B>, v1: T, v2: S) => R,
+    o1: A,
+    o2: B
+  ): A & B;
+  declare function mergeWithKey<
+    T,
+    S,
+    R,
+    A: { [k: string]: T },
+    B: { [k: string]: S }
+  >(
+    fn: (key: $Keys<A & B>, v1: T, v2: S) => R,
+    o1: A,
+    ...rest: Array<void>
+  ): (o2: B) => A & B;
 
   declare function objOf<T>(
     key: string,
@@ -1562,16 +1498,12 @@ declare module ramda {
   declare function objOf<T>(key: string, val: T): { [key: string]: T };
 
   declare function omit<T: Object>(
-    keys: Array<string>,
+    keys: Array<$Keys<T>>,
     ...rest: Array<void>
   ): (val: T) => Object;
-  declare function omit<T: Object>(keys: Array<string>, val: T): Object;
+  declare function omit<T: Object>(keys: Array<$Keys<T>>, val: T): Object;
 
-  declare function over<T, V, U>(lens: Lens, x: (any) => mixed, val: V): U;
-  declare function over<T, V, U>(
-    lens: Lens,
-    ...rest: Array<void>
-  ): ((x: (any) => mixed, ...rest: Array<void>) => (val: V) => U) & ((x: (any) => mixed, val: V) => U);
+  // TODO over
 
   declare function path<V>(
     p: Array<mixed>,
@@ -1670,16 +1602,16 @@ declare module ramda {
   declare function propOr<T, V, A: { [k: string]: V }>(
     or: T,
     ...rest: Array<void>
-  ): ((p: string, ...rest: Array<void>) => (o: A) => V | T) &
-    ((p: string, o: A) => V | T);
+  ): ((p: $Keys<A>, ...rest: Array<void>) => (o: A) => V | T) &
+    ((p: $Keys<A>, o: A) => V | T);
   declare function propOr<T, V, A: { [k: string]: V }>(
     or: T,
-    p: string,
+    p: $Keys<A>,
     ...rest: Array<void>
   ): (o: A) => V | T;
   declare function propOr<T, V, A: { [k: string]: V }>(
     or: T,
-    p: string,
+    p: $Keys<A>,
     o: A
   ): V | T;
 
@@ -1694,11 +1626,7 @@ declare module ramda {
     o: O
   ): Array<$ElementType<O, T>>;
 
-  declare function set<T, V, U>(lens: Lens, x: T, val: V): U;
-  declare function set<T, V, U>(
-    lens: Lens,
-    ...rest: Array<void>
-  ): ((x: (any) => mixed, ...rest: Array<void>) => (val: V) => U) & ((x: (any) => mixed, val: V) => U);
+  // TODO set
 
   declare function toPairs<T, O: { [k: string]: T }>(
     o: O
@@ -1729,8 +1657,7 @@ declare module ramda {
     o: $Shape<O & Q>
   ): boolean;
 
-  declare function view<T, V>(lens: Lens, val: T): V;
-  declare function view<T, V>(lens: Lens): (val: T) => V;
+  // TODO view
 
   // *Function
   declare var __: $npm$ramda$Placeholder;
@@ -1764,12 +1691,6 @@ declare module ramda {
   >(
     spec: T
   ): (...args: A) => NestedObject<S>;
-
-  declare function applyTo<A, B>(
-    a: A,
-    ...rest: Array<void>
-  ): (fn: (x: A) => B) => B;
-  declare function applyTo<A, B>(a: A, fn: (x: A) => B): B;
 
   declare function binary<T>(
     fn: (...args: Array<any>) => T
@@ -1848,33 +1769,12 @@ declare module ramda {
 
   declare function memoize<A, B, T: (...args: Array<A>) => B>(fn: T): T;
 
-  declare function memoizeWith<A, B>(
-    keyFn: (x: A) => string,
-    ...rest: Array<void>
-  ): (fn: (x: B) => B) => A;
-  declare function memoizeWith<A, B>(
-    keyFn: (x: A) => string,
-    fn: (x: B) => B
-  ): A;
-
   declare function nAry<T>(
     arity: number,
     fn: (...args: Array<any>) => T
   ): (...args: Array<any>) => T;
 
   declare function nthArg<T>(n: number): (...args: Array<T>) => T;
-
-  declare var o: (<A, B, C>(
-    fn1: (b: B) => C,
-    ...rest: void[]
-  ) => ((fn2: (a: A) => B, ...rest: void[]) => (x: A) => C) &
-    ((fn2: (a: A) => B, x: A) => C)) &
-    (<A, B, C>(
-      fn1: (b: B) => C,
-      fn2: (a: A) => B,
-      ...rest: void[]
-    ) => (x: A) => C) &
-    (<A, B, C>(fn1: (b: B) => C, fn2: (a: A) => B, x: A) => C);
 
   declare function of<T>(x: T): Array<T>;
 

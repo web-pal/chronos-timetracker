@@ -22,7 +22,6 @@ export type User = {
     items: Array<any>,
   },
   key: string,
-  name: string,
   locale?: string,
   self: string,
   timeZone: string,

@@ -17,9 +17,6 @@ export type AuthAction =
   |} |
   {|
     type: typeof actionTypes.LOGOUT_REQUEST,
-    payload: {
-      dontForget: boolean,
-    }
   |} |
   {|
     type: typeof actionTypes.ACCEPT_OAUTH,

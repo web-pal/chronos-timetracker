@@ -24,7 +24,6 @@ import {
   uiActions,
 } from 'actions';
 import {
-  getResourceIds,
   getResourceMap,
   getUiState,
 } from 'selectors';
@@ -102,25 +101,14 @@ export function* saveWorklog({
 }: {
   payload: any,
 }): Generator<*, *, *> {
-  const worklogsA = createActionCreators(
-    worklogId ? 'update' : 'create',
-    {
-      resourceName: 'worklogs',
-      request: 'saveWorklog',
-    },
-  );
-  const issuesActionsConfig = {
+  const worklogsA = createActionCreators(worklogId ? 'update' : 'create', {
+    resourceName: 'worklogs',
+    request: 'saveWorklog',
+  });
+  const issuesA = createActionCreators('update', {
     resourceName: 'issues',
     request: 'updateIssue',
-  };
-  const recentIssues = yield select(getResourceIds('issues', 'recentIssues'));
-  if (recentIssues.length) {
-    issuesActionsConfig.list = 'recentIssues';
-  }
-  const issuesA = createActionCreators(
-    'update',
-    issuesActionsConfig,
-  );
+  });
   try {
     yield put(worklogsA.pending());
     if (!worklogId) {
