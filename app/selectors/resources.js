@@ -33,7 +33,7 @@ export const getResourceMappedList = (
   resourceName: string,
   listName: string,
 ) => {
-  if (resourceSelectors[resourceName]) {
+  if (resourceSelectors[`${resourceName}${listName}`]) {
     return resourceSelectors[`${resourceName}${listName}`];
   }
   resourceSelectors[`${resourceName}${listName}`] =
