@@ -13,6 +13,7 @@ import {
 import Raven from 'raven-js';
 
 import * as Api from 'api';
+import * as R from 'ramda';
 
 import {
   actionTypes,
@@ -112,11 +113,22 @@ function storeInKeytar(payload, host) {
 }
 
 function* saveAccount(payload: { host: string, username: string }): Generator<*, void, *> {
-  const { host } = payload;
+  const { host, username } = payload;
   let accounts = yield call(getFromStorage, 'accounts');
   if (!accounts) accounts = [];
-  if (!accounts.find(ac => ac.host === host)) {
+  if (!R.find(R.whereEq({ host, username }), accounts)) {
     accounts.push(payload);
+    yield call(setToStorage, 'accounts', accounts);
+  }
+}
+
+function* deleteAccount(payload: { host: string, username: string }): Generator<*, void, *> {
+  const { host, username } = payload;
+  let accounts = yield call(getFromStorage, 'accounts');
+  if (!accounts) accounts = [];
+  const index = R.findIndex(R.whereEq({ host, username }), accounts);
+  if (index !== -1) {
+    accounts = R.without([{ host, username }], accounts);
     yield call(setToStorage, 'accounts', accounts);
   }
 }
@@ -293,11 +305,16 @@ export function* logoutFlow(): Generator<*, *, *> {
       }
       if (!running && !uploading && !dontForget) {
         yield call(removeFromStorage, 'desktop_tracker_jwt');
+        const lastUsedAccount = yield call(getFromStorage, 'last_used_account');
+        yield call(deleteAccount, lastUsedAccount);
         yield call(removeFromStorage, 'last_used_account');
       }
       yield put({
         type: actionTypes.__CLEAR_ALL_REDUCERS__,
       });
+      let accounts = yield call(getFromStorage, 'accounts');
+      if (!accounts) accounts = [];
+      yield put(uiActions.setUiState('accounts', accounts));
       trackMixpanel('Logout');
       incrementMixpanel('Logout', 1);
     } catch (err) {
@@ -383,6 +400,9 @@ export function* switchAccountFlow(): Generator<*, *, *> {
             type: actionTypes.__CLEAR_ALL_REDUCERS__,
           });
           yield put(uiActions.setUiState('initializeInProcess', true));
+          let accounts = yield call(getFromStorage, 'accounts');
+          if (!accounts) accounts = [];
+          yield put(uiActions.setUiState('accounts', accounts));
           yield put(authActions.loginRequest({ ...payload, password: credentials.password }));
         }
       }
