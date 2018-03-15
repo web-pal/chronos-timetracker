@@ -399,10 +399,10 @@ export function* switchAccountFlow(): Generator<*, *, *> {
           yield put({
             type: actionTypes.__CLEAR_ALL_REDUCERS__,
           });
+          yield put(uiActions.setUiState('initializeInProcess', true));
           let accounts = yield call(getFromStorage, 'accounts');
           if (!accounts) accounts = [];
           yield put(uiActions.setUiState('accounts', accounts));
-          yield put(uiActions.setUiState('initializeInProcess', true));
           yield put(authActions.loginRequest({ ...payload, password: credentials.password }));
         }
       }

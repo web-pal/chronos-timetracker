@@ -45,7 +45,10 @@ const AccountsStep = ({
   >
     <div>
       {accounts.map(ac => (
-        <Account onClick={() => dispatch(authActions.switchAccount(ac))}>
+        <Account
+          onClick={() => dispatch(authActions.switchAccount(ac))}
+          key={`${ac.username}:${ac.host}`}
+        >
           <Tag text={ac.host} color="teal" />
           {ac.username}
         </Account>
