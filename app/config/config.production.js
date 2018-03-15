@@ -9,7 +9,6 @@ const config = {
   idleTimeThreshold: 300,
   checkUpdates: true,
   infoLog: false,
-  issueWindowDevTools: false,
 };
 
 export default config;

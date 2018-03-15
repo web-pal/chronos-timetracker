@@ -9,7 +9,6 @@ const config = {
   checkUpdates: false,
   infoLog: false,
   reduxLogger: true,
-  issueWindowDevTools: false,
 };
 
 export default config;
