@@ -28,12 +28,12 @@ export default merge.smart(baseConfig, {
       {
         test: /\.less$/,
         use: [{
-          loader: 'style-loader' // creates style nodes from JS strings
+          loader: 'style-loader', // creates style nodes from JS strings
         }, {
-          loader: 'css-loader' // translates CSS into CommonJS
+          loader: 'css-loader', // translates CSS into CommonJS
         }, {
-          loader: 'less-loader'
-        }]
+          loader: 'less-loader',
+        }],
       },
       // WOFF Font
       {
@@ -43,7 +43,7 @@ export default merge.smart(baseConfig, {
           options: {
             limit: 10000,
             mimetype: 'application/font-woff',
-          }
+          },
         },
       },
       // WOFF2 Font
@@ -54,8 +54,8 @@ export default merge.smart(baseConfig, {
           options: {
             limit: 10000,
             mimetype: 'application/font-woff',
-          }
-        }
+          },
+        },
       },
       // TTF Font
       {
@@ -64,9 +64,9 @@ export default merge.smart(baseConfig, {
           loader: 'url-loader',
           options: {
             limit: 10000,
-            mimetype: 'application/octet-stream'
-          }
-        }
+            mimetype: 'application/octet-stream',
+          },
+        },
       },
       // EOT Font
       {
@@ -81,36 +81,38 @@ export default merge.smart(baseConfig, {
           options: {
             limit: 10000,
             mimetype: 'image/svg+xml',
-          }
-        }
+          },
+        },
       },
       // Common Image Formats
       {
         test: /\.(?:ico|gif|png|jpg|jpeg|webp)$/,
         use: 'url-loader',
-      }
-    ]
+      },
+    ],
   },
 
   resolve: {
     modules: [
       'app',
     ],
+    alias: {
+      'styled-components': path.resolve(__dirname, 'node_modules', 'styled-components'),
+    },
   },
 
   entry: {
     vendor: [
       'babel-polyfill',
-      ...Object.keys(dependencies)
-    ]
-    .filter(dependency => dependency !== 'font-awesome'),
+      ...Object.keys(dependencies),
+    ].filter(dependency => dependency !== 'font-awesome'),
   },
 
   output: {
     library: 'vendor',
     path: dist,
     filename: '[name].dll.js',
-    libraryTarget: 'var'
+    libraryTarget: 'var',
   },
 
   plugins: [
@@ -144,6 +146,6 @@ export default merge.smart(baseConfig, {
           path: path.resolve(process.cwd(), 'dll'),
         },
       },
-    })
+    }),
   ],
 });

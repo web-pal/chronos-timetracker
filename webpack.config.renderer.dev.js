@@ -214,10 +214,6 @@ export default merge.smart(baseConfig, {
       path.join(__dirname, 'app/config'),
       'node_modules',
     ],
-    // We need it because of atlaskit styled-components version
-    alias: {
-      'styled-components2': path.resolve(__dirname, 'app/styled-components.min.js'),
-    },
   },
 
   devServer: {

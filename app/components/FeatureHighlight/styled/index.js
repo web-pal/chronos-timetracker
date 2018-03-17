@@ -1,4 +1,4 @@
-import styled from 'styled-components2';
+import styled from 'styled-components';
 
 export const FeatureContainer = styled.div`
   position: relative;

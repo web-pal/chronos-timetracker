@@ -1,4 +1,4 @@
-import styled from 'styled-components2';
+import styled from 'styled-components';
 import { AnimatedPlaceholder } from '../../styled';
 
 export const PlaceholderContainer = styled.div`
