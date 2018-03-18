@@ -21,7 +21,7 @@ class JiraClientWrapper {
       path_prefix,
       port,
       protocol,
-      promise: Promise,
+      rejectUnauthorized: false,
       basic_auth: {
         username,
         password,

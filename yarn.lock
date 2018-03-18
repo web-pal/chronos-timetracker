@@ -452,8 +452,8 @@ ajv@^5.0.0, ajv@^5.1.0, ajv@^5.1.5, ajv@^5.3.0, ajv@^5.5.0:
     json-schema-traverse "^0.3.0"
 
 ajv@^6.0.1, ajv@^6.1.0:
-  version "6.2.1"
-  resolved "https://registry.yarnpkg.com/ajv/-/ajv-6.2.1.tgz#28a6abc493a2abe0fb4c8507acaedb43fa550671"
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/ajv/-/ajv-6.3.0.tgz#1650a41114ef00574cac10b8032d8f4c14812da7"
   dependencies:
     fast-deep-equal "^1.0.0"
     fast-json-stable-stringify "^2.0.0"
@@ -5394,9 +5394,9 @@ isurl@^1.0.0-alpha5:
     has-to-string-tag-x "^1.2.0"
     is-object "^1.0.1"
 
-"jira-connector@github:web-pal/jira-connector#56c56015371481701b7ae6fc2fd64ddf07a13b78":
-  version "2.6.0"
-  resolved "https://codeload.github.com/web-pal/jira-connector/tar.gz/56c56015371481701b7ae6fc2fd64ddf07a13b78"
+"jira-connector@github:web-pal/jira-connector#203fa73eb67c03a0147979a5f632cbdc6c5fb5e3":
+  version "2.7.0"
+  resolved "https://codeload.github.com/web-pal/jira-connector/tar.gz/203fa73eb67c03a0147979a5f632cbdc6c5fb5e3"
   dependencies:
     oauth "^0.9.12"
     request "^2.83.0"
