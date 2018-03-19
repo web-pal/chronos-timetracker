@@ -17,6 +17,7 @@ import {
 } from 'electron';
 import notifier from 'node-notifier';
 import MenuBuilder from './menu';
+import pjson from '../package.json';
 import config from './config';
 
 const appDir = app.getPath('userData');
@@ -405,9 +406,11 @@ ipcMain.on('save-login-debug', (event, messages) => {
     ? `${message.string}`
     : `${JSON.stringify(message.json, null, 2)}`
   )).join('\n');
-  dialog.showSaveDialog(mainWindow, (filename) => {
+  dialog.showSaveDialog(mainWindow, {
+    defaultPath: `chronos-${pjson.version}-auth-debug.log`,
+  },
+  (filename) => {
     if (filename) {
-      console.log(log);
       fs.writeFileSync(filename, log);
     }
   });
