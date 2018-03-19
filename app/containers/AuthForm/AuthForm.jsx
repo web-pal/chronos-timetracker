@@ -44,7 +44,6 @@ import EmailStep from './EmailStep';
 import TeamStep from './TeamStep';
 import AccountsStep from './AccountsStep';
 
-import AccountsStep from './AccountsStep';
 import AuthDebugger from './AuthDebugger';
 
 import {
