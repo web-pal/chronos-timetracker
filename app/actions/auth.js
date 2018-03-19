@@ -37,9 +37,14 @@ export const denyOAuth = (): AuthAction => ({
 });
 
 export const switchAccount = (payload: {|
-    host: string,
-    username: string,
+  host: string,
+  username: string,
 |}) => ({
   type: actionTypes.SWITCH_ACCOUNT,
+  payload,
+});
+
+export const addAuthDebugMessage = (payload: Array<*>) => ({
+  type: actionTypes.ADD_AUTH_DEBUG_MESSAGE,
   payload,
 });

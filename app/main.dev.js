@@ -1,5 +1,6 @@
 /* eslint-disable no-console, global-require */
 import path from 'path';
+import fs from 'fs';
 import keytar from 'keytar';
 import storage from 'electron-json-storage';
 import {
@@ -8,12 +9,15 @@ import {
   Menu,
   MenuItem,
   ipcMain,
+  clipboard,
   BrowserWindow,
   screen,
   session,
+  dialog,
 } from 'electron';
 import notifier from 'node-notifier';
 import MenuBuilder from './menu';
+import pjson from '../package.json';
 import config from './config';
 
 const appDir = app.getPath('userData');
@@ -395,6 +399,29 @@ ipcMain.on('issue-created', (event, issues) => {
 
 ipcMain.on('issue-refetch', (event, issueId) => {
   mainWindow.webContents.send('reFetchIssue', issueId);
+});
+
+ipcMain.on('save-login-debug', (event, messages) => {
+  const log = messages.map(message => (message.string
+    ? `${message.string}`
+    : `${JSON.stringify(message.json, null, 2)}`
+  )).join('\n');
+  dialog.showSaveDialog(mainWindow, {
+    defaultPath: `chronos-${pjson.version}-auth-debug.log`,
+  },
+  (filename) => {
+    if (filename) {
+      fs.writeFileSync(filename, log);
+    }
+  });
+});
+
+ipcMain.on('copy-login-debug', (event, messages) => {
+  const log = messages.map(message => (message.string
+    ? `${message.string}`
+    : `${JSON.stringify(message.json, null, 2)}`
+  )).join('\n');
+  clipboard.writeText(log);
 });
 
 ipcMain.on('load-issue-window', (event, url) => {

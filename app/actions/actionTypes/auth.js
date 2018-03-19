@@ -6,3 +6,4 @@ export const LOGOUT_REQUEST = 'auth/LOGOUT_REQUEST';
 export const ACCEPT_OAUTH = 'auth/ACCEPT_OAUTH';
 export const DENY_OAUTH = 'auth/DENY_OAUTH';
 export const SWITCH_ACCOUNT = 'auth/SWITCH_ACCOUNT';
+export const ADD_AUTH_DEBUG_MESSAGE = 'auth/ADD_AUTH_DEBUG_MESSAGE';

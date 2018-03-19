@@ -23,6 +23,9 @@ const initialState: UiState = {
   protocol: null,
   isPaidUser: false,
 
+  showAuthDebugConsole: false,
+  authDebugMessages: [],
+
   updateCheckRunning: false,
   updateFetching: false,
   updateAvailable: null,
@@ -95,6 +98,14 @@ export default function ui(
           ...state.issuesFilters,
           [action.filterType]: action.value,
         },
+      };
+    case actionTypes.ADD_AUTH_DEBUG_MESSAGE:
+      return {
+        ...state,
+        authDebugMessages: [
+          ...state.authDebugMessages,
+          ...action.payload,
+        ],
       };
     case actionTypes.ADD_FLAG:
       return {

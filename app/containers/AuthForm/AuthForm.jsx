@@ -43,6 +43,7 @@ import {
 import EmailStep from './EmailStep';
 import TeamStep from './TeamStep';
 import AccountsStep from './AccountsStep';
+import AuthDebugger from './AuthDebugger';
 
 import {
   Hint,
@@ -50,9 +51,11 @@ import {
   Container,
   Logo,
   LoginInfo,
+  AuthDebugContainer,
 } from './styled';
 
 type Props = {
+  showAuthDebugConsole: boolean,
   loginRequestInProcess: boolean,
   loginError: string,
   isPaidUser: boolean,
@@ -63,6 +66,7 @@ type Props = {
 } & FormProps
 
 const AuthForm: StatelessFunctionalComponent<Props> = ({
+  showAuthDebugConsole,
   loginRequestInProcess,
   loginError,
   isPaidUser,
@@ -73,7 +77,11 @@ const AuthForm: StatelessFunctionalComponent<Props> = ({
   dispatch,
 }: Props): Node =>
   <Container>
-    <Logo src={logoShadowed} alt="Chronos" />
+    <AuthDebugger show={showAuthDebugConsole} />
+    <Logo
+      src={logoShadowed}
+      alt="Chronos"
+    />
     <Flex column alignCenter>
       <LoginInfo>
         Log in to your account
@@ -125,12 +133,22 @@ const AuthForm: StatelessFunctionalComponent<Props> = ({
         />
       </ContentOuter>
     </Flex>
-    <Hint>Can not log in?</Hint>
+    <Hint
+      onClick={() => {
+        dispatch(uiActions.setUiState(
+          'showAuthDebugConsole',
+          true,
+        ));
+      }}
+    >
+      Can not log in?
+    </Hint>
   </Container>;
 
 const selector = formValueSelector('auth');
 function mapStateToProps(state) {
   return {
+    showAuthDebugConsole: getUiState('showAuthDebugConsole')(state),
     host: selector(state, 'host'),
     step: getUiState('authFormStep')(state),
     accounts: getUiState('accounts')(state),
