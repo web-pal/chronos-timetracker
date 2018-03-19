@@ -20,8 +20,11 @@ export const loginOAuthRequest = (host: string): AuthAction => ({
   host,
 });
 
-export const logoutRequest = (): AuthAction => ({
+export const logoutRequest = (payload: {
+  dontForget: boolean
+} = { dontForget: false }): AuthAction => ({
   type: actionTypes.LOGOUT_REQUEST,
+  payload,
 });
 
 export const acceptOAuth = (code: string): AuthAction => ({
