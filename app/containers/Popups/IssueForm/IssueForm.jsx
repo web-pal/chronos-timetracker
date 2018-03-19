@@ -8,7 +8,6 @@ import {
   AppWrapper,
   FullPageSpinner,
 } from 'styles';
-import config from '../../../config';
 
 
 class IssueForm extends Component<{}, any> {
@@ -38,26 +37,18 @@ class IssueForm extends Component<{}, any> {
   }
 
   onLoadUrl = (ev, url) => {
-    let webview = document.querySelector('webview');
-    if (!webview) {
-      webview = document.createElement('webview');
-      webview.setAttribute('preload', './preload.js');
-      webview.style.height = '100%';
+    const webview = document.createElement('webview');
+    webview.setAttribute('preload', './preload.js');
+    webview.style.height = '100%';
 
-      webview.addEventListener('did-finish-load', () => {
-        if (
-          config.issueWindowDevTools ||
-          process.env.DEBUG_PROD === true
-        ) {
-          webview.openDevTools();
-        }
-      });
+    webview.addEventListener('did-finish-load', () => {
+      if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === true) {
+        webview.openDevTools();
+      }
+    });
 
-      webview.src = url;
-      document.getElementById('forWebview').appendChild(webview);
-    } else {
-      webview.src = url;
-    }
+    webview.src = url;
+    document.getElementById('forWebview').appendChild(webview);
   }
 
   onShowForm = (

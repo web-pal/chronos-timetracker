@@ -17,13 +17,11 @@ import type {
 import type {
   Connector,
 } from 'react-redux';
-import Tag from '@atlaskit/tag';
 import type {
   User,
   Dispatch,
 } from 'types';
 
-import Lozenge from '@atlaskit/lozenge';
 
 import DropdownMenu, {
   DropdownItemGroup,
@@ -45,10 +43,6 @@ import {
   refreshWhite,
 } from 'data/svg';
 import config from 'config';
-import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
-import EditorAddIcon from '@atlaskit/icon/glyph/editor/add';
-
-import { transformValidHost } from '../../sagas/auth';
 
 import FeatureHighlight from '../../components/FeatureHighlight';
 
@@ -71,10 +65,6 @@ import {
 
 type Props = {
   userData: User,
-  accounts: Array<{|
-    host: string,
-    username: string,
-  |}>,
   host: string,
   updateAvailable: string,
   updateFetching: boolean,
@@ -84,7 +74,6 @@ type Props = {
 
 const Header: StatelessFunctionalComponent<Props> = ({
   userData,
-  accounts,
   host,
   updateAvailable,
   updateFetching,
@@ -217,7 +206,6 @@ function mapStateToProps(state) {
   return {
     userData: getUserData(state),
     host: getUiState('host')(state),
-    accounts: getUiState('accounts')(state),
     updateAvailable: getUiState('updateAvailable')(state),
     updateFetching: getUiState('updateFetching')(state),
     issuesFetching: getResourceStatus(

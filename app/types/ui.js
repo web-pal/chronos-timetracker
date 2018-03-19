@@ -108,7 +108,6 @@ export type UiState = {|
     confirmDeleteWorklog: boolean,
     settings: boolean,
     worklog: boolean,
-    accounts: boolean,
   |},
 
   flags: Array<any>,

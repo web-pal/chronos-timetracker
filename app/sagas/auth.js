@@ -13,7 +13,6 @@ import {
 import Raven from 'raven-js';
 
 import * as Api from 'api';
-import * as R from 'ramda';
 
 import {
   actionTypes,
@@ -23,7 +22,6 @@ import {
 
 import {
   setToStorage,
-  getFromStorage,
   removeFromStorage,
 } from './storage';
 import {
@@ -31,7 +29,6 @@ import {
 } from './initializeApp';
 import {
   throwError,
-  notify,
 } from './ui';
 import createIpcChannel from './ipc';
 
@@ -102,37 +99,6 @@ export function* chronosBackendAuth({
   }
 }
 
-function storeInKeytar(payload, host) {
-  ipcRenderer.sendSync(
-    'store-credentials',
-    {
-      ...payload,
-      host: host.hostname,
-    },
-  );
-}
-
-function* saveAccount(payload: { host: string, username: string }): Generator<*, void, *> {
-  const { host, username } = payload;
-  let accounts = yield call(getFromStorage, 'accounts');
-  if (!accounts) accounts = [];
-  if (!R.find(R.whereEq({ host, username }), accounts)) {
-    accounts.push(payload);
-    yield call(setToStorage, 'accounts', accounts);
-  }
-}
-
-function* deleteAccount(payload: { host: string, username: string }): Generator<*, void, *> {
-  const { host, username } = payload;
-  let accounts = yield call(getFromStorage, 'accounts');
-  if (!accounts) accounts = [];
-  const index = R.findIndex(R.whereEq({ host, username }), accounts);
-  if (index !== -1) {
-    accounts = R.without([{ host, username }], accounts);
-    yield call(setToStorage, 'accounts', accounts);
-  }
-}
-
 export function* basicAuthLoginForm(): Generator<*, void, *> {
   while (true) {
     try {
@@ -192,14 +158,7 @@ export function* basicAuthLoginForm(): Generator<*, void, *> {
       */
       yield call(
         setToStorage,
-        'last_used_account',
-        {
-          username: payload.username,
-          host: payload.host,
-        },
-      );
-      yield call(
-        saveAccount,
+        'jira_credentials',
         {
           username: payload.username,
           host: payload.host,
@@ -212,7 +171,17 @@ export function* basicAuthLoginForm(): Generator<*, void, *> {
           protocol,
         },
       );
-      yield call(storeInKeytar, payload, host);
+      yield call(
+        (): void => {
+          ipcRenderer.sendSync(
+            'store-credentials',
+            {
+              ...payload,
+              host: host.hostname,
+            },
+          );
+        },
+      );
       yield put(uiActions.setUiState('loginRequestInProcess', false));
       trackMixpanel('Jira login');
       incrementMixpanel('Jira login', 1);
@@ -316,7 +285,7 @@ export function* oAuthLoginForm(): Generator<*, *, *> {
 
 export function* logoutFlow(): Generator<*, *, *> {
   while (true) {
-    const { payload: { dontForget } } = yield take(actionTypes.LOGOUT_REQUEST);
+    yield take(actionTypes.LOGOUT_REQUEST);
     try {
       const { getGlobal } = remote;
       const { running, uploading } = getGlobal('sharedObj');
@@ -329,18 +298,13 @@ export function* logoutFlow(): Generator<*, *, *> {
         // eslint-disable-next-line no-alert
         window.alert('Currently app in process of saving worklog, wait few seconds please');
       }
-      if (!running && !uploading && !dontForget) {
+      if (!running && !uploading) {
         yield call(removeFromStorage, 'desktop_tracker_jwt');
-        const lastUsedAccount = yield call(getFromStorage, 'last_used_account');
-        yield call(deleteAccount, lastUsedAccount);
-        yield call(removeFromStorage, 'last_used_account');
+        yield call(removeFromStorage, 'jira_credentials');
       }
       yield put({
         type: actionTypes.__CLEAR_ALL_REDUCERS__,
       });
-      let accounts = yield call(getFromStorage, 'accounts');
-      if (!accounts) accounts = [];
-      yield put(uiActions.setUiState('accounts', accounts));
       trackMixpanel('Logout');
       incrementMixpanel('Logout', 1);
     } catch (err) {
@@ -372,72 +336,6 @@ function getOauthChannelListener(channel, type) {
       }
     }
   };
-}
-
-export function* switchAccountFlow(): Generator<*, *, *> {
-  while (true) {
-    const { payload } = yield take(actionTypes.SWITCH_ACCOUNT);
-    try {
-      const { getGlobal } = remote;
-      const { running, uploading } = getGlobal('sharedObj');
-
-      if (running) {
-        // eslint-disable-next-line no-alert
-        window.alert('Tracking in progress, save worklog before logout!');
-      }
-      if (uploading) {
-        // eslint-disable-next-line no-alert
-        window.alert('Currently app in process of saving worklog, wait few seconds please');
-      }
-      if (!running && !uploading) {
-        const host = yield call(transformValidHost, payload.host);
-        const {
-          credentials,
-          error,
-        } = ipcRenderer.sendSync(
-          'get-credentials',
-          {
-            username: payload.username,
-            host: host.hostname,
-          },
-        );
-        if (error) {
-          Raven.captureMessage('keytar error!', {
-            level: 'error',
-            extra: {
-              error: error.err,
-            },
-          });
-          yield call(
-            throwError,
-            error.err,
-          );
-          if (error.platform === 'linux') {
-            yield fork(
-              notify,
-              {
-                type: 'libSecretError',
-                autoDelete: false,
-              },
-            );
-          }
-        } else {
-          yield put({
-            type: actionTypes.__CLEAR_ALL_REDUCERS__,
-          });
-          yield put(uiActions.setUiState('initializeInProcess', true));
-          let accounts = yield call(getFromStorage, 'accounts');
-          if (!accounts) accounts = [];
-          yield put(uiActions.setUiState('accounts', accounts));
-          yield put(authActions.loginRequest({ ...payload, password: credentials.password }));
-        }
-      }
-      trackMixpanel('SwitchAccounts');
-      incrementMixpanel('SwitchAccounts', 1);
-    } catch (err) {
-      yield call(throwError, err);
-    }
-  }
 }
 
 export function* createIpcAuthListeners(): Generator<*, *, *> {

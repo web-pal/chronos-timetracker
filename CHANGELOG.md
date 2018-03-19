@@ -1,3 +1,27 @@
+<a name="2.6.0"></a>
+# [2.6.0](https://github.com/web-pal/chronos-timetracker/compare/v2.5.20...v2.6.0) (2018-03-15)
+
+
+### Bug Fixes
+
+* accoutin deletion on logout ([280ff32](https://github.com/web-pal/chronos-timetracker/commit/280ff32))
+* feature acknowlegement ([1721ffb](https://github.com/web-pal/chronos-timetracker/commit/1721ffb))
+* hide login to exiting account button if no accounts present ([40956d3](https://github.com/web-pal/chronos-timetracker/commit/40956d3))
+* issue form with multiple accounts ([290ef83](https://github.com/web-pal/chronos-timetracker/commit/290ef83))
+* keys warning ([f146205](https://github.com/web-pal/chronos-timetracker/commit/f146205))
+* memoized resourceMap list selectors ([54e00a2](https://github.com/web-pal/chronos-timetracker/commit/54e00a2))
+* recent workogs with just created new issue ([4bcb9d4](https://github.com/web-pal/chronos-timetracker/commit/4bcb9d4))
+* retry on connection refused ([db85971](https://github.com/web-pal/chronos-timetracker/commit/db85971))
+
+
+### Features
+
+* **Authorization:** support multiple accounts ([106d30a](https://github.com/web-pal/chronos-timetracker/commit/106d30a)), closes [#71](https://github.com/web-pal/chronos-timetracker/issues/71)
+* make account step on login ([9d9ade9](https://github.com/web-pal/chronos-timetracker/commit/9d9ade9))
+* make new feature presentation component ([ff76777](https://github.com/web-pal/chronos-timetracker/commit/ff76777))
+
+
+
 <a name="2.5.20"></a>
 ## [2.5.20](https://github.com/web-pal/chronos-timetracker/compare/v2.5.19...v2.5.20) (2018-03-07)
 

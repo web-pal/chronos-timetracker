@@ -64,7 +64,6 @@ const initialState: UiState = {
     confirmDeleteWorklog: false,
     settings: false,
     worklog: false,
-    accounts: false,
   },
 
   flags: [],

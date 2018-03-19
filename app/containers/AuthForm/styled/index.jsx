@@ -55,7 +55,6 @@ export const ContentInner = styled.div`
   position: absolute;
   left: ${(props) => {
     if (props.isActiveStep) return 0;
-    if (props.step === 0) return -760;
     if (props.step === 1) return -380;
     if (props.step === 2) return 380;
     return 0;
@@ -103,15 +102,6 @@ export const PrimaryButton = Button.extend`
   border: 0;
   :hover {
     background-color: hsla(216, 100%, 50%, 1);
-  }
-`;
-
-export const DefaultButton = Button.extend`
-  background-color: rgba(9, 30, 66, 0.04);
-  color: rgba(0, 0, 0, .7);
-  border: 0;
-  :hover {
-    background-color: rgba(9, 30, 66, 0.1);
   }
 `;
 
@@ -196,14 +186,4 @@ export const ContentStep = styled(Flex).attrs({
   alignCenter: true,
 })`
   width: 100%;
-`;
-
-export const Account = styled.div`
-  display: flex;
-  padding: 16px;
-  cursor: pointer;
-  border-radius: 5px;
-  &:hover {
-    background-color: rgba(9, 30, 66, 0.1);
-  }
 `;
