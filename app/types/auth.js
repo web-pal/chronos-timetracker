@@ -27,4 +27,15 @@ export type AuthAction =
   |} |
   {|
     type: typeof actionTypes.DENY_OAUTH,
+  |} |
+  {|
+    type: typeof actionTypes.SWITCH_ACCOUNT,
+    payload: {|
+      host: string,
+      username: string,
+    |}
+  |} |
+  {|
+    type: typeof actionTypes.ADD_AUTH_DEBUG_MESSAGE,
+    payload: Array<*>,
   |};

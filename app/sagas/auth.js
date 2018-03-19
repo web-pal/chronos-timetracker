@@ -140,6 +140,16 @@ export function* basicAuthLoginForm(): Generator<*, void, *> {
       const host = yield call(transformValidHost, payload.host);
       const protocol = host.protocol.slice(0, -1);
 
+      yield put(authActions.addAuthDebugMessage([
+        { string: 'Login request...' },
+        { string: `host: ${host.hostname}` },
+        { string: `protocol: ${protocol}` },
+        { string: `port: ${host.port}` },
+        { string: `path_prefix: ${host.pathname}` },
+        { string: `username: ${payload.username}` },
+        { string: 'password: ***' },
+      ]));
+
       yield put(uiActions.setUiState('loginRequestInProcess', true));
       yield put(uiActions.setUiState('loginError', null));
       yield call(
@@ -153,7 +163,14 @@ export function* basicAuthLoginForm(): Generator<*, void, *> {
         },
       );
       // Test request for check auth
-      const userData = yield call(Api.jiraProfile);
+      const {
+        debug,
+        result,
+      } = yield call(Api.jiraProfile, true);
+      yield put(authActions.addAuthDebugMessage([
+        { json: debug },
+      ]));
+      const userData = result;
       if (!userData.self || !userData.active) {
         Raven.captureMessage('Strange auth response!', {
           level: 'error',
@@ -200,12 +217,19 @@ export function* basicAuthLoginForm(): Generator<*, void, *> {
       trackMixpanel('Jira login');
       incrementMixpanel('Jira login', 1);
     } catch (err) {
+      err.debug.options.auth.password = '***';
+      err.debug.request.headers.authorization = '***';
+      yield put(authActions.addAuthDebugMessage([
+        {
+          json: err.debug,
+        },
+      ]));
       yield put(uiActions.setUiState('loginRequestInProcess', false));
       yield put(uiActions.setUiState(
         'loginError',
         'Can not authenticate user. Please try again',
       ));
-      yield call(throwError, err);
+      yield call(throwError, err.result);
     }
   }
 }
