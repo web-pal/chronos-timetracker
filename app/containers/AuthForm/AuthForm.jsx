@@ -137,7 +137,7 @@ const AuthForm: StatelessFunctionalComponent<Props> = ({
       onClick={() => {
         dispatch(uiActions.setUiState(
           'showAuthDebugConsole',
-          !showAuthDebugConsole,
+          true,
         ));
       }}
     >
