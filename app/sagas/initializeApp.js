@@ -109,6 +109,14 @@ export function* initialConfigureApp({
   yield call(initializeMixpanel);
   yield call(identifyInSentryAndMixpanel, host, userData);
 
+  let accounts = yield call(getFromStorage, 'accounts');
+  if (!accounts) accounts = [];
+  yield put(uiActions.setUiState('accounts', accounts));
+
+  let acknowlegdedFeatures = yield call(getFromStorage, 'acknowlegdedFeatures');
+  if (!acknowlegdedFeatures) acknowlegdedFeatures = [];
+  yield put(uiActions.setUiState('acknowlegdedFeatures', acknowlegdedFeatures));
+
   const issuesSourceId: Id | null = yield call(getFromStorage, 'issuesSourceId');
   const issuesSourceType = yield call(getFromStorage, 'issuesSourceType');
   const issuesSprintId: Id | null = yield call(getFromStorage, 'issuesSprintId');

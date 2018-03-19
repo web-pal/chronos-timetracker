@@ -111,7 +111,7 @@ class EmailStep extends Component<Props> {
           <Field
             name="username"
             type="text"
-            placeholder="Enter email"
+            placeholder="Enter username"
             withRef
             ref={(el) => {
               this.usernameInput = el;

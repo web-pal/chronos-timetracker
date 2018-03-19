@@ -44,6 +44,8 @@ import {
 } from 'data/svg';
 import config from 'config';
 
+import FeatureHighlight from '../../components/FeatureHighlight';
+
 import {
   HeaderContainer,
   ProfileContainer,
@@ -88,9 +90,45 @@ const Header: StatelessFunctionalComponent<Props> = ({
         <ProfileName>
           {userData.displayName}
         </ProfileName>
-        <ProfileTeam>
-          {host}
-        </ProfileTeam>
+        <FeatureHighlight
+          id="multiAccounts"
+          description="You can switch between your accounts here."
+        >
+          <DropdownMenu
+            triggerType="default"
+            position="right top"
+            trigger={
+              <ProfileTeam>
+                {host} <ChevronDownIcon />
+              </ProfileTeam>
+            }
+          >
+            {accounts.map((ac) => {
+              const isActive = transformValidHost(ac.host).host === host &&
+                (ac.username === userData.emailAddress ||
+                  ac.username === userData.key ||
+                  ac.username === userData.name);
+              return (
+                <DropdownItem
+                  key={`${ac.host}:${ac.username}`}
+                  onClick={() => dispatch(authActions.switchAccount(ac))}
+                  isDisabled={isActive}
+                  elemAfter={isActive && <Lozenge appearance="success">Active</Lozenge>}
+                >
+                  <Tag text={ac.host} color="teal" />
+                  {ac.username}
+                </DropdownItem>
+              );
+            })}
+            <DropdownItem
+              onClick={() => dispatch(authActions.logoutRequest({ dontForget: true }))}
+            >
+              <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                <EditorAddIcon /> Add account
+              </span>
+            </DropdownItem>
+          </DropdownMenu>
+        </FeatureHighlight>
       </ProfileInfo>
     </ProfileContainer>
 
