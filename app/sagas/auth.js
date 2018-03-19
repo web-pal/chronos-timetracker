@@ -217,19 +217,21 @@ export function* basicAuthLoginForm(): Generator<*, void, *> {
       trackMixpanel('Jira login');
       incrementMixpanel('Jira login', 1);
     } catch (err) {
-      err.debug.options.auth.password = '***';
-      err.debug.request.headers.authorization = '***';
-      yield put(authActions.addAuthDebugMessage([
-        {
-          json: err.debug,
-        },
-      ]));
+      if (err.debug) {
+        err.debug.options.auth.password = '***';
+        err.debug.request.headers.authorization = '***';
+        yield put(authActions.addAuthDebugMessage([
+          {
+            json: err.debug,
+          },
+        ]));
+      }
       yield put(uiActions.setUiState('loginRequestInProcess', false));
       yield put(uiActions.setUiState(
         'loginError',
         'Can not authenticate user. Please try again',
       ));
-      yield call(throwError, err.result);
+      yield call(throwError, err.result ? err.result : err);
     }
   }
 }
