@@ -1,4 +1,4 @@
-import styled from 'styled-components2';
+import styled from 'styled-components';
 
 export const PlaceholderContainer = styled.div`
   border-bottom: 1px solid rgba(151,151,151,.35);

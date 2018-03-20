@@ -1,4 +1,4 @@
-import styled from 'styled-components2';
+import styled from 'styled-components';
 import styledOld from 'styled-components';
 import FieldTextArea from '@atlaskit/field-text-area';
 

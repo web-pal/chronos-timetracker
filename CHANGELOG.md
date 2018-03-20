@@ -1,3 +1,48 @@
+<a name="2.6.2"></a>
+## [2.6.2](https://github.com/web-pal/chronos-timetracker/compare/v2.6.0...v2.6.2) (2018-03-19)
+
+
+### Bug Fixes
+
+* **Authorization:** check if debug info exist ([df86f22](https://github.com/web-pal/chronos-timetracker/commit/df86f22))
+* double-import ([f37beb7](https://github.com/web-pal/chronos-timetracker/commit/f37beb7))
+* yarn lock diff trash ([0c1398b](https://github.com/web-pal/chronos-timetracker/commit/0c1398b))
+
+
+### Features
+
+* **Authorization:** debug auth ([4a17ce0](https://github.com/web-pal/chronos-timetracker/commit/4a17ce0))
+* auth debug console actions ([741c1fa](https://github.com/web-pal/chronos-timetracker/commit/741c1fa))
+
+
+### Performance Improvements
+
+* rejectUnauthorized - false on ssl, for self-signed cerfificates ([37b2adb](https://github.com/web-pal/chronos-timetracker/commit/37b2adb))
+
+
+
+<a name="2.6.1"></a>
+## [2.6.1](https://github.com/web-pal/chronos-timetracker/compare/v2.6.0...v2.6.1) (2018-03-19)
+
+
+### Bug Fixes
+
+* **Authorization:** check if debug info exist ([df86f22](https://github.com/web-pal/chronos-timetracker/commit/df86f22))
+* double-import ([f37beb7](https://github.com/web-pal/chronos-timetracker/commit/f37beb7))
+
+
+### Features
+
+* **Authorization:** debug auth ([4a17ce0](https://github.com/web-pal/chronos-timetracker/commit/4a17ce0))
+* auth debug console actions ([741c1fa](https://github.com/web-pal/chronos-timetracker/commit/741c1fa))
+
+
+### Performance Improvements
+
+* rejectUnauthorized - false on ssl, for self-signed cerfificates ([37b2adb](https://github.com/web-pal/chronos-timetracker/commit/37b2adb))
+
+
+
 <a name="2.6.0"></a>
 # [2.6.0](https://github.com/web-pal/chronos-timetracker/compare/v2.5.20...v2.6.0) (2018-03-15)
 

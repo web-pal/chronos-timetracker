@@ -6,11 +6,8 @@ import {
 } from './helper';
 
 
-export function jiraProfile(): Promise<*> {
-  return jira.client.myself.getMyself()
-    .then(
-      res => res,
-    );
+export function jiraProfile(debug: boolean = false): Promise<*> {
+  return jira.client.myself.getMyself(debug);
 }
 
 export function jiraAuth({

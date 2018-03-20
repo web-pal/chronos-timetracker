@@ -2,7 +2,7 @@
 import React from 'react';
 import {
   ThemeProvider,
-} from 'styled-components2';
+} from 'styled-components';
 
 import type {
   StatelessFunctionalComponent,

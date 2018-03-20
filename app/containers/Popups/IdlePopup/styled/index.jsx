@@ -1,4 +1,4 @@
-import styled from 'styled-components2';
+import styled from 'styled-components';
 
 // eslint-disable-next-line import/prefer-default-export
 export const PopupContainer = styled.div`

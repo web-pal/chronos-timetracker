@@ -17,6 +17,9 @@ export type AuthAction =
   |} |
   {|
     type: typeof actionTypes.LOGOUT_REQUEST,
+    payload: {
+      dontForget: boolean,
+    }
   |} |
   {|
     type: typeof actionTypes.ACCEPT_OAUTH,
@@ -24,4 +27,15 @@ export type AuthAction =
   |} |
   {|
     type: typeof actionTypes.DENY_OAUTH,
+  |} |
+  {|
+    type: typeof actionTypes.SWITCH_ACCOUNT,
+    payload: {|
+      host: string,
+      username: string,
+    |}
+  |} |
+  {|
+    type: typeof actionTypes.ADD_AUTH_DEBUG_MESSAGE,
+    payload: Array<*>,
   |};

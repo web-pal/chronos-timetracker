@@ -1,4 +1,4 @@
-import styled from 'styled-components2';
+import styled from 'styled-components';
 
 export const H800 = styled.span`
   font-weight: 500;

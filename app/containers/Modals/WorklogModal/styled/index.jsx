@@ -1,4 +1,4 @@
-import styled from 'styled-components2';
+import styled from 'styled-components';
 import ClickOutside from 'react-click-outside';
 
 export const CalendarContainer = styled(ClickOutside)`

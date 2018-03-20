@@ -1,4 +1,4 @@
-import styled from 'styled-components2';
+import styled from 'styled-components';
 import UserAvatarCircleIcon from '@atlaskit/icon/glyph/user-avatar-circle';
 import {
   play,
