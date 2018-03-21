@@ -179,7 +179,6 @@ function* fetchAdditionalWorklogsForIssues(issues) {
         'filled issues with lacking worklogs: ',
         withAdditionalWorklogs,
       );
-      trackMixpanel('Additional worklogs was fetched');
       return withAdditionalWorklogs;
     }
     return issues;

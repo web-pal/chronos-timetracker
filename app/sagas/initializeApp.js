@@ -2,6 +2,7 @@
 import {
   call,
   put,
+  take,
   fork,
 } from 'redux-saga/effects';
 import {
@@ -45,6 +46,7 @@ import {
   infoLog,
   notify,
 } from './ui';
+import createIpcChannel from './ipc';
 
 import jira from '../utils/jiraClient';
 import {
@@ -291,4 +293,21 @@ export function* initializeApp(): Generator<*, *, *> {
   } finally {
     yield put(uiActions.setUiState('initializeInProcess', false));
   }
+}
+
+
+function getDispatchActionListener(channel) {
+  return function* listenReFetchIssue() {
+    while (true) {
+      const {
+        payload,
+      } = yield take(channel);
+      yield put(payload[0]);
+    }
+  };
+}
+
+export function* createDispatchActionListener(): Generator<*, *, *> {
+  const dispatchChannel = yield call(createIpcChannel, 'dispatch');
+  yield fork(getDispatchActionListener(dispatchChannel));
 }

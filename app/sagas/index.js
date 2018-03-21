@@ -18,6 +18,7 @@ import * as traySagas from './tray';
 
 import {
   initializeApp,
+  createDispatchActionListener,
 } from './initializeApp';
 
 
@@ -25,6 +26,7 @@ export default function* rootSaga(): Generator<*, void, *> {
   yield all([
     // INITIALIZATION
     fork(initializeApp),
+    fork(createDispatchActionListener),
 
     // auth
     fork(authSagas.createIpcAuthListeners),

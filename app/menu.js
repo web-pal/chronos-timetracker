@@ -4,6 +4,9 @@ import {
   shell,
   BrowserWindow,
 } from 'electron';
+import {
+  CLEAR_ELECTRON_CACHE,
+} from './actions/actionTypes/settings';
 
 
 export default class MenuBuilder {
@@ -58,6 +61,19 @@ export default class MenuBuilder {
         { label: 'Hide Others', accelerator: 'Command+Shift+H', role: 'hideothers' },
         { label: 'Show All', role: 'unhide' },
         { type: 'separator' },
+        {
+          label: 'Clear cache',
+          click: (menu, win) => {
+            if (win) {
+              win.webContents.send(
+                'dispatch',
+                {
+                  type: CLEAR_ELECTRON_CACHE,
+                },
+              );
+            }
+          },
+        },
         {
           label: 'Quit',
           accelerator: 'Command+Q',
@@ -183,8 +199,29 @@ export default class MenuBuilder {
           shell.openExternal('https://web-pal.atlassian.net/servicedesk/customer/portal/2');
         },
       }],
+    }, {
+      label: 'Clear cache',
+      click: (menu, win) => {
+        if (win) {
+          win.webContents.send(
+            'dispatch',
+            {
+              type: CLEAR_ELECTRON_CACHE,
+            },
+          );
+        }
+      },
+    }, {
+      label: 'Quit',
+      accelerator: 'Ctrl+Q',
+      click: (menu, win) => {
+        if (win && win.id !== 1) {
+          win.hide();
+        } else {
+          app.quit();
+        }
+      },
     }];
-
     return templateDefault;
   }
 }

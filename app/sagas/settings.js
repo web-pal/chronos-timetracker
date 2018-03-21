@@ -18,7 +18,6 @@ import * as Api from 'api';
 import {
   actionTypes,
   uiActions,
-  authActions,
 } from 'actions';
 import {
   getSettingsState,
@@ -95,24 +94,18 @@ export function* watchLocalDesktopSettingsChange(): Generator<*, *, *> {
   yield takeEvery(actionTypes.SET_LOCAL_DESKTOP_SETTING, onChangeLocalDesktopSettings);
 }
 
-function* clearElectronCacheSaga(): Generator<*, *, *> {
-  try {
-    const appDir = remote.getGlobal('appDir');
-    yield call(removeDir, appDir);
-    yield put(authActions.logoutRequest({ dontForget: true }));
-  }
-  catch(e) {
-    console.log(`@@ Error while removing appDir (${appDir})`, e);
+function* removeAllIn(dir, pathName) {
+  const p = path.join(dir, pathName);
+  const stat = yield cps(fs.lstat, p);
+  if (stat.isDirectory()) {
+    yield call(removeDir, p); // eslint-disable-line
+  } else {
+    yield cps(fs.unlink, p);
+    console.log(`Removed file ${p}`);
   }
 }
-
-export function* watchClearElectronChanheRequest(): Generator<*, *, *> {
-  yield takeEvery(actionTypes.CLEAR_ELECTRON_CACHE, clearElectronCacheSaga);
-}
-
 
 function* removeDir(dir) {
-  const ex = fs.existsSync(dir);
   const exists = yield cps(fs.lstat, dir);
   if (exists) {
     const files = yield cps(fs.readdir, dir);
@@ -124,13 +117,17 @@ function* removeDir(dir) {
   }
 }
 
-function* removeAllIn(dir, pathName) {
-  const p = path.join(dir, pathName);
-  const stat = yield cps(fs.lstat, p);
-  if (stat.isDirectory()) {
-    yield call(removeDir, p);
-  } else {
-    yield cps(fs.unlink, p);
-    console.log(`Removed file ${p}`);
+function* clearElectronCacheSaga(): Generator<*, *, *> {
+  try {
+    const appDir = remote.getGlobal('appDir');
+    yield call(removeDir, appDir);
+    remote.app.relaunch();
+    remote.app.exit(0);
+  } catch (err) {
+    console.log('@@ Error while removing appDir', err);
   }
+}
+
+export function* watchClearElectronChanheRequest(): Generator<*, *, *> {
+  yield takeEvery(actionTypes.CLEAR_ELECTRON_CACHE, clearElectronCacheSaga);
 }

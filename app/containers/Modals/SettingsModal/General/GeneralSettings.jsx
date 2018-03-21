@@ -66,7 +66,7 @@ const GeneralSettings: StatelessFunctionalComponent<Props> = ({
         <br />
         <ButtonGroup>
           <Button
-            appearance="danger"
+            appearance="primary"
             onClick={clearChache}
           >
             Clear cache
