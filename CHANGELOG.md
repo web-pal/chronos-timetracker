@@ -1,3 +1,19 @@
+<a name="2.6.3"></a>
+## [2.6.3](https://github.com/web-pal/chronos-timetracker/compare/v2.6.2...v2.6.3) (2018-03-21)
+
+
+### Bug Fixes
+
+* clear cache in menu ([ae57962](https://github.com/web-pal/chronos-timetracker/commit/ae57962))
+* storage promises with reject ([a3f3362](https://github.com/web-pal/chronos-timetracker/commit/a3f3362))
+
+
+### Features
+
+* add clear cache button to settings and error message of ErrorBoundary ([#97](https://github.com/web-pal/chronos-timetracker/issues/97)) ([216f104](https://github.com/web-pal/chronos-timetracker/commit/216f104))
+
+
+
 <a name="2.6.2"></a>
 ## [2.6.2](https://github.com/web-pal/chronos-timetracker/compare/v2.6.0...v2.6.2) (2018-03-19)
 
