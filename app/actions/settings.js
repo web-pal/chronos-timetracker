@@ -29,3 +29,7 @@ export const setSettingsModalTab = (
   type: types.SET_SETTINGS_MODAL_TAB,
   tabName,
 });
+
+export const clearElectronCache = (): SettingsAction => ({
+  type: types.CLEAR_ELECTRON_CACHE,
+});

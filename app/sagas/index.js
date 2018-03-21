@@ -57,6 +57,7 @@ export default function* rootSaga(): Generator<*, void, *> {
 
     // settings
     fork(settingsSagas.watchLocalDesktopSettingsChange),
+    fork(settingsSagas.watchClearElectronChanheRequest),
 
     // worklogs
     fork(worklogsSagas.watchSaveWorklogRequest),

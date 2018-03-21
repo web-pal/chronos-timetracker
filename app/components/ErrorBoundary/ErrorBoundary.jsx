@@ -2,6 +2,15 @@
 import React, { Component } from 'react';
 import Raven from 'raven-js';
 
+import { connect } from 'react-redux';
+
+
+import Button from '@atlaskit/button';
+
+import {
+  settingsActions,
+} from 'actions';
+
 
 class ErrorBoundary extends Component<any, any> {
   state = {
@@ -26,10 +35,26 @@ class ErrorBoundary extends Component<any, any> {
 
   render() {
     if (this.state.hasError) {
-      return <h1>Something went wrong.</h1>;
+      return (
+        <div>
+          <h1>Something went wrong.</h1>
+          You may try to
+          <Button
+            appearance="danger"
+            onClick={() => this.props.dispatch(
+              settingsActions.clearElectronCache(),
+            )}
+          >
+            Clear cache
+          </Button>
+        </div>
+      );
     }
     return this.props.children;
   }
 }
 
-export default ErrorBoundary;
+export default connect(
+  null,
+  dispatch => ({ dispatch }),
+)(ErrorBoundary);
