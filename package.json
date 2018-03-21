@@ -19,7 +19,7 @@
     "prestart": "npm run build",
     "postinstall": "concurrently \"yarn build-dll\" \"electron-builder install-app-deps\" \"node node_modules/fbjs-scripts/node/check-dev-engines.js package.json\" \"yarn flow-typed\"",
     "package": " cross-env UPLOAD_SENTRY=1 yarn build && build --publish never",
-    "package-dev": " cross-env DEBUG_PROD=true UPLOAD_SENTRY=0 yarn build && build --publish never",
+    "package-dev": " cross-env DEBUG_PROD=false UPLOAD_SENTRY=0 yarn build && build --publish never",
     "package-release": "yarn build && build -p always",
     "package-win": "yarn build && build --win --x64",
     "package-linux": "yarn build && build --linux",

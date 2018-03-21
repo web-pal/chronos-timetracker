@@ -18,36 +18,39 @@ const prefixedKeys = [
   'issuesFiltersBySourceId',
 ];
 
-export const storageGetPromise = (key: string): Promise<mixed> => new Promise((resolve) => {
-  storage.get(key, (err, data) => {
-    if (err) {
-      throw new Error(`Error getting from storage: ${err}`);
-    }
-    if (!data || (typeof data === 'object' && Object.keys(data).length === 0)) {
-      resolve(null);
-    } else {
-      resolve(data);
-    }
+export const storageGetPromise = (key: string): Promise<mixed> =>
+  new Promise((resolve, reject) => {
+    storage.get(key, (err, data) => {
+      if (err) {
+        reject(new Error(`Error getting from storage: ${err}`));
+      }
+      if (!data || (typeof data === 'object' && Object.keys(data).length === 0)) {
+        resolve(null);
+      } else {
+        resolve(data);
+      }
+    });
   });
-});
 
-export const storageSetPromise = (key: string, data: *): Promise<void> => new Promise((resolve) => {
-  storage.set(key, data, (err) => {
-    if (err) {
-      throw new Error(`Error setting to storage: ${err}`);
-    }
-    resolve();
+export const storageSetPromise = (key: string, data: *): Promise<void> =>
+  new Promise((resolve, reject) => {
+    storage.set(key, data, (err) => {
+      if (err) {
+        reject(new Error(`Error setting to storage: ${err}`));
+      }
+      resolve();
+    });
   });
-});
 
-export const storageRemovePromise = (key: string): Promise<void> => new Promise((resolve) => {
-  storage.remove(key, (err) => {
-    if (err) {
-      throw new Error(`Error removing from storage: ${err}`);
-    }
-    resolve();
+export const storageRemovePromise = (key: string): Promise<void> =>
+  new Promise((resolve, reject) => {
+    storage.remove(key, (err) => {
+      if (err) {
+        reject(new Error(`Error removing from storage: ${err}`));
+      }
+      resolve();
+    });
   });
-});
 
 export function* getFromStorage(key: string): Generator<*, mixed, *> {
   const host: URL | null = yield select(getUiState('host'));
