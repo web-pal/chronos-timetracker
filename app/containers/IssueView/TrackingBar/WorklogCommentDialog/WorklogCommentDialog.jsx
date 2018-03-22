@@ -23,6 +23,7 @@ import {
   EditButtonContainer,
 } from './styled';
 
+import WorklogCommentOptions from './WorklogCommentOptions';
 
 type Props = {
   issue: Issue,
@@ -106,6 +107,7 @@ class WorklogCommentDialog extends PureComponent<Props, State> {
           onConfirm={this.onConfirm}
           onCancel={this.onCancel}
         />
+        <WorklogCommentOptions />
         <RemainingEstimatePicker
           issue={this.props.issue}
           value={this.props.remainingEstimateValue}
