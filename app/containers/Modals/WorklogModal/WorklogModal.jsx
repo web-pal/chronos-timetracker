@@ -34,6 +34,9 @@ import TimePicker from 'rc-time-picker';
 import Button, {
   ButtonGroup,
 } from '@atlaskit/button';
+import {
+  CheckboxStateless as Checkbox,
+} from '@atlaskit/checkbox';
 
 import {
   ModalContentContainer,
@@ -42,11 +45,13 @@ import {
 import {
   uiActions,
   worklogsActions,
+  settingsActions,
 } from 'actions';
 import {
   getModalState,
   getUiState,
   getEditWorklog,
+  getSettingsState,
 } from 'selectors';
 
 import {
@@ -82,7 +87,10 @@ type State = {
   remainingEstimateValue: 'new' | 'leave' | 'manual' | 'auto',
   remainingEstimateSetTo: string,
   remainingEstimateReduceBy: string,
+  adjustStartTime: boolean,
 };
+
+const JIRA_TIME_REGEXP = /^(\d{1,2}d{1}(\s{1}|$))?(\d{1,2}h{1}(\s{1}|$))?(\d{1,2}m{1}(\s{1}|$))?(\d{1,2}s{1}(\s{1}|$))?$/g;
 
 class WorklogModal extends Component<Props, State> {
   state = {
@@ -125,13 +133,15 @@ class WorklogModal extends Component<Props, State> {
 
   setDateAndTimeToNow = () => {
     const now = moment();
-    this.setState({ startTime: now });
-    this.setState({ date: now.format('MM/DD/YYYY') });
+    this.setState({
+      startTime: now,
+      date: now.format('MM/DD/YYYY'),
+    });
   }
 
   timeInput: any;
 
-  handleTimeChange = label => (value) => {
+  handleTimeChange = (label: 'startTime') => (value) => {
     this.setState({ [label]: value });
   }
 
@@ -139,18 +149,42 @@ class WorklogModal extends Component<Props, State> {
     const jiraTime = e.target.value || '';
     const isValid = this.checkIfJiraTime(jiraTime);
     if (isValid) {
-      this.setState({ timeSpent: jiraTime, jiraTimeError: null });
+      this.setState(({ startTime }) => {
+        if (this.props.adjustStartTime) {
+          const newStartTime = startTime.clone().subtract(
+            jiraTime.split(' ').map((t) => {
+              const value = +(t.substr(0, t.length - 1));
+              switch (t.substr(-1)) {
+                case 's':
+                  return value;
+                case 'm':
+                  return value * 60;
+                case 'h':
+                  return value * 60 * 60;
+                case 'd':
+                  return value * 60 * 60 * 8;
+              }
+            }).reduce((s, v) => s + v, 0),
+            's',
+          );
+          return {
+            timeSpent: jiraTime,
+            jiraTimeError: null,
+            startTime: newStartTime,
+            date: newStartTime.format('MM/DD/YYYY'),
+          };
+        }
+        return {
+          timeSpent: jiraTime,
+          jiraTimeError: null,
+        };
+      });
     } else {
       this.setState({ timeSpent: jiraTime, jiraTimeError: 'invalid format' });
     }
   }
 
-  checkIfJiraTime = (jiraTime) => {
-    if (/^(\d{1,2}d{1}(\s{1}|$))?(\d{1,2}h{1}(\s{1}|$))?(\d{1,2}m{1}(\s{1}|$))?(\d{1,2}s{1}(\s{1}|$))?$/g.test(jiraTime)) {
-      return true;
-    }
-    return false;
-  }
+  checkIfJiraTime = RegExp.prototype.test.bind(JIRA_TIME_REGEXP)
 
   render() {
     const {
@@ -160,6 +194,7 @@ class WorklogModal extends Component<Props, State> {
       saveInProcess,
       dispatch,
       issue,
+      adjustStartTime,
     }: Props = this.props;
 
     const {
@@ -301,16 +336,33 @@ class WorklogModal extends Component<Props, State> {
           }
 
           {/* FROM */}
-          <Flex column style={{ width: 165 }}>
+
+          <Flex column>
             <InputLabel>Started</InputLabel>
-            <TimePicker
-              value={startTime}
-              onChange={this.handleTimeChange('startTime')}
-              className="TimePicker"
-              popupClassName="TimePickerPopup"
-              format="HH:mm"
-              showSecond={false}
-            />
+            <Flex alignCenter>
+              <div style={{ width: 165 }}>
+                <TimePicker
+                  value={startTime}
+                  onChange={this.handleTimeChange('startTime')}
+                  className="TimePicker"
+                  popupClassName="TimePickerPopup"
+                  format="HH:mm"
+                  showSecond={false}
+                />
+              </div>
+              <Checkbox
+                name="adjust_start_time"
+                id="adjust_start_time"
+                isChecked={adjustStartTime}
+                label="Adjust start time according to time spend"
+                onChange={() => {
+                  dispatch(settingsActions.setLocalDesktopSetting(
+                    adjustStartTime,
+                    'notAdjustStartTime',
+                  ));
+                }}
+              />
+            </Flex>
           </Flex>
 
           {/* ESTIMATE */}
@@ -348,6 +400,7 @@ function mapStateToProps(state) {
       state,
       'worklogs.requests.saveWorklog.status',
     ).pending,
+    adjustStartTime: !getSettingsState('localDesktopSettings')(state).notAdjustStartTime,
   };
 }
 
