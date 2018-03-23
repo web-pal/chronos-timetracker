@@ -48,15 +48,18 @@ class WorklogCommentDialog extends PureComponent<Props, State> {
     this.state = {
       dialogOpen: false,
       isEditing: true,
+      comment: this.props.comment,
     };
   }
 
   onConfirm = () => {
     this.exitEditingMode();
+    this.props.onSetComment(this.state.comment);
   };
 
   onCancel = () => {
     this.exitEditingMode();
+    this.setState({ comment: this.props.comment });
   };
 
   toggleDialog = () => {
@@ -90,8 +93,8 @@ class WorklogCommentDialog extends PureComponent<Props, State> {
               autoFocus
               isEditing
               isInitiallySelected
-              value={this.props.comment}
-              onChange={e => this.props.onSetComment(e.target.value)}
+              value={this.state.comment}
+              onChange={e => this.setState({ comment: e.target.value })}
             />
           }
           readView={(
