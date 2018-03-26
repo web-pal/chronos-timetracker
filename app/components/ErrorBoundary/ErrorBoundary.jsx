@@ -38,7 +38,7 @@ class ErrorBoundary extends Component<any, any> {
       return (
         <div>
           <h1>Something went wrong.</h1>
-          You may try to
+          You may try to &nbsp;
           <Button
             appearance="danger"
             onClick={() => this.props.dispatch(

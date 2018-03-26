@@ -135,6 +135,13 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
             clearChache={() => dispatch(
               settingsActions.clearElectronCache(),
             )}
+            setEmptyWorklogSettings={(value) => {
+              dispatch(settingsActions.setLocalDesktopSetting(
+                value,
+                'isEmptyWorklogForbid',
+              ));
+              }
+            }
           />
         }
         {tab === 'Notifications' &&
