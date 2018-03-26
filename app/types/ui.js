@@ -93,6 +93,7 @@ export type UiState = {|
   remainingEstimateValue: RemainingEstimate,
   remainingEstimateNewValue: string,
   remainingEstimateReduceByValue: string,
+  isCommentDialogOpen: boolean,
 
   selectedIssueId: Id | null,
   issuesSourceType: string | null,

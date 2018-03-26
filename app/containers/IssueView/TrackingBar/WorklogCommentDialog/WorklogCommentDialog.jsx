@@ -35,10 +35,11 @@ type Props = {
   onRemainingEstimateChange: Function,
   onRemainingEstimateNewChange: Function,
   onRemainingEstimateReduceByChange: Function,
+  dialogOpen: boolean,
+  setDialogState: (dialogOpen: boolean) => void,
 };
 
 type State = {
-  dialogOpen: boolean,
   isEditing: boolean,
 };
 
@@ -46,7 +47,6 @@ class WorklogCommentDialog extends PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      dialogOpen: false,
       isEditing: true,
       comment: this.props.comment,
     };
@@ -63,10 +63,11 @@ class WorklogCommentDialog extends PureComponent<Props, State> {
   };
 
   toggleDialog = () => {
+    const newState = !this.props.dialogOpen;
     this.setState({
-      dialogOpen: !this.state.dialogOpen,
-      isEditing: !this.state.dialogOpen,
+      isEditing: newState,
     });
+    this.props.setDialogState(newState);
   }
 
   enterEditingMode = () => {
@@ -129,17 +130,19 @@ class WorklogCommentDialog extends PureComponent<Props, State> {
       <EditButtonContainer>
         <InlineDialog
           content={this.renderDialog()}
-          isOpen={this.state.dialogOpen}
+          isOpen={this.props.dialogOpen}
           onClose={(e) => {
             // Atlaskit HACK.
             // without it inline dialog gets closed on clicking inline-edit action buttons
             const { path } = e.event;
-            const shouldClose = !path.some(el => el.className === 'worklog-edit-popup');
+            const shouldClose = !path.some(el =>
+                el.className === 'worklog-edit-popup' ||
+                el.className === 'worklog-edit-popup-shouldNotCLose');
             if (shouldClose) {
               this.setState({
-                dialogOpen: false,
                 isEditing: true,
               });
+              this.props.setDialogState(false);
             }
           }}
           position="bottom left"

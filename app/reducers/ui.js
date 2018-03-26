@@ -49,6 +49,7 @@ const initialState: UiState = {
   remainingEstimateValue: 'auto',
   remainingEstimateNewValue: '',
   remainingEstimateReduceByValue: '',
+  isCommentDialogOpen: false,
 
   selectedIssueId: null,
   issuesSourceType: null,
