@@ -56,6 +56,7 @@ type Props = {
   remainingEstimateNewValue: string,
   remainingEstimateReduceByValue: string,
   dispatch: Dispatch,
+  isCommentDialogOpen: boolean,
 }
 
 function addLeadingZero(s: number): string {
@@ -80,6 +81,7 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
   remainingEstimateNewValue,
   remainingEstimateReduceByValue,
   dispatch,
+  isCommentDialogOpen,
 }: Props): Node => (
   <Transition
     appear
@@ -107,6 +109,8 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
           onRemainingEstimateReduceByChange={(value) => {
             dispatch(uiActions.setUiState('remainingEstimateReduceByValue', value));
           }}
+          dialogOpen={isCommentDialogOpen}
+          setDialogState={value => dispatch(uiActions.setUiState('isCommentDialogOpen', value))}
         />
         {screenshotsAllowed &&
           <div style={{ marginLeft: 10 }}>
@@ -139,22 +143,18 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
           {getTimeString(time)}
         </Time>
       </Flex>
-      <div
-        onClick={() => {
-          if (screenshotUploading) {
-            // eslint-disable-next-line no-alert
-            window.alert(
-              'Currently app in process of uploading screenshot, wait few seconds please',
-            );
-          } else {
-            dispatch(timerActions.stopTimerRequest());
-          }
-        }}
-      >
+      <div className="worklog-edit-popup-shouldNotCLose">
         <StopButton
           alt="stop"
           onClick={() => {
-            dispatch(timerActions.stopTimerRequest());
+            if (screenshotUploading) {
+              // eslint-disable-next-line no-alert
+              window.alert(
+                'Currently app in process of uploading screenshot, wait few seconds please',
+              );
+            } else {
+              dispatch(timerActions.stopTimerRequest());
+            }
           }}
         />
       </div>
@@ -172,6 +172,7 @@ function mapStateToProps(state) {
     remainingEstimateValue: getUiState('remainingEstimateValue')(state),
     remainingEstimateNewValue: getUiState('remainingEstimateNewValue')(state),
     remainingEstimateReduceByValue: getUiState('remainingEstimateReduceByValue')(state),
+    isCommentDialogOpen: getUiState('isCommentDialogOpen')(state),
   };
 }
 

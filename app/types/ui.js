@@ -89,9 +89,11 @@ export type UiState = {|
   editWorklogId: Id | null,
   worklogFormIssueId: Id | null,
   worklogComment: string,
+  postAlsoAsIssueComment: boolean,
   remainingEstimateValue: RemainingEstimate,
   remainingEstimateNewValue: string,
   remainingEstimateReduceByValue: string,
+  isCommentDialogOpen: boolean,
 
   selectedIssueId: Id | null,
   issuesSourceType: string | null,

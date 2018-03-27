@@ -40,6 +40,7 @@ import {
 import {
   throwError,
   infoLog,
+  notify,
 } from './ui';
 import {
   uploadWorklog,
@@ -282,8 +283,17 @@ export function* timerFlow(): Generator<*, *, *> {
           yield cancel();
         }
       } else {
-        yield call(stopTimer, channel, timerInstance);
-        yield cancel();
+        const { isEmptyWorklogForbid } = yield select(getSettingsState('localDesktopSettings'));
+        const comment = yield select(getUiState('worklogComment'));
+        if (isEmptyWorklogForbid && !comment) {
+          yield fork(notify, {
+            title: 'Please set comment for worklog',
+          });
+          yield put(uiActions.setUiState('isCommentDialogOpen', true));
+        } else {
+          yield call(stopTimer, channel, timerInstance);
+          yield cancel();
+        }
       }
     }
   } catch (err) {

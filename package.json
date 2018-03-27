@@ -1,6 +1,6 @@
 {
   "name": "Chronos",
-  "version": "2.6.3",
+  "version": "2.6.4",
   "description": "Full functionality time tracking software with direct JIRA integration",
   "scripts": {
     "build": "concurrently \"yarn build-main\" \"yarn build-renderer\"",
@@ -161,7 +161,7 @@
     "electron-log": "2.2.14",
     "electron-updater": "2.20.1",
     "font-awesome": "4.7.0",
-    "jira-connector": "github:web-pal/jira-connector#c32722762d8d00c908f2449f6091e34f93937e7e",
+    "jira-connector": "github:web-pal/jira-connector#290772714e5ad00aa34854dcc5cd22f6a9c4ce43",
     "keytar": "^4.1.0",
     "merge-images": "1.0.7",
     "minimist": "^1.2.0",

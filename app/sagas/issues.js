@@ -417,12 +417,6 @@ export function* refetchIssues(debouncing: boolean): Generator<*, void, *> {
         refetchFilterIssuesMarker: true,
       },
     }));
-    yield put(resourcesActions.setResourceMeta({
-      resourceName: 'issues',
-      meta: {
-        refetchFilterIssuesMarker: true,
-      },
-    }));
 
     const sidebarType = yield select(getUiState('sidebarType'));
     if (sidebarType === 'recent') {

@@ -66,6 +66,9 @@ export const CommentBody = styled.span`
   color: #172B4D;
   font-weight: 400;
   margin-left: 48px;
+  & > p, & > div, & > span {
+    word-break: break-all;
+  }
 `;
 
 export const CommentAvatar = styled.img`
