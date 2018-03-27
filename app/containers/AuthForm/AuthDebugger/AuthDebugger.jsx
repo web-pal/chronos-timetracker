@@ -14,6 +14,9 @@ import type {
 } from 'react-redux';
 
 import {
+  settingsActions,
+} from 'actions';
+import {
   getUiState,
 } from 'selectors';
 
@@ -32,6 +35,7 @@ import CopyIcon from '@atlaskit/icon/glyph/copy';
 import FileIcon from '@atlaskit/icon/glyph/file';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import ShortcutIcon from '@atlaskit/icon/glyph/shortcut';
+import EditorRemoveIcon from '@atlaskit/icon/glyph/editor/remove';
 
 import {
   AuthDebuggerContainer,
@@ -59,6 +63,15 @@ const AuthDebugger: StatelessFunctionalComponent<Props> = ({
         Auth debug console 📺
       </DebugHeaderTitle>
       <DebugActions>
+        <Tooltip content="Clear cache">
+          <EditorRemoveIcon
+            onClick={() => {
+              dispatch(
+                settingsActions.clearElectronCache(),
+              );
+            }}
+          />
+        </Tooltip>
         <Tooltip content="Copy to clipboard">
           <CopyIcon onClick={() => ipcRenderer.send('copy-login-debug', messages)} />
         </Tooltip>

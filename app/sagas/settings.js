@@ -4,10 +4,14 @@ import {
   put,
   takeEvery,
   select,
+  cps,
+  all,
 } from 'redux-saga/effects';
 import {
   remote,
 } from 'electron';
+import path from 'path';
+import fs from 'fs';
 
 import * as Api from 'api';
 
@@ -88,4 +92,42 @@ export function* onChangeLocalDesktopSettings({
 
 export function* watchLocalDesktopSettingsChange(): Generator<*, *, *> {
   yield takeEvery(actionTypes.SET_LOCAL_DESKTOP_SETTING, onChangeLocalDesktopSettings);
+}
+
+function* removeAllIn(dir, pathName) {
+  const p = path.join(dir, pathName);
+  const stat = yield cps(fs.lstat, p);
+  if (stat.isDirectory()) {
+    yield call(removeDir, p); // eslint-disable-line
+  } else {
+    yield cps(fs.unlink, p);
+    console.log(`Removed file ${p}`);
+  }
+}
+
+function* removeDir(dir) {
+  const exists = yield cps(fs.lstat, dir);
+  if (exists) {
+    const files = yield cps(fs.readdir, dir);
+    yield all(
+      files.map(fileName => call(removeAllIn, dir, fileName)),
+    );
+    yield cps(fs.rmdir, dir);
+    console.log(`Removed dir ${dir}`);
+  }
+}
+
+function* clearElectronCacheSaga(): Generator<*, *, *> {
+  try {
+    const appDir = remote.getGlobal('appDir');
+    yield call(removeDir, appDir);
+    remote.app.relaunch();
+    remote.app.exit(0);
+  } catch (err) {
+    console.log('@@ Error while removing appDir', err);
+  }
+}
+
+export function* watchClearElectronChanheRequest(): Generator<*, *, *> {
+  yield takeEvery(actionTypes.CLEAR_ELECTRON_CACHE, clearElectronCacheSaga);
 }

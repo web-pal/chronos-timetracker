@@ -15,6 +15,9 @@ export type SettingsAction =
   {|
     type: typeof actionTypes.SET_SETTINGS_MODAL_TAB,
     tabName: string,
+  |}
+  {|
+    type: typeof actionTypes.CLEAR_ELECTRON_CACHE,
   |};
 
 export type SettingsState = {|

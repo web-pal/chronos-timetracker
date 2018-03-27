@@ -11,6 +11,10 @@ import {
   CheckboxGroup,
 } from '@atlaskit/checkbox';
 
+import Button, {
+  ButtonGroup,
+} from '@atlaskit/button';
+
 import {
   H100,
 } from 'styles/typography';
@@ -31,11 +35,13 @@ import {
 type Props = {
   settings: SettingsGeneral,
   setTraySettings: (value: any) => void,
+  clearChache: () => void,
 }
 
 const GeneralSettings: StatelessFunctionalComponent<Props> = ({
   settings,
   setTraySettings,
+  clearChache,
 }: Props): Node => {
   const isIconHidden = !!settings.trayShowTimer;
   // const isTimerHidden = false;
@@ -57,6 +63,18 @@ const GeneralSettings: StatelessFunctionalComponent<Props> = ({
             onChange={() => setTraySettings(!isIconHidden)}
           />
         </CheckboxGroup>
+        <br />
+        <ButtonGroup>
+          <Button
+            appearance="primary"
+            onClick={clearChache}
+          >
+            Clear cache
+          </Button>
+        </ButtonGroup>
+        <H100 style={{ margin: '4px 0 0 0' }}>
+          Clearing cache will cause logout.
+        </H100>
       </Flex>
     </SettingsSectionContent>
   );

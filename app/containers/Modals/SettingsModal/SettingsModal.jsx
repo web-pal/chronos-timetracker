@@ -132,6 +132,9 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
                 'trayShowTimer',
               ));
             }}
+            clearChache={() => dispatch(
+              settingsActions.clearElectronCache(),
+            )}
           />
         }
         {tab === 'Notifications' &&
