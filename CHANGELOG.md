@@ -1,3 +1,21 @@
+<a name="2.6.4"></a>
+## [2.6.4](https://github.com/web-pal/chronos-timetracker/compare/v2.6.3...v2.6.4) (2018-03-27)
+
+
+### Bug Fixes
+
+* **Browsing Issues:** fix for filter of issues for sprint ([#102](https://github.com/web-pal/chronos-timetracker/issues/102)) ([26b0608](https://github.com/web-pal/chronos-timetracker/commit/26b0608))
+* **Issue Detail View:** fix too wide comments tab if there are comments with long strings ([#100](https://github.com/web-pal/chronos-timetracker/issues/100)) ([804bfb6](https://github.com/web-pal/chronos-timetracker/commit/804bfb6)), closes [#83](https://github.com/web-pal/chronos-timetracker/issues/83)
+
+
+### Features
+
+* add adjust start time checkbox to worklog modal ([#98](https://github.com/web-pal/chronos-timetracker/issues/98)) ([0ce226d](https://github.com/web-pal/chronos-timetracker/commit/0ce226d)), closes [#84](https://github.com/web-pal/chronos-timetracker/issues/84)
+* **Tracking:** add checkbox to post comment also as issue comment ([#99](https://github.com/web-pal/chronos-timetracker/issues/99)) ([6f6c23a](https://github.com/web-pal/chronos-timetracker/commit/6f6c23a)), closes [#90](https://github.com/web-pal/chronos-timetracker/issues/90)
+* **Tracking:** worklog comment as a required item ([#101](https://github.com/web-pal/chronos-timetracker/issues/101)) ([33043bd](https://github.com/web-pal/chronos-timetracker/commit/33043bd)), closes [#81](https://github.com/web-pal/chronos-timetracker/issues/81)
+
+
+
 <a name="2.6.3"></a>
 ## [2.6.3](https://github.com/web-pal/chronos-timetracker/compare/v2.6.2...v2.6.3) (2018-03-21)
 
