@@ -18,3 +18,7 @@ export const EditButton = styled(EditFilledIcon)`
 export const EditButtonContainer = styled.div`
   cursor: pointer;
 `;
+
+export const IssueCommentCheckboxWrapper = styled.div`
+  margin-left: -10px;
+`;

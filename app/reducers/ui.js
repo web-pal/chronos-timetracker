@@ -45,9 +45,11 @@ const initialState: UiState = {
   editWorklogId: null,
   worklogFormIssueId: null,
   worklogComment: '',
+  postAlsoAsIssueComment: false,
   remainingEstimateValue: 'auto',
   remainingEstimateNewValue: '',
   remainingEstimateReduceByValue: '',
+  isCommentDialogOpen: false,
 
   selectedIssueId: null,
   issuesSourceType: null,

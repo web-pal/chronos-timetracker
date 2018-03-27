@@ -22,6 +22,7 @@ import {
 import {
   types,
   uiActions,
+  issuesActions,
 } from 'actions';
 import {
   getResourceIds,
@@ -266,9 +267,15 @@ export function* uploadWorklog(options: any): Generator<*, *, *> {
       },
     });
 
+    const postAlsoAsIssueComment = yield select(getUiState('postAlsoAsIssueComment'));
+    if (postAlsoAsIssueComment && options.comment) {
+      yield put(issuesActions.commentRequest(options.comment, options.issueId));
+    }
+
     // reset ui state
     yield put(uiActions.resetUiState([
       'worklogComment',
+      'postAlsoAsIssueComment',
       'remainingEstimateValue',
       'remainingEstimateNewValue',
       'remainingEstimateReduceByValue',
