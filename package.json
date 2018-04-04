@@ -143,6 +143,7 @@
     "@atlaskit/dropdown-menu": "3.12.1",
     "@atlaskit/field-base": "8.2.1",
     "@atlaskit/field-radio-group": "1.9.2",
+    "@atlaskit/field-text": "^4.3.0",
     "@atlaskit/field-text-area": "1.2.2",
     "@atlaskit/flag": "6.5.1",
     "@atlaskit/icon": "10.13.0",

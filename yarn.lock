@@ -154,6 +154,14 @@
     prop-types "^15.5.10"
     styled-components "1.4.6 - 3"
 
+"@atlaskit/field-text@^4.3.0":
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/@atlaskit/field-text/-/field-text-4.3.0.tgz#4ef2a8ff7d0e16cfcee4df402bd82d087a7c6065"
+  dependencies:
+    "@atlaskit/field-base" "^8.2.1"
+    "@atlaskit/theme" "^2.4.1"
+    styled-components "1.4.6 - 3"
+
 "@atlaskit/flag@6.5.1":
   version "6.5.1"
   resolved "https://registry.yarnpkg.com/@atlaskit/flag/-/flag-6.5.1.tgz#3a14627b6f06ddaad06526e7356c05927512a101"
