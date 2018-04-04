@@ -164,6 +164,13 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
                 'updateChannel',
               ));
             }}
+            automaticUpdate={settings.updateAutomatically}
+            setAutomaticUpdate={(value) => {
+              dispatch(settingsActions.setLocalDesktopSetting(
+                value,
+                'updateAutomatically',
+              ));
+            }}
             updateCheckRunning={updateCheckRunning}
             updateAvailable={updateAvailable}
             updateFetching={updateFetching}

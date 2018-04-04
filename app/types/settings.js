@@ -38,6 +38,6 @@ export type SettingsGeneral = {
   showScreenshotPreview: boolean,
   trayShowTimer: boolean,
   updateChannel: string,
-
+  updateAutomatically: boolean,
   isEmptyWorklogForbid: boolean,
 };

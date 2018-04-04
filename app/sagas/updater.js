@@ -82,11 +82,16 @@ function* watchUpdateAvailable(): Generator<*, *, *> {
     const { ev } = meta;
     yield call(
       infoLog,
-      'update is availible',
+      'update is available',
       meta,
     );
     yield put(uiActions.setUiState('updateFetching', true));
     newVersion = ev.version;
+
+    let settings = yield call(getFromStorage, 'localDesktopSettings');
+    if (settings.updateAutomatically) {
+      uiActions.installUpdateRequest();
+    }
   }
 }
 
@@ -118,7 +123,9 @@ function* watchUpdateDownloaded(): Generator<*, *, *> {
       updateDownloaded = true;
       trackMixpanel('Update installed');
       incrementMixpanel('Update installed', 1);
-      if (window.confirm('New version is available. Do you like to install it now?')) {
+
+      let settings = yield call(getFromStorage, 'localDesktopSettings');
+      if (settings.updateAutomatically) {
         const { running, uploading } = getGlobal('sharedObj');
         if (uploading) {
           window.alert('Currently app in process of saving worklog, wait few seconds and restart app');
@@ -130,6 +137,24 @@ function* watchUpdateDownloaded(): Generator<*, *, *> {
           } else {
             ipcRenderer.send('set-should-quit');
             autoUpdater.quitAndInstall();
+          }
+        }
+      } else {
+        let releaseNotes = parseReleaseNotes(meta.ev.releaseNotes.trim());
+        
+        if (window.confirm('New version is available:\n\n' + releaseNotes + 'Would you like to install it now?')) {
+          const { running, uploading } = getGlobal('sharedObj');
+          if (uploading) {
+            window.alert('Currently app in process of saving worklog, wait few seconds and restart app');
+          } else {
+            if (running) { // eslint-disable-line
+              if (window.confirm('Tracking in progress, save worklog before restart?')) {
+                yield put(timerActions.stopTimerRequest());
+              }
+            } else {
+              ipcRenderer.send('set-should-quit');
+              autoUpdater.quitAndInstall();
+            }
           }
         }
       }
@@ -185,4 +210,19 @@ export function* initializeUpdater(): Generator<*, *, *> {
   } catch (err) {
     yield call(throwError, err);
   }
+}
+
+function parseReleaseNotes(releaseNotes) {
+  releaseNotes = releaseNotes.replace(/<style([\s\S]*?)<\/style>/gi, '');
+  releaseNotes = releaseNotes.replace(/<script([\s\S]*?)<\/script>/gi, '');
+  releaseNotes = releaseNotes.replace(/<\/div>/ig, '\n');
+  releaseNotes = releaseNotes.replace(/<\/li>/ig, '\n');
+  releaseNotes = releaseNotes.replace(/<li>/ig, '  *  ');
+  releaseNotes = releaseNotes.replace(/<\/ul>/ig, '\n');
+  releaseNotes = releaseNotes.replace(/<\/h2>/ig, '\n');
+  releaseNotes = releaseNotes.replace(/<\/h3>/ig, '\n');
+  releaseNotes = releaseNotes.replace(/<\/p>/ig, '\n');
+  releaseNotes = releaseNotes.replace(/<br\s*[\/]?>/gi, "\n");
+  releaseNotes = releaseNotes.replace(/<[^>]+>/ig, '');
+  return releaseNotes;
 }
