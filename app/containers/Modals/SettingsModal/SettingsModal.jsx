@@ -135,10 +135,10 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
             clearChache={() => dispatch(
               settingsActions.clearElectronCache(),
             )}
-            setEmptyWorklogSettings={(value) => {
+            setAllowEmptyComment={(value) => {
               dispatch(settingsActions.setLocalDesktopSetting(
                 value,
-                'isEmptyWorklogForbid',
+                'allowEmptyComment',
               ));
               }
             }
