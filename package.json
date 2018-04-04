@@ -138,7 +138,7 @@
   "dependencies": {
     "@atlaskit/badge": "6.3.1",
     "@atlaskit/button": "6.6.3",
-    "@atlaskit/calendar": "3.2.1",
+    "@atlaskit/calendar": "^4.0.0",
     "@atlaskit/checkbox": "1.4.0",
     "@atlaskit/dropdown-menu": "3.12.1",
     "@atlaskit/field-base": "8.2.1",

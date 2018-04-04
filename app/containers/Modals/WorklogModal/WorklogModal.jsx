@@ -61,6 +61,8 @@ import {
   RemainingEstimatePicker,
 } from 'components';
 
+import { jts } from 'time-util';
+
 import {
   InputLabel,
   CalendarContainer,
@@ -151,27 +153,11 @@ class WorklogModal extends Component<Props, State> {
     if (isValid) {
       this.setState(({ startTime }) => {
         if (this.props.adjustStartTime) {
-          const newStartTime = startTime.clone().subtract(
-            jiraTime.split(' ').map((t) => {
-              const value = +(t.substr(0, t.length - 1));
-              switch (t.substr(-1)) {
-                case 's':
-                  return value;
-                case 'm':
-                  return value * 60;
-                case 'h':
-                  return value * 60 * 60;
-                case 'd':
-                  return value * 60 * 60 * 8;
-              }
-            }).reduce((s, v) => s + v, 0),
-            's',
-          );
+          const newStartTime = startTime.clone().subtract(jts(jiraTime), 's');
           return {
             timeSpent: jiraTime,
             jiraTimeError: null,
             startTime: newStartTime,
-            date: newStartTime.format('MM/DD/YYYY'),
           };
         }
         return {
