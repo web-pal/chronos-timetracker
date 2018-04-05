@@ -68,6 +68,19 @@ const GeneralSettings: StatelessFunctionalComponent<Props> = ({
           />
         </CheckboxGroup>
         <br />
+        <H100 style={{ margin: '0 0 4px 6px' }}>
+          Configure whether to allow sending worklogs without comment
+        </H100>
+        <CheckboxGroup>
+          <Checkbox
+            isChecked={allowEmptyComment}
+            value={allowEmptyComment}
+            name="sendEmptyWorklog"
+            label="Allow empty worklog comment"
+            onChange={() => setAllowEmptyComment(!allowEmptyComment)}
+          />
+        </CheckboxGroup>
+        <br />
         <ButtonGroup>
           <Button
             appearance="primary"
@@ -76,22 +89,10 @@ const GeneralSettings: StatelessFunctionalComponent<Props> = ({
             Clear cache
           </Button>
         </ButtonGroup>
-        <H100 style={{ margin: '4px 0 0 6px' }}>
-          Clearing cache will cause logout.
+        <H100 style={{ margin: '4px 0 0 6px', color: '#FFAB00', fontWeight: 300 }}>
+          Clearing cache will cause logout!
         </H100>
         <br />
-        <H100 style={{ margin: '0 0 4px 6px' }}>
-          Configure whether to forbid sending worlogs without comment
-        </H100>
-        <CheckboxGroup>
-          <Checkbox
-            isChecked={allowEmptyComment}
-            value={allowEmptyComment}
-            name="sendEmptyWorklog"
-            label="Allow empty comment"
-            onChange={() => setAllowEmptyComment(!allowEmptyComment)}
-          />
-        </CheckboxGroup>
       </Flex>
     </SettingsSectionContent>
   );

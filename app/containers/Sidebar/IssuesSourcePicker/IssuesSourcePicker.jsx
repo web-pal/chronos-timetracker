@@ -118,7 +118,6 @@ const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
         noMatchesFound="Nothing found"
       />
     }
-    {console.log(selectedOption)}
     {selectedSourceType === 'filter' && <JQLFilter selectedFilter={selectedOption} />}
   </IssuesSourceContainer>;
 
