@@ -135,10 +135,10 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
             clearChache={() => dispatch(
               settingsActions.clearElectronCache(),
             )}
-            setEmptyWorklogSettings={(value) => {
+            setAllowEmptyComment={(value) => {
               dispatch(settingsActions.setLocalDesktopSetting(
                 value,
-                'isEmptyWorklogForbid',
+                'allowEmptyComment',
               ));
               }
             }
@@ -162,6 +162,13 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
               dispatch(settingsActions.setLocalDesktopSetting(
                 value,
                 'updateChannel',
+              ));
+            }}
+            automaticUpdate={settings.updateAutomatically}
+            setAutomaticUpdate={(value) => {
+              dispatch(settingsActions.setLocalDesktopSetting(
+                value,
+                'updateAutomatically',
               ));
             }}
             updateCheckRunning={updateCheckRunning}

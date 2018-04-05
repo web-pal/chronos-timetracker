@@ -76,6 +76,16 @@ const rootReducer = combineReducers({
       },
     },
   }),
+  filters: resourceReducer('filters', {
+    plugins: [
+      clearAllPlugin,
+    ],
+    initialState: {
+      lists: {
+        allFilters: [],
+      },
+    },
+  }),
   boards: resourceReducer('boards', {
     plugins: [
       clearAllPlugin,

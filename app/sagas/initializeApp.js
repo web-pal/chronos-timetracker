@@ -36,6 +36,9 @@ import {
   fetchProjects,
 } from './projects';
 import {
+  fetchFilters,
+} from './filters';
+import {
   fetchBoards,
 } from './boards';
 import {
@@ -133,6 +136,7 @@ export function* initialConfigureApp({
       screenshotPreviewTime: 15,
       trayShowTimer: true,
       updateChannel: 'stable',
+      updateAutomatically: false,
     };
     yield call(
       setToStorage,
@@ -144,6 +148,7 @@ export function* initialConfigureApp({
   yield call(fetchIssueFields);
   yield fork(fetchEpics);
   yield fork(fetchProjects);
+  yield fork(fetchFilters);
   yield fork(fetchBoards);
 
   yield put(uiActions.setUiState('issuesSourceId', issuesSourceId));

@@ -19,6 +19,8 @@ import type {
   Project,
   BoardsResources,
   Board,
+  FiltersResources,
+  JIRAFilter,
 } from 'types';
 
 import {
@@ -255,10 +257,12 @@ export const getIssuesSourceOptions = createSelector(
   [
     getResourceMappedList('projects', 'allProjects'),
     getResourceMappedList('boards', 'allBoards'),
+    getResourceMappedList('filters', 'allFilters'),
   ],
   (
     projects: Array<Project>,
     boards: Array<Board>,
+    filters: Array<JIRAFilter>,
   ) => [
     {
       heading: 'Projects',
@@ -270,6 +274,11 @@ export const getIssuesSourceOptions = createSelector(
       items: boards.map(board =>
         ({ value: board.id, content: board.name, meta: { board } })),
     },
+    {
+      heading: 'Favourite JQL Filters',
+      items: filters.map(filter =>
+        ({ value: filter.id, content: filter.name, meta: { filter } })),
+    },
   ],
 );
 
@@ -279,12 +288,14 @@ export const getIssuesSourceSelectedOption = createSelector(
     getUiState('issuesSourceId'),
     getResourceMap('projects'),
     getResourceMap('boards'),
+    getResourceMap('filters'),
   ],
   (
     type: string,
     id: Id,
     projectsMap: ProjectsResources,
     boardsMap: BoardsResources,
+    filtersMap: FiltersResources,
   ) => {
     if (!id) {
       return null;
@@ -300,6 +311,19 @@ export const getIssuesSourceSelectedOption = createSelector(
           content: project.name,
           meta: {
             project,
+          },
+        };
+      }
+      case 'filter': {
+        const filter = filtersMap[id];
+        if (!filter) {
+          return null;
+        }
+        return {
+          value: filter.id,
+          content: filter.name,
+          meta: {
+            filter,
           },
         };
       }

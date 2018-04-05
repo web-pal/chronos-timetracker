@@ -1,3 +1,20 @@
+<a name="2.7.0"></a>
+# [2.7.0](https://github.com/web-pal/chronos-timetracker/compare/v2.6.4...v2.7.0) (2018-04-05)
+
+
+### Bug Fixes
+
+* **Browsing Issues:** fix jql filters in recent tab ([e1ceb13](https://github.com/web-pal/chronos-timetracker/commit/e1ceb13))
+* **Tracking:** stop adjust start time switch from resetting date to today ([5c351f5](https://github.com/web-pal/chronos-timetracker/commit/5c351f5))
+
+
+### Features
+
+* **Browsing Issues:** implement JQL filters search ([415bb76](https://github.com/web-pal/chronos-timetracker/commit/415bb76)), closes [#57](https://github.com/web-pal/chronos-timetracker/issues/57) [#48](https://github.com/web-pal/chronos-timetracker/issues/48) [#85](https://github.com/web-pal/chronos-timetracker/issues/85)
+* **Tracking:** make validation in add worklog modal ([38bd43e](https://github.com/web-pal/chronos-timetracker/commit/38bd43e))
+
+
+
 <a name="2.6.4"></a>
 ## [2.6.4](https://github.com/web-pal/chronos-timetracker/compare/v2.6.3...v2.6.4) (2018-03-27)
 

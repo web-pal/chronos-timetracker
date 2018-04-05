@@ -4,8 +4,8 @@
  * https://bitbucket.org/atlassian/atlaskit/src/4e15b22cd39d/packages/calendar/?at=master
  * BECAUSE IT'S BROKEN IN VERSION 1.3
  */
-import React, { PureComponent } from 'react';
-import { CalendarStateless } from '@atlaskit/calendar';
+import React, { Component } from 'react';
+import AKCalendar from '@atlaskit/calendar';
 import moment from 'moment';
 
 type Props = {|
@@ -14,7 +14,7 @@ type Props = {|
   onUpdate?: (event) => void;
 |}
 
-export default class Calendar extends PureComponent {
+export default class Calendar extends Component {
   props: Props // eslint-disable-line react/sort-comp
 
   static defaultProps: {
@@ -27,8 +27,6 @@ export default class Calendar extends PureComponent {
     const thisMonth = moment().month() + 1;
     const thisYear = moment().year();
     this.state = {
-      day: today,
-      focused: 0,
       selected: [],
       month: thisMonth,
       year: thisYear,
@@ -36,12 +34,11 @@ export default class Calendar extends PureComponent {
   }
 
   handleBlur = () => this.setState({
-    focused: 0,
   })
 
   handleChange = ({ day, month, year }) => {
     this.setState({
-      focused: day,
+      day,
       month,
       year,
     });
@@ -51,8 +48,7 @@ export default class Calendar extends PureComponent {
     const { selected } = this.state;
     this.handleChange({ day, month, year });
     if (selected.indexOf(iso) === -1) {
-      this.setState({ selected: [iso], focused: day });
-      console.log('CALENDAR onUpdate', iso, moment(iso).format('MM/DD/YYYY'));
+      this.setState({ selected: [iso], day });
       this.props.onUpdate(moment(iso).format('MM/DD/YYYY')); // FIXES https://bitbucket.org/atlassian/atlaskit/issues/64/calendar-onupdate-is-not-used
     } else {
       this.setState({ selected: [] });
@@ -61,7 +57,7 @@ export default class Calendar extends PureComponent {
 
   render() {
     return (
-      <CalendarStateless
+      <AKCalendar
         onBlur={this.handleBlur}
         onChange={this.handleChange}
         onSelect={this.handleSelect}

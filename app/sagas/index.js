@@ -9,6 +9,7 @@ import * as settingsSagas from './settings';
 import * as projectSagas from './projects';
 import * as issueSagas from './issues';
 import * as commentsSagas from './comments';
+import * as filtersSagas from './filters';
 import * as sprintsSagas from './sprints';
 import * as timerSagas from './timer';
 import * as worklogsSagas from './worklogs';
@@ -72,6 +73,10 @@ export default function* rootSaga(): Generator<*, void, *> {
 
     // tray
     fork(traySagas.createIpcTrayListeners),
+
+    // filters
+    fork(filtersSagas.createFilterFlow),
+    fork(filtersSagas.updateFilterFlow),
 
     // ui
     fork(uiSagas.watchUiStateChange),

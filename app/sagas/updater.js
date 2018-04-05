@@ -1,4 +1,5 @@
 // @flow
+/* eslint-disable no-alert */
 import {
   delay,
 } from 'redux-saga';
@@ -35,6 +36,7 @@ import {
   incrementMixpanel,
 } from '../utils/stat';
 
+import { getFromStorage } from './storage';
 
 const {
   autoUpdater,
@@ -82,11 +84,16 @@ function* watchUpdateAvailable(): Generator<*, *, *> {
     const { ev } = meta;
     yield call(
       infoLog,
-      'update is availible',
+      'update is available',
       meta,
     );
     yield put(uiActions.setUiState('updateFetching', true));
     newVersion = ev.version;
+
+    let settings = yield call(getFromStorage, 'localDesktopSettings');
+    if (settings.updateAutomatically) {
+      uiActions.installUpdateRequest();
+    }
   }
 }
 
@@ -103,6 +110,20 @@ function* watchUpdateNotAvailable(): Generator<*, *, *> {
 }
 
 function* watchUpdateDownloaded(): Generator<*, *, *> {
+  function parseReleaseNotes(releaseNotes) {
+    return releaseNotes
+      .replace(/<style([\s\S]*?)<\/style>/gi, '')
+      .replace(/<script([\s\S]*?)<\/script>/gi, '')
+      .replace(/<\/div>/ig, '\n')
+      .replace(/<\/li>/ig, '\n')
+      .replace(/<li>/ig, '  *  ')
+      .replace(/<\/ul>/ig, '\n')
+      .replace(/<\/h2>/ig, '\n') 
+      .replace(/<\/h3>/ig, '\n')
+      .replace(/<\/p>/ig, '\n')
+      .replace(/<br\s*[/]?>/gi, '\n')
+      .replace(/<[^>]+>/ig, '');
+  }
   while (true) {
     const meta = yield take(updateDownloadedChannel);
     yield call(
@@ -118,7 +139,8 @@ function* watchUpdateDownloaded(): Generator<*, *, *> {
       updateDownloaded = true;
       trackMixpanel('Update installed');
       incrementMixpanel('Update installed', 1);
-      if (window.confirm('New version is available. Do you like to install it now?')) {
+      const settings = yield call(getFromStorage, 'localDesktopSettings');
+      if (settings.updateAutomatically) {
         const { running, uploading } = getGlobal('sharedObj');
         if (uploading) {
           window.alert('Currently app in process of saving worklog, wait few seconds and restart app');
@@ -130,6 +152,23 @@ function* watchUpdateDownloaded(): Generator<*, *, *> {
           } else {
             ipcRenderer.send('set-should-quit');
             autoUpdater.quitAndInstall();
+          }
+        }
+      } else {
+        const releaseNotes = parseReleaseNotes(meta.ev.releaseNotes.trim());
+        if (window.confirm(`New version is available:\n\n${releaseNotes}\nWould you like to install it now?`)) {
+          const { running, uploading } = getGlobal('sharedObj');
+          if (uploading) {
+            window.alert('Currently app in process of saving worklog, wait few seconds and restart app');
+          } else {
+            if (running) { // eslint-disable-line
+              if (window.confirm('Tracking in progress, save worklog before restart?')) {
+                yield put(timerActions.stopTimerRequest());
+              }
+            } else {
+              ipcRenderer.send('set-should-quit');
+              autoUpdater.quitAndInstall();
+            }
           }
         }
       }

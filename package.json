@@ -1,6 +1,6 @@
 {
   "name": "Chronos",
-  "version": "2.6.4",
+  "version": "2.7.0",
   "description": "Full functionality time tracking software with direct JIRA integration",
   "scripts": {
     "build": "concurrently \"yarn build-main\" \"yarn build-renderer\"",
@@ -138,11 +138,12 @@
   "dependencies": {
     "@atlaskit/badge": "6.3.1",
     "@atlaskit/button": "6.6.3",
-    "@atlaskit/calendar": "3.2.1",
+    "@atlaskit/calendar": "^4.0.0",
     "@atlaskit/checkbox": "1.4.0",
     "@atlaskit/dropdown-menu": "3.12.1",
     "@atlaskit/field-base": "8.2.1",
     "@atlaskit/field-radio-group": "1.9.2",
+    "@atlaskit/field-text": "^4.3.0",
     "@atlaskit/field-text-area": "1.2.2",
     "@atlaskit/flag": "6.5.1",
     "@atlaskit/icon": "10.13.0",

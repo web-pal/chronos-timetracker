@@ -30,6 +30,7 @@ import {
   getIssuesSourceSelectedOption,
   getUiState,
 } from 'selectors';
+
 import {
   issuesActions,
   sprintsActions,
@@ -37,10 +38,9 @@ import {
   uiActions,
 } from 'actions';
 
-import {
-  IssuesSourceContainer,
-} from './styled';
+import JQLFilter from './JQLFilter';
 
+import { IssuesSourceContainer } from './styled';
 
 type Props = {
   options: Array<any>,
@@ -71,7 +71,10 @@ const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
       defaultSelected={selectedOption || undefined}
       placeholder="Select project or board"
       onSelected={({ item }) => {
-        const type = item.meta.board ? item.meta.board.type : 'project';
+        let type = '';
+        if (item.meta.board) type = item.meta.board.type;
+        if (item.meta.project) type = 'project';
+        if (item.meta.filter) type = 'filter';
         dispatch(uiActions.setUiState('issuesSprintId', null));
         dispatch(uiActions.setUiState('issuesSourceId', item.value));
         dispatch(uiActions.setUiState('issuesSourceType', type));
@@ -115,6 +118,8 @@ const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
         noMatchesFound="Nothing found"
       />
     }
+    {console.log(selectedOption)}
+    {selectedSourceType === 'filter' && <JQLFilter selectedFilter={selectedOption} />}
   </IssuesSourceContainer>;
 
 function mapStateToProps(state) {

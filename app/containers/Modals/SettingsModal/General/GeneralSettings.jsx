@@ -37,17 +37,17 @@ type Props = {
   settings: SettingsGeneral,
   setTraySettings: (value: any) => void,
   clearChache: () => void,
-  setEmptyWorklogSettings: () => void,
+  setAllowEmptyComment: () => void,
 }
 
 const GeneralSettings: StatelessFunctionalComponent<Props> = ({
   settings,
   setTraySettings,
   clearChache,
-  setEmptyWorklogSettings,
+  setAllowEmptyComment,
 }: Props): Node => {
   const isIconHidden = !!settings.trayShowTimer;
-  const isEmptyWorklogForbid = !!settings.isEmptyWorklogForbid;
+  const allowEmptyComment = !!settings.allowEmptyComment;
   // const isTimerHidden = false;
   return (
     <SettingsSectionContent>
@@ -85,11 +85,11 @@ const GeneralSettings: StatelessFunctionalComponent<Props> = ({
         </H100>
         <CheckboxGroup>
           <Checkbox
-            isChecked={isEmptyWorklogForbid}
-            value={isEmptyWorklogForbid}
+            isChecked={allowEmptyComment}
+            value={allowEmptyComment}
             name="sendEmptyWorklog"
-            label="Forbid sending worklog without comment"
-            onChange={() => setEmptyWorklogSettings(!isEmptyWorklogForbid)}
+            label="Allow empty comment"
+            onChange={() => setAllowEmptyComment(!allowEmptyComment)}
           />
         </CheckboxGroup>
       </Flex>

@@ -56,6 +56,11 @@ const initialState: UiState = {
   issuesSourceId: null,
   issuesSprintId: null,
 
+  newJQLFilterErrors: [],
+  newJQLFilterName: null,
+  newJQLFilterValue: null,
+  saveFilterDialogOpen: false,
+
   screenshotsAllowed: false,
   sidebarFiltersIsOpen: false,
   filterStatusesIsFetched: false,

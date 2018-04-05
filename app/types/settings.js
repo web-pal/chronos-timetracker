@@ -15,7 +15,7 @@ export type SettingsAction =
   {|
     type: typeof actionTypes.SET_SETTINGS_MODAL_TAB,
     tabName: string,
-  |}
+  |} |
   {|
     type: typeof actionTypes.CLEAR_ELECTRON_CACHE,
   |};
@@ -38,6 +38,6 @@ export type SettingsGeneral = {
   showScreenshotPreview: boolean,
   trayShowTimer: boolean,
   updateChannel: string,
-
-  isEmptyWorklogForbid: boolean,
+  updateAutomatically: boolean,
+  allowEmptyComment: boolean,
 };
