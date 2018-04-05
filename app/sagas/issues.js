@@ -357,7 +357,7 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
           startIndex: 0,
           stopIndex: 1000,
           jql,
-          boardId: issuesSourceType !== 'project' ? issuesSourceId : null,
+          boardId: issuesSourceType === 'board' ? issuesSourceId : null,
           additionalFields: epicLinkFieldId ? [epicLinkFieldId] : [],
         },
       ) :
