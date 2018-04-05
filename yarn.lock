@@ -69,16 +69,15 @@
     babel-runtime "^6.26.0"
     styled-components "1.4.6 - 3"
 
-"@atlaskit/calendar@3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@atlaskit/calendar/-/calendar-3.2.1.tgz#b6649ebfdf39150a156d08a5d45518de02224783"
+"@atlaskit/calendar@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@atlaskit/calendar/-/calendar-4.0.0.tgz#f4757102bd8c9ea96b9a88fda2f0d98a3db83ab7"
   dependencies:
     "@atlaskit/button" "^6.6.2"
     "@atlaskit/icon" "^10.12.1"
     "@atlaskit/theme" "^2.4.1"
     calendar-base "^0.3.0"
-    keycode "^2.1.7"
-    prop-types "^15.5.10"
+    lodash.pick "^4.4.0"
     styled-components "1.4.6 - 3"
     uuid "^3.1.0"
 
@@ -153,6 +152,14 @@
     "@atlaskit/theme" "^2.4.1"
     babel-runtime "^6.26.0"
     prop-types "^15.5.10"
+    styled-components "1.4.6 - 3"
+
+"@atlaskit/field-text@^4.3.0":
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/@atlaskit/field-text/-/field-text-4.3.0.tgz#4ef2a8ff7d0e16cfcee4df402bd82d087a7c6065"
+  dependencies:
+    "@atlaskit/field-base" "^8.2.1"
+    "@atlaskit/theme" "^2.4.1"
     styled-components "1.4.6 - 3"
 
 "@atlaskit/flag@6.5.1":
@@ -5815,6 +5822,10 @@ lodash.map@^4.5.1:
 lodash.memoize@^4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/lodash.memoize/-/lodash.memoize-4.1.2.tgz#bcc6c49a42a2840ed997f323eada5ecd182e0bfe"
+
+lodash.pick@^4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/lodash.pick/-/lodash.pick-4.4.0.tgz#52f05610fff9ded422611441ed1fc123a03001b3"
 
 lodash.restparam@^3.0.0:
   version "3.6.1"

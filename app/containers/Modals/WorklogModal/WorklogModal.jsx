@@ -14,9 +14,6 @@ import {
   getResources,
 } from 'redux-resource';
 import type {
-  Connector,
-} from 'react-redux';
-import type {
   Id,
   Worklog,
   Dispatch,
@@ -61,6 +58,8 @@ import {
   RemainingEstimatePicker,
 } from 'components';
 
+import { jts } from 'time-util';
+
 import {
   InputLabel,
   CalendarContainer,
@@ -75,6 +74,8 @@ type Props = {
   issue: Issue,
   worklog: Worklog,
   dispatch: Dispatch,
+  adjustStartTime: boolean,
+  allowEmptyComment: boolean,
 };
 
 type State = {
@@ -83,14 +84,13 @@ type State = {
   startTime: Moment,
   comment: string | null,
   timeSpent: string,
-  jiraTimeError: string | null,
   remainingEstimateValue: 'new' | 'leave' | 'manual' | 'auto',
   remainingEstimateSetTo: string,
   remainingEstimateReduceBy: string,
-  adjustStartTime: boolean,
+  errors: { [string]: string },
 };
 
-const JIRA_TIME_REGEXP = /^(\d{1,2}d{1}(\s{1}|$))?(\d{1,2}h{1}(\s{1}|$))?(\d{1,2}m{1}(\s{1}|$))?(\d{1,2}s{1}(\s{1}|$))?$/g;
+const JIRA_TIME_REGEXP = /^(?:\d{1,2}d{1}(?:\s{1}|$))?(?:\d{1,2}h{1}(?:\s{1}|$))?(?:\d{1,2}m{1}(?:\s{1}|$))?(?:\d{1,2}s{1}(?:\s{1}|$))?$/g;
 
 class WorklogModal extends Component<Props, State> {
   state = {
@@ -99,10 +99,15 @@ class WorklogModal extends Component<Props, State> {
     startTime: moment(),
     comment: '',
     timeSpent: '20m',
-    jiraTimeError: null,
     remainingEstimateValue: 'auto',
     remainingEstimateSetTo: '',
     remainingEstimateReduceBy: '',
+    errors: {
+      comment: '',
+      timeSpent: '',
+      date: '',
+      started: '',
+    },
   }
 
   componentWillReceiveProps(nextProps) {
@@ -127,6 +132,10 @@ class WorklogModal extends Component<Props, State> {
     if (!nextProps.isOpen && this.props.isOpen) {
       this.setState({
         comment: '',
+        errors: {
+          comment: '',
+          timeSpent: '',
+        },
       });
     }
   }
@@ -139,52 +148,63 @@ class WorklogModal extends Component<Props, State> {
     });
   }
 
-  timeInput: any;
+  setError = (fieldName, error) => this.setState({
+    errors: {
+      ...this.state.errors,
+      [fieldName]: error,
+    },
+  });
 
   handleTimeChange = (label: 'startTime') => (value) => {
     this.setState({ [label]: value });
   }
 
+  timeInput: any;
+
+  clearError = fieldName => this.setError(fieldName, '');
+
   handleTimeSpentChange = (e) => {
-    const jiraTime = e.target.value || '';
-    const isValid = this.checkIfJiraTime(jiraTime);
-    if (isValid) {
-      this.setState(({ startTime }) => {
-        if (this.props.adjustStartTime) {
-          const newStartTime = startTime.clone().subtract(
-            jiraTime.split(' ').map((t) => {
-              const value = +(t.substr(0, t.length - 1));
-              switch (t.substr(-1)) {
-                case 's':
-                  return value;
-                case 'm':
-                  return value * 60;
-                case 'h':
-                  return value * 60 * 60;
-                case 'd':
-                  return value * 60 * 60 * 8;
-              }
-            }).reduce((s, v) => s + v, 0),
-            's',
-          );
-          return {
-            timeSpent: jiraTime,
-            jiraTimeError: null,
-            startTime: newStartTime,
-            date: newStartTime.format('MM/DD/YYYY'),
-          };
-        }
+    const timeSpent = e.target.value || '';
+    this.setState(({ startTime }) => {
+      if (this.props.adjustStartTime) {
+        const newStartTime = startTime.clone().subtract(jts(timeSpent), 's');
         return {
-          timeSpent: jiraTime,
-          jiraTimeError: null,
+          timeSpent,
+          startTime: newStartTime,
         };
-      });
-    } else {
-      this.setState({ timeSpent: jiraTime, jiraTimeError: 'invalid format' });
-    }
+      }
+      return {
+        timeSpent,
+      };
+    });
   }
 
-  checkIfJiraTime = RegExp.prototype.test.bind(JIRA_TIME_REGEXP)
+  validateJiraTime = value => /^(?:\d{1,2}d{1}(?:\s{1}|$))?(?:\d{1,2}h{1}(?:\s{1}|$))?(?:\d{1,2}m{1}(?:\s{1}|$))?(?:\d{1,2}s{1}(?:\s{1}|$))?$/.test(value);
+
+  validate = () => {
+    const { errors, comment, timeSpent } = this.state;
+    let valid = true;
+
+    if (comment === '' && !this.props.allowEmptyComment) {
+      errors.comment = 'Comment is required';
+      valid = false;
+    } else {
+      errors.comment = '';
+    }
+
+    const condition = (timeSpent === '') || !this.validateJiraTime(timeSpent);
+
+    if (condition) {
+      errors.timeSpent = 'Invalid time format';
+      valid = false;
+    } else {
+      errors.timeSpent = '';
+    }
+
+    this.setState({ errors });
+
+    return valid;
+  }
 
   render() {
     const {
@@ -195,6 +215,7 @@ class WorklogModal extends Component<Props, State> {
       dispatch,
       issue,
       adjustStartTime,
+      allowEmptyComment,
     }: Props = this.props;
 
     const {
@@ -206,7 +227,7 @@ class WorklogModal extends Component<Props, State> {
       remainingEstimateValue,
       remainingEstimateSetTo,
       remainingEstimateReduceBy,
-      jiraTimeError,
+      errors,
     }: State = this.state;
 
     return isOpen && (
@@ -223,22 +244,25 @@ class WorklogModal extends Component<Props, State> {
                   appearance="primary"
                   disabled={saveInProcess}
                   onClick={() => {
-                    dispatch(worklogsActions.saveWorklogRequest({
-                      worklogId: worklog ? worklog.id : null,
-                      issueId,
-                      startTime: startTime.set({
-                        year: parseInt(date.split('/')[2], 10),
-                        month: parseInt(date.split('/')[0], 10) - 1,
-                        date: parseInt(date.split('/')[1], 10),
-                      }),
-                      adjustEstimate: remainingEstimateValue,
-                      newEstimate: remainingEstimateSetTo,
-                      reduceBy: remainingEstimateReduceBy,
-                      timeSpent,
-                      comment,
-                      date,
-                    }));
-                    this.setState({ comment: '' });
+                    const isValid = this.validate();
+                    if (isValid) {
+                      dispatch(worklogsActions.saveWorklogRequest({
+                        worklogId: worklog ? worklog.id : null,
+                        issueId,
+                        startTime: startTime.set({
+                          year: parseInt(date.split('/')[2], 10),
+                          month: parseInt(date.split('/')[0], 10) - 1,
+                          date: parseInt(date.split('/')[1], 10),
+                        }),
+                        adjustEstimate: remainingEstimateValue,
+                        newEstimate: remainingEstimateSetTo,
+                        reduceBy: remainingEstimateReduceBy,
+                        timeSpent,
+                        comment,
+                        date,
+                      }));
+                      this.setState({ comment: '', errors: { comment: '', timeSpent: '' } });
+                    }
                   }}
                   iconAfter={saveInProcess ? <Spinner invertColor /> : null}
                 >
@@ -273,8 +297,9 @@ class WorklogModal extends Component<Props, State> {
             <TextField
               value={timeSpent}
               onChange={this.handleTimeSpentChange}
-              isLabelHidden
-              isInvalid={!!jiraTimeError}
+              required
+              isInvalid={errors.timeSpent !== ''}
+              invalidMessage={errors.timeSpent}
               ref={(ref) => {
                 this.timeInput = ref; // eslint-disable-line
               }}
@@ -380,7 +405,10 @@ class WorklogModal extends Component<Props, State> {
           <FieldTextAreaStateless
             shouldFitContainer
             label="Worklog comment"
-            value={comment}
+            required={!allowEmptyComment}
+            isInvalid={errors.comment !== ''}
+            invalidMessage={errors.comment}
+            value={comment || ''}
             onChange={ev => this.setState({ comment: ev.target.value })}
           />
         </ModalContentContainer>
@@ -400,11 +428,13 @@ function mapStateToProps(state) {
       state,
       'worklogs.requests.saveWorklog.status',
     ).pending,
+    localDesktopSettings: getSettingsState('localDesktopSettings')(state),
+    allowEmptyComment: getSettingsState('localDesktopSettings')(state).allowEmptyComment,
     adjustStartTime: !getSettingsState('localDesktopSettings')(state).notAdjustStartTime,
   };
 }
 
-const connector: Connector<{}, Props> = connect(
+const connector = connect(
   mapStateToProps,
   dispatch => ({ dispatch }),
 );

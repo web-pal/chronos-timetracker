@@ -39,5 +39,5 @@ export type SettingsGeneral = {
   trayShowTimer: boolean,
   updateChannel: string,
   updateAutomatically: boolean,
-  isEmptyWorklogForbid: boolean,
+  allowEmptyComment: boolean,
 };
