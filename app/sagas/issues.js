@@ -119,6 +119,7 @@ function buildJQLQuery({
   projectKey,
   projectId,
   sprintId,
+  filterId,
   worklogAuthor,
   additionalJQL,
 }: {
@@ -131,6 +132,7 @@ function buildJQLQuery({
   projectKey?: string | null,
   projectId?: number | string | null,
   sprintId?: number | string | null,
+  filterId?: string | null,
   worklogAuthor?: string | null,
   additionalJQL?: string | null,
 }) {
@@ -141,6 +143,7 @@ function buildJQLQuery({
   } = issuesFilters;
   const jql = [
     (projectId && `project = ${projectId}`),
+    (filterId && `filter = ${filterId}`),
     (sprintId && `sprint = ${sprintId}`),
     (worklogAuthor && `worklogAuthor = ${worklogAuthor}`),
     (type.length && `issueType in (${type.join(',')})`),
@@ -242,17 +245,18 @@ export function* fetchIssues({
       projectKey,
       searchValue,
       projectId: issuesSourceType === 'project' ? issuesSourceId : null,
+      filterId: issuesSourceType === 'filter' ? issuesSourceId : null,
       sprintId: issuesSourceType === 'scrum' ? issuesSprintId : null,
     });
 
-    const response = (jql.length || (issuesSourceType !== 'project' && issuesSourceId)) ?
+    const response = (jql.length || (issuesSourceType === 'board' && issuesSourceId)) ?
       yield call(
         Api.fetchIssues,
         {
           startIndex,
           stopIndex,
           jql,
-          boardId: issuesSourceType !== 'project' ? issuesSourceId : null,
+          boardId: issuesSourceType === 'board' ? issuesSourceId : null,
           additionalFields: epicLinkFieldId ? [epicLinkFieldId] : [],
           timeout: tryCount ? 8000 : 3000,
         },
@@ -336,6 +340,7 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
 
     const jql: string = buildJQLQuery({
       projectId: issuesSourceType === 'project' ? issuesSourceId : null,
+      filterId: issuesSourceType === 'filter' ? issuesSourceId : null,
       sprintId: issuesSourceType === 'scrum' ? issuesSprintId : null,
       worklogAuthor: 'currentUser()',
       additionalJQL: 'timespent > 0 AND worklogDate >= "-4w"',

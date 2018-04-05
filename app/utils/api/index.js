@@ -1,5 +1,6 @@
 // @flow
 export * from './profile';
+export * from './filters';
 export * from './settings';
 export * from './projects';
 export * from './boards';
