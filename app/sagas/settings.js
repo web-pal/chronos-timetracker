@@ -77,7 +77,7 @@ export function* onChangeLocalDesktopSettings({
         `switched updateAutomatically to ${value}`,
       );
 
-      let settings = yield call(getFromStorage, 'localDesktopSettings');
+      const settings = yield call(getFromStorage, 'localDesktopSettings');
       settings.updateAutomatically = value;
       yield call(
         setToStorage,
