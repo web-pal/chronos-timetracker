@@ -47,16 +47,20 @@ type Props = {
   updateCheckRunning: boolean,
   updateAvailable: string,
   updateFetching: boolean,
+  automaticUpdate: boolean,
+  setAutomaticUpdate: (automaticUpdate: boolean) => void,
   setChannel: (channel: string) => void,
   onUpdateClick: () => void,
 };
 
 const UpdateSettings: StatelessFunctionalComponent<Props> = ({
   channel,
+  setAutomaticUpdate,
   setChannel,
   updateCheckRunning,
   updateAvailable,
   updateFetching,
+  automaticUpdate,
   onUpdateClick,
 } : Props): Node => (
   <SettingsSectionContent style={{ width: '100%' }}>
@@ -120,6 +124,20 @@ const UpdateSettings: StatelessFunctionalComponent<Props> = ({
             </Button>
           }
         </ButtonGroup>
+        <Checkbox
+            isChecked={automaticUpdate === true}
+            value={automaticUpdate}
+            onChange={(ev) => {
+              const { value } = ev.target;
+              if (value === 'false') {
+                setAutomaticUpdate(true);
+              } else {
+                setAutomaticUpdate(false);
+              }
+            }}
+            label="Download and update automatically"
+            name="allowAutomaticUpdate"
+        />
       </Flex>
       <Flex column>
         <H100 style={{ padding: '12px 0 6px 0' }}>

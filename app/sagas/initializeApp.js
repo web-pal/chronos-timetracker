@@ -136,6 +136,7 @@ export function* initialConfigureApp({
       screenshotPreviewTime: 15,
       trayShowTimer: true,
       updateChannel: 'stable',
+      updateAutomatically: false,
     };
     yield call(
       setToStorage,
