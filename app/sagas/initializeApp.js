@@ -36,6 +36,9 @@ import {
   fetchProjects,
 } from './projects';
 import {
+  fetchFilters,
+} from './filters';
+import {
   fetchBoards,
 } from './boards';
 import {
@@ -145,6 +148,7 @@ export function* initialConfigureApp({
   yield call(fetchIssueFields);
   yield fork(fetchEpics);
   yield fork(fetchProjects);
+  yield fork(fetchFilters);
   yield fork(fetchBoards);
 
   yield put(uiActions.setUiState('issuesSourceId', issuesSourceId));

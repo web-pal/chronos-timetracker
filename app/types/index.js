@@ -164,6 +164,8 @@ export type {
 
 export type {
   Filter,
+  JIRAFilter,
+  FiltersResources,
 } from './filters';
 
 export type {
