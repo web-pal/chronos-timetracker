@@ -28,6 +28,7 @@ import {
   throwError,
 } from './ui';
 import {
+  getFromStorage,
   setToStorage,
 } from './storage';
 
@@ -69,6 +70,26 @@ export function* onChangeLocalDesktopSettings({
     if (settingName === 'trayShowTimer' && !value) {
       remote.getGlobal('tray').setTitle('');
     }
+
+    if (settingName === 'updateAutomatically') {
+      yield call(
+        infoLog,
+        `switched updateAutomatically to ${value}`,
+      );
+
+      const settings = yield call(getFromStorage, 'localDesktopSettings');
+      settings.updateAutomatically = value;
+      yield call(
+        setToStorage,
+        'localDesktopSettings',
+        settings,
+      );
+
+      if (value) {
+        yield put(uiActions.checkForUpdatesRequest());
+      }
+    }
+
     if (settingName === 'updateChannel') {
       yield call(
         infoLog,
