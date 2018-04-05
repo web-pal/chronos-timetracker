@@ -76,6 +76,7 @@ export default function* rootSaga(): Generator<*, void, *> {
 
     // filters
     fork(filtersSagas.createFilterFlow),
+    fork(filtersSagas.updateFilterFlow),
 
     // ui
     fork(uiSagas.watchUiStateChange),

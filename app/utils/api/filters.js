@@ -7,3 +7,7 @@ export function fetchFilters(): Promise<*> {
 export function createFilter(filter): Promise<*> {
   return jira.client.filter.createFilter({ filter });
 }
+
+export function updateFilter(filterId, filter): Promise<*> {
+  return jira.client.filter.updateFilter({ filterId, filter });
+};

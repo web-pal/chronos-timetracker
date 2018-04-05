@@ -7,3 +7,5 @@ export * from './projects';
 export * from './sprints';
 export * from './issues';
 export * from './timer';
+
+export { getStatus as getResourceStatus } from 'redux-resource';
