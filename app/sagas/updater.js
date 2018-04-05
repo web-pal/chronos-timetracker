@@ -1,4 +1,5 @@
 // @flow
+/* eslint-disable no-alert */
 import {
   delay,
 } from 'redux-saga';
@@ -35,6 +36,7 @@ import {
   incrementMixpanel,
 } from '../utils/stat';
 
+import { getFromStorage } from './storage';
 
 const {
   autoUpdater,
@@ -108,6 +110,20 @@ function* watchUpdateNotAvailable(): Generator<*, *, *> {
 }
 
 function* watchUpdateDownloaded(): Generator<*, *, *> {
+  function parseReleaseNotes(releaseNotes) {
+    return releaseNotes
+      .replace(/<style([\s\S]*?)<\/style>/gi, '')
+      .replace(/<script([\s\S]*?)<\/script>/gi, '')
+      .replace(/<\/div>/ig, '\n')
+      .replace(/<\/li>/ig, '\n')
+      .replace(/<li>/ig, '  *  ')
+      .replace(/<\/ul>/ig, '\n')
+      .replace(/<\/h2>/ig, '\n') 
+      .replace(/<\/h3>/ig, '\n')
+      .replace(/<\/p>/ig, '\n')
+      .replace(/<br\s*[/]?>/gi, '\n')
+      .replace(/<[^>]+>/ig, '');
+  }
   while (true) {
     const meta = yield take(updateDownloadedChannel);
     yield call(
@@ -123,8 +139,7 @@ function* watchUpdateDownloaded(): Generator<*, *, *> {
       updateDownloaded = true;
       trackMixpanel('Update installed');
       incrementMixpanel('Update installed', 1);
-
-      let settings = yield call(getFromStorage, 'localDesktopSettings');
+      const settings = yield call(getFromStorage, 'localDesktopSettings');
       if (settings.updateAutomatically) {
         const { running, uploading } = getGlobal('sharedObj');
         if (uploading) {
@@ -140,9 +155,8 @@ function* watchUpdateDownloaded(): Generator<*, *, *> {
           }
         }
       } else {
-        let releaseNotes = parseReleaseNotes(meta.ev.releaseNotes.trim());
-        
-        if (window.confirm('New version is available:\n\n' + releaseNotes + 'Would you like to install it now?')) {
+        const releaseNotes = parseReleaseNotes(meta.ev.releaseNotes.trim());
+        if (window.confirm(`New version is available:\n\n${releaseNotes}\nWould you like to install it now?`)) {
           const { running, uploading } = getGlobal('sharedObj');
           if (uploading) {
             window.alert('Currently app in process of saving worklog, wait few seconds and restart app');
@@ -210,19 +224,4 @@ export function* initializeUpdater(): Generator<*, *, *> {
   } catch (err) {
     yield call(throwError, err);
   }
-}
-
-function parseReleaseNotes(releaseNotes) {
-  releaseNotes = releaseNotes.replace(/<style([\s\S]*?)<\/style>/gi, '');
-  releaseNotes = releaseNotes.replace(/<script([\s\S]*?)<\/script>/gi, '');
-  releaseNotes = releaseNotes.replace(/<\/div>/ig, '\n');
-  releaseNotes = releaseNotes.replace(/<\/li>/ig, '\n');
-  releaseNotes = releaseNotes.replace(/<li>/ig, '  *  ');
-  releaseNotes = releaseNotes.replace(/<\/ul>/ig, '\n');
-  releaseNotes = releaseNotes.replace(/<\/h2>/ig, '\n');
-  releaseNotes = releaseNotes.replace(/<\/h3>/ig, '\n');
-  releaseNotes = releaseNotes.replace(/<\/p>/ig, '\n');
-  releaseNotes = releaseNotes.replace(/<br\s*[\/]?>/gi, "\n");
-  releaseNotes = releaseNotes.replace(/<[^>]+>/ig, '');
-  return releaseNotes;
 }
