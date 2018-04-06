@@ -1,3 +1,13 @@
+<a name="2.7.1"></a>
+## [2.7.1](https://github.com/web-pal/chronos-timetracker/compare/v2.7.0...v2.7.1) (2018-04-05)
+
+
+### Bug Fixes
+
+* **Browsing Issues:** fix empty string input handling in JQL field & default allowEmptyWorklog to tr ([dacdabf](https://github.com/web-pal/chronos-timetracker/commit/dacdabf))
+
+
+
 <a name="2.7.0"></a>
 # [2.7.0](https://github.com/web-pal/chronos-timetracker/compare/v2.6.4...v2.7.0) (2018-04-05)
 
