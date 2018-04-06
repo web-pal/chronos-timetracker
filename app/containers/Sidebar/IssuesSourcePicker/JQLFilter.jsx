@@ -49,7 +49,7 @@ const JQLFilter = ({
 }: Props) => (
   <Flex column style={{ marginTop: 8 }}>
     <FieldText
-      value={newJQLFilterValue || R.path(['meta', 'filter', 'jql'], selectedFilter)}
+      value={newJQLFilterValue !== null ? newJQLFilterValue : R.path(['meta', 'filter', 'jql'], selectedFilter)}
       isInvalid={newJQLFilterErrors.length > 0}
       isLabelHidden
       invalidMessage={newJQLFilterErrors.join(', ')}
@@ -117,7 +117,7 @@ const JQLFilter = ({
       </Button>
       <Button
         appearance="subtle-link"
-        isDisabled={!newJQLFilterValue}
+        isDisabled={newJQLFilterValue === null}
         onClick={() => dispatch(uiActions.setUiState('newJQLFilterValue', null))}
       >
         Reset

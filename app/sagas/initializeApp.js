@@ -136,6 +136,7 @@ export function* initialConfigureApp({
       screenshotPreviewTime: 15,
       trayShowTimer: true,
       updateChannel: 'stable',
+      allowEmptyComment: true,
       updateAutomatically: false,
     };
     yield call(
@@ -143,7 +144,15 @@ export function* initialConfigureApp({
       'localDesktopSettings',
       settings,
     );
+  } else if (settings.allowEmptyComment === undefined) {
+    settings.allowEmptyComment = true;
+    yield call(
+      setToStorage,
+      'localDesktopSettings',
+      settings,
+    );
   }
+
 
   yield call(fetchIssueFields);
   yield fork(fetchEpics);
