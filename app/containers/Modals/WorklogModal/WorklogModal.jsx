@@ -167,7 +167,7 @@ class WorklogModal extends Component<Props, State> {
     const timeSpent = e.target.value || '';
     this.setState(({ startTime }) => {
       if (this.props.adjustStartTime) {
-        const newStartTime = startTime.clone().subtract(jts(timeSpent), 's');
+        const newStartTime = moment().subtract(jts(timeSpent), 's');
         return {
           timeSpent,
           startTime: newStartTime,
