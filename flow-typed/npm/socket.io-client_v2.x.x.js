@@ -1,5 +1,5 @@
-// flow-typed signature: 1eed102f1f3f03ab47e98615df15dfd3
-// flow-typed version: 51b71b47ea/socket.io-client_v2.x.x/flow_>=v0.34.x
+// flow-typed signature: 7c685d7598a4fb437f0c294df30693de
+// flow-typed version: 1de402c763/socket.io-client_v2.x.x/flow_>=v0.34.x
 
 declare module "socket.io-client" {
   declare type Callback = (...args: any[]) => void;
@@ -13,6 +13,11 @@ declare module "socket.io-client" {
     randomizationFactor: number,
     timeout: number,
     transports: ("polling" | "websocket")[],
+    transportOptions: {
+      polling: {
+        extraHeaders: {[string]:string}
+      }
+    },
     autoConnect: boolean,
     query: { [string]: string },
     parser: any
@@ -28,7 +33,7 @@ declare module "socket.io-client" {
     once(event: string, cb: Callback): T;
     off(event: string, cb: Callback): T;
     removeListener(event: string, cb: Callback): T;
-    removeAllListeners(event: string, cb: Callback): T;
+    removeAllListeners(event?: string): T;
     removeEventListener(event: string, cb: Callback): T;
     emit(event: string, payload: mixed): T;
     listeners(event: string): Callback[];
@@ -51,6 +56,7 @@ declare module "socket.io-client" {
 
   declare export class Socket extends Emitter<Socket> {
     constructor(io: Manager, nsp: string, opts?: SocketOptions): Socket;
+    id: string;
     open(): Socket;
     connect(): Socket;
     send(...args: any[]): Socket;

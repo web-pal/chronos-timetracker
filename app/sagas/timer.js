@@ -285,7 +285,7 @@ export function* timerFlow(): Generator<*, *, *> {
       } else {
         const { allowEmptyComment } = yield select(getSettingsState('localDesktopSettings'));
         const comment = yield select(getUiState('worklogComment'));
-        if (allowEmptyComment && !comment) {
+        if (!allowEmptyComment && !comment) {
           yield fork(notify, {
             title: 'Please set comment for worklog',
           });
