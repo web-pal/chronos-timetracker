@@ -56,7 +56,7 @@ const WorklogItem: StatelessFunctionalComponent<Props> = ({
     <Flex row alignCenter style={{ padding: 10 }}>
       <UserAvatar src={worklog.author.avatarUrls['32x32']} />
       {worklog.author.displayName} logged
-      work – {moment(worklog.started).format('DD/MMM/YY h:mm A')}
+      work – {moment(worklog.started).format('MM/DD/YYYY H:m')}
       {isEdited(worklog) && (
         <Edited>- <span>edited</span></Edited>
       )}
