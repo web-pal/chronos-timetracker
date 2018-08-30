@@ -104,9 +104,9 @@ function mapSearchValue(searchValue: string, projectKey: string): string {
     return `key = "${searchValue}"`;
   }
   if (/^[0-9]*$/.test(searchValue)) {
-    return `(key = "${projectKey}-${searchValue}" OR summary ~ "${searchValue}")`;
+    return `(key = "${projectKey}-${searchValue}" OR summary ~ "${searchValue.replace(/\s+$/, '')}*")`;
   }
-  return `summary ~ "${searchValue}"`;
+  return `summary ~ "${searchValue.replace(/\s+$/, '')}*"`;
 }
 
 function buildJQLQuery({
