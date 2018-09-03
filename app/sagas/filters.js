@@ -30,9 +30,9 @@ export function* fetchFilters(): Generator<*, *, *> {
       list: 'allFilters',
     });
     yield put(actions.pending());
-    console.log('fetchFilters');
+    // console.log('fetchFilters');
     const filters = yield call(Api.fetchFilters);
-    console.log(filters);
+    // console.log(filters);
     yield put(actions.succeeded({
       resources: filters,
     }));

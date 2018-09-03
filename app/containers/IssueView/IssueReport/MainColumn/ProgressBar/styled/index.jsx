@@ -2,7 +2,7 @@
 import styled from 'styled-components';
 
 export const ProgressBarContainer = styled.div`
-  width: 94%;
+  width: 92%;
   position: relative;
 `;
 
@@ -38,4 +38,12 @@ export const Time = styled.span`
 export const TimeLabel = styled.span`
   color: rgba(225, 225, 225, .7);
   font-size: 10px;
+`;
+
+export const Percentage = styled.span`
+  color: rgba(225, 225, 225, .7);
+  font-size: 10px;
+  position: absolute;
+  right: -26px;
+  top: 20px;
 `;

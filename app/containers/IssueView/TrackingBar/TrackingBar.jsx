@@ -15,12 +15,15 @@ import type {
 import type {
   Issue,
   Dispatch,
+  IssuesReports,
   RemainingEstimate,
 } from 'types';
 
 import {
   getUiState,
+  getSettingsState,
   getTrackingIssue,
+  getTrackingIssueReport,
   getTimerState,
 } from 'selectors';
 import {
@@ -37,17 +40,18 @@ import CameraIcon from '@atlaskit/icon/glyph/camera';
 import Tooltip from '@atlaskit/tooltip';
 
 import WorklogCommentDialog from './WorklogCommentDialog';
+import ProgressBar from './ProgressBar/ProgressBar';
 import {
   IssueName,
   Dot,
   Time,
-  StopButton,
   Container,
 } from './styled';
 
 
 type Props = {
   time: number,
+  report: IssuesReports,
   screenshotUploading: boolean,
   screenshotsAllowed: boolean,
   trackingIssue: Issue,
@@ -57,6 +61,7 @@ type Props = {
   remainingEstimateReduceByValue: string,
   dispatch: Dispatch,
   isCommentDialogOpen: boolean,
+  showLoggedOnStop: boolean,
 }
 
 function addLeadingZero(s: number): string {
@@ -73,6 +78,7 @@ function getTimeString(time: number): string {
 
 const TrackingBar: StatelessFunctionalComponent<Props> = ({
   time,
+  report,
   screenshotUploading,
   screenshotsAllowed,
   trackingIssue,
@@ -82,6 +88,7 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
   remainingEstimateReduceByValue,
   dispatch,
   isCommentDialogOpen,
+  showLoggedOnStop,
 }: Props): Node => (
   <Transition
     appear
@@ -144,8 +151,10 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
         </Time>
       </Flex>
       <div className="worklog-edit-popup-shouldNotCLose">
-        <StopButton
-          alt="stop"
+        <ProgressBar
+          time={time}
+          report={report}
+          showLoggedOnStop={showLoggedOnStop}
           onClick={() => {
             if (screenshotUploading) {
               // eslint-disable-next-line no-alert
@@ -165,6 +174,7 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
 function mapStateToProps(state) {
   return {
     time: getTimerState('time')(state),
+    report: getTrackingIssueReport(state),
     screenshotUploading: false,
     screenshotsAllowed: false,
     trackingIssue: getTrackingIssue(state),
@@ -173,6 +183,7 @@ function mapStateToProps(state) {
     remainingEstimateNewValue: getUiState('remainingEstimateNewValue')(state),
     remainingEstimateReduceByValue: getUiState('remainingEstimateReduceByValue')(state),
     isCommentDialogOpen: getUiState('isCommentDialogOpen')(state),
+    showLoggedOnStop: getSettingsState('localDesktopSettings')(state).showLoggedOnStop,
   };
 }
 

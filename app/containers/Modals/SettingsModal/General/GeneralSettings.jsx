@@ -38,6 +38,7 @@ type Props = {
   setTraySettings: (value: any) => void,
   clearChache: () => void,
   setAllowEmptyComment: () => void,
+  setShowLoggedOnStop: () => void,
 }
 
 const GeneralSettings: StatelessFunctionalComponent<Props> = ({
@@ -45,9 +46,11 @@ const GeneralSettings: StatelessFunctionalComponent<Props> = ({
   setTraySettings,
   clearChache,
   setAllowEmptyComment,
+  setShowLoggedOnStop,
 }: Props): Node => {
   const isIconHidden = !!settings.trayShowTimer;
   const allowEmptyComment = !!settings.allowEmptyComment;
+  const showLoggedOnStop = !!settings.showLoggedOnStop;
   // const isTimerHidden = false;
   return (
     <SettingsSectionContent>
@@ -78,6 +81,16 @@ const GeneralSettings: StatelessFunctionalComponent<Props> = ({
             name="sendEmptyWorklog"
             label="Allow empty worklog comment"
             onChange={() => setAllowEmptyComment(!allowEmptyComment)}
+          />
+        </CheckboxGroup>
+        <br />
+        <CheckboxGroup>
+          <Checkbox
+            isChecked={showLoggedOnStop}
+            value={showLoggedOnStop}
+            name="showLoggedOnStop"
+            label="Show additional tracking info on hover stop button"
+            onChange={() => setShowLoggedOnStop(!showLoggedOnStop)}
           />
         </CheckboxGroup>
         <br />

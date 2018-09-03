@@ -68,6 +68,7 @@ export type IssueField = {
   resolutiondate: string | null,
   labels: Array<string>,
   timeestimate: number | null,
+  timeoriginalestimate: number | null,
   versions: Array<Version>,
   worklog: IssueWorklog,
   worklogs: Array<Id>,
