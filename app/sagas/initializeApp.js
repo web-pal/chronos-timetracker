@@ -138,6 +138,7 @@ export function* initialConfigureApp({
       updateChannel: 'stable',
       allowEmptyComment: true,
       updateAutomatically: false,
+      showLoggedOnStop: false,
     };
     yield call(
       setToStorage,

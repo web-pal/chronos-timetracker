@@ -142,6 +142,13 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
               ));
               }
             }
+            setShowLoggedOnStop={(value) => {
+              dispatch(settingsActions.setLocalDesktopSetting(
+                value,
+                'showLoggedOnStop',
+              ));
+              }
+            }
           />
         }
         {tab === 'Notifications' &&

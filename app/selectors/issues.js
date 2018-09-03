@@ -164,6 +164,22 @@ export const getTrackingIssue = createSelector(
   ) => (issuesMap[issueId] ? issuesMap[issueId] : null),
 );
 
+export const getTrackingIssueWorklogs = createSelector(
+  [
+    // $FlowFixMe
+    getTrackingIssue,
+    getResourceMap('worklogs'),
+  ],
+  (
+    issue: Issue,
+    worklogsMap: WorklogsResources,
+  ) => (
+    issue ?
+      issue.fields.worklogs.map(id => worklogsMap[id]).sort(worklogSorter) :
+      []
+  ),
+);
+
 
 export const getFieldIdByName =
   (fieldName: string) =>
@@ -249,6 +265,34 @@ export const getSelectedIssueReport = createSelector(
       youLoggedTotal,
       yourWorklogsToday,
       youLoggedToday,
+    };
+  },
+);
+
+
+export const getTrackingIssueReport = createSelector(
+  [
+    // $FlowFixMe
+    getTrackingIssue,
+    getTrackingIssueWorklogs,
+  ],
+  (
+    issue: Issue,
+    worklogs: Array<Worklog>,
+  ) => {
+    const timespent = issue.fields.timespent || 0;
+    const remaining = issue.fields.timeestimate || 0;
+    const originalestimate = issue.fields.timeoriginalestimate || 0;
+    const estimate = remaining - timespent < 0 ? 0 : remaining - timespent;
+
+    const loggedTotal = worklogs.reduce((v, w) => v + w.timeSpentSeconds, 0);
+
+    return {
+      timespent,
+      remaining,
+      estimate,
+      loggedTotal,
+      originalestimate,
     };
   },
 );

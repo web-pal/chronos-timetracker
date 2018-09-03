@@ -4,6 +4,7 @@ export type IssuesReports = {
   loggedTotal: number,
   remaining: number,
   timespent: number,
+  originalestimate: number,
   youLoggedToday: number,
   youLoggedTotal: number,
   yourWorklogs: Array<any>,

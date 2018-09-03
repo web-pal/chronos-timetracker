@@ -6,6 +6,7 @@ import { stop, stopHover } from 'data/svg';
 // background: #172B4D !important;
 // background: linear-gradient(to right, rgb(255, 209, 72), rgb(255, 204, 77)) !important;
 export const Container = styled.div`
+  position: relative;
   display: flex;
   flex-direction: row;
   justify-content: space-between;

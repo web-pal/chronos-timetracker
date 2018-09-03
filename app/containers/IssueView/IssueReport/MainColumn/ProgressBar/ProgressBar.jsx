@@ -11,6 +11,7 @@ import {
 } from 'time-util';
 
 import {
+  Percentage,
   ProgressBarContainer,
 } from './styled';
 
@@ -26,27 +27,34 @@ type Props = {
 const ProgressBar: StatelessFunctionalComponent<Props> = ({
   remaining,
   loggedTotal,
-}: Props): Node => (
-  <ProgressBarContainer>
-    {remaining > 0 &&
+}: Props): Node => {
+  const percentage = Math.round((loggedTotal / (loggedTotal + remaining)) * 100);
+
+  return (
+    <ProgressBarContainer>
+      {remaining > 0 &&
+        <ProgressBarFill
+          name="remaining"
+          label="Remaining"
+          width={100}
+          color="#FFAB00"
+          time={stj(remaining)}
+          style={{ alignItems: 'flex-end' }}
+        />
+      }
       <ProgressBarFill
-        name="remaining"
-        label="Remaining"
-        width={100}
-        color="#FFAB00"
-        time={stj(remaining)}
-        style={{ alignItems: 'flex-end' }}
+        name="logged-total"
+        width={percentage}
+        label="Logged"
+        color="#B2D4FF"
+        time={stj(loggedTotal)}
+        style={(remaining === 0) ? { alignItems: 'flex-end' } : { alignItems: 'flex-start' }}
       />
-    }
-    <ProgressBarFill
-      name="logged-total"
-      width={(loggedTotal / (loggedTotal + remaining)) * 100}
-      label="Logged"
-      color="#B2D4FF"
-      time={stj(loggedTotal)}
-      style={(remaining === 0) ? { alignItems: 'flex-end' } : { alignItems: 'flex-start' }}
-    />
-  </ProgressBarContainer>
-);
+      {remaining > 0 &&
+        <Percentage>{percentage}%</Percentage>
+      }
+    </ProgressBarContainer>
+  );
+};
 
 export default ProgressBar;
