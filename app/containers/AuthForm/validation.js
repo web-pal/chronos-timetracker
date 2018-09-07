@@ -3,12 +3,6 @@ const validate = (values) => {
   if (!values.host) {
     errors.host = 'Requried';
   }
-  if (!values.username) {
-    errors.username = 'Requried';
-  }
-  if (!values.password) {
-    errors.password = 'Requried';
-  }
   return errors;
 };
 

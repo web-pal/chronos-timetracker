@@ -4,29 +4,17 @@ import * as actionTypes from '../actions/actionTypes/auth';
 
 export type AuthAction =
   {|
-    type: typeof actionTypes.LOGIN_REQUEST,
+    type: typeof actionTypes.AUTH_REQUEST,
     payload: {|
-      host: string,
-      username: string,
-      password: string,
+      host: any,
+      token: string,
     |},
-  |} |
-  {|
-    type: typeof actionTypes.LOGIN_OAUTH_REQUEST,
-    host: string,
   |} |
   {|
     type: typeof actionTypes.LOGOUT_REQUEST,
     payload: {
       dontForget: boolean,
     }
-  |} |
-  {|
-    type: typeof actionTypes.ACCEPT_OAUTH,
-    code: string,
-  |} |
-  {|
-    type: typeof actionTypes.DENY_OAUTH,
   |} |
   {|
     type: typeof actionTypes.SWITCH_ACCOUNT,

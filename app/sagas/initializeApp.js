@@ -42,9 +42,6 @@ import {
   fetchBoards,
 } from './boards';
 import {
-  transformValidHost,
-} from './auth';
-import {
   throwError,
   infoLog,
   notify,
@@ -56,6 +53,9 @@ import {
   trackMixpanel,
   incrementMixpanel,
 } from '../utils/stat';
+import {
+  transformValidHost,
+} from './auth';
 import {
   version,
 } from '../package.json';
@@ -106,7 +106,6 @@ export function* initialConfigureApp({
     'load-issue-window',
     `${protocol}://${host}/issues`,
   );
-
   const userData = yield call(Api.jiraProfile);
 
   yield put(profileActions.fillUserData(userData));
@@ -190,30 +189,26 @@ export function* initialConfigureApp({
 }
 
 function* getInitializeAppData(): Generator<*, *, *> {
-  const basicAuthCredentials = yield call(
+  const authCredentials = yield call(
     getFromStorage,
     'last_used_account',
   );
-  const basicAuthDataExist =
-    basicAuthCredentials !== null &&
-    basicAuthCredentials.username &&
-    basicAuthCredentials.host;
-  if (basicAuthDataExist) {
-    const host = yield call(transformValidHost, basicAuthCredentials.host);
-    basicAuthCredentials.host = host.hostname;
-    basicAuthCredentials.protocol = host.protocol.slice(0, -1);
-    basicAuthCredentials.port = host.port;
-    basicAuthCredentials.path_prefix = host.pathname;
+  const authDataExist =
+    authCredentials !== null &&
+    authCredentials.name &&
+    authCredentials.origin;
+  if (authDataExist) {
     const {
-      credentials,
+      credentials: { token },
       error,
     } = ipcRenderer.sendSync(
       'get-credentials',
       {
-        username: basicAuthCredentials.username,
-        host: host.hostname,
+        name: authCredentials.name,
+        origin: authCredentials.origin,
       },
     );
+
     if (error) {
       Raven.captureMessage('keytar error!', {
         level: 'error',
@@ -234,71 +229,34 @@ function* getInitializeAppData(): Generator<*, *, *> {
           },
         );
       }
-    } else {
-      basicAuthCredentials.password = credentials.password;
     }
+
+    authCredentials.token = token;
   }
 
-  const jwt = yield call(
-    getFromStorage,
-    'jira_jwt',
-  );
-  let oAuthCredentials = {};
-  if (jwt) {
-    const oAuthData = yield call(
-      Api.getDataForOAuth,
-      basicAuthCredentials.host,
-    );
-    const oAuthAdditionalData = yield call(
-      Api.chronosBackendGetJiraCredentials,
-    );
-    oAuthCredentials = {
-      host: oAuthAdditionalData.baseUrl,
-      oauth: {
-        token: oAuthAdditionalData.token,
-        token_secret: oAuthAdditionalData.token_secret,
-        consumer_key: oAuthData.consumerKey,
-        private_key: oAuthData.privateKey,
-      },
-    };
-  }
-
-  const authType = jwt ? 'OAuth' : 'Basic';
-  const authData = jwt ?
-    oAuthCredentials :
-    basicAuthCredentials;
-
-  return {
-    tryLogin: authType === 'OAuth' || (basicAuthDataExist && basicAuthCredentials.password),
-    authType,
-    authData,
-  };
+  return authCredentials;
 }
 
 export function* initializeApp(): Generator<*, *, *> {
   yield put(uiActions.setUiState('initializeInProcess', true));
   try {
-    const {
-      tryLogin,
-      authType,
-      authData,
-    } = yield call(getInitializeAppData);
+    const appData = yield call(getInitializeAppData);
+    if (appData && appData.token) {
+      const host = yield call(transformValidHost, appData.origin);
+      const { hostname, protocol } = host;
 
-    let accounts = yield call(getFromStorage, 'accounts');
-    if (!accounts) accounts = [];
-    yield put(uiActions.setUiState('accounts', accounts));
+      let accounts = yield call(getFromStorage, 'accounts');
+      if (!accounts) accounts = [];
+      yield put(uiActions.setUiState('accounts', accounts));
 
-    if (tryLogin) {
-      const loginFunc =
-        authType === 'OAuth' ? jira.oauth : jira.basicAuth;
-      yield call(loginFunc, authData);
-      yield call(
-        initialConfigureApp,
-        {
-          host: authData.host,
-          protocol: authData.protocol,
-        },
-      );
+      yield call(jira.auth, {
+        host,
+        token: appData.token,
+      });
+      yield call(initialConfigureApp, {
+        host: hostname,
+        protocol,
+      });
     }
     trackMixpanel('Application was initialized');
     incrementMixpanel('Initialize', 1);

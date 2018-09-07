@@ -1,59 +1,27 @@
+import request from 'request';
 import JiraClient from 'jira-connector';
+
+const getCookieJar = (origin, token) => {
+  const jar = request.jar();
+  jar.setCookie(
+    `cloud.session.token=${token}; path=/; domain=.atlassian.net;`,
+    origin,
+  );
+  return jar;
+};
 
 
 class JiraClientWrapper {
   constructor() {
     this.client = null;
-    this.basicAuth = this.basicAuth.bind(this);
-    this.oauth = this.oauth.bind(this);
+    this.auth = this.auth.bind(this);
   }
-
-  basicAuth({
-    host,
-    username,
-    password,
-    port,
-    protocol,
-    path_prefix,
-  }) {
+  auth({ host, token }) {
     const client = new JiraClient({
-      host,
-      path_prefix,
-      port,
-      protocol,
-      rejectUnauthorized: false,
-      basic_auth: {
-        username,
-        password,
-      },
+      host: host.hostname,
+      cookie_jar: getCookieJar(host.origin, token),
     });
     this.client = client;
-  }
-
-
-  oauth({ host, oauth }) {
-    const client = new JiraClient({
-      host,
-      oauth,
-    });
-    this.client = client;
-  }
-
-  getOAuthUrl({ host, oauth: { consumerKey, privateKey } }, cb) { // eslint-disable-line
-    return JiraClient.oauth_util.getAuthorizeURL({
-      host,
-      oauth: {
-        consumer_key: consumerKey,
-        private_key: privateKey,
-      },
-    }, cb);
-  }
-
-  getOAuthToken({ host, oauth }, cb) { // eslint-disable-line
-    return JiraClient.oauth_util.swapRequestTokenWithAccessToken({
-      host,
-      oauth,
-    }, cb);
   }
 }
 

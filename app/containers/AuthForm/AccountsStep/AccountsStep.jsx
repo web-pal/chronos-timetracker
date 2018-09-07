@@ -1,11 +1,15 @@
 // @flow
-import React, { Component } from 'react';
+import React from 'react';
 import {
   authActions,
 } from 'actions';
 
 import Button from '@atlaskit/button';
 import Tag from '@atlaskit/tag';
+
+import {
+  transformValidHost,
+} from '../../../sagas/auth';
 
 import {
   ContentInner,
@@ -17,29 +21,20 @@ import {
 
 type Props = {
   isActiveStep: boolean,
-  loginError: string,
+  authError: string,
   dispatch: Function,
   onBack: Function,
-  accounts: Array<{| host: string, username: string |}>,
-  onContinue: () => void,
+  accounts: Array<{| origin: string, name: string |}>,
 }
 
 const AccountsStep = ({
   isActiveStep,
-  loginError,
-  onContinue,
+  authError,
   onBack,
   dispatch,
   accounts,
 }: Props) => (
   <ContentInner
-    onKeyDown={(ev) => {
-      if (ev.key === 'Enter') {
-        ev.preventDefault();
-        ev.stopPropagation();
-        onContinue();
-      }
-    }}
     isActiveStep={isActiveStep}
     step={0}
   >
@@ -47,10 +42,10 @@ const AccountsStep = ({
       {accounts.map(ac => (
         <Account
           onClick={() => dispatch(authActions.switchAccount(ac))}
-          key={`${ac.username}:${ac.host}`}
+          key={`${ac.name}:${ac.origin}`}
         >
-          <Tag text={ac.host} color="teal" />
-          {ac.username}
+          <Tag text={transformValidHost(ac.origin).hostname} color="teal" />
+          {ac.name}
         </Account>
       ))}
     </div>
@@ -62,7 +57,7 @@ const AccountsStep = ({
         Back
       </Button>
     </BackButtonContainer>
-    <Error>{loginError}</Error>
+    <Error>{authError}</Error>
   </ContentInner>
 );
 

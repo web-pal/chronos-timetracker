@@ -16,9 +16,6 @@ import type {
   Connector,
 } from 'react-redux';
 import type {
-  FormProps,
-} from 'redux-form';
-import type {
   Dispatch,
 } from 'types';
 
@@ -40,8 +37,8 @@ import {
   validate,
 } from './validation';
 
-import EmailStep from './EmailStep';
 import TeamStep from './TeamStep';
+import LoginFormStep from './LoginFormStep';
 import AccountsStep from './AccountsStep';
 
 import AuthDebugger from './AuthDebugger';
@@ -52,29 +49,25 @@ import {
   Container,
   Logo,
   LoginInfo,
-  AuthDebugContainer,
 } from './styled';
 
 type Props = {
   showAuthDebugConsole: boolean,
-  loginRequestInProcess: boolean,
-  loginError: string,
-  isPaidUser: boolean,
-  accounts: Array<{| host: string, username: string |}>,
+  authRequestInProcess: boolean,
+  authError: string,
+  accounts: Array<{| origin: string, name: string |}>,
   host: string | null,
   step: number,
   dispatch: Dispatch,
-} & FormProps
+};
 
 const AuthForm: StatelessFunctionalComponent<Props> = ({
   showAuthDebugConsole,
-  loginRequestInProcess,
-  loginError,
-  isPaidUser,
+  authRequestInProcess,
+  authError,
   accounts,
   host,
   step,
-  handleSubmit,
   dispatch,
 }: Props): Node =>
   <Container>
@@ -93,10 +86,7 @@ const AuthForm: StatelessFunctionalComponent<Props> = ({
             isActiveStep={step === 0}
             dispatch={dispatch}
             accounts={accounts}
-            onContinue={handleSubmit((data) => {
-              dispatch(authActions.loginRequest(data));
-            })}
-            loginError={loginError}
+            authError={authError}
             onBack={() => {
               dispatch(uiActions.setUiState('authFormStep', 1));
             }}
@@ -111,26 +101,21 @@ const AuthForm: StatelessFunctionalComponent<Props> = ({
             );
           }}
           dispatch={dispatch}
-          loginError={loginError}
+          authError={authError}
+          authRequestInProcess={authRequestInProcess}
         />
-        <EmailStep
+        <LoginFormStep
+          host={host}
           isActiveStep={step === 2}
-          onContinue={handleSubmit((data) => {
-            dispatch(authActions.loginRequest(data));
-          })}
-          loginError={loginError}
+          onContinue={(data) => {
+            dispatch(authActions.authRequest(data));
+          }}
+          onError={(err) => {
+            dispatch(uiActions.setUiState('authError', err));
+          }}
           onBack={() => {
             dispatch(uiActions.setUiState('authFormStep', 1));
           }}
-          onJiraClick={() => {
-            if (host !== null && host.length) {
-              dispatch(authActions.loginOAuthRequest(host));
-            } else {
-              dispatch(uiActions.setUiState('loginError', 'You need to fill JIRA host first'));
-            }
-          }}
-          loginRequestInProcess={loginRequestInProcess}
-          isPaidUser={isPaidUser}
         />
       </ContentOuter>
     </Flex>
@@ -147,26 +132,20 @@ const AuthForm: StatelessFunctionalComponent<Props> = ({
   </Container>;
 
 const selector = formValueSelector('auth');
-function mapStateToProps(state) {
-  return {
-    showAuthDebugConsole: getUiState('showAuthDebugConsole')(state),
-    host: selector(state, 'host'),
-    step: getUiState('authFormStep')(state),
-    accounts: getUiState('accounts')(state),
-    loginError: getUiState('loginError')(state),
-    loginRequestInProcess: getUiState('loginRequestInProcess')(state),
-    // Temporary block OAuth
-    isPaidUser: false,
-  };
-}
-
 const AuthFormDecorated = reduxForm({
   form: 'auth',
   validate,
 })(AuthForm);
 
 const connector: Connector<{}, Props> = connect(
-  mapStateToProps,
+  state => ({
+    showAuthDebugConsole: getUiState('showAuthDebugConsole')(state),
+    host: selector(state, 'host'),
+    step: getUiState('authFormStep')(state),
+    accounts: getUiState('accounts')(state),
+    authError: getUiState('authError')(state),
+    authRequestInProcess: getUiState('authRequestInProcess')(state),
+  }),
   dispatch => ({ dispatch }),
 );
 

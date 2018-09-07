@@ -29,8 +29,8 @@ import {
 
 type Props = {
   isActiveStep: boolean,
-  accounts: Array<{| host: string, username: string |}>,
-  loginError: string,
+  accounts: Array<{| name: string, origin: string |}>,
+  authError: string,
   dispatch: Function,
   onContinue: () => void,
 }
@@ -55,7 +55,7 @@ class TeamStep extends Component<Props> {
   render() {
     const {
       isActiveStep,
-      loginError,
+      authError,
       onContinue,
       dispatch,
       accounts,
@@ -92,7 +92,7 @@ class TeamStep extends Component<Props> {
               component={ReduxFormComponents.UnderlineInput}
             />
           </Form>
-          <Error>{loginError}</Error>
+          <Error>{authError}</Error>
         </ContentStep>
         <PrimaryButton onClick={onContinue}>
           Continue

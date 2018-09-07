@@ -27,7 +27,6 @@ let mainWindow;
 let issueWindow;
 let tray;
 let menu;
-let authWindow;
 let shouldQuit = process.platform !== 'darwin';
 
 global.appDir = appDir;
@@ -287,43 +286,43 @@ function authJiraBrowserRequests({
 ipcMain.on('store-credentials', (event, credentials) => {
   try {
     const {
-      username,
-      password,
-      host,
+      name,
+      // origin,
+      token,
     } = credentials;
     keytar.setPassword(
       'Chronos',
-      username,
-      password,
+      name,
+      token,
     );
     event.returnValue = true; // eslint-disable-line no-param-reassign
-    authJiraBrowserRequests({
-      username,
-      password,
-      host,
-    });
+    // authJiraBrowserRequests({
+    //   name,
+    //   token,
+    //   origin,
+    // });
   } catch (err) {
     console.log(err);
   }
 });
 
-ipcMain.on('get-credentials', (event, { username, host }) => {
+ipcMain.on('get-credentials', (event, { name }) => {
   try {
-    keytar.getPassword('Chronos', username)
+    keytar.getPassword('Chronos', name)
       .then(
-        (password) => {
+        (token) => {
           const credentials = {
-            username,
-            password,
+            name,
+            token,
           };
           event.returnValue = { // eslint-disable-line no-param-reassign
             credentials,
           };
-          authJiraBrowserRequests({
-            username,
-            password,
-            host,
-          });
+          // authJiraBrowserRequests({
+          //   username,
+          //   password,
+          //   host,
+          // });
         },
       ).catch(
         (err) => {
@@ -473,70 +472,6 @@ ipcMain.on('load-issue-window', (event, url) => {
     issueWindow.webContents.send('url', url);
   }
 });
-
-ipcMain.on('oauth-response', (event, text) => {
-  if (mainWindow && authWindow) {
-    try {
-      const code = text.split('.')[1].split('\'')[1];
-      mainWindow.webContents.send('oauth-accepted', code);
-    } catch (err) {
-      console.log(err);
-    }
-    authWindow.close();
-  }
-});
-
-ipcMain.on('oauth-denied', () => {
-  if (mainWindow && authWindow) {
-    mainWindow.webContents.send('oauth-denied');
-    authWindow.close();
-  }
-});
-
-ipcMain.on('open-oauth-url', (event, url) => {
-  authWindow = new BrowserWindow({
-    parent: mainWindow,
-    modal: true,
-    useContentSize: true,
-    closable: true,
-    resizable: false,
-    center: true,
-    webPreferences: {
-      nodeIntegration: false,
-      preload: path.join(__dirname, 'preload.js'),
-    },
-  });
-
-  authWindow.loadURL(url);
-  authWindow.once('ready-to-show', () => {
-    if (authWindow) {
-      authWindow.show();
-    }
-  });
-
-  authWindow.webContents.on('did-navigate', (ev, navUrl) => {
-    if (navUrl.includes('plugins/servlet/oauth/authorize')) {
-      setTimeout(() => {
-        if (authWindow) {
-          authWindow.webContents.executeJavaScript(`
-            var text = document.querySelector('#content p').textContent;
-            if (text.includes('You have successfully authorized')) {
-              ipcRenderer.send('oauth-response', text);
-            }
-            if (text.includes('You have denied')) {
-              ipcRenderer.send('oauth-denied', text);
-            }
-          `);
-        }
-      }, 500);
-    }
-  });
-
-  authWindow.on('close', () => {
-    authWindow = null;
-  }, false);
-});
-
 
 ipcMain.on('show-idle-popup', () => {
   const options = {

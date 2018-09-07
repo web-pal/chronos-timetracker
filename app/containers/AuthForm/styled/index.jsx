@@ -207,3 +207,13 @@ export const Account = styled.div`
     background-color: rgba(9, 30, 66, 0.1);
   }
 `;
+
+export const WebViewContainer = styled.div`
+  & > webview {
+    width: 380px;
+    height: 430px;
+    overflow: hidden;
+    opacity: ${props => (props.isCompleting ? 1 : 0)};
+    transition: 0.3s;
+  }
+`;

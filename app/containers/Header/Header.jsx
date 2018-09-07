@@ -72,8 +72,8 @@ import {
 type Props = {
   userData: User,
   accounts: Array<{|
-    host: string,
-    username: string,
+    name: string,
+    origin: string,
   |}>,
   host: string,
   updateAvailable: string,
@@ -115,19 +115,20 @@ const Header: StatelessFunctionalComponent<Props> = ({
             }
           >
             {accounts.map((ac) => {
-              const isActive = transformValidHost(ac.host).host === host &&
-                (ac.username === userData.emailAddress ||
-                  ac.username === userData.key ||
-                  ac.username === userData.name);
+              const acHost = transformValidHost(ac.origin);
+              const isActive = acHost.host === host &&
+                (ac.name === userData.emailAddress ||
+                  ac.name === userData.key ||
+                  ac.name === userData.name);
               return (
                 <DropdownItem
-                  key={`${ac.host}:${ac.username}`}
+                  key={`${ac.origin}:${ac.name}`}
                   onClick={() => dispatch(authActions.switchAccount(ac))}
                   isDisabled={isActive}
                   elemAfter={isActive && <Lozenge appearance="success">Active</Lozenge>}
                 >
-                  <Tag text={ac.host} color="teal" />
-                  {ac.username}
+                  <Tag text={acHost.hostname} color="teal" />
+                  {ac.name}
                 </DropdownItem>
               );
             })}

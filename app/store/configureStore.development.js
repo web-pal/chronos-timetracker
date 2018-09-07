@@ -25,7 +25,7 @@ export default function configureStore(initialState) {
   const sagaMiddleware = createSagaMiddleware();
   const middlewares = [
     sagaMiddleware,
-    config.reduxLogger && logger,
+    // config.reduxLogger && logger,
   ].filter(Boolean);
   const enhancer = composeEnhancers(
     applyMiddleware(...middlewares),

@@ -30,9 +30,7 @@ export default function* rootSaga(): Generator<*, void, *> {
     fork(createDispatchActionListener),
 
     // auth
-    fork(authSagas.createIpcAuthListeners),
-    fork(authSagas.basicAuthLoginForm),
-    fork(authSagas.oAuthLoginForm),
+    fork(authSagas.authFlow),
     fork(authSagas.logoutFlow),
     fork(authSagas.switchAccountFlow),
 

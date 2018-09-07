@@ -2,7 +2,6 @@
 import {
   fork,
   take,
-  race,
   call,
   put,
 } from 'redux-saga/effects';
@@ -33,7 +32,6 @@ import {
   throwError,
   notify,
 } from './ui';
-import createIpcChannel from './ipc';
 
 import jira from '../utils/jiraClient';
 import {
@@ -102,66 +100,56 @@ export function* chronosBackendAuth({
   }
 }
 
-function storeInKeytar(payload, host) {
+function storeInKeytar(payload) {
   ipcRenderer.sendSync(
     'store-credentials',
-    {
-      ...payload,
-      host: host.hostname,
-    },
+    payload,
   );
 }
 
-function* saveAccount(payload: { host: string, username: string }): Generator<*, void, *> {
-  const { host, username } = payload;
+function* saveAccount(payload: { name: string, origin: string }): Generator<*, void, *> {
+  const { name, origin } = payload;
   let accounts = yield call(getFromStorage, 'accounts');
   if (!accounts) accounts = [];
-  if (!R.find(R.whereEq({ host, username }), accounts)) {
+  if (!R.find(R.whereEq({ origin, name }), accounts)) {
     accounts.push(payload);
     yield call(setToStorage, 'accounts', accounts);
   }
 }
 
-function* deleteAccount(payload: { host: string, username: string }): Generator<*, void, *> {
-  const { host, username } = payload;
+function* deleteAccount(payload: { name: string, origin: string }): Generator<*, void, *> {
+  const { origin, name } = payload;
   let accounts = yield call(getFromStorage, 'accounts');
   if (!accounts) accounts = [];
-  const index = R.findIndex(R.whereEq({ host, username }), accounts);
+  const index = R.findIndex(R.whereEq({ name, origin }), accounts);
   if (index !== -1) {
-    accounts = R.without([{ host, username }], accounts);
+    accounts = R.without([{ name, origin }], accounts);
     yield call(setToStorage, 'accounts', accounts);
   }
 }
 
-export function* basicAuthLoginForm(): Generator<*, void, *> {
+export function* authFlow(): Generator<*, *, *> {
   while (true) {
     try {
-      const { payload } = yield take(actionTypes.LOGIN_REQUEST);
-      const host = yield call(transformValidHost, payload.host);
+      const { payload: { host, token } } = yield take(actionTypes.AUTH_REQUEST);
+      const { hostname, origin } = host;
       const protocol = host.protocol.slice(0, -1);
 
       yield put(authActions.addAuthDebugMessage([
         { string: 'Login request...' },
-        { string: `host: ${host.hostname}` },
+        { string: `host: ${hostname}` },
         { string: `protocol: ${protocol}` },
         { string: `port: ${host.port}` },
         { string: `path_prefix: ${host.pathname}` },
-        { string: `username: ${payload.username}` },
-        { string: 'password: ***' },
       ]));
 
-      yield put(uiActions.setUiState('loginRequestInProcess', true));
-      yield put(uiActions.setUiState('loginError', null));
-      yield call(
-        jira.basicAuth,
-        {
-          ...payload,
-          host: host.hostname,
-          protocol,
-          port: host.port,
-          path_prefix: host.pathname,
-        },
-      );
+      yield put(uiActions.setUiState('authRequestInProcess', true));
+
+      yield call(jira.auth, {
+        host,
+        token,
+      });
+
       // Test request for check auth
       const {
         debug,
@@ -170,50 +158,31 @@ export function* basicAuthLoginForm(): Generator<*, void, *> {
       yield put(authActions.addAuthDebugMessage([
         { json: debug },
       ]));
-      const userData = result;
-      if (!userData.self || !userData.active) {
-        Raven.captureMessage('Strange auth response!', {
-          level: 'error',
-          extra: {
-            userData,
-          },
-        });
-        throw new Error('Strange auth response!');
-      }
-      /*
-      yield fork(chronosBackendAuth, {
-        username: payload.username,
-        password: payload.password,
-        host: host.hostname,
-        protocol,
-        port: host.port,
-        pathPrefix: host.pathname,
-      });
-      */
+      const { name } = result;
       yield call(
         setToStorage,
         'last_used_account',
         {
-          username: payload.username,
-          host: payload.host,
+          name,
+          origin,
         },
       );
       yield call(
         saveAccount,
         {
-          username: payload.username,
-          host: payload.host,
+          name,
+          origin,
         },
       );
-      yield call(
-        initialConfigureApp,
-        {
-          host: host.hostname,
-          protocol,
-        },
-      );
-      yield call(storeInKeytar, payload, host);
-      yield put(uiActions.setUiState('loginRequestInProcess', false));
+      yield call(initialConfigureApp, {
+        host: hostname,
+        protocol,
+      });
+      yield call(storeInKeytar, {
+        name,
+        token,
+      });
+      yield put(uiActions.setUiState('authRequestInProcess', false));
       trackMixpanel('Jira login');
       incrementMixpanel('Jira login', 1);
     } catch (err) {
@@ -226,89 +195,12 @@ export function* basicAuthLoginForm(): Generator<*, void, *> {
           },
         ]));
       }
-      yield put(uiActions.setUiState('loginRequestInProcess', false));
+      yield put(uiActions.setUiState('authRequestInProcess', false));
       yield put(uiActions.setUiState(
-        'loginError',
+        'authError',
         'Can not authenticate user. Please try again',
       ));
       yield call(throwError, err.result ? err.result : err);
-    }
-  }
-}
-
-export function* oAuthLoginForm(): Generator<*, *, *> {
-  while (true) {
-    try {
-      const { host } = yield take(actionTypes.LOGIN_OAUTH_REQUEST);
-      yield put(uiActions.setUiState('loginRequestInProcess', true));
-
-      const { hostname } = yield call(transformValidHost, host);
-      const oAuthData = yield call(Api.getDataForOAuth, hostname);
-
-      const {
-        token,
-        url,
-        ...rest
-      } = yield call(
-        Api.getOAuthUrl,
-        {
-          oauth: oAuthData,
-          host: hostname,
-        },
-      );
-
-      // opening oAuth modal
-      ipcRenderer.send('open-oauth-url', url);
-
-      const { code, denied } = yield race({
-        code: take(actionTypes.ACCEPT_OAUTH),
-        denied: take(actionTypes.DENY_OAUTH),
-      });
-
-      if (denied) {
-        throw new Error('OAuth denied');
-      }
-
-      // if not denied get oAuth Token
-      const accessToken = yield call(Api.getOAuthToken, {
-        host: hostname,
-        oauth: {
-          token,
-          token_secret: rest.tokenSecret,
-          oauth_verifier: code.payload,
-          consumer_key: oAuthData.consumerKey,
-          private_key: oAuthData.privateKey,
-        },
-      });
-
-      const data = yield call(
-        Api.chronosBackendOAuth,
-        {
-          baseUrl: hostname,
-          token: accessToken,
-          token_secret: rest.tokenSecret,
-        },
-      );
-
-      yield call(jira.oauth, {
-        host: hostname,
-        oauth: {
-          token: accessToken,
-          token_secret: rest.tokenSecret,
-          consumer_key: oAuthData.consumerKey,
-          private_key: oAuthData.privateKey,
-        },
-      });
-      yield call(setToStorage, 'desktop_tracker_jwt', data.token);
-      yield call(initialConfigureApp, { host: hostname, protocol: 'https' });
-      yield put(uiActions.setUiState('loginRequestInProcess', false));
-    } catch (err) {
-      yield put(uiActions.setUiState('loginRequestInProcess', false));
-      yield put(uiActions.setUiState(
-        'loginError',
-        'Can not authenticate user. Please try again',
-      ));
-      yield call(throwError, err);
     }
   }
 }
@@ -349,34 +241,9 @@ export function* logoutFlow(): Generator<*, *, *> {
   }
 }
 
-function getOauthChannelListener(channel, type) {
-  if (type === 'accepted') {
-    return function* listenOauthAccepted(): Generator<*, *, *> {
-      while (true) {
-        const ev = yield take(channel);
-        try {
-          yield put(authActions.acceptOAuth(ev.payload[0]));
-        } catch (err) {
-          yield call(throwError, err);
-        }
-      }
-    };
-  }
-  return function* listenOauthDenied(): Generator<*, *, *> {
-    while (true) {
-      yield take(channel);
-      try {
-        yield put(authActions.denyOAuth());
-      } catch (err) {
-        yield call(throwError, err);
-      }
-    }
-  };
-}
-
 export function* switchAccountFlow(): Generator<*, *, *> {
   while (true) {
-    const { payload } = yield take(actionTypes.SWITCH_ACCOUNT);
+    const { payload: { name, origin } } = yield take(actionTypes.SWITCH_ACCOUNT);
     try {
       const { getGlobal } = remote;
       const { running, uploading } = getGlobal('sharedObj');
@@ -390,15 +257,15 @@ export function* switchAccountFlow(): Generator<*, *, *> {
         window.alert('Currently app in process of saving worklog, wait few seconds please');
       }
       if (!running && !uploading) {
-        const host = yield call(transformValidHost, payload.host);
+        const host = yield call(transformValidHost, origin);
         const {
           credentials,
           error,
         } = ipcRenderer.sendSync(
           'get-credentials',
           {
-            username: payload.username,
-            host: host.hostname,
+            name,
+            origin,
           },
         );
         if (error) {
@@ -429,7 +296,10 @@ export function* switchAccountFlow(): Generator<*, *, *> {
           let accounts = yield call(getFromStorage, 'accounts');
           if (!accounts) accounts = [];
           yield put(uiActions.setUiState('accounts', accounts));
-          yield put(authActions.loginRequest({ ...payload, password: credentials.password }));
+          yield put(authActions.authRequest({
+            host,
+            token: credentials.token,
+          }));
         }
       }
       trackMixpanel('SwitchAccounts');
@@ -438,12 +308,4 @@ export function* switchAccountFlow(): Generator<*, *, *> {
       yield call(throwError, err);
     }
   }
-}
-
-export function* createIpcAuthListeners(): Generator<*, *, *> {
-  const oAuthAcceptedChannel = yield call(createIpcChannel, 'oauth-accepted');
-  const oAuthDeniedChannel = yield call(createIpcChannel, 'oauth-denied');
-
-  yield fork(getOauthChannelListener(oAuthAcceptedChannel, 'accepted'));
-  yield fork(getOauthChannelListener(oAuthDeniedChannel, 'denied'));
 }
