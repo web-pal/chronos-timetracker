@@ -4,25 +4,18 @@
   "version": "2.7.1",
   "description": "Native app for time-tracking fully integrated with JIRA",
   "main": "./main.prod.js",
-  "scripts": {
-    "rebuild-electron": "npm rebuild --runtime=electron --target=1.7.5 --disturl=https://atom.io/download/atom-shell -—abi=57",
-    "postinstall": "npm run rebuild-electron && ./scripts/replaceNotifier.sh"
-  },
   "author": {
     "name": "Webpal",
     "url": "https://github.com/web-pal"
   },
   "license": "CCL",
   "dependencies": {
-    "@paulcbetts/system-idle-time": "github:paulcbetts/node-system-idle-time",
-    "electron-log": "2.2.14",
-    "electron-updater": "2.20.1",
-    "keytar": "4.1.0",
-    "node-notifier": "^5.1.2"
+    "desktop-idle": "1.1.2",
+    "keytar": "4.3.0"
   },
   "devEngines": {
-    "node": ">=6.x",
-    "npm": ">=4.x",
-    "yarn": "0.22.0"
+    "node": ">=10.x",
+    "npm": ">=6.x",
+    "yarn": ">=1.9"
   }
 }
