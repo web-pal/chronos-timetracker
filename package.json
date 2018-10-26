@@ -172,7 +172,7 @@
     "raven-js": "3.27.0",
     "rc-time-picker": "3.4.0",
     "react": "16.5.2",
-    "react-click-outside": "3.0.1",
+    "react-click-outside": "tj/react-click-outside",
     "react-dom": "16.5.2",
     "react-markdown": "4.0.3",
     "react-redux": "5.0.7",
