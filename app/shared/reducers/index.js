@@ -1,0 +1,1 @@
+export windowsManager from './windowsManager';
