@@ -1,3 +1,27 @@
+<a name="2.8.0"></a>
+# [2.8.0](https://github.com/web-pal/chronos-timetracker/compare/v2.7.3...v2.8.0) (2018-10-26)
+
+
+### Bug Fixes
+
+* **Browsing Issues:** fix empty string input handling in JQL field & default allowEmptyWorklog to tr ([dacdabf](https://github.com/web-pal/chronos-timetracker/commit/dacdabf))
+* **Browsing Issues:** fix jql filters in recent tab ([e1ceb13](https://github.com/web-pal/chronos-timetracker/commit/e1ceb13))
+* **Browsing Issues:** search for parts of search terms ([9b0c93b](https://github.com/web-pal/chronos-timetracker/commit/9b0c93b)), closes [#115](https://github.com/web-pal/chronos-timetracker/issues/115)
+* **Issue Detail View:** fix date and time formatting in Worklogs tab ([4a00be4](https://github.com/web-pal/chronos-timetracker/commit/4a00be4)), closes [#82](https://github.com/web-pal/chronos-timetracker/issues/82)
+* **Tracking:** fix adjustStartTime behaviour ([ecc2dfb](https://github.com/web-pal/chronos-timetracker/commit/ecc2dfb)), closes [#84](https://github.com/web-pal/chronos-timetracker/issues/84)
+* **Tracking:** fix allow empty worklog comment ([eb29e4c](https://github.com/web-pal/chronos-timetracker/commit/eb29e4c))
+* **Tracking:** stop adjust start time switch from resetting date to today ([5c351f5](https://github.com/web-pal/chronos-timetracker/commit/5c351f5))
+
+
+### Features
+
+* **Authorization:** rewrite Authorization ([96effe8](https://github.com/web-pal/chronos-timetracker/commit/96effe8)), closes [#119](https://github.com/web-pal/chronos-timetracker/issues/119)
+* **Browsing Issues:** implement JQL filters search ([415bb76](https://github.com/web-pal/chronos-timetracker/commit/415bb76)), closes [#57](https://github.com/web-pal/chronos-timetracker/issues/57) [#48](https://github.com/web-pal/chronos-timetracker/issues/48) [#85](https://github.com/web-pal/chronos-timetracker/issues/85)
+* **Tracking:** display traking info progress bar ([1995497](https://github.com/web-pal/chronos-timetracker/commit/1995497)), closes [#74](https://github.com/web-pal/chronos-timetracker/issues/74)
+* **Tracking:** make validation in add worklog modal ([38bd43e](https://github.com/web-pal/chronos-timetracker/commit/38bd43e))
+
+
+
 <a name="2.7.1"></a>
 ## [2.7.1](https://github.com/web-pal/chronos-timetracker/compare/v2.7.0...v2.7.1) (2018-04-05)
 
