@@ -35,35 +35,60 @@ class LoginFormStep extends Component<Props, {}> {
 
   loadUrl(hostStr) {
     const host = transformValidHost(hostStr);
-    const src = `${host.href}login.jsp`;
+    const protocol = host.protocol.slice(0, -1);
+    const baseUrl = `${host.origin}${host.pathname.replace(/\/$/, '')}`;
+    const src = `${baseUrl}/login.jsp`;
 
     let webview = document.querySelector('webview');
     if (!webview) {
       webview = document.createElement('webview');
       webview.setAttribute('preload', getPreload('authPreload'));
 
+      webview.addEventListener('will-navigate', ({ url }) => {
+        console.log('will-navigate', url);
+      });
+
       webview.addEventListener('did-navigate', ({ url }) => {
+        console.log('did-navigate', url);
         webview.focus();
         if (process.env.NODE_ENV === 'development') {
           webview.openDevTools();
         }
 
-        if (url.includes('login.jsp')) {
-          this.props.onError('Team not found');
-          this.props.onBack();
-        }
+        // if (url.includes('login.jsp')) {
+        //   this.props.onError('Team not found');
+        //   this.props.onBack();
+        // }
 
-        if (url.includes('secure/Dashboard.jspa') || url.includes('secure/MyJiraHome.jspa')) {
+        // TODO Fix
+        if (url.replace(/\/$/, '') === baseUrl
+          || url.includes('/issues')
+          || url.includes('secure/Dashboard.jspa')
+          || url.includes('secure/MyJiraHome.jspa')
+          || url.includes('secure/WelcomeToJIRA.jspa')
+        ) {
           const { session } = webview.getWebContents();
+          const domain = (
+            host.origin.includes('atlassian.net')
+              ? '.atlassian.net'
+              : host.hostname
+          );
           session.cookies.get({
-            name: 'cloud.session.token',
-            domain: '.atlassian.net',
+            domain,
           }, (error, cookies) => {
+            console.log('error', error);
+            console.log('cookies', cookies);
             if (cookies && cookies.length) {
               this.props.onContinue({
-                host,
-                token: cookies[0].value,
+                cookies,
+                protocol,
+                hostname: host.hostname,
+                port: host.port,
+                pathname: host.pathname,
               });
+            } else {
+              this.props.onError('Can not authenticate user. Please try again');
+              this.props.onBack();
             }
             session.clearStorageData([]);
           });

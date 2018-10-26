@@ -27,7 +27,6 @@ function back() {
 function initAtlassian(base, reset) {
   base.style.width = '100%';
   base.style.height = '100%';
-  // base.style.overflow = 'hidden';
 
   hideNode('header', base);
   hideNode('footer', base);
@@ -62,6 +61,31 @@ function initGoogle(base) {
   });
 }
 
+function initSelfHost(base) {
+  hideNode('#header', base);
+  hideNode('#footer', base);
+  hideNode('#login-form .checkbox', base);
+  document.body.style.minWidth = 'auto';
+  document.body.style.width = 'auto';
+  const panel = base.querySelector('.aui-page-panel');
+  if (panel) {
+    panel.style.marginTop = '35px';
+    panel.style.maxWidth = '345px';
+
+    const a = document.createElement('a');
+    a.innerHTML = 'Back to Jira';
+    panel.appendChild(a);
+    a.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      back();
+    });
+  }
+
+  store.dispatch(
+    uiActions.setUiState('authFormIsComplete', true, 'allRenderer'),
+  );
+}
+
 function init() {
   if (global.location.host === 'id.atlassian.com') {
     const base = document.getElementById('root');
@@ -78,10 +102,14 @@ function init() {
     } else {
       setTimeout(init, 500);
     }
-  } else {
-    store.dispatch(
-      uiActions.setUiState('authFormIsComplete', false, 'allRenderer'),
-    );
+  } else if (global.location.pathname.endsWith('/login.jsp')
+    || global.location.pathname.endsWith('/secure/ForgotLoginDetails.jspa')) {
+    const base = document.getElementById('page');
+    if (base) {
+      initSelfHost(base);
+    } else {
+      setTimeout(init, 500);
+    }
   }
 }
 

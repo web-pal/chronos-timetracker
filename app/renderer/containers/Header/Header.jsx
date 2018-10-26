@@ -73,9 +73,9 @@ type Props = {
   userData: User,
   accounts: Array<{|
     name: string,
-    origin: string,
+    hostname: string,
   |}>,
-  host: string,
+  hostname: string,
   updateAvailable: string,
   updateFetching: boolean,
   issuesFetching: boolean,
@@ -85,7 +85,7 @@ type Props = {
 const Header: StatelessFunctionalComponent<Props> = ({
   userData,
   accounts,
-  host,
+  hostname,
   updateAvailable,
   updateFetching,
   issuesFetching,
@@ -106,24 +106,20 @@ const Header: StatelessFunctionalComponent<Props> = ({
           position="right top"
           trigger={(
             <ProfileTeam>
-              {host} <ChevronDownIcon />
+              {hostname} <ChevronDownIcon />
             </ProfileTeam>
           )}
         >
           {accounts.map((ac) => {
-            const acHost = transformValidHost(ac.origin);
-            const isActive = acHost.host === host
-              && (ac.name === userData.emailAddress
-                || ac.name === userData.key
-                || ac.name === userData.name);
+            const isActive = ac.hostname === hostname;
             return (
               <DropdownItem
-                key={`${ac.origin}:${ac.name}`}
+                key={`${ac.hostname}:${ac.name}`}
                 onClick={() => dispatch(authActions.switchAccount(ac))}
                 isDisabled={isActive}
                 elemAfter={isActive && <Lozenge appearance="success">Active</Lozenge>}
               >
-                <Tag text={acHost.hostname} color="teal" />
+                <Tag text={ac.hostname} color="teal" />
                 {ac.name}
               </DropdownItem>
             );
@@ -213,7 +209,7 @@ function mapStateToProps(state) {
   const request = sidebarType === 'recent' ? 'recentIssues' : 'filterIssues';
   return {
     userData: getUserData(state),
-    host: getUiState('host')(state),
+    hostname: getUiState('hostname')(state),
     accounts: getUiState('accounts')(state),
     updateAvailable: getUiState('updateAvailable')(state),
     updateFetching: getUiState('updateFetching')(state),

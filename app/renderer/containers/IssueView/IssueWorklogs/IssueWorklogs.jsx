@@ -35,6 +35,7 @@ import {
   getSelectedIssueWorklogs,
   getSelectedIssue,
   getUiState,
+  getBaseUrl,
 } from 'selectors';
 
 import WorklogItem from './WorklogItem';
@@ -45,6 +46,7 @@ type Props = {
   issue: Issue,
   selectedWorklogId: Id | null,
   scrollToIndex: number,
+  baseUrl: string,
   dispatch: Dispatch,
 };
 
@@ -54,13 +56,14 @@ const IssueWorklogs: StatelessFunctionalComponent<Props> = ({
   selectedWorklogId,
   scrollToIndex,
   dispatch,
+  baseUrl,
 }: Props): Node => (
   <Flex column style={{ flexGrow: 1 }}>
     <Flex column style={{ flexGrow: 1 }}>
       <List
         autoSized
         noRowsRenderer={
-          () =>
+          () => (
             <Flex row justifyCenter>
               <Flex column alignCenter justifyCenter>
                 <img src={noIssuesImage} alt="not found" width="100px" />
@@ -69,7 +72,7 @@ const IssueWorklogs: StatelessFunctionalComponent<Props> = ({
                 </H600>
               </Flex>
             </Flex>
-        }
+          )}
         listProps={{
           rowCount: worklogs.length,
           rowHeight: 120,
@@ -82,6 +85,7 @@ const IssueWorklogs: StatelessFunctionalComponent<Props> = ({
                 worklog={worklog}
                 selected={selectedWorklogId === worklog.id}
                 issueKey={issue.key}
+                baseUrl={baseUrl}
                 onEditWorklog={() => {
                   dispatch(uiActions.setUiState('editWorklogId', worklog.id));
                   dispatch(uiActions.setUiState('worklogFormIssueId', issue.id));
@@ -95,7 +99,7 @@ const IssueWorklogs: StatelessFunctionalComponent<Props> = ({
             );
           },
           noRowsRenderer:
-            () =>
+            () => (
               <Flex row justifyCenter>
                 <Flex column alignCenter justifyCenter>
                   <img src={noIssuesImage} alt="not found" width="100px" />
@@ -103,7 +107,8 @@ const IssueWorklogs: StatelessFunctionalComponent<Props> = ({
                     No work logged for this issue
                   </H600>
                 </Flex>
-              </Flex>,
+              </Flex>
+            ),
           scrollToIndex,
         }}
       />
@@ -115,6 +120,7 @@ function mapStateToProps(state) {
   return {
     worklogs: getSelectedIssueWorklogs(state),
     issue: getSelectedIssue(state),
+    baseUrl: getBaseUrl(state),
     selectedWorklogId: getUiState('selectedWorklogId')(state),
     scrollToIndex: getUiState('issueViewWorklogsScrollToIndex')(state),
   };

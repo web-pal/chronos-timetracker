@@ -105,23 +105,23 @@ function storeInKeytar(payload) {
   );
 }
 
-function* saveAccount(payload: { name: string, origin: string }): Generator<*, void, *> {
-  const { name, origin } = payload;
+function* saveAccount(payload: { name: string, hostname: string }): Generator<*, void, *> {
+  const { name, hostname } = payload;
   let accounts = yield call(getFromStorage, 'accounts');
   if (!accounts) accounts = [];
-  if (!R.find(R.whereEq({ origin, name }), accounts)) {
+  if (!R.find(R.whereEq({ name, hostname }), accounts)) {
     accounts.push(payload);
     yield call(setToStorage, 'accounts', accounts);
   }
 }
 
-function* deleteAccount(payload: { name: string, origin: string }): Generator<*, void, *> {
-  const { origin, name } = payload;
+function* deleteAccount(payload: { name: string, hostname: string }): Generator<*, void, *> {
+  const { name, hostname } = payload;
   let accounts = yield call(getFromStorage, 'accounts');
   if (!accounts) accounts = [];
-  const index = R.findIndex(R.whereEq({ name, origin }), accounts);
+  const index = R.findIndex(R.whereEq({ name, hostname }), accounts);
   if (index !== -1) {
-    accounts = R.without([{ name, origin }], accounts);
+    accounts = R.without([{ name, hostname }], accounts);
     yield call(setToStorage, 'accounts', accounts);
   }
 }
@@ -129,23 +129,32 @@ function* deleteAccount(payload: { name: string, origin: string }): Generator<*,
 export function* authFlow(): Generator<*, *, *> {
   while (true) {
     try {
-      const { payload: { host, token } } = yield take(actionTypes.AUTH_REQUEST);
-      const { hostname, origin } = host;
-      const protocol = host.protocol.slice(0, -1);
+      const {
+        payload: {
+          protocol,
+          hostname,
+          port,
+          pathname,
+          cookies,
+        },
+      } = yield take(actionTypes.AUTH_REQUEST);
 
       yield put(authActions.addAuthDebugMessage([
         { string: 'Login request...' },
         { string: `host: ${hostname}` },
         { string: `protocol: ${protocol}` },
-        { string: `port: ${host.port}` },
-        { string: `path_prefix: ${host.pathname}` },
+        { string: `port: ${port}` },
+        { string: `path_prefix: ${pathname}` },
       ]));
 
       yield put(uiActions.setUiState('authRequestInProcess', true));
 
       yield call(jira.auth, {
-        host,
-        token,
+        protocol,
+        hostname,
+        port,
+        pathname,
+        cookies,
       });
 
       // Test request for check auth
@@ -157,36 +166,39 @@ export function* authFlow(): Generator<*, *, *> {
         { json: debug },
       ]));
       const { name } = result;
+      const account = {
+        name,
+        protocol,
+        hostname,
+        port,
+        pathname,
+      };
       yield call(
         setToStorage,
         'last_used_account',
-        {
-          name,
-          origin,
-        },
+        account,
       );
       yield call(
         saveAccount,
-        {
-          name,
-          origin,
-        },
+        account,
       );
-      yield call(initialConfigureApp, {
-        host: hostname,
-        protocol,
-      });
       yield call(storeInKeytar, {
         name,
-        token,
-        origin,
+        protocol,
+        hostname,
+        cookies,
       });
-      yield put(uiActions.setUiState('authRequestInProcess', false));
+      yield call(initialConfigureApp, {
+        protocol,
+        hostname,
+        port,
+        pathname,
+      });
       trackMixpanel('Jira login');
       incrementMixpanel('Jira login', 1);
     } catch (err) {
       if (err.debug) {
-        err.debug.options.auth.password = '***';
+        console.log(err.debug);
         err.debug.request.headers.authorization = '***';
         yield put(authActions.addAuthDebugMessage([
           {
@@ -195,6 +207,8 @@ export function* authFlow(): Generator<*, *, *> {
         ]));
       }
       yield put(uiActions.setUiState('authRequestInProcess', false));
+      yield put(uiActions.setUiState('authFormStep', 1));
+      yield put(uiActions.setUiState('authFormIsComplete', false));
       yield put(uiActions.setUiState(
         'authError',
         'Can not authenticate user. Please try again',
@@ -223,7 +237,6 @@ export function* logoutFlow(): Generator<*, *, *> {
       const lastUsedAccount = yield call(getFromStorage, 'last_used_account');
       ipcRenderer.send(
         'remove-auth-cookies',
-        lastUsedAccount.origin,
       );
       if (!running && !uploading && !dontForget) {
         yield call(removeFromStorage, 'desktop_tracker_jwt');
@@ -246,7 +259,7 @@ export function* logoutFlow(): Generator<*, *, *> {
 
 export function* switchAccountFlow(): Generator<*, *, *> {
   while (true) {
-    const { payload: { name, origin } } = yield take(actionTypes.SWITCH_ACCOUNT);
+    const { payload } = yield take(actionTypes.SWITCH_ACCOUNT);
     try {
       const { getGlobal } = remote;
       const { running, uploading } = getGlobal('sharedObj');
@@ -260,15 +273,15 @@ export function* switchAccountFlow(): Generator<*, *, *> {
         window.alert('Currently app in process of saving worklog, wait few seconds please');
       }
       if (!running && !uploading) {
-        const host = yield call(transformValidHost, origin);
         const {
           credentials,
           error,
         } = ipcRenderer.sendSync(
           'get-credentials',
           {
-            name,
-            origin,
+            name: payload.name,
+            protocol: payload.protocol,
+            hostname: payload.hostname,
           },
         );
         if (error) {
@@ -294,7 +307,6 @@ export function* switchAccountFlow(): Generator<*, *, *> {
         } else {
           ipcRenderer.send(
             'remove-auth-cookies',
-            origin,
           );
           yield put({
             type: actionTypes.__CLEAR_ALL_REDUCERS__,
@@ -304,8 +316,8 @@ export function* switchAccountFlow(): Generator<*, *, *> {
           if (!accounts) accounts = [];
           yield put(uiActions.setUiState('accounts', accounts));
           yield put(authActions.authRequest({
-            host,
-            token: credentials.token,
+            ...payload,
+            ...credentials,
           }));
         }
       }

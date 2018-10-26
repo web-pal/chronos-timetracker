@@ -3,36 +3,18 @@ import {
   shell,
 } from 'electron';
 import type {
-  Issue,
-  Project,
   Worklog,
 } from 'types';
 
-export function openIssueInBrowser(issue: Issue): { (ev: SyntheticMouseEvent<any>): void } {
-  return (ev: SyntheticMouseEvent<any>) => {
-    ev.preventDefault();
-    const urlArr = issue.self.split('/');
-    shell.openExternal(`${urlArr[0]}//${urlArr[2]}/browse/${issue.key}`);
-  };
-}
-
-export function openProjectInBrowser(project: Project): { (ev: SyntheticMouseEvent<any>): void } {
-  return (ev: SyntheticMouseEvent<any>) => {
-    ev.preventDefault();
-    const urlArr: Array<string> = project.self.split('/');
-    shell.openExternal(`${urlArr[0]}//${urlArr[2]}/projects/${project.key}`);
-  };
-}
-
 export function openWorklogInBrowser(
-  worklog: Worklog,
+  worklogId: Worklog,
   issueKey: string,
+  baseUrl: string,
 ): { (ev: SyntheticMouseEvent<any>): void } {
   return (ev: SyntheticMouseEvent<any>) => {
     ev.preventDefault();
-    const urlArr: Array<string> = worklog.self.split('/');
-    const urlQuery = `focusedWorklogId=${worklog.id}&page=com.atlassian.jira.plugin.system.issuetabpanels%3Aworklog-tabpanel#worklog-${worklog.id}`;
-    shell.openExternal(`${urlArr[0]}//${urlArr[2]}/browse/${issueKey}?${urlQuery}`);
+    const urlQuery = `focusedWorklogId=${worklogId}&page=com.atlassian.jira.plugin.system.issuetabpanels%3Aworklog-tabpanel#worklog-${worklogId}`;
+    shell.openExternal(`${baseUrl}/browse/${issueKey}?${urlQuery}`);
   };
 }
 

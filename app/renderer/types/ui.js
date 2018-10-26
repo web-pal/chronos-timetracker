@@ -66,8 +66,10 @@ export type UiState = {|
   authFormStep: number,
   loginError: null | string,
   loginRequestInProcess: boolean,
-  host: null | string,
   protocol: null | string,
+  host: null | string,
+  port: null | string,
+  pathname: null | string,
   isPaidUser: boolean,
 
   updateCheckRunning: boolean,

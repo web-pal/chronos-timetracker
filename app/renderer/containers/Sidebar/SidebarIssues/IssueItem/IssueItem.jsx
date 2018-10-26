@@ -16,7 +16,7 @@ import {
   getStatusColor,
 } from 'utils/jiraColors-util';
 import {
-  openIssueInBrowser,
+  openURLInBrowser,
 } from 'utils/external-open-util';
 
 import {
@@ -34,6 +34,7 @@ import {
 type Props = {
   issue: Issue,
   active: boolean,
+  baseUrl: string,
   selectIssue: (issueId: Id) => void
 }
 
@@ -41,7 +42,8 @@ const IssueItem: StatelessFunctionalComponent<Props> = ({
   issue,
   active,
   selectIssue,
-}: Props = {}): Node =>
+  baseUrl,
+}: Props = {}): Node => (
   <IssueContainer
     active={active}
     onClick={() => {
@@ -59,7 +61,7 @@ const IssueItem: StatelessFunctionalComponent<Props> = ({
         <ShortcutIcon
           label="Open in browser"
           size="small"
-          onClick={openIssueInBrowser(issue)}
+          onClick={openURLInBrowser(`${baseUrl}/browse/${issue.key}`)}
           primaryColor="#0052CC"
         />
       </Tooltip>
@@ -68,7 +70,8 @@ const IssueItem: StatelessFunctionalComponent<Props> = ({
       {issue.fields.summary}
     </IssueDescription>
     <IssueFieldsContainer>
-      {issue.fields.issuetype &&
+      {issue.fields.issuetype
+        && (
         <Tooltip
           description={issue.fields.issuetype.name}
           position="bottom"
@@ -79,8 +82,10 @@ const IssueItem: StatelessFunctionalComponent<Props> = ({
             alt="type"
           />
         </Tooltip>
+        )
       }
-      {issue.fields.priority &&
+      {issue.fields.priority
+        && (
         <Tooltip
           description={issue.fields.priority.name}
           position="bottom"
@@ -91,15 +96,19 @@ const IssueItem: StatelessFunctionalComponent<Props> = ({
             alt="priority"
           />
         </Tooltip>
+        )
       }
-      {issue.fields.status &&
+      {issue.fields.status
+        && (
         <IssueLabel
           backgroundColor={getStatusColor(issue.fields.status.statusCategory.colorName)}
         >
           {issue.fields.status.name.toUpperCase()}
         </IssueLabel>
+        )
       }
     </IssueFieldsContainer>
-  </IssueContainer>;
+  </IssueContainer>
+);
 
 export default IssueItem;

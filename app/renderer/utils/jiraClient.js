@@ -1,14 +1,23 @@
 import request from 'request';
 import JiraClient from 'jira-connector';
+import {
+  Cookie,
+} from 'tough-cookie';
 
-const getCookieJar = (origin, token) => {
+function parseToCookieJar(cookies, protocol, hostname) {
   const jar = request.jar();
-  jar.setCookie(
-    `cloud.session.token=${token}; path=/; domain=.atlassian.net;`,
-    origin,
-  );
+  cookies.forEach((cookie) => {
+    const jarCookie = new Cookie({
+      ...cookie,
+      key: cookie.name,
+      secure: cookie.secure || false,
+      httpOnly: cookie.httpOnly || false,
+    });
+    jar.setCookie(jarCookie.toString(), `${protocol}://${hostname}`);
+  });
+  console.log('cookie jar', jar);
   return jar;
-};
+}
 
 
 class JiraClientWrapper {
@@ -17,12 +26,21 @@ class JiraClientWrapper {
     this.auth = this.auth.bind(this);
   }
 
-  auth({ host, token }) {
-    const client = new JiraClient({
-      host: host.hostname,
-      cookie_jar: getCookieJar(host.origin, token),
-    });
-    this.client = client;
+  auth({
+    port,
+    hostname,
+    protocol,
+    pathname,
+    cookies,
+  }) {
+    const options = {
+      protocol,
+      host: hostname,
+      port,
+      path_prefix: `${pathname.replace(/\/$/, '')}/`,
+      cookie_jar: parseToCookieJar(cookies, protocol, hostname),
+    };
+    this.client = new JiraClient(options);
   }
 }
 

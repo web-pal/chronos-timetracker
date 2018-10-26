@@ -7,6 +7,7 @@ export const CalendarContainer = styled(ClickOutside)`
   z-index: 2; // bigger than rc-time-picker popup
 `;
 
+
 export const CalendarIconContainer = styled.div`
   margin-left: -30px;
   margin-top: 2px;
