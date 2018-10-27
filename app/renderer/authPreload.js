@@ -49,6 +49,25 @@ function initAtlassian(base, reset) {
   );
 }
 
+function initSelfHosted(base) {
+  base.style.width = '100%';
+  base.style.height = '100%';
+  // base.style.overflow = 'hidden';
+
+  hideNode('header', base);
+  hideNode('footer', base);
+
+  // focus email input
+  const input = document.getElementById('username');
+  if (input) {
+    input.focus();
+  }
+
+  store.dispatch(
+    uiActions.setUiState('authFormIsComplete', true, 'allRenderer'),
+  );
+}
+
 function initGoogle(base) {
   hideNode('header');
   hideNode('footer');
@@ -79,9 +98,18 @@ function init() {
       setTimeout(init, 500);
     }
   } else {
+    const loginForm = document.getElementById('login-form');
+    console.log(loginForm);
+    if (loginForm) {
+      initSelfHosted(loginForm);
+    } else {
+      setTimeout(init, 500);
+    }
+    /*
     store.dispatch(
       uiActions.setUiState('authFormIsComplete', false, 'allRenderer'),
     );
+    */
   }
 }
 

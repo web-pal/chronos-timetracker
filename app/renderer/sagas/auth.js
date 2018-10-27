@@ -129,7 +129,7 @@ function* deleteAccount(payload: { name: string, origin: string }): Generator<*,
 export function* authFlow(): Generator<*, *, *> {
   while (true) {
     try {
-      const { payload: { host, token } } = yield take(actionTypes.AUTH_REQUEST);
+      const { payload: { host, cookie } } = yield take(actionTypes.AUTH_REQUEST);
       const { hostname, origin } = host;
       const protocol = host.protocol.slice(0, -1);
 
@@ -145,7 +145,10 @@ export function* authFlow(): Generator<*, *, *> {
 
       yield call(jira.auth, {
         host,
-        token,
+        protocol,
+        /* temporary static port */
+        port: '8080',
+        cookie,
       });
 
       // Test request for check auth
@@ -178,13 +181,14 @@ export function* authFlow(): Generator<*, *, *> {
       });
       yield call(storeInKeytar, {
         name,
-        token,
+        cookie,
         origin,
       });
       yield put(uiActions.setUiState('authRequestInProcess', false));
       trackMixpanel('Jira login');
       incrementMixpanel('Jira login', 1);
     } catch (err) {
+      console.log(err);
       if (err.debug) {
         err.debug.options.auth.password = '***';
         err.debug.request.headers.authorization = '***';

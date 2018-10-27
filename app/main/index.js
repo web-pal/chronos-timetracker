@@ -273,16 +273,17 @@ function showScreenPreview() {
 }
 
 function authJiraBrowserRequests({
-  token,
+  cookie,
   origin,
 }) {
-  if (token && origin) {
-    const cookie = {
+  console.log('-----');
+  console.log(origin);
+  console.log('-----');
+  if (cookie && origin) {
+    session.defaultSession.cookies.set({
+      ...cookie,
       url: origin,
-      name: 'cloud.session.token',
-      value: token,
-    };
-    session.defaultSession.cookies.set(cookie, (error) => {
+    }, (error) => {
       if (error) console.log(error);
     });
   }
@@ -299,17 +300,17 @@ ipcMain.on('store-credentials', (event, credentials) => {
   try {
     const {
       name,
-      token,
+      cookie,
       origin,
     } = credentials;
     keytar.setPassword(
       'Chronos',
       name,
-      token,
+      cookie.value,
     );
     event.returnValue = true; // eslint-disable-line no-param-reassign
     authJiraBrowserRequests({
-      token,
+      cookie,
       origin,
     });
   } catch (err) {

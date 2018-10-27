@@ -270,6 +270,10 @@ export function* initializeApp(): Generator<*, *, *> {
       const { hostname, protocol } = host;
 
 
+      console.log('999999999');
+      console.log(host);
+      console.log(appData);
+      console.log('999999999');
       yield call(jira.auth, {
         host,
         token: appData.token,

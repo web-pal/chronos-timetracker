@@ -48,21 +48,50 @@ class LoginFormStep extends Component<Props, {}> {
           webview.openDevTools();
         }
 
+        /*
         if (url.includes('login.jsp')) {
           this.props.onError('Team not found');
           this.props.onBack();
         }
+        */
+        console.log('-_________');
+        console.log(url);
+        console.log('-_________');
 
-        if (url.includes('secure/Dashboard.jspa') || url.includes('secure/MyJiraHome.jspa')) {
+        if (
+          url.includes('secure/Dashboard.jspa')
+          || url.includes('secure/MyJiraHome.jspa')
+          || url.includes('secure/WelcomeToJIRA.jspa')
+        ) {
           const { session } = webview.getWebContents();
+          console.log(session.cookies);
+          console.log(host);
           session.cookies.get({
-            name: 'cloud.session.token',
-            domain: '.atlassian.net',
+            name: 'JSESSIONID',
+            domain: host.hostname,
           }, (error, cookies) => {
             if (cookies && cookies.length) {
               this.props.onContinue({
                 host,
-                token: cookies[0].value,
+                cookie: {
+                  name: 'JSESSIONID',
+                  value: cookies[0].value,
+                },
+              });
+            }
+            session.clearStorageData([]);
+          });
+          session.cookies.get({
+            name: 'cloud.session.token',
+            domain: host.hostname,
+          }, (error, cookies) => {
+            if (cookies && cookies.length) {
+              this.props.onContinue({
+                host,
+                cookie: {
+                  name: 'cloud.session.token',
+                  value: cookies[0].value,
+                },
               });
             }
             session.clearStorageData([]);
@@ -86,7 +115,7 @@ class LoginFormStep extends Component<Props, {}> {
         step={2}
       >
         <ContentStep>
-          <Spinner size="xlarge" isCompleting={loading} />
+          {/* <Spinner size="xlarge" isCompleting={loading} /> */}
           <WebViewContainer
             id="webviewContainer"
             isComplete={isComplete}

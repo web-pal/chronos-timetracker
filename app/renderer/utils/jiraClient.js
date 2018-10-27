@@ -1,11 +1,15 @@
 import request from 'request';
 import JiraClient from 'jira-connector';
 
-const getCookieJar = (origin, token) => {
+const getCookieJar = (origin, domain, cookie) => {
   const jar = request.jar();
+  console.log(`${cookie.name}=${cookie.value}; path=/; domain=${domain};`);
   jar.setCookie(
-    `cloud.session.token=${token}; path=/; domain=.atlassian.net;`,
+    `${cookie.name}=${cookie.value}; path=/; domain=${domain};`,
     origin,
+    {
+      ignoreError: true,
+    },
   );
   return jar;
 };
@@ -17,10 +21,17 @@ class JiraClientWrapper {
     this.auth = this.auth.bind(this);
   }
 
-  auth({ host, token }) {
+  auth({
+    host,
+    protocol,
+    port,
+    cookie,
+  }) {
     const client = new JiraClient({
       host: host.hostname,
-      cookie_jar: getCookieJar(host.origin, token),
+      protocol,
+      port,
+      cookie_jar: getCookieJar(host.origin, host.hostname, cookie),
     });
     this.client = client;
   }

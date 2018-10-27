@@ -8,7 +8,7 @@ import * as actionTypes from './actionTypes';
 
 export const authRequest = (payload: {|
   host: any,
-  token: string,
+  cookie: any,
 |}): AuthAction => ({
   type: actionTypes.AUTH_REQUEST,
   payload,
