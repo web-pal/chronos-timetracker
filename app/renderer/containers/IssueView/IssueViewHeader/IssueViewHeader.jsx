@@ -22,8 +22,7 @@ import {
   Flex,
 } from 'components';
 import {
-  openProjectInBrowser,
-  openIssueInBrowser,
+  openURLInBrowser,
 } from 'utils/external-open-util';
 
 import DropdownMenu, {
@@ -37,7 +36,7 @@ import Button, {
 } from '@atlaskit/button';
 import Spinner from '@atlaskit/spinner';
 import {
-  getUiState,
+  getBaseUrl,
   getTimerState,
   getSelectedIssue,
   getSelfKey,
@@ -77,6 +76,7 @@ type Props = {
   transitionsIsFetching: boolean,
   issueTransitions: Array<IssueStatus>,
   selfKey: string,
+  baseUrl: string,
   dispatch: Dispatch,
 };
 
@@ -87,6 +87,7 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
   transitionsIsFetching,
   issueTransitions,
   selfKey,
+  baseUrl,
   dispatch,
 }: Props):Node => (
   <IssueViewHeaderContainer>
@@ -116,11 +117,11 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
         </UserAvatarContainer>
         <Flex column>
           <Flex row>
-            <ALink onClick={openProjectInBrowser(selectedIssue.fields.project)}>
+            <ALink onClick={openURLInBrowser(`${baseUrl}/projects/${selectedIssue.fields.project.key}`)}>
               {selectedIssue.fields.project.name}
             </ALink>
             <Breadcrumb>/</Breadcrumb>
-            <ALink onClick={openIssueInBrowser(selectedIssue)}>
+            <ALink onClick={openURLInBrowser(`${baseUrl}/browse/${selectedIssue.key}`)}>
               {selectedIssue.key}
             </ALink>
           </Flex>
@@ -251,8 +252,7 @@ function mapStateToProps(state) {
     allowEdit = issueMeta.permissions ? issueMeta.permissions.EDIT_ISSUE.havePermission : false;
   }
   return {
-    host: getUiState('host')(state),
-    protocol: getUiState('protocol')(state),
+    baseUrl: getBaseUrl(state),
     timerRunning: getTimerState('running')(state),
     selectedIssue,
     allowEdit,

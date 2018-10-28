@@ -40,6 +40,7 @@ type Props = {
   worklog: Worklog,
   selected: boolean,
   issueKey: string,
+  baseUrl: string,
   onEditWorklog: () => void,
   onDeleteWorklog: () => void,
 };
@@ -51,6 +52,7 @@ const WorklogItem: StatelessFunctionalComponent<Props> = ({
   issueKey,
   onEditWorklog,
   onDeleteWorklog,
+  baseUrl,
 }: Props): Node => (
   <WorklogContainer selected={selected} id={`worklog-${worklog.id}`} style={style}>
     <Flex row alignCenter style={{ padding: 10 }}>
@@ -63,7 +65,7 @@ const WorklogItem: StatelessFunctionalComponent<Props> = ({
       <WorklogActions>
         <Tooltip description="Open worklog in JIRA" position="left">
           <LinkIcon
-            onClick={openWorklogInBrowser(worklog, issueKey)}
+            onClick={openWorklogInBrowser(worklog.id, issueKey, baseUrl)}
             label="Open in browser"
             size="small"
             primaryColor="#707070"

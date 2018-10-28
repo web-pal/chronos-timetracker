@@ -273,24 +273,23 @@ function showScreenPreview() {
 }
 
 function authJiraBrowserRequests({
-  token,
-  origin,
+  protocol,
+  hostname,
+  cookies,
 }) {
-  if (token && origin) {
-    const cookie = {
-      url: origin,
-      name: 'cloud.session.token',
-      value: token,
-    };
-    session.defaultSession.cookies.set(cookie, (error) => {
+  cookies.forEach((cookie) => {
+    session.defaultSession.cookies.set({
+      url: `${protocol}://${hostname}`,
+      name: cookie.name,
+      value: cookie.value,
+    }, (error) => {
       if (error) console.log(error);
     });
-  }
+  });
 }
 
-ipcMain.on('remove-auth-cookies', (event, origin) => {
-  const name = 'cloud.session.token';
-  session.defaultSession.cookies.remove(origin, name, (error) => {
+ipcMain.on('remove-auth-cookies', () => {
+  session.defaultSession.clearStorageData([], (error) => {
     if (error) console.log(error);
   });
 });
@@ -299,39 +298,44 @@ ipcMain.on('store-credentials', (event, credentials) => {
   try {
     const {
       name,
-      token,
-      origin,
+      protocol,
+      hostname,
+      cookies,
     } = credentials;
+    const str = JSON.stringify(cookies);
     keytar.setPassword(
       'Chronos',
       name,
-      token,
+      str,
     );
     event.returnValue = true; // eslint-disable-line no-param-reassign
     authJiraBrowserRequests({
-      token,
-      origin,
+      protocol,
+      hostname,
+      cookies,
     });
   } catch (err) {
     console.log(err);
   }
 });
 
-ipcMain.on('get-credentials', (event, { name, origin }) => {
+ipcMain.on('get-credentials', (event, { name, protocol, hostname }) => {
   try {
     keytar.getPassword('Chronos', name)
       .then(
-        (token) => {
+        (str) => {
+          const cookies = JSON.parse(str);
           const credentials = {
             name,
-            token,
+            cookies,
           };
           event.returnValue = { // eslint-disable-line no-param-reassign
             credentials,
           };
           authJiraBrowserRequests({
-            token,
-            origin,
+            protocol,
+            hostname,
+            cookies,
           });
         },
       ).catch(

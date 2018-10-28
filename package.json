@@ -1,6 +1,6 @@
 {
   "name": "Chronos",
-  "version": "2.8.0",
+  "version": "2.8.1",
   "description": "Full functionality time tracking software with direct JIRA integration",
   "scripts": {
     "dev": "yarn start-renderer-dev",
@@ -172,7 +172,7 @@
     "raven-js": "3.27.0",
     "rc-time-picker": "3.4.0",
     "react": "16.5.2",
-    "react-click-outside": "3.0.1",
+    "react-click-outside": "tj/react-click-outside",
     "react-dom": "16.5.2",
     "react-markdown": "4.0.3",
     "react-redux": "5.0.7",
@@ -189,7 +189,8 @@
     "reselect": "4.0.0",
     "smoothscroll-polyfill": "0.4.3",
     "socket.io-client": "2.1.1",
-    "styled-components": "3.4.10"
+    "styled-components": "3.4.10",
+    "tough-cookie": "^2.4.3"
   },
   "devEngines": {
     "node": ">=10.x",

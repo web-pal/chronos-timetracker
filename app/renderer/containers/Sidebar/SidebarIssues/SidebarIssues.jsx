@@ -28,6 +28,7 @@ import type {
 } from 'types';
 
 import {
+  getBaseUrl,
   getSidebarIssues,
   getResourceMeta,
   getUiState,
@@ -57,6 +58,7 @@ type Props = {
   projectsFetching: boolean,
   sidebarFiltersIsOpen: boolean,
   totalCount: number,
+  baseUrl: string,
   selectedIssueId: Id | null,
   trackingIssueId: Id | null,
   saveLastRenderedIndex: ({
@@ -80,6 +82,7 @@ const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
   saveOnRowsRenderedFunction,
   registerInfiniteNode,
   dispatch,
+  baseUrl,
 }: Props): Node =>
   <ListContainer>
     <IssuesHeader />
@@ -133,6 +136,7 @@ const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
                             issue={item}
                             active={selectedIssueId === item.id}
                             tracking={trackingIssueId === item.id}
+                            baseUrl={baseUrl}
                             selectIssue={(issueId) => {
                               dispatch(
                                 uiActions.setUiState('selectedIssueId', issueId),
@@ -171,6 +175,7 @@ function mapStateToProps(state) {
   )(state);
   return {
     issues: getSidebarIssues(state),
+    baseUrl: getBaseUrl(state),
     projectsFetching,
     issuesFetching,
     totalCount,

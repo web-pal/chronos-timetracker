@@ -1,4 +1,4 @@
 // @flow
-import TeamStep from './AccountsStep';
+import AccountsStep from './AccountsStep';
 
-export default TeamStep;
+export default AccountsStep;

@@ -212,9 +212,12 @@ export const Account = styled.div`
 export const WebViewContainer = styled.div`
   & > webview {
     width: 380px;
-    height: 430px;
+    height: 470px;
     overflow: hidden;
     opacity: ${props => (props.isComplete ? 1 : 0)};
     transition: 0.5s;
+    position: absolute;
+    top: 0;
+    left: 0;
   }
 `;

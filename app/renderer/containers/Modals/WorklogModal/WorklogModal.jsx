@@ -1,5 +1,7 @@
 // @flow
-import React, { Component } from 'react';
+import React, {
+  Component,
+} from 'react';
 import moment from 'moment';
 import type Moment from 'moment';
 import CalendarIcon from '@atlaskit/icon/glyph/calendar';
@@ -58,7 +60,9 @@ import {
   RemainingEstimatePicker,
 } from 'components';
 
-import { jts } from 'utils/time-util';
+import {
+  jts,
+} from 'utils/time-util';
 
 import {
   InputLabel,
@@ -325,23 +329,28 @@ class WorklogModal extends Component<Props, State> {
                 isReadOnly
               />
               <CalendarIconContainer>
-                {calendarOpened ?
-                  <EditorCloseIcon
-                    label="Close Calendar"
-                    size="medium"
-                    primaryColor="#263958"
-                  /> :
-                  <CalendarIcon
-                    label="Open Calendar"
-                    size="medium"
-                    primaryColor="#263958"
-                  />
+                {calendarOpened
+                  ? (
+                    <EditorCloseIcon
+                      label="Close Calendar"
+                      size="medium"
+                      primaryColor="#263958"
+                    />
+                  )
+                  : (
+                    <CalendarIcon
+                      label="Open Calendar"
+                      size="medium"
+                      primaryColor="#263958"
+                    />
+                  )
                 }
               </CalendarIconContainer>
             </Flex>
           </Tooltip>
 
-          {calendarOpened &&
+          {calendarOpened
+            && (
             <CalendarContainer
               onClickOutside={() => {
                 this.setState({
@@ -358,6 +367,7 @@ class WorklogModal extends Component<Props, State> {
                 }}
               />
             </CalendarContainer>
+            )
           }
 
           {/* FROM */}
