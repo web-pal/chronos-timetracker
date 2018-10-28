@@ -1,3 +1,13 @@
+<a name="2.8.1"></a>
+## [2.8.1](https://github.com/web-pal/chronos-timetracker/compare/v2.8.0...v2.8.1) (2018-10-28)
+
+
+### Bug Fixes
+
+* **Auth:** jira self-hosted servers authentication ([83c5844](https://github.com/web-pal/chronos-timetracker/commit/83c5844)), closes [#128](https://github.com/web-pal/chronos-timetracker/issues/128)
+
+
+
 <a name="2.8.0"></a>
 # [2.8.0](https://github.com/web-pal/chronos-timetracker/compare/v2.7.3...v2.8.0) (2018-10-26)
 
