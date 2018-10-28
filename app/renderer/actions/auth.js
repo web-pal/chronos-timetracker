@@ -7,8 +7,9 @@ import * as actionTypes from './actionTypes';
 
 
 export const authRequest = (payload: {|
-  host: any,
-  token: string,
+  name: string,
+  hostname: string,
+  pathname: string,
 |}): AuthAction => ({
   type: actionTypes.AUTH_REQUEST,
   payload,
@@ -23,7 +24,8 @@ export const logoutRequest = (payload: {
 
 export const switchAccount = (payload: {|
   name: string,
-  origin: string,
+  hostname: string,
+  pathname: string,
 |}) => ({
   type: actionTypes.SWITCH_ACCOUNT,
   payload,

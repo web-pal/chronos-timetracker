@@ -53,14 +53,14 @@ import {
 
 
 type Props = {
-  host: string,
+  hostname: string,
   report: IssuesReports,
 };
 
 const IssueReport: StatelessFunctionalComponent<Props> = ({
-  host,
+  hostname,
   report,
-}: Props): Node =>
+}: Props): Node => (
   <Flex column style={{ flexGrow: 1 }}>
     <div>
       <BackgroundShape number={1} color="#0962E8" opacity="1" />
@@ -87,7 +87,7 @@ const IssueReport: StatelessFunctionalComponent<Props> = ({
             View reports and calculate salaries in Chronos Timesheets
           </Heading>
           <CTAButton
-            onClick={openURLInBrowser(`http://${host}/plugins/servlet/ac/jira-chronos/api-page-jira`)}
+            onClick={openURLInBrowser(`http://${hostname}/plugins/servlet/ac/jira-chronos/api-page-jira`)}
           >
             Open plugin
           </CTAButton>
@@ -151,12 +151,13 @@ const IssueReport: StatelessFunctionalComponent<Props> = ({
       </MetaColumn>
 
     </ReportTabContainer>
-  </Flex>;
+  </Flex>
+);
 
 function mapStateToProps(state) {
   return {
     report: getSelectedIssueReport(state),
-    host: getUiState('host')(state),
+    hostname: getUiState('hostname')(state),
   };
 }
 

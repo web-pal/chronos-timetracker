@@ -1,18 +1,26 @@
-import { put, call, cps, select } from 'redux-saga/effects';
+import {
+  put, call, cps, select,
+} from 'redux-saga/effects';
 import path from 'path';
 import fs from 'fs';
-import { timerActions } from 'actions';
+import {
+  timerActions,
+} from 'actions';
 import Raven from 'raven-js';
 import * as Api from 'api';
-import { remote } from 'electron';
 import {
-  getHost,
+  remote,
+} from 'electron';
+import {
+  getUiState,
   getUserData,
   getTimerState,
   getSettingsState,
 } from 'selectors';
 
-import { throwError } from './ui';
+import {
+  throwError,
+} from './ui';
 
 export function* uploadScreenshot({
   screenshotTime,
@@ -99,7 +107,7 @@ export function* takeScreenshot() {
   try {
     const screenshotTime = yield select(getTimerState('time'));
     const userData = yield select(getUserData);
-    const host = yield select(getHost);
+    const host = yield select(getUiState('host'));
     const localDesktopSettings = yield select(getSettingsState('localDesktopSettings'));
     yield call(
       Api.makeScreenshot,

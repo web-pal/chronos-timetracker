@@ -18,11 +18,9 @@ import {
 } from './profile';
 
 
-export const getUiState = (key: string) =>
-  ({ ui }: { ui: UiState }) => ui[key];
+export const getUiState = (key: string) => ({ ui }: { ui: UiState }) => ui[key];
 
-export const getModalState = (key: string) =>
-  ({ ui }: { ui: UiState }) => ui.modalState[key];
+export const getModalState = (key: string) => ({ ui }: { ui: UiState }) => ui.modalState[key];
 
 export const getFilterOptions = createSelector(
   [
@@ -34,30 +32,47 @@ export const getFilterOptions = createSelector(
     issuesTypes: Array<IssueType>,
     issuesStatuses: Array<IssueStatus>,
     selfKey: Id | null,
-  ) =>
-    [{
-      name: 'Type',
-      key: 'type',
-      options: issuesTypes,
-      showIcons: true,
-    }, {
-      name: 'Status',
-      key: 'status',
-      options: issuesStatuses,
-      showIcons: true,
-    }, {
-      name: 'Assignee',
-      key: 'assignee',
-      options: [
-        {
-          name: 'Current User',
-          id: selfKey,
-        },
-        {
-          name: 'Unassigned',
-          id: 'unassigned',
-        },
-      ],
-      showIcons: false,
-    }],
+  ) => [{
+    name: 'Type',
+    key: 'type',
+    options: issuesTypes,
+    showIcons: true,
+  }, {
+    name: 'Status',
+    key: 'status',
+    options: issuesStatuses,
+    showIcons: true,
+  }, {
+    name: 'Assignee',
+    key: 'assignee',
+    options: [
+      {
+        name: 'Current User',
+        id: selfKey,
+      },
+      {
+        name: 'Unassigned',
+        id: 'unassigned',
+      },
+    ],
+    showIcons: false,
+  }],
+);
+
+export const getBaseUrl = createSelector(
+  [
+    getUiState('protocol'),
+    getUiState('hostname'),
+    getUiState('port'),
+    getUiState('pathname'),
+  ],
+  (
+    protocol: string,
+    hostname: string,
+    port: number | string,
+    pathname: string,
+  ) => {
+    const p = port ? `:${port}` : '';
+    return `${protocol}://${hostname}${p}${pathname.replace(/\/$/, '')}`;
+  },
 );

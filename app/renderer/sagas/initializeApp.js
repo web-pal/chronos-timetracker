@@ -4,6 +4,7 @@ import {
   put,
   take,
   fork,
+  select,
 } from 'redux-saga/effects';
 import {
   ipcRenderer,
@@ -18,10 +19,12 @@ import {
   trackMixpanel,
   incrementMixpanel,
 } from 'utils/stat';
-
 import type {
   Id,
 } from 'types';
+import {
+  getBaseUrl,
+} from 'selectors';
 
 import {
   uiActions,
@@ -53,9 +56,6 @@ import {
   notify,
 } from './ui';
 import createIpcChannel from './ipc';
-import {
-  transformValidHost,
-} from './auth';
 import {
   version,
 } from '../../package.json';
@@ -96,22 +96,32 @@ function* initializeMixpanel(): Generator<*, *, *> {
 }
 
 export function* initialConfigureApp({
-  host,
   protocol,
+  hostname,
+  port,
+  pathname,
 }: {
-  host: string,
   protocol: string,
+  hostname: string,
+  port: number | string,
+  pathname: string,
 }): Generator<*, *, *> {
+  yield put(uiActions.setUiState('authRequestInProcess', false));
+  yield put(uiActions.setUiState('protocol', protocol));
+  yield put(uiActions.setUiState('hostname', hostname));
+  yield put(uiActions.setUiState('port', port));
+  yield put(uiActions.setUiState('pathname', pathname));
+
+  const baseUrl = yield select(getBaseUrl);
   ipcRenderer.send(
     'load-issue-window',
-    `${protocol}://${host}/issues`,
+    `${baseUrl}/issues`,
   );
   const userData = yield call(Api.jiraProfile);
 
   yield put(profileActions.fillUserData(userData));
-  yield put(uiActions.setUiState('host', host));
   yield call(initializeMixpanel);
-  yield call(identifyInSentryAndMixpanel, host, userData);
+  yield call(identifyInSentryAndMixpanel, hostname, userData);
 
   let accounts = yield call(getFromStorage, 'accounts');
   if (!accounts) {
@@ -119,7 +129,7 @@ export function* initialConfigureApp({
   } else {
     // check old account format
     accounts = accounts.filter((account) => {
-      if (account.username || account.hostname) {
+      if (account.username || account.origin) {
         return false;
       }
       return true;
@@ -178,7 +188,6 @@ export function* initialConfigureApp({
   }
 
   yield put(settingsActions.fillLocalDesktopSettings(settings));
-  yield put(uiActions.setUiState('protocol', protocol));
   yield put(uiActions.setUiState('authorized', true));
 
   yield put(resourcesActions.setResourceMeta({
@@ -205,16 +214,18 @@ function* getInitializeAppData(): Generator<*, *, *> {
   );
   const authDataExist = authCredentials !== null
     && authCredentials.name
-    && authCredentials.origin;
+    && authCredentials.protocol
+    && authCredentials.hostname;
   if (authDataExist) {
     const {
-      credentials: { token },
+      credentials,
       error,
     } = ipcRenderer.sendSync(
       'get-credentials',
       {
         name: authCredentials.name,
-        origin: authCredentials.origin,
+        protocol: authCredentials.protocol,
+        hostname: authCredentials.hostname,
       },
     );
 
@@ -240,7 +251,7 @@ function* getInitializeAppData(): Generator<*, *, *> {
       }
     }
 
-    authCredentials.token = token;
+    authCredentials.cookies = credentials.cookies;
   }
 
   return authCredentials;
@@ -249,11 +260,9 @@ function* getInitializeAppData(): Generator<*, *, *> {
 export function* initializeApp(): Generator<*, *, *> {
   yield put(uiActions.setUiState('initializeInProcess', true));
   try {
-    const accounts = (
-      yield call(getFromStorage, 'accounts')
-      || []
-    );
-    if (accounts.some(a => a.username || a.hostname)) {
+    const accounts = yield call(getFromStorage, 'accounts');
+
+    if (accounts && accounts.some(a => a.username || a.origin)) {
       yield fork(notify, {
         title: 'New authentication system.',
         description: "We've rewritten authentication system, unfortunately, all previously saved sessions is not valid anymore. You have to re-login.",
@@ -261,23 +270,13 @@ export function* initializeApp(): Generator<*, *, *> {
       yield call(
         setToStorage,
         'accounts',
-        accounts.filter(a => (!(a.username || a.hostname))),
+        accounts.filter(a => (!(a.username || a.origin))),
       );
     }
     const appData = yield call(getInitializeAppData);
-    if (appData && appData.token) {
-      const host = yield call(transformValidHost, appData.origin);
-      const { hostname, protocol } = host;
-
-
-      yield call(jira.auth, {
-        host,
-        token: appData.token,
-      });
-      yield call(initialConfigureApp, {
-        host: hostname,
-        protocol,
-      });
+    if (appData && appData.cookies) {
+      yield call(jira.auth, appData);
+      yield call(initialConfigureApp, appData);
     }
     trackMixpanel('Application was initialized');
     incrementMixpanel('Initialize', 1);

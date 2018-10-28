@@ -24,16 +24,16 @@ export type JIRAFilter = {
   sharedUsers: {
     size: number,
     items: Array<any>,
-    max-results: number,
-    start-index: number,
-    end-index: number,
+    // max-results: number,
+    // start-index: number,
+    // end-index: number,
   },
   subscriptions: {
     size: number,
     items: Array<any>,
-    max-results: number,
-    start-index: number,
-    end-index: number,
+    // max-results: number,
+    // start-index: number,
+    // end-index: number,
   },
 };
 

@@ -15,6 +15,7 @@ export const DetailsValue = styled.span`
   display: flex;
   flex-direction: row;
   align-items: center;
+  overflow: hidden;
 `;
 
 export const IssueType = styled.img`

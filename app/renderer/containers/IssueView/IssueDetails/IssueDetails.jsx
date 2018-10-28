@@ -283,7 +283,48 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
           )
           : (
             <ReactMarkdown
+              linkTarget="_blank"
               source={issue.fields.description || '*No description*'}
+              renderers={{
+                link: link => (
+                  <a
+                    href={link.href}
+                    onClick={(ev) => {
+                      ev.preventDefault();
+                      ev.stopPropagation();
+                      shell.openExternal(link.href);
+                    }}
+                  >
+                    {link.children}
+                  </a>
+                ),
+                linkReference: (link) => {
+                  let url = '';
+                  let text = '';
+                  try {
+                    const jiraLink = link.children[0].props.value.split('|');
+                    [text, url] = jiraLink;
+                    if (!url) {
+                      url = text;
+                    }
+                  } catch (err) {
+                    url = link.children;
+                    text = link.children;
+                  }
+                  return (
+                    <a
+                      href={link.href}
+                      onClick={(ev) => {
+                        ev.preventDefault();
+                        ev.stopPropagation();
+                        shell.openExternal(url);
+                      }}
+                    >
+                      {text}
+                    </a>
+                  );
+                },
+              }}
             />
           )
         }
