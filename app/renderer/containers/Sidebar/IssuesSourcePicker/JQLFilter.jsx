@@ -1,11 +1,17 @@
 // @flow
 import React from 'react';
 import InlineDialog from '@atlaskit/inline-dialog';
-import { connect } from 'react-redux';
-import { FieldTextStateless as FieldText } from '@atlaskit/field-text';
+import {
+  connect,
+} from 'react-redux';
+import {
+  FieldTextStateless as FieldText,
+} from '@atlaskit/field-text';
 import Spinner from '@atlaskit/spinner';
 import Button from '@atlaskit/button';
-import { Flex } from 'components';
+import {
+  Flex,
+} from 'components';
 
 import {
   getUiState,
@@ -24,7 +30,9 @@ import type {
 
 import * as R from 'ramda';
 
-import { InputLabel } from './styled';
+import {
+  InputLabel,
+} from './styled';
 
 type Props = {
   newJQLFilterName: string | null,
@@ -67,7 +75,7 @@ const JQLFilter = ({
       <InlineDialog
         isOpen={saveFilterDialogOpen}
         onClose={() => dispatch(uiActions.setUiState('saveFilterDialogOpen', false))}
-        content={
+        content={(
           <Flex column>
             <InputLabel>New filter name</InputLabel>
             <Flex alignItems="center">
@@ -92,7 +100,7 @@ const JQLFilter = ({
               </Button>
             </Flex>
           </Flex>
-        }
+        )}
       >
         <Button
           appearance="link"

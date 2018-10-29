@@ -1,47 +1,39 @@
 import styled from 'styled-components';
 
-
-export const UnderlineStyledInput = styled.input`
+const baseInput = styled.input`
   width: calc(100% - 10px);
   height: 40px;
   min-height: 40px;
+
+  color: #091E42;
   font-size: 14px;
   letter-spacing: 0;
-  color: #091E42;
+
+  &::-webkit-input-placeholder {
+    font-size: 14px;
+  }
+`;
+
+
+export const UnderlineStyledInput = styled(baseInput)`
   background: white;
   border: 0px;
   border-bottom: 2px solid #0052cc;
   border-radius: 0px;
   padding: 0px;
-  font-size: 14px;
   font-weight: 500;
-  margin-bottom: 40px;
-  &::-webkit-input-placeholder {
-    font-size: 14px;
-  }
+
   &:focus {
     border-color: hsla(216, 49%, 43%, 1);
   }
 `;
 
-export const StyledInput = styled.input`
-  width: calc(100% - 10px);
-  height: 40px;
-  min-height: 40px;
+export const StyledInput = styled(baseInput)`
   padding-left: 10px;
-  margin-bottom: 10px;
-
-  font-size: 14px;
-  letter-spacing: 0;
 
   background-color: #FAFBFC;
   border: 1px solid #F4F5F7;
   border-radius: 5px;
-  color: #091E42;
-
-  &::-webkit-input-placeholder {
-    font-size: 14px;
-  }
   &:hover {
     background-color: #F4F5F7;
     border-color: #F4F5F7;
@@ -54,4 +46,16 @@ export const StyledInput = styled.input`
     padding-left: 9px;
     background: white;
   }
+`;
+
+export const FormGroup = styled.div`
+  width: 100%;
+  margin-bottom: 10px;
+`;
+
+export const Error = styled.div`
+  color: #DE350B;
+  align-self: left;
+  font-size: 12px;
+  margin-top: 5px;
 `;

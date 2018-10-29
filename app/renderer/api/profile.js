@@ -1,4 +1,7 @@
 // @flow
+import {
+  remote,
+} from 'electron';
 import config from 'config';
 import jira from 'utils/jiraClient';
 import {
@@ -189,4 +192,57 @@ export function getPermissions(
   },
 ): Promise<*> {
   return jira.client.myPermissions.getMyPermissions(opts);
+}
+
+export function getAuthCookies(
+  payload: {
+    username: string,
+    password: string,
+    baseUrl: string,
+  },
+): Promise<*> {
+  const { username, password, baseUrl } = payload;
+  const url: string = `${baseUrl}/rest/auth/1/session`;
+  const request = remote.net.request({
+    url,
+    method: 'POST',
+  });
+  return new Promise((resolve, reject) => {
+    request.on('response', (response) => {
+      const status = response.statusCode;
+      response.on('data', (chunk) => {
+        try {
+          const json = JSON.parse(chunk);
+          if (status === 200) {
+            resolve(json);
+          } else {
+            reject(json);
+          }
+        } catch (e) {
+          reject(e);
+        }
+      });
+      response.on('error', (error) => {
+        reject(error);
+      });
+    });
+    request.on('error', (error) => {
+      reject(error);
+    });
+    request.setHeader(
+      'User-agent',
+      'request',
+    );
+    request.setHeader(
+      'Content-Type',
+      'application/json',
+    );
+    request.write(
+      JSON.stringify({
+        username,
+        password,
+      }),
+    );
+    request.end();
+  });
 }

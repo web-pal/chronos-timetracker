@@ -200,6 +200,9 @@ function createWindow(callback) {
       minHeight: 800,
       ...lastWindowSize,
       ...noFrameOption,
+      webPreferences: {
+        webSecurity: false,
+      },
     });
     if (callback) callback();
 
@@ -448,9 +451,6 @@ ipcMain.on('load-issue-window', (event, url) => {
       useContentSize: true,
       center: true,
       title: 'Chronos',
-      webPreferences: {
-        devTools: true,
-      },
     });
     const html = (
       process.env.NODE_ENV === 'development'

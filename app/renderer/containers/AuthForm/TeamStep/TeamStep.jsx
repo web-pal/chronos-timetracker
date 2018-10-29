@@ -4,7 +4,14 @@ import React, {
 } from 'react';
 import {
   Field,
+  reduxForm,
 } from 'redux-form';
+import type {
+  FormProps,
+} from 'redux-form';
+import type {
+  Account,
+} from 'types';
 
 import {
   ReduxFormComponents,
@@ -19,23 +26,23 @@ import {
   ContentInner,
   PrimaryButton,
   DefaultButton,
-  Form,
   Lock,
   ContentIconContainer,
   Title,
   Subtitle,
   ContentStep,
+  Form,
   Error,
 } from '../styled';
 
 
 type Props = {
   isActiveStep: boolean,
-  accounts: Array<{| name: string, origin: string |}>,
+  accounts: Array<Account>,
   authError: string,
   dispatch: Function,
   onContinue: () => void,
-}
+} & FormProps
 
 class TeamStep extends Component<Props> {
   // Need it because of animation between steps
@@ -62,54 +69,58 @@ class TeamStep extends Component<Props> {
       onContinue,
       dispatch,
       accounts,
+      handleSubmit,
     } = this.props;
     return (
       <ContentInner
-        onKeyDown={(ev) => {
-          if (ev.key === 'Enter') {
-            ev.preventDefault();
-            ev.stopPropagation();
-            onContinue();
-          }
-        }}
         isActiveStep={isActiveStep}
         step={1}
       >
-        <ContentIconContainer>
-          <Lock src={peopleBlue} alt="" width="24" />
-        </ContentIconContainer>
-        <ContentStep>
-          <Title>Enter your team</Title>
-          <Subtitle>Please fill in your JIRA host</Subtitle>
-          <Form>
+        <Form onSubmit={handleSubmit(onContinue)}>
+          <ContentIconContainer>
+            <Lock src={peopleBlue} alt="" width="24" />
+          </ContentIconContainer>
+          <ContentStep>
+            <Title>Enter your team</Title>
+            <Subtitle>Please fill in your JIRA host</Subtitle>
             <Field
               autoFocus
-              name="host"
+              name="team"
               type="text"
-              className="host"
               placeholder="example.atlassian.net"
               withRef
-              ref={(el) => {
+              innerRef={(el) => {
                 this.hostInput = el;
               }}
               component={ReduxFormComponents.UnderlineInput}
             />
-          </Form>
-          <Error>{authError}</Error>
-        </ContentStep>
-        <PrimaryButton onClick={onContinue}>
-          Continue
-        </PrimaryButton>
-        {accounts.length > 0
+            <Error>{authError}</Error>
+          </ContentStep>
+          <PrimaryButton style={{ marginTop: 40, marginBottom: 10 }} type="submit">
+            Continue
+          </PrimaryButton>
+          {accounts.length > 0
           && (
           <DefaultButton onClick={() => dispatch(uiActions.setUiState('authFormStep', 0))}>
             Login to existing account
           </DefaultButton>
           )
         }
+        </Form>
       </ContentInner>
     );
   }
 }
 
-export default TeamStep;
+const validate = (values) => {
+  const errors = {};
+  if (!values.team) {
+    errors.team = 'Requried';
+  }
+  return errors;
+};
+
+export default reduxForm({
+  form: 'TeamStep',
+  validate,
+})(TeamStep);

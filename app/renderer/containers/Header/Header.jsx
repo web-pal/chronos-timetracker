@@ -49,10 +49,6 @@ import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import EditorAddIcon from '@atlaskit/icon/glyph/editor/add';
 
 import {
-  transformValidHost,
-} from 'sagas/auth';
-
-import {
   HeaderContainer,
   ProfileContainer,
   IconsContainer,
@@ -111,7 +107,7 @@ const Header: StatelessFunctionalComponent<Props> = ({
           )}
         >
           {accounts.map((ac) => {
-            const isActive = ac.hostname === hostname;
+            const isActive = ac.hostname === hostname && ac.name === userData.name;
             return (
               <DropdownItem
                 key={`${ac.hostname}:${ac.name}`}

@@ -3,10 +3,6 @@ import React from 'react';
 import {
   connect,
 } from 'react-redux';
-import ReactMarkdown from 'react-markdown';
-import {
-  shell,
-} from 'electron';
 
 import type {
   StatelessFunctionalComponent,
@@ -31,6 +27,8 @@ import {
   getEpicColor,
 } from 'utils/jiraColors-util';
 
+import DataRenderer from '../DataRenderer';
+
 import {
   IssueDetailsContainer,
   DetailsLabel,
@@ -49,18 +47,6 @@ type Props = {
     color: string,
     name: string,
   },
-}
-
-function handleDescriptionClick(e) {
-  const tag = e.target ? e.target.tagName.toLowerCase() : null;
-  if (tag && (tag === 'img' || tag === 'a')) {
-    e.preventDefault();
-    // external links only
-    const url = e.target.getAttribute(tag === 'a' ? 'href' : 'src');
-    if (url && url.includes('http')) {
-      shell.openExternal(url);
-    }
-  }
 }
 
 const IssueDetails: StatelessFunctionalComponent<Props> = ({
@@ -272,62 +258,10 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
         <strong>
           Description
         </strong>
-        {issue.renderedFields
-          ? (
-            <div
-              onClick={handleDescriptionClick}
-              dangerouslySetInnerHTML={{
-                __html: issue.renderedFields.description,
-              }}
-            />
-          )
-          : (
-            <ReactMarkdown
-              linkTarget="_blank"
-              source={issue.fields.description || '*No description*'}
-              renderers={{
-                link: link => (
-                  <a
-                    href={link.href}
-                    onClick={(ev) => {
-                      ev.preventDefault();
-                      ev.stopPropagation();
-                      shell.openExternal(link.href);
-                    }}
-                  >
-                    {link.children}
-                  </a>
-                ),
-                linkReference: (link) => {
-                  let url = '';
-                  let text = '';
-                  try {
-                    const jiraLink = link.children[0].props.value.split('|');
-                    [text, url] = jiraLink;
-                    if (!url) {
-                      url = text;
-                    }
-                  } catch (err) {
-                    url = link.children;
-                    text = link.children;
-                  }
-                  return (
-                    <a
-                      href={link.href}
-                      onClick={(ev) => {
-                        ev.preventDefault();
-                        ev.stopPropagation();
-                        shell.openExternal(url);
-                      }}
-                    >
-                      {text}
-                    </a>
-                  );
-                },
-              }}
-            />
-          )
-        }
+        <DataRenderer
+          html={issue.renderedFields ? issue.renderedFields.description : null}
+          source={issue.fields.description || '*No description*'}
+        />
       </DescriptionSectionHeader>
     </IssueDetailsContainer>
   );

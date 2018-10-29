@@ -147,6 +147,7 @@ export const Error = styled.span`
   margin-bottom: 15px;
   align-self: left;
   font-size: 12px;
+  width: 100%;
 `;
 
 export const Form = styled.form`
@@ -198,7 +199,7 @@ export const ContentStep = styled(Flex).attrs({
   width: 100%;
 `;
 
-export const Account = styled.div`
+export const AccountContainer = styled.div`
   display: flex;
   align-items: center;
   padding: 16px;
