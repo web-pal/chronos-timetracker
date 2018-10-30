@@ -1,13 +1,13 @@
 {
   "name": "Chronos",
-  "version": "2.8.2",
+  "version": "2.8.3",
   "description": "Full functionality time tracking software with direct JIRA integration",
   "scripts": {
     "dev": "yarn start-renderer-dev",
     "start-renderer-dev": "cross-env NODE_ENV=development webpack-dev-server -r \"@babel/register\" --config webpack.renderer.dev.js --colors",
     "start-main-dev": "electron -r \"@babel/register\" app/main",
     "build": "rm -rf app/dist && concurrently \"yarn build-main\" \"yarn build-renderer\"",
-    "build-main": "cross-env NODE_ENV=production DEBUG_PROD=true webpack -r \"@babel/register\" --config webpack.main.prod.js --colors --progress --profile",
+    "build-main": "cross-env NODE_ENV=production webpack -r \"@babel/register\" --config webpack.main.prod.js --colors --progress --profile",
     "build-renderer": "cross-env NODE_ENV=production webpack -r \"@babel/register\" --config webpack.renderer.prod.js --colors --progress --profile",
     "flow": "flow check",
     "flow-typed": "rm -rf flow-typed/yarn && flow-typed install --overwrite || true",
