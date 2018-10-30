@@ -1,5 +1,7 @@
 // @flow
-import React, { Component } from 'react';
+import React, {
+  Component,
+} from 'react';
 import moment from 'moment';
 import {
   connect,
@@ -15,7 +17,6 @@ import type {
   Connector,
 } from 'react-redux';
 
-import ReactMarkdown from 'react-markdown';
 import Spinner from '@atlaskit/spinner';
 import Button from '@atlaskit/button';
 import {
@@ -38,6 +39,8 @@ import {
 import {
   getStatus as getResourceStatus,
 } from 'redux-resource';
+
+import DataRenderer from '../DataRenderer';
 
 import {
   ActivitySection,
@@ -84,16 +87,17 @@ class IssueComments extends Component<Props, State> {
       <ActivitySection>
         <Flex column>
           <Flex column>
-            {commentsFetching &&
-              Array.from(Array(10).keys()).map(
-                i =>
-                  <IssueCommentPlaceholder key={i} />,
+            {commentsFetching
+              && Array.from(Array(10).keys()).map(
+                i => <IssueCommentPlaceholder key={i} />,
               )
             }
-            {!commentsFetching && comments.length === 0 &&
+            {!commentsFetching && comments.length === 0
+              && (
               <Flex row>
                 There are no comments yet on this issue.
               </Flex>
+              )
             }
             {!commentsFetching && comments.map(comment => (
               <Commentd key={comment.id}>
@@ -112,26 +116,17 @@ class IssueComments extends Component<Props, State> {
                 </Flex>
                 <Flex column>
                   <CommentBody>
-                    {comment.renderedBody
-                      ? (
-                        <div
-                          dangerouslySetInnerHTML={{
-                            __html: comment.renderedBody,
-                          }}
-                        />
-                      ) : (
-                        <ReactMarkdown
-                          softBreak="br"
-                          source={comment.body}
-                        />
-                      )
-                    }
+                    <DataRenderer
+                      html={comment.renderedBody ? comment.renderedBody : null}
+                      source={comment.body}
+                    />
                   </CommentBody>
                 </Flex>
               </Commentd>
             ))}
           </Flex>
-          {!commentsFetching &&
+          {!commentsFetching
+            && (
             <CommentInput>
               <Flex row alignCenter style={{ marginBottom: 5 }}>
                 <CommentAvatar src={self.avatarUrls['48x48']} alt="" />
@@ -166,6 +161,7 @@ class IssueComments extends Component<Props, State> {
                 </Actions>
               </CommentInputContainer>
             </CommentInput>
+            )
           }
         </Flex>
       </ActivitySection>

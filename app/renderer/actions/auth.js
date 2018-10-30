@@ -15,6 +15,14 @@ export const authRequest = (payload: {|
   payload,
 });
 
+export const authSelfHostRequest = (payload: {|
+  username: string,
+  password: string,
+|}): AuthAction => ({
+  type: actionTypes.AUTH_SELF_HOST_REQUEST,
+  payload,
+});
+
 export const logoutRequest = (payload: {
   dontForget: boolean
 } = { dontForget: false }): AuthAction => ({

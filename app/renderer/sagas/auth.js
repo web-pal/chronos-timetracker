@@ -39,28 +39,6 @@ import {
   notify,
 } from './ui';
 
-
-export function transformValidHost(host: string): URL {
-  try {
-    return new URL(host);
-  } catch (err) {
-    if (err instanceof TypeError) {
-      try {
-        if (/^[a-zA-Z0-9-]*$/.test(host)) {
-          const atlassianUrl = `https://${host}.atlassian.net`;
-          return new URL(atlassianUrl);
-        } if (!host.match(/^(http:\/\/|https:\/\/)/)) {
-          const protocolUrl = `https://${host}`;
-          return new URL(protocolUrl);
-        }
-      } catch (err2) {
-        throw new Error('Invalid Jira url');
-      }
-    }
-    throw new Error('Invalid Jira url');
-  }
-}
-
 export function* chronosBackendAuth({
   host,
   username,
@@ -121,8 +99,55 @@ function* deleteAccount(payload: { name: string, hostname: string }): Generator<
   if (!accounts) accounts = [];
   const index = R.findIndex(R.whereEq({ name, hostname }), accounts);
   if (index !== -1) {
-    accounts = R.without([{ name, hostname }], accounts);
+    accounts = R.remove(index, 1, accounts);
     yield call(setToStorage, 'accounts', accounts);
+  }
+}
+
+export function* authSelfHostFlow(): Generator<*, *, *> {
+  while (true) {
+    const {
+      payload: {
+        username,
+        password,
+        host,
+      },
+    } = yield take(actionTypes.AUTH_SELF_HOST_REQUEST);
+    try {
+      yield put(uiActions.setUiState('authRequestInProcess', true));
+      const { href, hostname, port, pathname } = host;
+      const protocol = host.protocol.slice(0, -1);
+      const { session } = yield call(Api.getAuthCookies, {
+        username,
+        password,
+        baseUrl: href.replace(/\/$/, ''),
+      });
+      const cookie = {
+        path: pathname,
+        name: session.name,
+        value: session.value,
+        httpOnly: protocol === 'http',
+      };
+      const data = {
+        protocol,
+        hostname,
+        port,
+        pathname,
+        cookies: [cookie],
+      };
+      yield put(authActions.authRequest(data));
+    } catch (err) {
+      if (err.errorMessages) {
+        yield put(uiActions.setUiState('authError', err.errorMessages[0]));
+      } else {
+        yield put(uiActions.setUiState(
+          'authError',
+          'Can not authenticate user. Please try again',
+        ));
+      }
+      yield call(throwError, err);
+      yield put(uiActions.setUiState('authRequestInProcess', false));
+    }
   }
 }
 

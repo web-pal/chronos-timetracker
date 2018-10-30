@@ -106,7 +106,6 @@ export function* initialConfigureApp({
   port: number | string,
   pathname: string,
 }): Generator<*, *, *> {
-  yield put(uiActions.setUiState('authRequestInProcess', false));
   yield put(uiActions.setUiState('protocol', protocol));
   yield put(uiActions.setUiState('hostname', hostname));
   yield put(uiActions.setUiState('port', port));
@@ -189,6 +188,7 @@ export function* initialConfigureApp({
 
   yield put(settingsActions.fillLocalDesktopSettings(settings));
   yield put(uiActions.setUiState('authorized', true));
+  yield put(uiActions.setUiState('authRequestInProcess', false));
 
   yield put(resourcesActions.setResourceMeta({
     resourceType: 'issues',

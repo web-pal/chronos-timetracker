@@ -27,3 +27,11 @@ export type AuthAction =
     type: typeof actionTypes.ADD_AUTH_DEBUG_MESSAGE,
     payload: Array<*>,
   |};
+
+export type Account = {
+  name: string,
+  protocol: string,
+  hostname: string,
+  port: string | number,
+  pathname: string,
+};

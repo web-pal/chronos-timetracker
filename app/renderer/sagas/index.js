@@ -31,6 +31,7 @@ export default function* rootSaga(): Generator<*, void, *> {
 
     // auth
     fork(authSagas.authFlow),
+    fork(authSagas.authSelfHostFlow),
     fork(authSagas.logoutFlow),
     fork(authSagas.switchAccountFlow),
 

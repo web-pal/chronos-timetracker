@@ -4,11 +4,12 @@ import React, {
 import Spinner from '@atlaskit/spinner';
 
 import {
-  transformValidHost,
-} from 'sagas/auth';
-import {
   getPreload,
 } from 'utils/preload';
+
+import {
+  transformValidHost,
+} from '../utils';
 
 import {
   ContentInner,
@@ -17,7 +18,7 @@ import {
 } from '../styled';
 
 type Props = {
-  host: string,
+  team: string,
   isActiveStep: boolean,
   isComplete: boolean,
   authRequestInProcess: boolean,
@@ -26,15 +27,15 @@ type Props = {
   onBack: () => void,
 };
 
-class LoginFormStep extends Component<Props, {}> {
+class CloudLoginStep extends Component<Props, {}> {
   componentWillReceiveProps(nextProps: Props) {
     if (!this.props.isActiveStep && nextProps.isActiveStep) {
-      this.loadUrl(nextProps.host);
+      const host = transformValidHost(nextProps.team);
+      this.loadUrl(host);
     }
   }
 
-  loadUrl(hostStr) {
-    const host = transformValidHost(hostStr);
+  loadUrl(host) {
     const protocol = host.protocol.slice(0, -1);
     const baseUrl = `${host.origin}${host.pathname.replace(/\/$/, '')}`;
     const src = `${baseUrl}/login.jsp`;
@@ -44,10 +45,6 @@ class LoginFormStep extends Component<Props, {}> {
       webview = document.createElement('webview');
       webview.setAttribute('preload', getPreload('authPreload'));
 
-      webview.addEventListener('will-navigate', ({ url }) => {
-        console.log('will-navigate', url);
-      });
-
       webview.addEventListener('did-navigate', ({ url }) => {
         console.log('did-navigate', url);
         webview.focus();
@@ -55,26 +52,21 @@ class LoginFormStep extends Component<Props, {}> {
           webview.openDevTools();
         }
 
-        // if (url.includes('login.jsp')) {
-        //   this.props.onError('Team not found');
-        //   this.props.onBack();
-        // }
+        if (url.includes('login.jsp')) {
+          this.props.onError('Team not found');
+          this.props.onBack();
+        }
 
         // TODO Fix
         if (url.replace(/\/$/, '') === baseUrl
           || url.includes('/issues')
-          || url.includes('secure/Dashboard.jspa')
-          || url.includes('secure/MyJiraHome.jspa')
-          || url.includes('secure/WelcomeToJIRA.jspa')
+          || url.includes('secure/Dashboard')
+          || url.includes('secure/MyJiraHome')
+          || url.includes('secure/WelcomeToJIRA')
         ) {
           const { session } = webview.getWebContents();
-          const domain = (
-            host.origin.includes('atlassian.net')
-              ? '.atlassian.net'
-              : host.hostname
-          );
           session.cookies.get({
-            domain,
+            domain: '.atlassian.net',
           }, (error, cookies) => {
             console.log('error', error);
             console.log('cookies', cookies);
@@ -98,6 +90,8 @@ class LoginFormStep extends Component<Props, {}> {
       webview.src = src;
       document.getElementById('webviewContainer').appendChild(webview);
     } else {
+      const { session } = webview.getWebContents();
+      session.clearStorageData([]);
       webview.src = src;
     }
   }
@@ -122,4 +116,4 @@ class LoginFormStep extends Component<Props, {}> {
   }
 }
 
-export default LoginFormStep;
+export default CloudLoginStep;
