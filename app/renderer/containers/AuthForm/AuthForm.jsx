@@ -4,7 +4,6 @@ import {
   connect,
 } from 'react-redux';
 import {
-  reduxForm,
   formValueSelector,
 } from 'redux-form';
 
@@ -17,6 +16,7 @@ import type {
 } from 'react-redux';
 import type {
   Dispatch,
+  Account,
 } from 'types';
 
 import {
@@ -33,10 +33,9 @@ import {
   getUiState,
 } from 'selectors';
 
-import validate from './validation';
-
 import TeamStep from './TeamStep';
-import LoginFormStep from './LoginFormStep';
+import CloudLoginStep from './CloudLoginStep';
+import SelfHostLoginStep from './SelfHostLoginStep';
 import AccountsStep from './AccountsStep';
 
 import AuthDebugger from './AuthDebugger';
@@ -49,13 +48,17 @@ import {
   LoginInfo,
 } from './styled';
 
+import {
+  transformValidHost,
+} from './utils';
+
 type Props = {
   showAuthDebugConsole: boolean,
   authRequestInProcess: boolean,
   authError: string,
   authFormIsComplete: boolean,
-  accounts: Array<{| origin: string, name: string |}>,
-  host: string | null,
+  accounts: Array<Account>,
+  team: string | null,
   step: number,
   dispatch: Dispatch,
 };
@@ -66,7 +69,7 @@ const AuthForm: StatelessFunctionalComponent<Props> = ({
   authFormIsComplete,
   authError,
   accounts,
-  host,
+  team,
   step,
   dispatch,
 }: Props): Node => (
@@ -98,18 +101,28 @@ const AuthForm: StatelessFunctionalComponent<Props> = ({
           isActiveStep={step === 1}
           accounts={accounts}
           onContinue={() => {
-            dispatch(
-              uiActions.setUiState('authFormStep', 2),
-            );
+            const host = transformValidHost(team);
+            if (host) {
+              dispatch(
+                uiActions.setUiState(
+                  'authFormStep',
+                  host.origin.endsWith('.atlassian.net') ? 2 : 3,
+                ),
+              );
+              dispatch(uiActions.setUiState('authError', null));
+            } else {
+              dispatch(uiActions.setUiState('authError', 'Invalid Jira url'));
+            }
           }}
           dispatch={dispatch}
           authError={authError}
           authRequestInProcess={authRequestInProcess}
         />
-        <LoginFormStep
-          host={host}
+        <CloudLoginStep
+          team={team}
           isActiveStep={step === 2}
           isComplete={authFormIsComplete}
+          authRequestInProcess={authRequestInProcess}
           onContinue={(data) => {
             dispatch(authActions.authRequest(data));
           }}
@@ -117,6 +130,22 @@ const AuthForm: StatelessFunctionalComponent<Props> = ({
             dispatch(uiActions.setUiState('authError', err));
           }}
           onBack={() => {
+            dispatch(uiActions.setUiState('authFormStep', 1));
+            dispatch(uiActions.setUiState('authFormIsComplete', false));
+          }}
+        />
+        <SelfHostLoginStep
+          isActiveStep={step === 3}
+          authError={authError}
+          authRequestInProcess={authRequestInProcess}
+          onContinue={(data) => {
+            dispatch(authActions.authSelfHostRequest({
+              ...data,
+              host: transformValidHost(team),
+            }));
+          }}
+          onBack={() => {
+            dispatch(uiActions.setUiState('authError', null));
             dispatch(uiActions.setUiState('authFormStep', 1));
             dispatch(uiActions.setUiState('authFormIsComplete', false));
           }}
@@ -136,23 +165,19 @@ const AuthForm: StatelessFunctionalComponent<Props> = ({
   </Container>
 );
 
-const selector = formValueSelector('auth');
-const AuthFormDecorated = reduxForm({
-  form: 'auth',
-  validate,
-})(AuthForm);
+const selector = formValueSelector('TeamStep');
 
 const connector: Connector<{}, Props> = connect(
   state => ({
-    showAuthDebugConsole: getUiState('showAuthDebugConsole')(state),
-    host: selector(state, 'host'),
+    team: selector(state, 'team'),
     step: getUiState('authFormStep')(state),
-    authFormIsComplete: getUiState('authFormIsComplete')(state),
-    accounts: getUiState('accounts')(state),
     authError: getUiState('authError')(state),
+    authFormIsComplete: getUiState('authFormIsComplete')(state),
     authRequestInProcess: getUiState('authRequestInProcess')(state),
+    accounts: getUiState('accounts')(state),
+    showAuthDebugConsole: getUiState('showAuthDebugConsole')(state),
   }),
   dispatch => ({ dispatch }),
 );
 
-export default connector(AuthFormDecorated);
+export default connector(AuthForm);

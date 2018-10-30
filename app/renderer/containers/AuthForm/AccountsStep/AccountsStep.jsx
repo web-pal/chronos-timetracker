@@ -1,5 +1,8 @@
 // @flow
 import React from 'react';
+import type {
+  Account,
+} from 'types';
 import {
   authActions,
 } from 'actions';
@@ -8,14 +11,10 @@ import Button from '@atlaskit/button';
 import Tag from '@atlaskit/tag';
 
 import {
-  transformValidHost,
-} from '../../../sagas/auth';
-
-import {
   ContentInner,
   BackButtonContainer,
   Error,
-  Account,
+  AccountContainer,
 } from '../styled';
 
 
@@ -24,7 +23,7 @@ type Props = {
   authError: string,
   dispatch: Function,
   onBack: Function,
-  accounts: Array<{| origin: string, name: string |}>,
+  accounts: Array<Account>,
 }
 
 const AccountsStep = ({
@@ -40,13 +39,13 @@ const AccountsStep = ({
   >
     <div>
       {accounts.map(ac => (
-        <Account
+        <AccountContainer
           onClick={() => dispatch(authActions.switchAccount(ac))}
-          key={`${ac.name}:${ac.origin}`}
+          key={`${ac.name}:${ac.hostname}`}
         >
-          <Tag text={transformValidHost(ac.origin).hostname} color="teal" />
+          <Tag text={ac.hostname} color="teal" />
           {ac.name}
-        </Account>
+        </AccountContainer>
       ))}
     </div>
     <BackButtonContainer>
