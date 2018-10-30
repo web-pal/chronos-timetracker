@@ -1,12 +1,17 @@
 // @flow
-import React, { Component } from 'react';
+import React, {
+  Component,
+} from 'react';
+
 
 import type {
   FieldProps,
 } from 'redux-form';
 
 import {
+  FormGroup,
   StyledInput,
+  Error,
 } from './styled';
 
 type Props = {
@@ -15,27 +20,30 @@ type Props = {
   placeholder: string,
 } & FieldProps;
 
-
 class Input extends Component<Props> {
   input = null;
 
   render() {
     const {
+      meta,
       input,
       autoFocus,
       type,
       placeholder,
     } = this.props;
     return (
-      <StyledInput
-        {...input}
-        innerRef={(el) => {
-          this.input = el;
-        }}
-        type={type}
-        autoFocus={autoFocus}
-        placeholder={placeholder}
-      />
+      <FormGroup>
+        <StyledInput
+          {...input}
+          innerRef={(el) => {
+            this.input = el;
+          }}
+          type={type}
+          autoFocus={autoFocus}
+          placeholder={placeholder}
+        />
+        {meta.touched && meta.error && <Error>{meta.error}</Error>}
+      </FormGroup>
     );
   }
 }

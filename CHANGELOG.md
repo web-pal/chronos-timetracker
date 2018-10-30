@@ -1,3 +1,9 @@
+<a name="2.8.2"></a>
+## [2.8.2](https://github.com/web-pal/chronos-timetracker/compare/v2.8.1...v2.8.2) (2018-10-30)
+Authentication bug fixes
+
+
+
 <a name="2.8.1"></a>
 ## [2.8.1](https://github.com/web-pal/chronos-timetracker/compare/v2.8.0...v2.8.1) (2018-10-28)
 

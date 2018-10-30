@@ -14,14 +14,14 @@ function hideNode(el, scope) {
   }
 }
 
-function back() {
+function back(error = null) {
   store.dispatch(
     uiActions.setUiState('authFormStep', 1, 'allRenderer'),
   );
   store.dispatch(
     uiActions.setUiState('authFormIsComplete', false, 'allRenderer'),
   );
-  store.dispatch(uiActions.setUiState('authError', null));
+  store.dispatch(uiActions.setUiState('authError', error, 'allRenderer'));
 }
 
 function initAtlassian(base, reset) {
@@ -59,35 +59,16 @@ function initGoogle(base) {
     ev.preventDefault();
     back();
   });
-}
-
-function initSelfHost(base) {
-  hideNode('#header', base);
-  hideNode('#footer', base);
-  hideNode('#login-form .checkbox', base);
-  document.body.style.minWidth = 'auto';
-  document.body.style.width = 'auto';
-  const panel = base.querySelector('.aui-page-panel');
-  if (panel) {
-    panel.style.marginTop = '35px';
-    panel.style.maxWidth = '345px';
-
-    const a = document.createElement('a');
-    a.innerHTML = 'Back to Jira';
-    panel.appendChild(a);
-    a.addEventListener('click', (ev) => {
-      ev.preventDefault();
-      back();
-    });
-  }
-
   store.dispatch(
     uiActions.setUiState('authFormIsComplete', true, 'allRenderer'),
   );
 }
 
 function init() {
-  if (global.location.host === 'id.atlassian.com') {
+  store.dispatch(
+    uiActions.setUiState('authFormIsComplete', false, 'allRenderer'),
+  );
+  if (global.location.host === 'id.atlassian.com' && global.location.pathname === '/login') {
     const base = document.getElementById('root');
     const reset = document.getElementById('resetPassword');
     if (base && reset) {
@@ -102,14 +83,10 @@ function init() {
     } else {
       setTimeout(init, 500);
     }
-  } else if (global.location.pathname.endsWith('/login.jsp')
-    || global.location.pathname.endsWith('/secure/ForgotLoginDetails.jspa')) {
-    const base = document.getElementById('page');
-    if (base) {
-      initSelfHost(base);
-    } else {
-      setTimeout(init, 500);
-    }
+  } else if (global.location.pathname === '/login') {
+    back('Something has gone wrong');
+  } else {
+    setTimeout(init, 500);
   }
 }
 

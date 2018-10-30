@@ -84,6 +84,7 @@ export type {
 
 export type {
   AuthAction,
+  Account,
 } from './auth';
 
 export type {

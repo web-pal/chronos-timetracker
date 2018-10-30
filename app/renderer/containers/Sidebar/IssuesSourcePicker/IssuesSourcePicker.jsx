@@ -40,7 +40,9 @@ import {
 
 import JQLFilter from './JQLFilter';
 
-import { IssuesSourceContainer } from './styled';
+import {
+  IssuesSourceContainer,
+} from './styled';
 
 type Props = {
   options: Array<any>,
@@ -62,7 +64,7 @@ const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
   sprintsFetching,
   selectedSourceType,
   dispatch,
-}: Props): Node =>
+}: Props): Node => (
   <IssuesSourceContainer>
     <SingleSelect
       items={options}
@@ -101,7 +103,8 @@ const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
       shouldFitContainer
       noMatchesFound="Nothing found"
     />
-    { (selectedSourceType === 'scrum') &&
+    { (selectedSourceType === 'scrum')
+      && (
       <SingleSelect
         items={sprintsOptions}
         hasAutocomplete
@@ -117,9 +120,11 @@ const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
         shouldFitContainer
         noMatchesFound="Nothing found"
       />
+      )
     }
     {selectedSourceType === 'filter' && <JQLFilter selectedFilter={selectedOption} />}
-  </IssuesSourceContainer>;
+  </IssuesSourceContainer>
+);
 
 function mapStateToProps(state) {
   return {
