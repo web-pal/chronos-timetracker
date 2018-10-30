@@ -1,3 +1,13 @@
+<a name="2.8.3"></a>
+## [2.8.3](https://github.com/web-pal/chronos-timetracker/compare/v2.8.2...v2.8.3) (2018-10-30)
+
+
+### Bug Fixes
+
+* hide devTools ([ed35e3a](https://github.com/web-pal/chronos-timetracker/commit/ed35e3a))
+
+
+
 <a name="2.8.2"></a>
 ## [2.8.2](https://github.com/web-pal/chronos-timetracker/compare/v2.8.1...v2.8.2) (2018-10-30)
 Authentication bug fixes
