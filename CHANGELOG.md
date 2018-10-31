@@ -1,3 +1,14 @@
+<a name="2.8.4"></a>
+## [2.8.4](https://github.com/web-pal/chronos-timetracker/compare/v2.8.3...v2.8.4) (2018-10-31)
+
+
+### Bug Fixes
+
+* **Auth:** sso crowd authentication ([7724e46](https://github.com/web-pal/chronos-timetracker/commit/7724e46))
+* quit app ([1ef898c](https://github.com/web-pal/chronos-timetracker/commit/1ef898c))
+
+
+
 <a name="2.8.3"></a>
 ## [2.8.3](https://github.com/web-pal/chronos-timetracker/compare/v2.8.2...v2.8.3) (2018-10-30)
 
