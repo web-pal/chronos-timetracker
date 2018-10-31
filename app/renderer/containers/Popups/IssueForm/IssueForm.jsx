@@ -1,4 +1,6 @@
-import React, { Component } from 'react';
+import React, {
+  Component,
+} from 'react';
 import {
   ipcRenderer,
 } from 'electron';
@@ -25,6 +27,7 @@ class IssueForm extends Component<{}, any> {
   componentDidMount() {
     ipcRenderer.on('url', this.onLoadUrl);
     ipcRenderer.on('showForm', this.onShowForm);
+    ipcRenderer.on('hideForm', this.onHideForm);
     ipcRenderer.on('page-fully-loaded', () => {
       setTimeout(() => {
         this.setState({
@@ -38,6 +41,7 @@ class IssueForm extends Component<{}, any> {
   componentWillUnmount() {
     ipcRenderer.removeListener('url', this.onLoadUrl);
     ipcRenderer.removeListener('showForm', this.onShowForm);
+    ipcRenderer.removeListener('hideForm', this.onHideForm);
   }
 
   onLoadUrl = (ev, url) => {
@@ -47,20 +51,20 @@ class IssueForm extends Component<{}, any> {
       webview.setAttribute('preload', getPreload('issueFormPreload'));
       webview.style.height = '100%';
 
-      webview.addEventListener('did-finish-load', () => {
-        if (
-          config.issueWindowDevTools ||
-          process.env.DEBUG_PROD === true
-        ) {
-          webview.openDevTools();
-        }
-      });
-
       webview.src = url;
       document.getElementById('forWebview').appendChild(webview);
     } else {
       webview.src = url;
     }
+  }
+
+  onHideForm = () => {
+    const webview = document.querySelector('webview');
+    webview.executeJavaScript(`
+      if (window.issueForm) {
+        window.issueForm.trigger('hide');
+      }
+    `);
   }
 
   onShowForm = (
@@ -79,6 +83,12 @@ class IssueForm extends Component<{}, any> {
         });
       }, 1000);
     }
+    if (
+      config.issueWindowDevTools
+      || process.env.DEBUG_PROD === 'true'
+    ) {
+      webview.openDevTools();
+    }
     document.getElementById('root').style.display = 'block';
     this.setState({
       show: true,
@@ -86,14 +96,14 @@ class IssueForm extends Component<{}, any> {
     return webview.executeJavaScript(`
       document.getElementById('page').style.display = 'none';
       var issueForm = JIRA.Forms
-        ${issueId ?
-      `.createEditIssueForm({ issueId: ${issueId} })` :
-      `.createCreateIssueForm({ pid: ${projectId} })`
+        ${issueId
+      ? `.createEditIssueForm({ issueId: ${issueId} })`
+      : `.createCreateIssueForm({ pid: ${projectId} })`
         }
         .bind('sessionComplete', function(ev, issues) {
-          ${issueId ?
-          `ipcRenderer.send("issue-refetch", "${issueId}");` :
-          'ipcRenderer.send("issue-created", issues);'
+          ${issueId
+          ? `ipcRenderer.send("issue-refetch", "${issueId}");`
+          : 'ipcRenderer.send("issue-created", issues);'
           }
           ipcRenderer.send('close-issue-window');
         })
@@ -104,6 +114,7 @@ class IssueForm extends Component<{}, any> {
               var jiraDialog = issueForm.$popup[0];
               formBody.style.maxHeight = (parseInt(formBody.style.maxHeight.replace('px', ''), 10) + 120).toString() + 'px';
               jiraDialog.style.marginTop = (parseInt(jiraDialog.style.marginTop.replace('px', ''), 10) - 65).toString() + 'px';
+              issueForm.$popupHeading[0].lastElementChild.style.display = 'none';
             }, 200);
           } catch(err) {
             console.log(err);
@@ -130,6 +141,7 @@ class IssueForm extends Component<{}, any> {
           ipcRenderer.send('page-fully-loaded');
         }
       }, 500);
+      window.issueForm = issueForm;
     `);
   }
 

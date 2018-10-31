@@ -468,9 +468,11 @@ ipcMain.on('load-issue-window', (event, url) => {
       issueWindow.openDevTools();
     }
     issueWindow.on('close', (cEv) => {
+      console.log('close', cEv);
+      console.log('shouldQuit', shouldQuit);
       if (!shouldQuit) {
         cEv.preventDefault();
-        issueWindow.hide();
+        issueWindow.webContents.send('hideForm');
       }
     });
     ipcMain.on('page-fully-loaded', () => {
@@ -479,6 +481,7 @@ ipcMain.on('load-issue-window', (event, url) => {
       }
     });
     ipcMain.on('close-issue-window', () => {
+      console.log('close-issue-window');
       if (issueWindow) {
         issueWindow.hide();
       }

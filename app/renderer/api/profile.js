@@ -2,6 +2,7 @@
 import {
   remote,
 } from 'electron';
+import querystring from 'querystring';
 import config from 'config';
 import jira from 'utils/jiraClient';
 import {
@@ -194,55 +195,70 @@ export function getPermissions(
   return jira.client.myPermissions.getMyPermissions(opts);
 }
 
+const handleNetError = (error: string): string => ({
+  'Error: net::ERR_INTERNET_DISCONNECTED': 'Internet disconnected',
+  'Error: net::ERR_PROXY_CONNECTION_FAILED': 'Proxy connection failed',
+  'Error: net::ERR_CONNECTION_RESET': 'Connection reset',
+  'Error: net::ERR_CONNECTION_CLOSE': 'Connection close',
+  'Error: net::ERR_NAME_NOT_RESOLVED': 'Page unavailable',
+  'Error: net::ERR_CONNECTION_TIMED_OUT': 'Nonnection timed out',
+}[error] || 'Unknown Error');
+
 export function getAuthCookies(
   payload: {
+    pathname: string,
+    protocol: string,
     username: string,
     password: string,
     baseUrl: string,
   },
 ): Promise<*> {
-  const { username, password, baseUrl } = payload;
-  const url: string = `${baseUrl}/rest/auth/1/session`;
+  const {
+    pathname,
+    protocol,
+    username,
+    password,
+    baseUrl,
+  } = payload;
+  const url: string = `${baseUrl}/jira/rest/gadget/1.0/login`;
   const request = remote.net.request({
     url,
     method: 'POST',
   });
+  const form = {
+    os_username: username,
+    os_password: password,
+  };
+  const postData = querystring.stringify(form);
   return new Promise((resolve, reject) => {
     request.on('response', (response) => {
-      const status = response.statusCode;
-      response.on('data', (chunk) => {
-        try {
-          const json = JSON.parse(chunk);
-          if (status === 200) {
-            resolve(json);
-          } else {
-            reject(json);
-          }
-        } catch (e) {
-          reject(e);
-        }
-      });
-      response.on('error', (error) => {
-        reject(error);
-      });
+      const cookie = response.headers['set-cookie'];
+      if (response.headers['x-seraph-loginreason'].includes('OK')) {
+        resolve(cookie.map((d) => {
+          const name = d.split('=')[0];
+          const value = d.split(`${name}=`)[1].split(';')[0];
+          return ({
+            path: pathname,
+            name,
+            value,
+            httpOnly: protocol === 'http',
+          });
+        }));
+      }
+      reject(new Error('Incorrect email address and / or password.'));
     });
     request.on('error', (error) => {
-      reject(error);
+      reject(new Error(handleNetError(error)));
     });
     request.setHeader(
-      'User-agent',
-      'request',
+      'Content-Type',
+      'application/x-www-form-urlencoded',
     );
     request.setHeader(
-      'Content-Type',
-      'application/json',
+      'Content-Length',
+      Buffer.byteLength(postData),
     );
-    request.write(
-      JSON.stringify({
-        username,
-        password,
-      }),
-    );
+    request.write(postData);
     request.end();
   });
 }
