@@ -117,28 +117,24 @@ export function* authSelfHostFlow(): Generator<*, *, *> {
       yield put(uiActions.setUiState('authRequestInProcess', true));
       const { href, hostname, port, pathname } = host;
       const protocol = host.protocol.slice(0, -1);
-      const { session } = yield call(Api.getAuthCookies, {
+      const cookies = yield call(Api.getAuthCookies, {
+        pathname,
+        protocol,
         username,
         password,
         baseUrl: href.replace(/\/$/, ''),
       });
-      const cookie = {
-        path: pathname,
-        name: session.name,
-        value: session.value,
-        httpOnly: protocol === 'http',
-      };
       const data = {
         protocol,
         hostname,
         port,
         pathname,
-        cookies: [cookie],
+        cookies,
       };
       yield put(authActions.authRequest(data));
     } catch (err) {
-      if (err.errorMessages) {
-        yield put(uiActions.setUiState('authError', err.errorMessages[0]));
+      if (err && err.message) {
+        yield put(uiActions.setUiState('authError', err.message));
       } else {
         yield put(uiActions.setUiState(
           'authError',
@@ -224,7 +220,6 @@ export function* authFlow(): Generator<*, *, *> {
     } catch (err) {
       if (err.debug) {
         console.log(err.debug);
-        err.debug.request.headers.authorization = '***';
         yield put(authActions.addAuthDebugMessage([
           {
             json: err.debug,
@@ -234,6 +229,8 @@ export function* authFlow(): Generator<*, *, *> {
       yield put(uiActions.setUiState('authRequestInProcess', false));
       yield put(uiActions.setUiState('authFormStep', 1));
       yield put(uiActions.setUiState('authFormIsComplete', false));
+      yield put(uiActions.setUiState('initializeInProcess', false));
+      yield put(uiActions.setUiState('authorized', false));
       yield put(uiActions.setUiState(
         'authError',
         'Can not authenticate user. Please try again',

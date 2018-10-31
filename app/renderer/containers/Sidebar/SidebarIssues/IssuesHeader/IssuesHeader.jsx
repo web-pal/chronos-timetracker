@@ -54,7 +54,7 @@ const IssuesHeader: StatelessFunctionalComponent<Props> = ({
   filtersApplied,
   currentProjectId,
   dispatch,
-}: Props): Node =>
+}: Props): Node => (
   <SearchBar>
     <SearchIcon
       label="Search"
@@ -101,11 +101,12 @@ const IssuesHeader: StatelessFunctionalComponent<Props> = ({
           }}
         />
       </span>
-      {(filtersApplied !== 0) &&
-        <FiltersAppliedBadge />
+      {(filtersApplied !== 0)
+        && <FiltersAppliedBadge />
       }
     </SearchOptions>
-  </SearchBar>;
+  </SearchBar>
+);
 
 function mapStateToProps(state) {
   const filters = getUiState('issuesFilters')(state);
