@@ -470,7 +470,7 @@ ipcMain.on('load-issue-window', (event, url) => {
     issueWindow.on('close', (cEv) => {
       console.log('close', cEv);
       console.log('shouldQuit', shouldQuit);
-      if (!shouldQuit) {
+      if (process.platform !== 'darwin' || !shouldQuit) {
         cEv.preventDefault();
         issueWindow.webContents.send('hideForm');
       }
