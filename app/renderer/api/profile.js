@@ -228,6 +228,7 @@ export function getAuthCookies(
   const form = {
     os_username: username,
     os_password: password,
+    os_cookie: true,
   };
   const postData = querystring.stringify(form);
   return new Promise((resolve, reject) => {
