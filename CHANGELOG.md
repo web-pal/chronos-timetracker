@@ -1,3 +1,13 @@
+<a name="2.8.6"></a>
+## [2.8.6](https://github.com/web-pal/chronos-timetracker/compare/v2.8.5...v2.8.6) (2018-11-06)
+
+
+### Bug Fixes
+
+* **Auth:** add os_cookie true for self-hosted ([a89db94](https://github.com/web-pal/chronos-timetracker/commit/a89db94))
+
+
+
 <a name="2.8.5"></a>
 ## [2.8.5](https://github.com/web-pal/chronos-timetracker/compare/v2.8.4...v2.8.5) (2018-11-06)
 
