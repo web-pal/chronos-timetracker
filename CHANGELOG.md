@@ -1,3 +1,13 @@
+<a name="2.8.5"></a>
+## [2.8.5](https://github.com/web-pal/chronos-timetracker/compare/v2.8.4...v2.8.5) (2018-11-06)
+
+
+### Bug Fixes
+
+* **Auth:** set infinite cookie expiration ([885b676](https://github.com/web-pal/chronos-timetracker/commit/885b676))
+
+
+
 <a name="2.8.4"></a>
 ## [2.8.4](https://github.com/web-pal/chronos-timetracker/compare/v2.8.3...v2.8.4) (2018-10-31)
 
