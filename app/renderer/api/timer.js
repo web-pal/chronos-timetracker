@@ -1,5 +1,7 @@
 import fs from 'fs';
-import { remote, ipcRenderer, desktopCapturer } from 'electron';
+import {
+  remote, ipcRenderer, desktopCapturer,
+} from 'electron';
 import mergeImages from 'merge-images';
 
 

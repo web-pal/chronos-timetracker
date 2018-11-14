@@ -68,10 +68,10 @@ export function* fetchProjectStatuses(): Generator<*, *, *> {
       const metadata = yield call(Api.getIssuesMetadata, projectId);
       // Some users have strange metada response, it needs to detect issue
       if (
-        !metadata ||
-        !metadata.projects ||
-        !metadata.projects[0] ||
-        !metadata.projects[0].issuetypes
+        !metadata
+        || !metadata.projects
+        || !metadata.projects[0]
+        || !metadata.projects[0].issuetypes
       ) {
         Raven.captureMessage('Issue types empty!', {
           level: 'error',
@@ -92,11 +92,10 @@ export function* fetchProjectStatuses(): Generator<*, *, *> {
         projectId,
       );
       const statuses = [].concat(...statusesResponse.map(s => s.statuses));
-      const uniqueStatuses =
-        statuses.reduce((acc, s) => {
-          acc[s.id] = s;
-          return acc;
-        }, {});
+      const uniqueStatuses = statuses.reduce((acc, s) => {
+        acc[s.id] = s;
+        return acc;
+      }, {});
 
       yield put(statusesActions.succeeded({
         resources: Object.keys(uniqueStatuses).map(id => uniqueStatuses[id]),

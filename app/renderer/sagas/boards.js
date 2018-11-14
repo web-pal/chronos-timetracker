@@ -65,17 +65,16 @@ function* fetchAllBoards({
   if (!response.isLast) {
     const additionalBoards =
       // Some servers do not send total
-      response.total ?
-        yield all(
+      response.total
+        ? yield all(
           Array.from(Array(Math.ceil(response.total / maxResults)).keys()).map(
-            i =>
-              call(Api.fetchBoards, {
-                startAt: (i + 1) * maxResults,
-                maxResults,
-              }),
+            i => call(Api.fetchBoards, {
+              startAt: (i + 1) * maxResults,
+              maxResults,
+            }),
           ),
-        ) :
-        yield call(fetchAllBoardsWithoutTotal, {
+        )
+        : yield call(fetchAllBoardsWithoutTotal, {
           startAt: maxResults,
           maxResults,
         });
@@ -107,19 +106,19 @@ export function* fetchBoards(): Generator<*, void, *> {
         resources: boards.map(
           (b, index) => (
             (
-              projects[index] &&
-              projects[index].values &&
-              projects[index].values[0] &&
-              projects[index].values[0].id
-            ) ?
-              {
+              projects[index]
+              && projects[index].values
+              && projects[index].values[0]
+              && projects[index].values[0].id
+            )
+              ? {
                 ...b,
                 location: {
                   ...projects[index].values[0],
                   projectId: projects[index].values[0].id,
                 },
-              } :
-              b
+              }
+              : b
           ),
         ),
       }));
@@ -136,8 +135,7 @@ export function* fetchBoards(): Generator<*, void, *> {
   } catch (err) {
     yield call(throwError, err);
     if (JSON.parse(err).statusCode === 403) {
-      const helpUrl =
-        'https://web-pal.atlassian.net/wiki/spaces/CHRONOS/pages/173899778/Problem+with+loading+boards';
+      const helpUrl = 'https://web-pal.atlassian.net/wiki/spaces/CHRONOS/pages/173899778/Problem+with+loading+boards';
       const flagActions = [
         {
           content: 'How to resolve this?',

@@ -82,7 +82,7 @@ const JQLFilter = ({
               <FieldText
                 placeholder="New filter name"
                 isLabelHidden
-                value={newJQLFilterName}
+                value={newJQLFilterName || ''}
                 onChange={e => dispatch(uiActions.setUiState('newJQLFilterName', e.target.value))}
                 shouldFitContainer
               />

@@ -54,11 +54,11 @@ export function* createFilterFlow(): Generator<*, *, *> {
     try {
       const { payload: { name, jql } } = yield take(types.CREATE_FILTER_REQUEST);
       const newFilter = {
+        jql,
         name,
         description: 'Filter created in Chronos desktop',
-        jql,
         favourite: true,
-        favouritedCount: 0,
+        // favouritedCount: 0,
       };
       yield put(actions.pending());
       const created = yield call(Api.createFilter, newFilter);

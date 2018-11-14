@@ -1,5 +1,5 @@
 // @flow
-import jira from 'utils/jiraClient';
+import client from './client';
 
 // maxResults 50 - it's maximum
 export function fetchBoards({
@@ -9,16 +9,20 @@ export function fetchBoards({
   startAt: number,
   maxResults: number,
 }): Promise<*> {
-  return jira.client.board.getAllBoards({
-    startAt,
-    maxResults,
+  return client.getAllBoards({
+    queryParameters: {
+      startAt,
+      maxResults,
+    },
   });
 }
 
 export function fetchBoardProjects(boardId: string | number): Promise<*> {
-  return jira.client.board.getProjectsForBoard({
+  return client.getProjectsForBoard({
     boardId,
-    startAt: 0,
-    maxResults: 1000,
+    queryParameters: {
+      startAt: 0,
+      maxResults: 1000,
+    },
   });
 }

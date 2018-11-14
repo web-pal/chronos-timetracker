@@ -1,17 +1,17 @@
 // @flow
-
 import type {
   Id,
 } from 'types';
 
-import jira from 'utils/jiraClient';
-
+import client from './client';
 
 export function fetchSprints({ boardId }: { boardId: Id }): Promise<*> {
-  return jira.client.board.getSprintsForBoard({
-    startAt: 0,
-    maxResults: 1000,
+  return client.getSprintsForBoard({
     boardId,
-    state: 'active',
+    queryParameters: {
+      state: 'active',
+      startAt: 0,
+      maxResults: 1000,
+    },
   });
 }

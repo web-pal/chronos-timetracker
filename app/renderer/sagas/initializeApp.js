@@ -4,7 +4,6 @@ import {
   put,
   take,
   fork,
-  select,
 } from 'redux-saga/effects';
 import {
   ipcRenderer,
@@ -14,7 +13,6 @@ import mixpanel from 'mixpanel-browser';
 
 import * as Api from 'api';
 
-import jira from 'utils/jiraClient';
 import {
   trackMixpanel,
   incrementMixpanel,
@@ -22,9 +20,6 @@ import {
 import type {
   Id,
 } from 'types';
-import {
-  getBaseUrl,
-} from 'selectors';
 
 import {
   uiActions,
@@ -111,12 +106,12 @@ export function* initialConfigureApp({
   yield put(uiActions.setUiState('port', port));
   yield put(uiActions.setUiState('pathname', pathname));
 
-  const baseUrl = yield select(getBaseUrl);
+  const baseUrl = Api.getBaseUrl({ protocol, hostname, port, pathname });
   ipcRenderer.send(
     'load-issue-window',
     `${baseUrl}/issues`,
   );
-  const userData = yield call(Api.jiraProfile);
+  const userData = yield call(Api.fetchProfile);
 
   yield put(profileActions.fillUserData(userData));
   yield call(initializeMixpanel);
@@ -275,7 +270,7 @@ export function* initializeApp(): Generator<*, *, *> {
     }
     const appData = yield call(getInitializeAppData);
     if (appData && appData.cookies) {
-      yield call(jira.auth, appData);
+      yield call(Api.authJira, appData);
       yield call(initialConfigureApp, appData);
     }
     trackMixpanel('Application was initialized');

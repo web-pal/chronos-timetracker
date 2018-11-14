@@ -1,39 +1,26 @@
 // @flow
 import config from 'config';
 
-import jira from 'utils/jiraClient';
-import { getHeaders } from './helper';
+import type {
+  Issue, Id,
+} from 'types';
+import {
+  getHeaders,
+} from './helper';
 
-import type { Issue, Id } from 'types';
+import client from './client';
+
 
 export function fetchWorklogs(issues: Array<Issue>): Promise<*> {
-  return new Promise((resolve) => {
-    const promises = issues.map(issue => (
-      // eslint-disable-next-line promise/param-names
-      new Promise((resolve2) => {
-        jira.client.issue.getWorkLogs({
-          issueId: issue.id,
-        }, (err, response) => {
-          resolve2(response ? response.worklogs : []);
-        });
-      })
-    ));
-    return Promise.all(promises).then((results) => {
-      const items = [].concat(...results.map(i => i));
-      resolve(items);
-      return items;
-    });
-  });
+  const promises = issues.map(issue => client.getWorkLogs({
+    issueId: issue.id,
+  }));
+  return Promise.all(promises).then(results => [].concat(
+    ...results.map(i => (i.worklogs ? i.worklogs : [])),
+  ));
 }
 
-export async function fetchChronosBackendWorklogs(ids: Array<Id>): Promise<*> {
-  return fetch(`${config.apiUrl}/api/tracker/worklogs?worklogIds=${ids.join(',')}`, {
-    method: 'GET',
-    headers: await getHeaders(),
-  }).then(res => res.json());
-}
-
-type jiraUploadOptions = {
+type WorklogRequest = {
   issueId: Id,
   adjustEstimate: 'auto',
   worklog: {
@@ -42,10 +29,6 @@ type jiraUploadOptions = {
   },
 };
 
-export function jiraUploadWorklog(opts: jiraUploadOptions): Promise<*> {
-  return jira.client.issue.addWorkLog(opts);
-}
-
 export async function chronosBackendUploadWorklog(worklog: any): Promise<*> {
   return fetch(`${config.apiUrl}/api/tracker/worklog`, {
     method: 'POST',
@@ -53,20 +36,6 @@ export async function chronosBackendUploadWorklog(worklog: any): Promise<*> {
     body: JSON.stringify(worklog),
   });
 }
-
-export async function chronosBackendUpdateWorklogType({
-  worklogType,
-  worklogId,
-}: { worklogType: string, worklogId: string }): Promise<*> {
-  const url = `${config.apiUrl}/api/tracker/updateWorklogType`;
-  const options = {
-    method: 'POST',
-    headers: await getHeaders(),
-    body: JSON.stringify({ worklogType, worklogId }),
-  };
-  return fetch(url, options);
-}
-
 
 export async function signUploadUrlForS3Bucket(fileName: string): Promise<*> {
   const url = `${config.apiUrl}/desktop-tracker/sign-bucket-url`;
@@ -102,8 +71,12 @@ export async function fetchWorklogTypes(): Promise<*> {
   return fetch(url, { headers: await getHeaders() }).then(res => res.json());
 }
 
-export function addWorklog(opts: jiraUploadOptions): Promise<*> {
-  return jira.client.issue.addWorkLog(opts);
+export function addWorklog(opts: WorklogRequest): Promise<*> {
+  return client.addWorkLog(opts);
+}
+
+export function updateWorklog(opts: WorklogRequest): Promise<*> {
+  return client.updateWorkLog(opts);
 }
 
 export function deleteWorklog({
@@ -115,9 +88,5 @@ export function deleteWorklog({
   worklogId: Id,
   adjustEstimate: string,
 }): Promise<*> {
-  return jira.client.issue.deleteWorkLog({ issueId, worklogId, adjustEstimate });
-}
-
-export function updateWorklog(opts: jiraUploadOptions): Promise<*> {
-  return jira.client.issue.updateWorkLog(opts);
+  return client.deleteWorkLog({ issueId, worklogId, adjustEstimate });
 }

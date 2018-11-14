@@ -14,7 +14,6 @@ import Raven from 'raven-js';
 import * as Api from 'api';
 import * as R from 'ramda';
 
-import jira from 'utils/jiraClient';
 import {
   trackMixpanel,
   incrementMixpanel,
@@ -170,19 +169,14 @@ export function* authFlow(): Generator<*, *, *> {
 
       yield put(uiActions.setUiState('authRequestInProcess', true));
 
-      yield call(jira.auth, {
+      // Try auth and get mySelf
+      const { debug, result } = yield call(Api.authJira, {
         protocol,
         hostname,
         port,
         pathname,
         cookies,
       });
-
-      // Test request for check auth
-      const {
-        debug,
-        result,
-      } = yield call(Api.jiraProfile, true);
       yield put(authActions.addAuthDebugMessage([
         { json: debug },
       ]));

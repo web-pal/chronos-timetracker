@@ -1,6 +1,8 @@
 // @flow
 import config from 'config';
-import { getHeaders } from './helper';
+import {
+  getHeaders,
+} from './helper';
 
 
 export async function fetchSettings(): Promise<*> {

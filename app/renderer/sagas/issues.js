@@ -52,7 +52,6 @@ import {
 } from './comments';
 import createIpcChannel from './ipc';
 
-
 const JQL_RESTRICTED_CHARS_REGEX = /[+.,;?|*/%^$#@[\]]/;
 
 export function transformFilterValue(value: string): string {
@@ -529,9 +528,7 @@ export function* transitionIssue({
 
 export function* getIssuePermissions(issueId: string | number): Generator<*, void, *> {
   try {
-    const {
-      permissions,
-    } = yield call(Api.getPermissions, { issueId });
+    const { permissions } = yield call(Api.getPermissions, { issueId });
     yield put(resourcesActions.setResourceMeta({
       resourceType: 'issues',
       resources: [issueId],
@@ -550,9 +547,7 @@ export function* issueSelectFlow(issueId: string | number): Generator<*, *, *> {
   yield fork(getIssuePermissions, issueId);
 }
 
-export function* assignIssue({
-  issueId,
-}: {
+export function* assignIssue({ issueId }: {
   issueId: Id,
 }): Generator<*, void, *> {
   const issuesA = createActionCreators('update', {

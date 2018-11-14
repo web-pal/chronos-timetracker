@@ -4,34 +4,40 @@ import {
 } from 'electron';
 import querystring from 'querystring';
 import config from 'config';
-import jira from 'utils/jiraClient';
+import client, {
+  configureApi,
+} from './client';
 import {
   getHeaders,
 } from './helper';
 
 
-export function jiraProfile(debug: boolean = false): Promise<*> {
-  return jira.client.myself.getMyself(debug);
+export function fetchProfile(): Promise<*> {
+  return client.getMyself();
 }
 
-export function jiraAuth({
-  host,
-  username,
-  password,
+export function authJira({
+  protocol,
+  hostname,
+  port,
+  pathname,
+  cookies,
 }: {
-  host: URL,
-  username: string,
-  password: string,
-}): Promise<any> {
-  const port = host.port.length ? host.port : '443';
-  jira.auth(
-    host.hostname,
-    username,
-    password,
+  protocol: string,
+  hostname: string,
+  port: number | string,
+  pathname: string,
+  cookies: Array<any>,
+}): Promise<*> {
+  configureApi({
+    protocol,
+    hostname,
     port,
-    host.protocol,
-  );
-  return jiraProfile();
+    pathname,
+    cookies,
+  });
+
+  return client.getMyself({ debug: true });
 }
 
 export function checkUserPlan({ host }: {
@@ -121,38 +127,6 @@ export function chronosBackendOAuth({
   }).then(res => res.json());
 }
 
-export function getOAuthUrl(options: any): Promise<*> {
-  return new Promise((resolve) => {
-    jira.getOAuthUrl(options, (err, res) => {
-      if (err) {
-        console.error(err);
-        throw new Error('To use oAuth ask your jira admin configure application link');
-      }
-      resolve(res);
-    });
-  })
-    .then(
-      res => ({
-        ...res,
-        tokenSecret: res.token_secret,
-      }),
-    );
-}
-
-export function getOAuthToken(options: { oauth: any, host: string }): Promise<*> {
-  return new Promise((resolve) => {
-    jira.getOAuthToken(options, (err, res) => {
-      if (err) {
-        throw new Error(`Error getting oAuth token: ${err.message}`);
-      }
-      resolve(res);
-    });
-  })
-    .then(
-      res => res,
-    );
-}
-
 export async function chronosBackendGetJiraCredentials(): Promise<*> {
   const url: string = `${config.apiUrl}/desktop-tracker/authenticate`;
   return fetch(url, {
@@ -192,7 +166,7 @@ export function getPermissions(
     projectKey?: string | number,
   },
 ): Promise<*> {
-  return jira.client.myPermissions.getMyPermissions(opts);
+  return client.getMyPermissions(opts);
 }
 
 const handleNetError = (error: string): string => ({

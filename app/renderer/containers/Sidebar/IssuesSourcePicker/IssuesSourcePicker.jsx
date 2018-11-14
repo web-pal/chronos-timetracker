@@ -122,16 +122,17 @@ const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
       />
       )
     }
-    {selectedSourceType === 'filter' && <JQLFilter selectedFilter={selectedOption} />}
+    {(selectedOption && selectedSourceType === 'filter') && (
+      <JQLFilter selectedFilter={selectedOption} />
+    )}
   </IssuesSourceContainer>
 );
 
-function mapStateToProps(state) {
-  return {
+const connector: Connector<{}, Props> = connect(
+  state => ({
     options: getIssuesSourceOptions(state),
     selectedOption: getIssuesSourceSelectedOption(state),
     selectedSourceType: getUiState('issuesSourceType')(state),
-
     sprintsOptions: getSprintsOptions(state),
     selectedSprintOption: getSelectedSprintOption(state),
     projectsFetching: getResourceStatus(
@@ -144,11 +145,7 @@ function mapStateToProps(state) {
       'sprints.requests.allSprints.status',
       true,
     ).pending,
-  };
-}
-
-const connector: Connector<{}, Props> = connect(
-  mapStateToProps,
+  }),
   dispatch => ({ dispatch }),
 );
 

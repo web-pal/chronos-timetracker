@@ -146,23 +146,23 @@ export function* saveWorklog({
       );
       yield cancel();
     }
-    const jiraUploadOptions = {
+    const worklogRequest = {
       worklogId,
       issueId,
       adjustEstimate,
-      worklog: {
+      body: {
         started,
         timeSpentSeconds,
         comment,
       },
     };
 
-    if (adjustEstimate === 'new') jiraUploadOptions.newEstimate = newEstimate;
-    if (adjustEstimate === 'manual') jiraUploadOptions.reduceBy = reduceBy;
+    if (adjustEstimate === 'new') worklogRequest.newEstimate = newEstimate;
+    if (adjustEstimate === 'manual') worklogRequest.reduceBy = reduceBy;
 
     const worklog = yield call(
       worklogId ? Api.updateWorklog : Api.addWorklog,
-      jiraUploadOptions,
+      worklogRequest,
     );
     yield put(worklogsA.succeeded({
       resources: [worklog],

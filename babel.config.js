@@ -1,4 +1,3 @@
-/* Babel config for the main process */
 module.exports = (api) => {
   api.cache(true);
   return ({

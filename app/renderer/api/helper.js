@@ -1,5 +1,7 @@
 // @flow
-import { storageGetPromise } from 'sagas/storage';
+import {
+  storageGetPromise,
+} from 'sagas/storage';
 
 // eslint-disable-next-line import/prefer-default-export
 export async function getHeaders() {

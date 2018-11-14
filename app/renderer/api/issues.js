@@ -4,7 +4,7 @@ import type {
   Id,
 } from 'types';
 
-import jira from 'utils/jiraClient';
+import client from './client';
 
 const requiredFields: Array<string> = [
   'issuetype',
@@ -27,19 +27,27 @@ const requiredFields: Array<string> = [
 ];
 
 export function getIssueTransitions(issueId: Id): Promise<*> {
-  return jira.client.issue.getTransitions({ issueId });
+  return client.getIssueTransitions({ issueId });
 }
 
 export function transitionIssue(issueId: Id, transitionId: Id): Promise<*> {
-  return jira.client.issue.transitionIssue({
+  return client.transitionIssue({
     issueId,
-    transition: transitionId,
+    body: {
+      transition: transitionId,
+    },
   });
 }
 
 export function fetchEpics(): Promise<*> {
   const jql: string = "issuetype = 'Epic'";
-  return jira.client.search.search({ jql, maxResults: 1000, startAt: 0 });
+  return client.search({
+    queryParameters: {
+      jql,
+      maxResults: 1000,
+      startAt: 0,
+    },
+  });
 }
 
 export function fetchIssues({
@@ -56,9 +64,9 @@ export function fetchIssues({
   boardId?: number | string | null,
   timeout?: number,
 }): Promise<*> {
-  const api = boardId ?
-    opts => jira.client.board.getIssuesForBoard({ ...opts, boardId }) :
-    opts => jira.client.search.search(opts);
+  const api = boardId
+    ? queryParameters => client.getIssuesForBoard({ queryParameters, boardId })
+    : queryParameters => client.search({ queryParameters });
   return api({
     jql,
     maxResults: (stopIndex - startIndex) + 1,
@@ -73,16 +81,20 @@ export function fetchIssues({
 }
 
 export function fetchIssue(issueId: string): Promise<*> {
-  return jira.client.issue.getIssue({
+  return client.getIssue({
     issueId,
-    fields: requiredFields,
+    queryParameters: {
+      fields: requiredFields,
+    },
   });
 }
 
 export function fetchIssueByKey(issueKey: string): Promise<*> {
-  return jira.client.issue.getIssue({
+  return client.getIssue({
     issueKey,
-    fields: requiredFields,
+    queryParameters: {
+      fields: requiredFields,
+    },
   });
 }
 
@@ -106,8 +118,11 @@ export function fetchRecentIssues({
   ].filter(f => !!f).join(' AND ');
 
   const api = projectType === 'project'
-    ? opts => jira.client.search.search(opts)
-    : opts => jira.client.board.getIssuesForBoard({ ...opts, boardId: projectId });
+    ? queryParameters => client.search({ queryParameters })
+    : queryParameters => client.getIssuesForBoard({
+      queryParameters,
+      boardId: projectId,
+    });
 
   return api({
     jql,
@@ -120,15 +135,25 @@ export function assignIssue({
   issueKey,
   assignee,
 }: { issueKey: string, assignee: string }): Promise<*> {
-  return jira.client.issue.assignIssue({ issueKey, assignee });
+  return client.assignIssue({
+    issueKey,
+    body: {
+      name: assignee,
+    },
+  });
 }
 
 export function fetchIssueFields(): Promise<*> {
-  return jira.client.field.getAllFields();
+  return client.getAllFields();
 }
 
 export function fetchIssueComments(issueId: Id): Promise<*> {
-  return jira.client.issue.getComments({ issueId, expand: ['renderedBody'] });
+  return client.getIssueComments({
+    issueId,
+    queryParameters: {
+      expand: ['renderedBody'],
+    },
+  });
 }
 
 export function addComment({
@@ -140,13 +165,16 @@ export function addComment({
     body: string,
   }
 }): Promise<*> {
-  return jira.client.issue.addComment({ issueId, comment });
+  return client.addIssueComment({
+    issueId,
+    body: comment,
+  });
 }
 
 export function getIssuesMetadata(projectId: Id | null): Promise<*> {
-  const opts = {};
+  const queryParameters = {};
   if (projectId) {
-    opts.projectIds = projectId;
+    queryParameters.projectIds = projectId;
   }
-  return jira.client.issue.getCreateMetadata(opts);
+  return client.getCreateMetadata({ queryParameters });
 }
