@@ -11,10 +11,12 @@ import {
 } from 'electron';
 import Raven from 'raven-js';
 
-import * as Api from 'api';
+import {
+  jiraApi,
+  authSelfHosted,
+} from 'api';
 import * as R from 'ramda';
 
-import jira from 'utils/jiraClient';
 import {
   trackMixpanel,
   incrementMixpanel,
@@ -39,44 +41,8 @@ import {
   notify,
 } from './ui';
 
-export function* chronosBackendAuth({
-  host,
-  username,
-  password,
-  port,
-  protocol,
-  pathPrefix,
-}: {
-  host: string,
-  username: string,
-  password: string,
-  port: string,
-  protocol: string,
-  pathPrefix: string,
-}): Generator<*, void, *> {
-  try {
-    const { token } = yield call(
-      Api.chronosBackendAuth,
-      {
-        host,
-        username,
-        password,
-        port,
-        protocol,
-        pathPrefix,
-      },
-    );
-    yield call(
-      setToStorage,
-      'desktop_tracker_jwt',
-      token,
-    );
-  } catch (err) {
-    yield call(throwError, err);
-  }
-}
 
-function storeInKeytar(payload) {
+function storeCredentialsInKeytar(payload) {
   ipcRenderer.sendSync(
     'store-credentials',
     payload,
@@ -104,7 +70,7 @@ function* deleteAccount(payload: { name: string, hostname: string }): Generator<
   }
 }
 
-export function* authSelfHostFlow(): Generator<*, *, *> {
+export function* authSelfHostedFlow(): Generator<*, *, *> {
   while (true) {
     const {
       payload: {
@@ -117,21 +83,20 @@ export function* authSelfHostFlow(): Generator<*, *, *> {
       yield put(uiActions.setUiState('authRequestInProcess', true));
       const { href, hostname, port, pathname } = host;
       const protocol = host.protocol.slice(0, -1);
-      const cookies = yield call(Api.getAuthCookies, {
+      const cookies = yield call(authSelfHosted, {
         pathname,
         protocol,
         username,
         password,
         baseUrl: href.replace(/\/$/, ''),
       });
-      const data = {
+      yield put(authActions.authRequest({
         protocol,
         hostname,
         port,
         pathname,
         cookies,
-      };
-      yield put(authActions.authRequest(data));
+      }));
     } catch (err) {
       if (err && err.message) {
         yield put(uiActions.setUiState('authError', err.message));
@@ -170,7 +135,7 @@ export function* authFlow(): Generator<*, *, *> {
 
       yield put(uiActions.setUiState('authRequestInProcess', true));
 
-      yield call(jira.auth, {
+      yield call([jiraApi, 'setAuthHeaders'], {
         protocol,
         hostname,
         port,
@@ -179,13 +144,12 @@ export function* authFlow(): Generator<*, *, *> {
       });
 
       // Test request for check auth
-      const {
-        debug,
-        result,
-      } = yield call(Api.jiraProfile, true);
+      const result = yield call(jiraApi.getMyself);
+      /*
       yield put(authActions.addAuthDebugMessage([
         { json: debug },
       ]));
+      */
       const { name } = result;
       const account = {
         name,
@@ -203,7 +167,7 @@ export function* authFlow(): Generator<*, *, *> {
         saveAccount,
         account,
       );
-      yield call(storeInKeytar, {
+      yield call(storeCredentialsInKeytar, {
         name,
         protocol,
         hostname,

@@ -163,7 +163,6 @@
     "electron-json-storage": "4.1.4",
     "electron-log": "2.2.17",
     "font-awesome": "4.7.0",
-    "jira-connector": "github:web-pal/jira-connector#290772714e5ad00aa34854dcc5cd22f6a9c4ce43",
     "merge-images": "1.1.0",
     "mixpanel-browser": "2.22.4",
     "moment": "2.22.2",

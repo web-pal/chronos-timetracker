@@ -7,7 +7,6 @@ import {
   timerActions,
 } from 'actions';
 import Raven from 'raven-js';
-import * as Api from 'api';
 import {
   remote,
 } from 'electron';
@@ -21,6 +20,8 @@ import {
 import {
   throwError,
 } from './ui';
+
+const Api = () => 'deprecated';
 
 export function* uploadScreenshot({
   screenshotTime,

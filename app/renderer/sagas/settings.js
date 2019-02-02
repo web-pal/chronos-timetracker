@@ -13,8 +13,6 @@ import {
 import path from 'path';
 import fs from 'fs';
 
-import * as Api from 'api';
-
 import {
   actionTypes,
   uiActions,
@@ -32,24 +30,6 @@ import {
   setToStorage,
 } from './storage';
 
-
-export function* getSettings(): Generator<*, *, *> {
-  try {
-    yield call(
-      infoLog,
-      'backend settings requested',
-    );
-    const { payload } = yield call(Api.fetchSettings);
-    yield call(
-      infoLog,
-      'got backend settings',
-      payload,
-    );
-    // yield put(settingsActions.fillSettings(payload));
-  } catch (err) {
-    yield call(throwError, err);
-  }
-}
 
 export function* onChangeLocalDesktopSettings({
   settingName,

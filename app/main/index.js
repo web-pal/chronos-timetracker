@@ -1,4 +1,4 @@
-/* eslint-disable no-console, global-require */
+/* eslint-disable no-console, no-param-reassign, global-require */
 import path from 'path';
 import fs from 'fs';
 import keytar from 'keytar';
@@ -198,6 +198,9 @@ function createWindow(callback) {
       height: 800,
       minWidth: 1040,
       minHeight: 800,
+      webPreferences: {
+        webSecurity: false,
+      },
       ...lastWindowSize,
       ...noFrameOption,
     });
@@ -590,6 +593,16 @@ app.on('activate', () => {
 });
 
 app.on('ready', async () => {
+  const filter = {
+    urls: ['*://*/rest/api/*'],
+  };
+  /* it need to prevent XSRF check */
+  session.defaultSession.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
+    details.requestHeaders.referer = 'electron://chronos-timetracker';
+    details.requestHeaders.Origin = 'electron://chronos-timetracker';
+    details.requestHeaders['User-Agent'] = 'chronos-timetracker';
+    callback({ cancel: false, requestHeaders: details.requestHeaders });
+  });
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === true) {
     await installExtensions();
   }

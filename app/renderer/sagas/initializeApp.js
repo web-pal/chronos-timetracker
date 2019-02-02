@@ -12,9 +12,10 @@ import {
 import Raven from 'raven-js';
 import mixpanel from 'mixpanel-browser';
 
-import * as Api from 'api';
+import {
+  jiraApi,
+} from 'api';
 
-import jira from 'utils/jiraClient';
 import {
   trackMixpanel,
   incrementMixpanel,
@@ -116,7 +117,7 @@ export function* initialConfigureApp({
     'load-issue-window',
     `${baseUrl}/issues`,
   );
-  const userData = yield call(Api.jiraProfile);
+  const userData = yield call(jiraApi.getMyself);
 
   yield put(profileActions.fillUserData(userData));
   yield call(initializeMixpanel);
@@ -197,14 +198,6 @@ export function* initialConfigureApp({
     },
   }));
   yield put(uiActions.setUiState('initializeInProcess', false));
-  /*
-  const isPaidChronosUser = yield select(getIsPaidUser);
-
-  if (isPaidChronosUser) {
-    yield fork(getWorklogTypes);
-    yield fork(plugSocket);
-  }
-  */
 }
 
 function* getInitializeAppData(): Generator<*, *, *> {
@@ -275,7 +268,7 @@ export function* initializeApp(): Generator<*, *, *> {
     }
     const appData = yield call(getInitializeAppData);
     if (appData && appData.cookies) {
-      yield call(jira.auth, appData);
+      yield call([jiraApi, 'setAuthHeaders'], appData);
       yield call(initialConfigureApp, appData);
     }
     trackMixpanel('Application was initialized');

@@ -11,7 +11,9 @@ import {
 } from 'redux-resource';
 import createActionCreators from 'redux-resource-action-creators';
 
-import * as Api from 'api';
+import {
+  jiraApi,
+} from 'api';
 
 import type {
   Id,
@@ -37,19 +39,28 @@ export function* getIssueComments(issueId: Id): Generator<*, void, *> {
     mergeListIds: false,
   });
   try {
-    const alreadyFetched =
+    const alreadyFetched = (
       yield select(
-        state =>
+        state => (
           getResourceStatus(
             state,
             `issuesComments.requests.issue_${issueId}.status`,
-          ).succeeded,
-      );
+          ).succeeded
+        ),
+      )
+    );
     if (!alreadyFetched) {
       yield put(actions.pending());
     }
     yield call(infoLog, `fetching comments for issue ${issueId}`);
-    const { comments } = yield call(Api.fetchIssueComments, issueId);
+    const { comments } = yield call(
+      jiraApi.getIssueComments,
+      {
+        params: {
+          issueIdOrKey: issueId,
+        },
+      },
+    );
     yield put(actions.succeeded({
       resources: comments,
     }));
@@ -74,13 +85,17 @@ export function* addIssueComment({
   try {
     yield call(infoLog, 'adding comment', text, issueId);
     yield put(uiActions.setUiState('commentAdding', true));
-    const opts = {
-      issueId,
-      comment: {
-        body: text,
+    const newComment = yield call(
+      jiraApi.addIssueComment,
+      {
+        params: {
+          issueIdOrKey: issueId,
+        },
+        body: {
+          body: text,
+        },
       },
-    };
-    const newComment = yield call(Api.addComment, opts);
+    );
     yield call(infoLog, 'comment added', newComment);
     yield put(actions.succeeded({
       resources: [newComment],

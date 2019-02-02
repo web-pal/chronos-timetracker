@@ -31,7 +31,7 @@ export default function* rootSaga(): Generator<*, void, *> {
 
     // auth
     fork(authSagas.authFlow),
-    fork(authSagas.authSelfHostFlow),
+    fork(authSagas.authSelfHostedFlow),
     fork(authSagas.logoutFlow),
     fork(authSagas.switchAccountFlow),
 
@@ -74,8 +74,7 @@ export default function* rootSaga(): Generator<*, void, *> {
     fork(traySagas.createIpcTrayListeners),
 
     // filters
-    fork(filtersSagas.createFilterFlow),
-    fork(filtersSagas.updateFilterFlow),
+    fork(filtersSagas.takeSaveFilterRequest),
 
     // ui
     fork(uiSagas.watchUiStateChange),
