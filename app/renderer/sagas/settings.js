@@ -1,9 +1,9 @@
 // @flow
 import {
   call,
+  select,
   put,
   takeEvery,
-  select,
   cps,
   all,
 } from 'redux-saga/effects';
@@ -17,18 +17,14 @@ import {
   actionTypes,
   uiActions,
 } from 'actions';
-import {
-  getSettingsState,
-} from 'selectors';
 
 import {
   infoLog,
   throwError,
 } from './ui';
 import {
-  getFromStorage,
-  setToStorage,
-} from './storage';
+  setElectronStorage,
+} from './helpers';
 
 
 export function* onChangeLocalDesktopSettings({
@@ -57,14 +53,6 @@ export function* onChangeLocalDesktopSettings({
         `switched updateAutomatically to ${value}`,
       );
 
-      const settings = yield call(getFromStorage, 'localDesktopSettings');
-      settings.updateAutomatically = value;
-      yield call(
-        setToStorage,
-        'localDesktopSettings',
-        settings,
-      );
-
       if (value) {
         yield put(uiActions.checkForUpdatesRequest());
       }
@@ -77,15 +65,6 @@ export function* onChangeLocalDesktopSettings({
       );
       yield put(uiActions.checkForUpdatesRequest());
     }
-    const newLocalSettings = yield select(getSettingsState('localDesktopSettings'));
-    yield call(
-      setToStorage,
-      'localDesktopSettings',
-      {
-        ...newLocalSettings,
-        [settingName]: value,
-      },
-    );
   } catch (err) {
     yield call(throwError, err);
   }
@@ -118,12 +97,70 @@ function* removeDir(dir) {
   }
 }
 
+const keytar = remote.require('keytar');
 function* clearElectronCacheSaga(): Generator<*, *, *> {
   try {
+    yield call(
+      remote.session.defaultSession.clearStorageData,
+      {
+        quotas: [
+          'temporary',
+          'persistent',
+          'syncable',
+        ],
+        storages: [
+          'appcache',
+          'cookies',
+          'filesystem',
+          'indexdb',
+          'localstorage',
+          'shadercache',
+          'websql',
+          'serviceworkers',
+          'cachestorage',
+        ],
+      },
+    );
+    const accounts = yield call(
+      keytar.findCredentials,
+      'Chronos',
+    );
+    yield all(
+      accounts.map(
+        ({ account }) => (
+          call(
+            keytar.deletePassword,
+            'Chronos',
+            account,
+          )
+        ),
+      ),
+    );
+
+    const hostname = yield select(
+      uiActions.getUiState2('hostname'),
+    );
+    yield call(
+      setElectronStorage,
+      `persistUiState_${hostname}`,
+      {},
+    );
+    yield call(
+      setElectronStorage,
+      'accounts',
+      [],
+    );
+    yield call(
+      setElectronStorage,
+      `localDesktopSettings_${hostname}`,
+      {},
+    );
+    /*
     const appDir = remote.getGlobal('appDir');
     yield call(removeDir, appDir);
     remote.app.relaunch();
     remote.app.exit(0);
+    */
   } catch (err) {
     console.log('@@ Error while removing appDir', err);
   }

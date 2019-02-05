@@ -55,8 +55,7 @@ export default function enhancedFetch(
   ).then(
     (response) => {
       if (response.status === 404) {
-        return ({
-          dataType: 'text',
+        throw new EnhancedFetchError({
           response,
         });
       }

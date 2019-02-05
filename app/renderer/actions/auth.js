@@ -7,12 +7,14 @@ import * as actionTypes from './actionTypes';
 
 
 export const authRequest = (payload: {|
-  name: string,
+  protocol: string,
   hostname: string,
+  port: string,
   pathname: string,
+  cookies: any,
 |}): AuthAction => ({
   type: actionTypes.AUTH_REQUEST,
-  payload,
+  ...payload,
 });
 
 export const authSelfHostRequest = (payload: {|
@@ -23,20 +25,20 @@ export const authSelfHostRequest = (payload: {|
   payload,
 });
 
-export const logoutRequest = (payload: {
-  dontForget: boolean
-} = { dontForget: false }): AuthAction => ({
+export const logoutRequest = ({ forget = true }): AuthAction => ({
   type: actionTypes.LOGOUT_REQUEST,
-  payload,
+  forget,
 });
 
 export const switchAccount = (payload: {|
   name: string,
+  protocol: string,
   hostname: string,
+  port: string,
   pathname: string,
 |}) => ({
   type: actionTypes.SWITCH_ACCOUNT,
-  payload,
+  ...payload,
 });
 
 export const addAuthDebugMessage = (payload: Array<*>) => ({

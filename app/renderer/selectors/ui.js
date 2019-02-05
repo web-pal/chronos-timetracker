@@ -20,6 +20,22 @@ import {
 
 export const getUiState = (key: string) => ({ ui }: { ui: UiState }) => ui[key];
 
+export const getUiState2 = (keyOrKeys: string | Array<string>) => (
+  ({ ui }: { ui: UiState }) => (
+    Array.isArray(keyOrKeys)
+      ? (
+        keyOrKeys.reduce(
+          (acc, key) => ({
+            ...acc,
+            [key]: ui[key],
+          }),
+          {},
+        )
+      )
+      : ui[keyOrKeys]
+  )
+);
+
 export const getModalState = (key: string) => ({ ui }: { ui: UiState }) => ui.modalState[key];
 
 export const getFilterOptions = createSelector(

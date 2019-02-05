@@ -66,3 +66,30 @@ export const assignIssueRequest = (
   type: actionTypes.ASSIGN_ISSUE_REQUEST,
   issueId,
 });
+
+export const fetchNewIssueRequest = ({ issueIdOrKey }): IssuesAction => ({
+  type: actionTypes.FETCH_NEW_ISSUE_REQUEST,
+  issueIdOrKey,
+  scope: 'allRenderer',
+});
+
+export const fetchUpdateIssueRequest = ({ issueIdOrKey }): IssuesAction => ({
+  type: actionTypes.FETCH_UPDATE_ISSUE_REQUEST,
+  issueIdOrKey,
+  scope: 'allRenderer',
+});
+
+export const showIssueFormWindow = ({
+  issueId,
+  projectId,
+}): IssuesAction => ({
+  type: actionTypes.SHOW_ISSUE_FORM_WINDOW,
+  issueId,
+  projectId,
+  scope: 'allRenderer',
+});
+
+export const closeIssueFormWindow = (): IssuesAction => ({
+  type: actionTypes.CLOSE_ISSUE_FORM_WINDOW,
+  scope: 'allRenderer',
+});

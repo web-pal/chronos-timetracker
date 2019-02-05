@@ -1,15 +1,14 @@
 // @flow
 import {
-  fork,
   take,
   call,
+  all,
+  select,
   put,
 } from 'redux-saga/effects';
 import {
-  ipcRenderer,
   remote,
 } from 'electron';
-import Raven from 'raven-js';
 
 import {
   jiraApi,
@@ -27,48 +26,23 @@ import {
   authActions,
   uiActions,
 } from 'actions';
+import {
+  getTimerState,
+  getUiState2,
+} from 'selectors';
 
 import {
-  setToStorage,
-  getFromStorage,
-  removeFromStorage,
-} from './storage';
-import {
-  initialConfigureApp,
-} from './initializeApp';
+  getElectronStorage,
+  setElectronStorage,
+  removeElectronStorage,
+  savePersistStorage,
+} from './helpers';
 import {
   throwError,
-  notify,
 } from './ui';
 
+const keytar = remote.require('keytar');
 
-function storeCredentialsInKeytar(payload) {
-  ipcRenderer.sendSync(
-    'store-credentials',
-    payload,
-  );
-}
-
-function* saveAccount(payload: { name: string, hostname: string }): Generator<*, void, *> {
-  const { name, hostname } = payload;
-  let accounts = yield call(getFromStorage, 'accounts');
-  if (!accounts) accounts = [];
-  if (!R.find(R.whereEq({ name, hostname }), accounts)) {
-    accounts.push(payload);
-    yield call(setToStorage, 'accounts', accounts);
-  }
-}
-
-function* deleteAccount(payload: { name: string, hostname: string }): Generator<*, void, *> {
-  const { name, hostname } = payload;
-  let accounts = yield call(getFromStorage, 'accounts');
-  if (!accounts) accounts = [];
-  const index = R.findIndex(R.whereEq({ name, hostname }), accounts);
-  if (index !== -1) {
-    accounts = R.remove(index, 1, accounts);
-    yield call(setToStorage, 'accounts', accounts);
-  }
-}
 
 export function* authSelfHostedFlow(): Generator<*, *, *> {
   while (true) {
@@ -112,45 +86,67 @@ export function* authSelfHostedFlow(): Generator<*, *, *> {
   }
 }
 
+function setCookie(cookie) {
+  return new Promise((
+    (resolve, reject) => {
+      remote.session.defaultSession.cookies.set(
+        cookie,
+        (error) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(cookie);
+          }
+        },
+      );
+    }
+  ));
+}
+
 export function* authFlow(): Generator<*, *, *> {
   while (true) {
     try {
       const {
-        payload: {
-          protocol,
-          hostname,
-          port,
-          pathname,
-          cookies,
-        },
-      } = yield take(actionTypes.AUTH_REQUEST);
-
-      yield put(authActions.addAuthDebugMessage([
-        { string: 'Login request...' },
-        { string: `host: ${hostname}` },
-        { string: `protocol: ${protocol}` },
-        { string: `port: ${port}` },
-        { string: `path_prefix: ${pathname}` },
-      ]));
-
-      yield put(uiActions.setUiState('authRequestInProcess', true));
-
-      yield call([jiraApi, 'setAuthHeaders'], {
         protocol,
         hostname,
         port,
         pathname,
         cookies,
-      });
+      } = yield take(actionTypes.AUTH_REQUEST);
+      yield put(uiActions.setUiState('authRequestInProcess', true));
 
-      // Test request for check auth
-      const result = yield call(jiraApi.getMyself);
-      /*
-      yield put(authActions.addAuthDebugMessage([
-        { json: debug },
-      ]));
-      */
-      const { name } = result;
+      const clearedCookies = (
+        cookies.map(cookie => ({
+          url: `${protocol}://${hostname}`,
+          name: cookie.name,
+          value: cookie.value,
+          domain: cookie.domain,
+          httpOnly: protocol === 'http',
+          expires: 'Fri, 31 Dec 9999 23:59:59 GMT',
+        }))
+      );
+      try {
+        yield all(
+          clearedCookies.map(cookie => (
+            call(
+              setCookie,
+              cookie,
+            )
+          )),
+        );
+      } catch (err) {
+        console.log(err);
+      }
+
+      const p = port ? `:${port}` : '';
+      const rootApiUrl = `${protocol}://${hostname}${p}${pathname.replace(/\/$/, '')}`;
+      yield call(
+        jiraApi.setRootUrl,
+        rootApiUrl,
+      );
+
+      /* Test request for check auth */
+      const { name } = yield call(jiraApi.getMyself);
       const account = {
         name,
         protocol,
@@ -158,27 +154,46 @@ export function* authFlow(): Generator<*, *, *> {
         port,
         pathname,
       };
+
       yield call(
-        setToStorage,
+        setElectronStorage,
         'last_used_account',
         account,
       );
-      yield call(
-        saveAccount,
-        account,
+
+      const accounts = yield call(
+        getElectronStorage,
+        'accounts',
+        [],
       );
-      yield call(storeCredentialsInKeytar, {
-        name,
-        protocol,
-        hostname,
-        cookies,
-      });
-      yield call(initialConfigureApp, {
-        protocol,
-        hostname,
-        port,
-        pathname,
-      });
+      if (!R.find(R.whereEq({ name, hostname }), accounts)) {
+        accounts.push(account);
+        yield call(
+          setElectronStorage,
+          'accounts',
+          accounts,
+        );
+      }
+
+      yield call(
+        keytar.setPassword,
+        'Chronos',
+        `${name}_${hostname}`,
+        JSON.stringify(clearedCookies),
+      );
+
+      yield put(
+        uiActions.initialConfigureApp(
+          {
+            protocol,
+            hostname,
+            port,
+            pathname,
+            rootApiUrl,
+          },
+        ),
+      );
+
       trackMixpanel('Jira login');
       incrementMixpanel('Jira login', 1);
     } catch (err) {
@@ -207,33 +222,79 @@ export function* authFlow(): Generator<*, *, *> {
 
 export function* logoutFlow(): Generator<*, *, *> {
   while (true) {
-    const { payload: { dontForget } } = yield take(actionTypes.LOGOUT_REQUEST);
+    const { forget } = yield take(actionTypes.LOGOUT_REQUEST);
     try {
-      const { getGlobal } = remote;
-      const { running, uploading } = getGlobal('sharedObj');
+      const running = yield select(getTimerState('running'));
+      const saveWorklogInProcess = yield select(getUiState2('saveWorklogInProcess'));
 
       if (running) {
         // eslint-disable-next-line no-alert
         window.alert('Tracking in progress, save worklog before logout!');
       }
-      if (uploading) {
+      if (saveWorklogInProcess) {
         // eslint-disable-next-line no-alert
         window.alert('Currently app in process of saving worklog, wait few seconds please');
       }
-      const lastUsedAccount = yield call(getFromStorage, 'last_used_account');
-      ipcRenderer.send(
-        'remove-auth-cookies',
+      yield call(
+        remote.session.defaultSession.clearStorageData,
+        {
+          quotas: [
+            'temporary',
+            'persistent',
+            'syncable',
+          ],
+          storages: [
+            'appcache',
+            'cookies',
+            'filesystem',
+            'indexdb',
+            'localstorage',
+            'shadercache',
+            'websql',
+            'serviceworkers',
+            'cachestorage',
+          ],
+        },
       );
-      if (!running && !uploading && !dontForget) {
-        yield call(removeFromStorage, 'desktop_tracker_jwt');
-        yield call(deleteAccount, lastUsedAccount);
-        yield call(removeFromStorage, 'last_used_account');
+
+      const lastUsedAccount = yield call(
+        getElectronStorage,
+        'last_used_account',
+        null,
+      );
+      let accounts = yield call(
+        getElectronStorage,
+        'accounts',
+        [],
+      );
+      if (
+        !running
+        && !saveWorklogInProcess
+        && lastUsedAccount
+      ) {
+        yield call(
+          removeElectronStorage,
+          'last_used_account',
+        );
+        if (forget) {
+          accounts = accounts.filter(
+            a => (
+              a.name !== lastUsedAccount.name
+              && a.hostname !== lastUsedAccount.hostname
+            ),
+          );
+          yield put(uiActions.setUiState('accounts', accounts));
+          yield call(
+            setElectronStorage,
+            'accounts',
+            accounts,
+          );
+        }
       }
+      yield call(savePersistStorage);
       yield put({
         type: actionTypes.__CLEAR_ALL_REDUCERS__,
       });
-      let accounts = yield call(getFromStorage, 'accounts');
-      if (!accounts) accounts = [];
       yield put(uiActions.setUiState('accounts', accounts));
       trackMixpanel('Logout');
       incrementMixpanel('Logout', 1);
@@ -245,70 +306,70 @@ export function* logoutFlow(): Generator<*, *, *> {
 
 export function* switchAccountFlow(): Generator<*, *, *> {
   while (true) {
-    const { payload } = yield take(actionTypes.SWITCH_ACCOUNT);
+    const {
+      name,
+      protocol,
+      hostname,
+      port,
+      pathname,
+    } = yield take(actionTypes.SWITCH_ACCOUNT);
     try {
-      const { getGlobal } = remote;
-      const { running, uploading } = getGlobal('sharedObj');
+      const saveWorklogInProcess = yield select(getUiState2('saveWorklogInProcess'));
+      const running = yield select(getTimerState('running'));
 
       if (running) {
         // eslint-disable-next-line no-alert
         window.alert('Tracking in progress, save worklog before logout!');
       }
-      if (uploading) {
+      if (saveWorklogInProcess) {
         // eslint-disable-next-line no-alert
         window.alert('Currently app in process of saving worklog, wait few seconds please');
       }
-      if (!running && !uploading) {
-        const {
-          credentials,
-          error,
-        } = ipcRenderer.sendSync(
-          'get-credentials',
+      if (
+        !running
+        && !saveWorklogInProcess
+      ) {
+        const cookiesStr = yield call(
+          keytar.getPassword,
+          'Chronos',
+          `${name}_${hostname}`,
+        );
+        const cookies = JSON.parse(cookiesStr);
+        yield call(
+          remote.session.defaultSession.clearStorageData,
           {
-            name: payload.name,
-            protocol: payload.protocol,
-            hostname: payload.hostname,
+            quotas: [
+              'temporary',
+              'persistent',
+              'syncable',
+            ],
+            storages: [
+              'appcache',
+              'cookies',
+              'filesystem',
+              'indexdb',
+              'localstorage',
+              'shadercache',
+              'websql',
+              'serviceworkers',
+              'cachestorage',
+            ],
           },
         );
-        if (error) {
-          Raven.captureMessage('keytar error!', {
-            level: 'error',
-            extra: {
-              error: error.err,
-            },
-          });
-          yield call(
-            throwError,
-            error.err,
-          );
-          if (error.platform === 'linux') {
-            yield fork(
-              notify,
-              {
-                type: 'libSecretError',
-                autoDelete: false,
-              },
-            );
-          }
-        } else {
-          ipcRenderer.send(
-            'remove-auth-cookies',
-          );
-          yield put({
-            type: actionTypes.__CLEAR_ALL_REDUCERS__,
-          });
-          yield put(uiActions.setUiState('initializeInProcess', true));
-          let accounts = yield call(getFromStorage, 'accounts');
-          if (!accounts) accounts = [];
-          yield put(uiActions.setUiState('accounts', accounts));
-          yield put(authActions.authRequest({
-            ...payload,
-            ...credentials,
-          }));
-        }
+        yield put({
+          type: actionTypes.__CLEAR_ALL_REDUCERS__,
+        });
+        yield put(uiActions.setUiState('initializeInProcess', true));
+        yield put(authActions.authRequest({
+          protocol,
+          hostname,
+          port,
+          pathname,
+          cookies,
+        }));
+        trackMixpanel('SwitchAccounts');
+        incrementMixpanel('SwitchAccounts', 1);
       }
-      trackMixpanel('SwitchAccounts');
-      incrementMixpanel('SwitchAccounts', 1);
     } catch (err) {
       yield call(throwError, err);
     }

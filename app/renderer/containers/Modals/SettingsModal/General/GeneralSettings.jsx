@@ -31,7 +31,6 @@ import type {
 import {
   SettingsSectionContent,
   ContentLabel,
-  InputNumber,
 } from './styled';
 
 
@@ -51,7 +50,7 @@ const GeneralSettings: StatelessFunctionalComponent<Props> = ({
   setShowLoggedOnStop,
 }: Props): Node => {
   const isIconHidden = !!settings.trayShowTimer;
-  const allowEmptyComment = !!settings.allowEmptyComment;
+  const allowEmptyComment = settings.allowEmptyComment;
   const showLoggedOnStop = !!settings.showLoggedOnStop;
   // const isTimerHidden = false;
   return (

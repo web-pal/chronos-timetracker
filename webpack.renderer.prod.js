@@ -4,7 +4,7 @@
 
 import path from 'path';
 import webpack from 'webpack';
-import SentryPlugin from 'webpack-sentry-plugin';
+// import SentryPlugin from 'webpack-sentry-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import merge from 'webpack-merge';
 import {
@@ -52,6 +52,7 @@ const plugins = [
   }),
 ];
 
+/*
 if (process.env.UPLOAD_SENTRY !== '0' && process.env.DISABLE_SENTRY !== '1') {
   plugins.push(
     new SentryPlugin({
@@ -62,6 +63,7 @@ if (process.env.UPLOAD_SENTRY !== '0' && process.env.DISABLE_SENTRY !== '1') {
     }),
   );
 }
+*/
 
 module.exports = env => merge(config(env), {
   mode: 'production',

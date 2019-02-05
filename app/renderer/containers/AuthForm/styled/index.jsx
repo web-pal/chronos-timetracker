@@ -212,6 +212,7 @@ export const AccountContainer = styled.div`
 
 export const WebViewContainer = styled.div`
   & > webview {
+    display: inline-flex;
     width: 380px;
     height: 470px;
     overflow: hidden;

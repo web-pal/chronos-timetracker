@@ -10,6 +10,7 @@ const config = {
   checkUpdates: true,
   infoLog: false,
   issueWindowDevTools: false,
+  loginWindowDevTools: false,
 };
 
 export default config;

@@ -78,11 +78,10 @@ const IssuesHeader: StatelessFunctionalComponent<Props> = ({
           label="Add"
           size="medium"
           onClick={() => {
-            ipcRenderer.send(
-              'show-issue-window',
-              {
+            dispatch(
+              issuesActions.showIssueFormWindow({
                 projectId: currentProjectId,
-              },
+              }),
             );
           }}
         />

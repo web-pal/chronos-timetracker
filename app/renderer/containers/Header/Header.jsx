@@ -121,7 +121,7 @@ const Header: StatelessFunctionalComponent<Props> = ({
             );
           })}
           <DropdownItem
-            onClick={() => dispatch(authActions.logoutRequest({ dontForget: true }))}
+            onClick={() => dispatch(authActions.logoutRequest({ forget: false }))}
           >
             <span style={{ display: 'inline-flex', alignItems: 'center' }}>
               <EditorAddIcon /> Add account
@@ -188,7 +188,9 @@ const Header: StatelessFunctionalComponent<Props> = ({
 
           <DropdownLogoutItem
             onClick={() => {
-              dispatch(authActions.logoutRequest());
+              dispatch(authActions.logoutRequest({
+                forget: true,
+              }));
             }}
           >
             Logout

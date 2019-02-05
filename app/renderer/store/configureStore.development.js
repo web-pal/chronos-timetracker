@@ -3,52 +3,41 @@ import {
   applyMiddleware,
   compose,
 } from 'redux';
-import {
-  createLogger,
-} from 'redux-logger';
-import createSagaMiddleware, { END } from 'redux-saga';
-
-import config from 'config';
+import createSagaMiddleware, {
+  END,
+} from 'redux-saga';
 
 import rendererEnhancer from './middleware';
 import rootReducer from '../reducers';
 
-const logger = createLogger({
-  level: 'info',
-  collapsed: true,
-});
+const sagaMiddleware = createSagaMiddleware();
+const middleware = [
+  rendererEnhancer,
+  sagaMiddleware,
+].filter(Boolean);
 
-/* eslint-disable no-underscore-dangle */
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-/* eslint-enable */
 
-
-export default function configureStore(initialState) {
-  const sagaMiddleware = createSagaMiddleware();
-  const middlewares = [
-    rendererEnhancer,
-    sagaMiddleware,
-    // config.reduxLogger && logger,
-  ].filter(Boolean);
-  const enhancer = composeEnhancers(
-    applyMiddleware(...middlewares),
-  );
+function configureStore(initialState) {
   const store = createStore(
     rootReducer,
     initialState,
-    enhancer,
+    composeEnhancers(
+      applyMiddleware(...middleware),
+    ),
   );
 
   if (module.hot) {
     // Enable Webpack hot module replacement for reducers
-    module.hot.accept('../reducers/', () => {
-      const nextRootReducer = require('../reducers'); //eslint-disable-line
-      store.replaceReducer(nextRootReducer);
+    module.hot.accept('../reducers', () => {
+      // eslint-disable-next-line
+      store.replaceReducer(require('../reducers').default);
     });
   }
-
 
   store.runSaga = sagaMiddleware.run;
   store.close = () => store.dispatch(END);
   return store;
 }
+
+export default configureStore;

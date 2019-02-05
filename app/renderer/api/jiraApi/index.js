@@ -125,6 +125,10 @@ function apiFactory({ makeRequest }) {
       return baseApiUrl;
     },
 
+    setRootUrl(url) {
+      rootApiUrl = url;
+    },
+
     setMockMethods(
       mockObject,
       merge = true,
@@ -140,25 +144,6 @@ function apiFactory({ makeRequest }) {
     clearMockMethods() {
       mockMethods = {};
       return mockMethods;
-    },
-
-    setAuthHeaders({
-      protocol,
-      hostname,
-      port,
-      pathname,
-      cookies,
-    }) {
-      const p = port ? `:${port}` : '';
-      rootApiUrl = `${protocol}://${hostname}${p}${pathname.replace(/\/$/, '')}`;
-      if (cookies && cookies.length) {
-        this.setHeaders({
-          ...headers,
-          cookie: cookies.map(
-            cookie => `${cookie.name}=${cookie.value};`,
-          ).join(' '),
-        });
-      }
     },
 
     ...(

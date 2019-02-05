@@ -1,9 +1,7 @@
 // @flow
 import {
-  delay,
-} from 'redux-saga';
-import {
   call,
+  delay,
   all,
   take,
   select,
@@ -53,7 +51,6 @@ import {
 import {
   getIssueComments,
 } from './comments';
-import createIpcChannel from './ipc';
 
 
 const JQL_RESTRICTED_CHARS_REGEX = /[+.,;?|*/%^$#@[\]]/;
@@ -750,7 +747,7 @@ export function* fetchEpics(): Generator<*, void, *> {
   }
 }
 
-function* onNewIssue(issueKey): Generator<*, *, *> {
+function* fetchNewIssue({ issueIdOrKey }): Generator<*, *, *> {
   const actions = createActionCreators('create', {
     resourceType: 'issues',
     request: 'createIssue',
@@ -761,7 +758,7 @@ function* onNewIssue(issueKey): Generator<*, *, *> {
       jiraApi.getIssueByIdOrKey,
       {
         params: {
-          issueIdOrKey: issueKey,
+          issueIdOrKey,
           fields: [
             ...ISSUE_FIELDS,
             ...(
@@ -792,20 +789,20 @@ function* onNewIssue(issueKey): Generator<*, *, *> {
   }
 }
 
-function* reFetchIssue(issueId): Generator<*, *, *> {
+function* fetchUpdateIssue({ issueIdOrKey }): Generator<*, *, *> {
   const actions = createActionCreators('update', {
     resourceType: 'issues',
-    resources: [issueId],
+    resources: [issueIdOrKey],
   });
   try {
     yield put(actions.pending());
-    const prevIssue = yield select(getResourceItemById('issues', issueId));
+    const prevIssue = yield select(getResourceItemById('issues', issueIdOrKey));
     const epicLinkFieldId: string | null = yield select(getFieldIdByName('Epic Link'));
     const issue = yield call(
       jiraApi.getIssueByIdOrKey,
       {
         params: {
-          issueIdOrKey: issueId,
+          issueIdOrKey,
           fields: [
             ...ISSUE_FIELDS,
             ...(
@@ -833,32 +830,12 @@ function* reFetchIssue(issueId): Generator<*, *, *> {
   }
 }
 
-function getNewIssueChannelListener(channel) {
-  return function* listenNewIssue() {
-    while (true) {
-      const { payload } = yield take(channel);
-      yield fork(onNewIssue, payload[0]);
-    }
-  };
+export function* takeFetchNewIssue(): Generator<*, *, *> {
+  yield takeEvery(actionTypes.FETCH_NEW_ISSUE_REQUEST, fetchNewIssue);
 }
 
-function getReFetchIssueChannelListener(channel) {
-  return function* listenReFetchIssue() {
-    while (true) {
-      const { payload } = yield take(channel);
-      yield fork(reFetchIssue, payload[0]);
-    }
-  };
-}
-
-export function* createIpcNewIssueListener(): Generator<*, *, *> {
-  const newIssueChannel = yield call(createIpcChannel, 'newIssue');
-  yield fork(getNewIssueChannelListener(newIssueChannel));
-}
-
-export function* createIpcReFetchIssueListener(): Generator<*, *, *> {
-  const reFetchIssueChannel = yield call(createIpcChannel, 'reFetchIssue');
-  yield fork(getReFetchIssueChannelListener(reFetchIssueChannel));
+export function* takeFetchUpdateIssue(): Generator<*, *, *> {
+  yield takeEvery(actionTypes.FETCH_UPDATE_ISSUE_REQUEST, fetchUpdateIssue);
 }
 
 export function* watchFetchIssuesRequest(): Generator<*, *, *> {

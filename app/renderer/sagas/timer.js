@@ -196,7 +196,6 @@ function* timerStep(screenshotsAllowed, secondsToMinutesGrid) {
 
 
 export function* runTimer(channel: any): Generator<*, *, *> {
-  remote.getGlobal('sharedObj').running = true;
   const screenshotsQuantity = yield select(getSettingsState('screenshotsQuantity'));
   const screenshotsPeriod = yield select(getSettingsState('screenshotsPeriod'));
 
@@ -218,8 +217,6 @@ export function* runTimer(channel: any): Generator<*, *, *> {
 let closeAfterStopTimer = false;
 
 function* stopTimer(channel, timerInstance) {
-  remote.getGlobal('sharedObj').uploading = true;
-  remote.getGlobal('sharedObj').running = false;
   try {
     yield call(ipcRenderer.send, 'stop-timer');
     channel.close();
@@ -255,12 +252,10 @@ function* stopTimer(channel, timerInstance) {
         /* keepedIdles, */
       });
     }
-    remote.getGlobal('sharedObj').uploading = false;
     if (closeAfterStopTimer) {
       ipcRenderer.send('ready-to-quit');
     }
   } catch (err) {
-    remote.getGlobal('sharedObj').uploading = false;
     yield call(throwError, err);
   }
 }

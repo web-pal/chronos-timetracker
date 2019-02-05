@@ -10,6 +10,7 @@ const config = {
   infoLog: false,
   reduxLogger: true,
   issueWindowDevTools: false,
+  loginWindowDevTools: false,
 };
 
 export default config;

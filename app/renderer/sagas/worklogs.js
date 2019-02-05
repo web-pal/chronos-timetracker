@@ -39,24 +39,11 @@ import {
 } from 'api';
 
 import {
-  getFromStorage,
-  setToStorage,
-} from './storage';
-import {
   throwError,
   notify,
   infoLog,
   scrollToIndexRequest,
 } from './ui';
-
-export function* saveWorklogAsOffline(worklog: any): Generator<*, *, *> {
-  let offlineWorklogs = yield call(getFromStorage, 'offlineWorklogs');
-  if (!Array.isArray(offlineWorklogs)) {
-    offlineWorklogs = [];
-  }
-  offlineWorklogs.push(worklog);
-  yield call(setToStorage, 'offlineWorklogs', offlineWorklogs);
-}
 
 
 export function* getAdditionalWorklogsForIssues(

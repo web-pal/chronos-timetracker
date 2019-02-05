@@ -15,7 +15,17 @@ const initialState: SettingsState = {
   screenshotsEnabled: false,
   modalTab: 'General',
   screenshotsEnabledUsers: [],
-  localDesktopSettings: {},
+  localDesktopSettings: {
+    autoCheckForUpdates: true,
+    nativeNotifications: true,
+    showScreenshotPreview: true,
+    screenshotPreviewTime: 15,
+    trayShowTimer: true,
+    updateChannel: 'stable',
+    allowEmptyComment: true,
+    updateAutomatically: false,
+    showLoggedOnStop: false,
+  },
 };
 
 export default function settings(
