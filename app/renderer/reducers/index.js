@@ -13,6 +13,10 @@ import {
   reducer as formReducer,
 } from 'redux-form';
 
+import {
+  windowsManager,
+} from 'shared/reducers';
+
 import profile from './profile';
 import ui from './ui';
 import settings from './settings';
@@ -30,6 +34,7 @@ const rootReducer = combineReducers({
   settings,
   timer,
   form: formReducer,
+  windowsManager,
   issuesComments: resourceReducer('issuesComments', {
     plugins: [
       clearAllPlugin,

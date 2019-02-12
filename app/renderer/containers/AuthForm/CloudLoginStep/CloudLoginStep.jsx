@@ -3,6 +3,7 @@ import React, {
 } from 'react';
 import Spinner from '@atlaskit/spinner';
 
+import config from 'config';
 import {
   getPreload,
 } from 'utils/preload';
@@ -33,6 +34,13 @@ class CloudLoginStep extends Component<Props, {}> {
       const host = transformValidHost(nextProps.team);
       this.loadUrl(host);
     }
+
+    if (this.props.isActiveStep && !nextProps.isActiveStep) {
+      const webview = document.querySelector('webview');
+      if (webview) {
+        webview.parentNode.removeChild(webview);
+      }
+    }
   }
 
   loadUrl(host) {
@@ -43,47 +51,39 @@ class CloudLoginStep extends Component<Props, {}> {
     let webview = document.querySelector('webview');
     if (!webview) {
       webview = document.createElement('webview');
-      webview.setAttribute('preload', getPreload('authPreload'));
+      webview.setAttribute('autosize', 'on');
+      webview.setAttribute(
+        'preload',
+        `file:${getPreload('authPreload')}`,
+      );
 
       webview.addEventListener('did-navigate', ({ url }) => {
-        console.log('did-navigate', url);
+        const { session } = webview.getWebContents();
+        session.cookies.get({
+          domain: '.atlassian.net',
+        }, (error, cookies) => {
+          if (
+            cookies
+            && cookies.length
+            && cookies.find(c => c.name === 'cloud.session.token')
+          ) {
+            this.props.onContinue({
+              cookies,
+              protocol,
+              hostname: host.hostname,
+              port: host.port,
+              pathname: host.pathname,
+            });
+          }
+        });
         webview.focus();
-        if (process.env.NODE_ENV === 'development') {
+        if (config.loginWindowDevTools) {
           webview.openDevTools();
         }
 
         if (url.includes('login.jsp')) {
           this.props.onError('Team not found');
           this.props.onBack();
-        }
-
-        // TODO Fix
-        if (url.replace(/\/$/, '') === baseUrl
-          || url.includes('/issues')
-          || url.includes('secure/Dashboard')
-          || url.includes('secure/MyJiraHome')
-          || url.includes('secure/WelcomeToJIRA')
-        ) {
-          const { session } = webview.getWebContents();
-          session.cookies.get({
-            domain: '.atlassian.net',
-          }, (error, cookies) => {
-            console.log('error', error);
-            console.log('cookies', cookies);
-            if (cookies && cookies.length) {
-              this.props.onContinue({
-                cookies,
-                protocol,
-                hostname: host.hostname,
-                port: host.port,
-                pathname: host.pathname,
-              });
-            } else {
-              this.props.onError('Can not authenticate user. Please try again');
-              this.props.onBack();
-            }
-            session.clearStorageData([]);
-          });
         }
       });
 

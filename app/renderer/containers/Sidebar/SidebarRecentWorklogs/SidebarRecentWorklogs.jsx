@@ -5,6 +5,10 @@ import {
   connect,
 } from 'react-redux';
 import {
+  compose,
+  lifecycle,
+} from 'recompose';
+import {
   getStatus as getResourceStatus,
 } from 'redux-resource';
 
@@ -12,9 +16,6 @@ import type {
   StatelessFunctionalComponent,
   Node,
 } from 'react';
-import type {
-  Connector,
-} from 'react-redux';
 import type {
   Id,
   Dispatch,
@@ -26,6 +27,7 @@ import {
 } from 'components';
 import {
   uiActions,
+  issuesActions,
 } from 'actions';
 import {
   getRecentIssues,
@@ -69,77 +71,99 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
   projectsFetching,
   dispatch,
 }: Props): Node => (
-  (issuesFetching || projectsFetching) ?
-    <RecentItemsPlaceholder /> :
-    <ListContainer>
-      {Object.keys(recentIssues).length === 0 &&
-        <NoWorklogs />
-      }
-      {Object.keys(recentIssues).map((day) => {
-        const worklogs = recentIssues[day];
-        return (
-          <ItemContainer key={day}>
-            <TimestampItem
-              date={moment(day)}
-              worklogs={worklogs}
-            />
-            <Flex column>
-              {worklogs.map(worklog =>
-                <WorklogItem
-                  key={`${day}_${worklog.id}`}
-                  issue={worklog.issue}
-                  active={selectedWorklogId === worklog.id}
-                  showShowButton={currentIssueViewTab !== 'Worklogs'}
-                  selectIssue={(issueId) => {
-                    dispatch(uiActions.setUiState('selectedIssueId', issueId));
-                    dispatch(uiActions.setUiState('selectedWorklogId', worklog.id));
-                    dispatch(uiActions.issueWorklogsScrollToIndexRequest(
-                      worklog.id,
-                      issueId,
-                    ));
-                  }}
-                  onClickShow={
-                    (issueId) => {
-                      dispatch(uiActions.setUiState(
-                        'issueViewTab',
-                        'Worklogs',
-                      ));
+  (
+    issuesFetching
+    || projectsFetching
+  ) ? (
+    <RecentItemsPlaceholder />
+    ) : (
+      <ListContainer>
+        {
+          Object.keys(recentIssues).length === 0 && (
+            <NoWorklogs />
+          )
+        }
+        {Object.keys(recentIssues).map((day) => {
+          const worklogs = recentIssues[day];
+          return (
+            <ItemContainer key={day}>
+              <TimestampItem
+                date={moment(day)}
+                worklogs={worklogs}
+              />
+              <Flex column>
+                {worklogs.map(worklog => (
+                  <WorklogItem
+                    key={`${day}_${worklog.id}`}
+                    issue={worklog.issue}
+                    active={selectedWorklogId === worklog.id}
+                    showShowButton={currentIssueViewTab !== 'Worklogs'}
+                    selectIssue={(issueId) => {
+                      dispatch(uiActions.setUiState('selectedIssueId', issueId));
+                      dispatch(uiActions.setUiState('selectedWorklogId', worklog.id));
                       dispatch(uiActions.issueWorklogsScrollToIndexRequest(
                         worklog.id,
                         issueId,
                       ));
+                    }}
+                    onClickShow={
+                      (issueId) => {
+                        dispatch(uiActions.setUiState(
+                          'issueViewTab',
+                          'Worklogs',
+                        ));
+                        dispatch(uiActions.issueWorklogsScrollToIndexRequest(
+                          worklog.id,
+                          issueId,
+                        ));
+                      }
                     }
-                  }
-                  worklog={worklog}
-                />)}
-            </Flex>
-          </ItemContainer>
-        );
-      })}
-    </ListContainer>
+                    worklog={worklog}
+                  />
+                ))}
+              </Flex>
+            </ItemContainer>
+          );
+        })}
+      </ListContainer>
+    )
 );
 
 function mapStateToProps(state) {
   return {
     recentIssues: getRecentIssues(state),
+    sidebarType: getUiState('sidebarType')(state),
     selectedWorklogId: getUiState('selectedWorklogId')(state),
+    issuesFetched: !getResourceStatus(
+      state,
+      'issues.requests.recentIssues.status',
+    ).idle,
     issuesFetching: getResourceStatus(
       state,
       'issues.requests.recentIssues.status',
-      true,
     ).pending,
     projectsFetching: getResourceStatus(
       state,
       'projects.requests.allProjects.status',
-      true,
     ).pending,
     currentIssueViewTab: getUiState('issueViewTab')(state),
   };
 }
 
-const connector: Connector<{}, Props> = connect(
-  mapStateToProps,
-  dispatch => ({ dispatch }),
-);
-
-export default connector(SidebarRecentItems);
+export default compose(
+  connect(
+    mapStateToProps,
+    dispatch => ({ dispatch }),
+  ),
+  lifecycle({
+    componentDidUpdate() {
+      if (
+        this.props.sidebarType === 'recent'
+        && !this.props.issuesFetched
+        && !this.props.issuesFetching
+      ) {
+        this.props.dispatch(issuesActions.fetchRecentIssuesRequest());
+      }
+    },
+  }),
+)(SidebarRecentItems);

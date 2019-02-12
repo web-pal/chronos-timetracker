@@ -1,47 +1,44 @@
 import {
-  remote,
-  ipcRenderer,
+  ipcMain,
+  BrowserWindow,
 } from 'electron';
-
-import {
-  actionTypes,
-} from 'shared/actions';
 
 const isNumber = n => typeof n === 'number';
 
-const rendererEnhancer = (store) => {
+export default function main(store) {
   const channel = 'electron-actions';
-  const sourceId = remote.getCurrentWindow()?.id;
-  const handler = (event, action) => (store.dispatch(action));
 
-  ipcRenderer.on(channel, handler);
-
-  window.addEventListener('beforeunload', () => {
-    store.dispatch({ type: actionTypes.WINDOW_BEFORE_UNLOAD });
-    ipcRenderer.removeListener(channel, handler);
-  });
+  // Unsubscribe?
+  ipcMain.on(
+    channel,
+    (event, action) => (
+      store.dispatch(action)
+    ),
+  );
 
   return next => (action) => {
     if (
       !action.sourceId
       && action.scope
     ) {
-      const signedAction = {
-        ...action,
-        sourceId,
-      };
       const scopes = (
         Array.isArray(action.scope) ? action.scope : [action.scope]
       );
+      // Reserved system scopes
       const toMain = [
         'all',
         'main',
+      ];
+      const toSelf = [
+        'all',
+        'allRenderer',
       ];
       const toAllRenderer = [
         'all',
         'allRenderer',
       ];
       const allReserverd = [
+        ...toSelf,
         ...toAllRenderer,
         ...toMain,
       ];
@@ -70,36 +67,31 @@ const rendererEnhancer = (store) => {
         ],
       );
 
-
-      if (scopes.some(s => toMain.includes(s))) {
-        /* Main process */
-        ipcRenderer.send(
-          channel,
-          signedAction,
-        );
-      }
-
-      remote.BrowserWindow
+      BrowserWindow
         .getAllWindows()
         .filter(
           win => (
-            (
-              scopes.some(s => toAllRenderer.includes(s))
-              || targetWinIds.includes(win.id)
-            )
+            scopes.includes('all')
+            || targetWinIds.includes(win.id)
           ),
         )
         .forEach(
           win => (
             win.webContents.send(
               channel,
-              signedAction,
+              {
+                ...action,
+                sourceId: 'main',
+              },
             )
           ),
         );
+
+      if (scopes.some(s => toMain.includes(s))) {
+        next(action);
+      }
     } else {
       next(action);
     }
   };
-};
-export default rendererEnhancer;
+}

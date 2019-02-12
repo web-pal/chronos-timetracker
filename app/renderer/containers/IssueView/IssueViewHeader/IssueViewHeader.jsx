@@ -228,11 +228,10 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
           <Button
             isDisabled={!allowEdit}
             onClick={() => {
-              ipcRenderer.send(
-                'show-issue-window',
-                {
+              dispatch(
+                issuesActions.showIssueFormWindow({
                   issueId: selectedIssue.id,
-                },
+                }),
               );
             }}
           >

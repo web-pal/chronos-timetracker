@@ -35,7 +35,11 @@ export const getCurrentProjectId = createSelector(
     boardsMap: BoardsResources,
     sprintsMap: SprintsResources,
   ) => {
-    let projectId = issuesSourceId;
+    let projectId = (
+      issuesSourceType === 'project'
+        ? issuesSourceId
+        : null
+    );
     if (issuesSourceId && issuesSourceType === 'kanban') {
       const board = boardsMap[issuesSourceId];
       if (board) {

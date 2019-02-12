@@ -62,9 +62,9 @@ const CircularProgressBar: StatelessFunctionalComponent<Props> = ({
           strokeWidth={`${strokeWidth}px`}
           transform={`rotate(-90 ${sqSize / 2} ${sqSize / 2})`}
           style={{
-              strokeDasharray: dashArray,
-              strokeDashoffset: dashOffset,
-            }}
+            strokeDasharray: dashArray,
+            strokeDashoffset: dashOffset,
+          }}
         />
         <CircleStop
           x="20"

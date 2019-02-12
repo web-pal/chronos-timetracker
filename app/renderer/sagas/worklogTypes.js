@@ -15,6 +15,6 @@ export function* getWorklogTypes() {
     yield call(infoLog, 'got worklog types', payload);
     // yield put(worklogTypesActions.fill);
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
 }

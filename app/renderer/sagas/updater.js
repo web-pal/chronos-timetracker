@@ -2,10 +2,8 @@
 /* eslint-disable no-alert */
 import path from 'path';
 import {
-  delay,
-} from 'redux-saga';
-import {
   call,
+  delay,
   fork,
   take,
   put,
@@ -41,7 +39,7 @@ import {
 } from './storage';
 
 const { autoUpdater } = remote.require('electron-updater');
-const log = remote.require('electron-log');
+const log = console.log;
 
 let checkingForUpdatesChannel;
 let updateAvailableChannel;

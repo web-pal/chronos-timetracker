@@ -17,7 +17,10 @@ import {
   getCurrentProjectId,
 } from 'selectors';
 
-import * as Api from 'api';
+import {
+  jiraApi,
+} from 'api';
+
 
 import {
   throwError,
@@ -33,7 +36,7 @@ export function* fetchProjects(): Generator<*, *, *> {
       list: 'allProjects',
     });
     yield put(actions.pending());
-    const projects = yield call(Api.fetchProjects);
+    const projects = yield call(jiraApi.getAllProjects);
     yield put(actions.succeeded({
       resources: projects,
     }));
@@ -65,13 +68,20 @@ export function* fetchProjectStatuses(): Generator<*, *, *> {
       yield put(typesActions.pending());
       yield put(statusesActions.pending());
 
-      const metadata = yield call(Api.getIssuesMetadata, projectId);
+      const metadata = yield call(
+        jiraApi.getCreateIssueMetadata,
+        {
+          params: {
+            projectIds: projectId,
+          },
+        },
+      );
       // Some users have strange metada response, it needs to detect issue
       if (
-        !metadata ||
-        !metadata.projects ||
-        !metadata.projects[0] ||
-        !metadata.projects[0].issuetypes
+        !metadata
+        || !metadata.projects
+        || !metadata.projects[0]
+        || !metadata.projects[0].issuetypes
       ) {
         Raven.captureMessage('Issue types empty!', {
           level: 'error',
@@ -88,15 +98,20 @@ export function* fetchProjectStatuses(): Generator<*, *, *> {
       }
 
       const statusesResponse = yield call(
-        Api.fetchProjectStatuses,
-        projectId,
+        jiraApi.getProjectStatuses,
+        {
+          params: {
+            projectIdOrKey: projectId,
+          },
+        },
       );
       const statuses = [].concat(...statusesResponse.map(s => s.statuses));
-      const uniqueStatuses =
+      const uniqueStatuses = (
         statuses.reduce((acc, s) => {
           acc[s.id] = s;
           return acc;
-        }, {});
+        }, {})
+      );
 
       yield put(statusesActions.succeeded({
         resources: Object.keys(uniqueStatuses).map(id => uniqueStatuses[id]),

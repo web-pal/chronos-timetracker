@@ -80,6 +80,7 @@ const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
         dispatch(uiActions.setUiState('issuesSprintId', null));
         dispatch(uiActions.setUiState('issuesSourceId', item.value));
         dispatch(uiActions.setUiState('issuesSourceType', type));
+        dispatch(uiActions.setUiState('sidebarFiltersIsOpen', false));
         dispatch(uiActions.setIssuesFilters('assignee', []));
         dispatch(uiActions.setIssuesFilters('status', []));
         dispatch(uiActions.setIssuesFilters('type', []));
@@ -113,6 +114,7 @@ const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
         placeholder="Select sprint"
         onSelected={({ item }) => {
           dispatch(uiActions.setUiState('issuesSprintId', item.value));
+          dispatch(uiActions.setUiState('sidebarFiltersIsOpen', false));
           dispatch(issuesActions.refetchIssuesRequest());
         }}
         isLoading={sprintsFetching}

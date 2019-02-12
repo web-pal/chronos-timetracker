@@ -78,28 +78,32 @@ const IssuesHeader: StatelessFunctionalComponent<Props> = ({
           label="Add"
           size="medium"
           onClick={() => {
-            ipcRenderer.send(
-              'show-issue-window',
-              {
+            dispatch(
+              issuesActions.showIssueFormWindow({
                 projectId: currentProjectId,
-              },
+              }),
             );
           }}
         />
-        <FilterIcon
-          label="Filter"
-          size="medium"
-          primaryColor={sidebarFiltersIsOpen ? '#0052CC' : '#333333'}
-          onClick={() => {
-            if (!filterStatusesIsFetched) {
-              dispatch(projectsActions.fetchProjectStatusesRequest());
-            }
-            dispatch(uiActions.setUiState(
-              'sidebarFiltersIsOpen',
-              !sidebarFiltersIsOpen,
-            ));
-          }}
-        />
+        {
+          currentProjectId
+          && (
+          <FilterIcon
+            label="Filter"
+            size="medium"
+            primaryColor={sidebarFiltersIsOpen ? '#0052CC' : '#333333'}
+            onClick={() => {
+              if (!filterStatusesIsFetched) {
+                dispatch(projectsActions.fetchProjectStatusesRequest());
+              }
+              dispatch(uiActions.setUiState(
+                'sidebarFiltersIsOpen',
+                !sidebarFiltersIsOpen,
+              ));
+            }}
+          />
+          )
+        }
       </span>
       {(filtersApplied !== 0)
         && <FiltersAppliedBadge />

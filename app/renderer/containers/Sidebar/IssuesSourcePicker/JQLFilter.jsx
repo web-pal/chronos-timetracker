@@ -90,7 +90,7 @@ const JQLFilter = ({
                 appearance="link"
                 iconAfter={newJQLFilterAdding ? <Spinner /> : null}
                 onClick={() => dispatch(
-                  filtersActions.createFilterRequest({
+                  filtersActions.saveFilterRequest({
                     name: newJQLFilterName,
                     jql: newJQLFilterValue,
                   }),
@@ -113,9 +113,9 @@ const JQLFilter = ({
       <Button
         appearance="link"
         onClick={() => dispatch(
-          filtersActions.updateFilterRequest({
-            oldFilter: selectedFilter.meta.filter,
-            newJQLString: newJQLFilterValue,
+          filtersActions.saveFilterRequest({
+            filterId: selectedFilter.meta.filter.id,
+            jql: newJQLFilterValue,
           }),
         )}
         isDisabled={!newJQLFilterValue}
