@@ -93,3 +93,17 @@ export const closeIssueFormWindow = (): IssuesAction => ({
   type: actionTypes.CLOSE_ISSUE_FORM_WINDOW,
   scope: 'allRenderer',
 });
+
+export const showAttachmentWindow = ({ issueId }): IssuesAction => ({
+  type: actionTypes.SHOW_ATTACHMENT_WINDOW,
+  issueId,
+});
+
+export const setAttachments = ({
+  attachments,
+  scope,
+}): IssuesAction => ({
+  type: actionTypes.SET_ATTACHMENTS,
+  attachments,
+  scope,
+});

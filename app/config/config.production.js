@@ -10,6 +10,7 @@ const config = {
   checkUpdates: true,
   infoLog: false,
   issueWindowDevTools: false,
+  popupWindowDevTools: false,
   loginWindowDevTools: false,
 };
 

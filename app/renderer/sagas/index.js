@@ -20,6 +20,7 @@ import {
   initializeApp,
   takeInitialConfigureApp,
   createDispatchActionListener,
+  handleAttachmentWindow,
 } from './initialize';
 
 
@@ -28,6 +29,7 @@ export default function* rootSaga(): Generator<*, void, *> {
     // INITIALIZATION
     fork(takeInitialConfigureApp),
     fork(initializeApp),
+    fork(handleAttachmentWindow),
     fork(createDispatchActionListener),
 
     // auth
@@ -55,8 +57,7 @@ export default function* rootSaga(): Generator<*, void, *> {
     fork(sprintsSagas.watchFetchSprintsRequest),
 
     // timer
-    fork(timerSagas.watchStartTimer),
-    fork(timerSagas.createIpcListeners),
+    fork(timerSagas.takeStartTimer),
 
     // settings
     fork(settingsSagas.watchLocalDesktopSettingsChange),
@@ -74,5 +75,6 @@ export default function* rootSaga(): Generator<*, void, *> {
 
     // ui
     fork(uiSagas.watchScrollToIndexRequest),
+    fork(uiSagas.takeUiStateChange),
   ]);
 }

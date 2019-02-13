@@ -57,7 +57,7 @@ export default function timer(
         ...state,
         screenshotPeriods: action.payload,
       };
-    case actionTypes.ADD_IDLE_TIME:
+    case actionTypes.KEEP_IDLE_TIME:
       return {
         ...state,
         idles: [

@@ -14,7 +14,6 @@ import {
 import rendererEnhancer from './middleware';
 
 const rootReducer = combineReducers({
-  // timers,
   windowsManager,
 });
 

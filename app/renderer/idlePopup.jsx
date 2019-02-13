@@ -4,7 +4,7 @@ import {
   render,
 } from 'react-dom';
 
-import IdlePopup from './containers/Popups/IdlePopup/IdlePopup';
+import IdlePopup from './containers/Popups/IdlePopup';
 
 render(
   <IdlePopup />,

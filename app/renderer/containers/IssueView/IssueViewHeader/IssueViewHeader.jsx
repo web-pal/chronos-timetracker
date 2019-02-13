@@ -6,9 +6,6 @@ import {
 import {
   getStatus as getResourceStatus,
 } from 'redux-resource';
-import {
-  ipcRenderer,
-} from 'electron';
 
 import type {
   StatelessFunctionalComponent,
@@ -248,7 +245,11 @@ function mapStateToProps(state) {
   let allowEdit = false;
   if (selectedIssue) {
     const issueMeta = getResourceMeta('issues', selectedIssue.id)(state);
-    allowEdit = issueMeta.permissions ? issueMeta.permissions.EDIT_ISSUE.havePermission : false;
+    allowEdit = (
+      issueMeta.permissions
+        ? issueMeta.permissions.EDIT_ISSUE.havePermission
+        : false
+    );
   }
   return {
     baseUrl: getBaseUrl(state),

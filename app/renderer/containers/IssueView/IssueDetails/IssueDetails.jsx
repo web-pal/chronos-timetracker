@@ -3,6 +3,9 @@ import React from 'react';
 import {
   connect,
 } from 'react-redux';
+import {
+  shell,
+} from 'electron';
 
 import type {
   StatelessFunctionalComponent,
@@ -19,6 +22,9 @@ import {
   getSelectedIssue,
   getSelectedIssueEpic,
 } from 'selectors';
+import {
+  issuesActions,
+} from 'actions';
 import {
   Flex,
 } from 'components';
@@ -43,6 +49,7 @@ import {
 
 type Props = {
   issue: Issue,
+  dispatch: any,
   epic: Issue & {
     color: string,
     name: string,
@@ -52,6 +59,7 @@ type Props = {
 const IssueDetails: StatelessFunctionalComponent<Props> = ({
   issue,
   epic,
+  dispatch,
 }: Props): Node => {
   const {
     versions,
@@ -261,6 +269,21 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
         <DataRenderer
           html={issue.renderedFields ? issue.renderedFields.description : null}
           source={issue.fields.description || '*No description*'}
+          onAttachmentClick={(e) => {
+            const tag = e.target ? e.target.tagName.toLowerCase() : null;
+            if (tag && (tag === 'img' || tag === 'a')) {
+              e.preventDefault();
+              if (tag === 'img') {
+                dispatch(issuesActions.showAttachmentWindow({ issueId: issue.id }));
+              } else {
+                // external links only
+                const url = e.target.getAttribute(tag === 'a' ? 'href' : 'src');
+                if (url && url.includes('http')) {
+                  shell.openExternal(url);
+                }
+              }
+            }
+          }}
         />
       </DescriptionSectionHeader>
     </IssueDetailsContainer>

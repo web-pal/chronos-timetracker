@@ -6,6 +6,7 @@ import {
   race,
   fork,
   select,
+  delay,
 } from 'redux-saga/effects';
 import {
   remote,
@@ -23,6 +24,7 @@ import {
 } from 'utils/stat';
 import {
   getBaseUrl,
+  getResourceItemById,
 } from 'selectors';
 
 import {
@@ -31,6 +33,7 @@ import {
   profileActions,
   settingsActions,
   resourcesActions,
+  issuesActions,
 } from 'actions';
 import config from 'config';
 import {
@@ -322,6 +325,43 @@ export function* initializeApp(): Generator<*, *, *> {
   }
 }
 
+export function* handleAttachmentWindow(): Generator<*, *, *> {
+  let win = null;
+  while (true) {
+    const { issueId } = yield take(actionTypes.SHOW_ATTACHMENT_WINDOW);
+    const issue = yield select(getResourceItemById('issues', issueId));
+    if (
+      !win
+      || win.isDestroyed()
+    ) {
+      win = yield call(
+        windowsManagerSagas.forkNewWindow,
+        {
+          url: (
+            process.env.NODE_ENV === 'development'
+              ? 'http://localhost:3000/attachmentWindow.html'
+              : `file://${__dirname}/attachmentWindow.html`
+          ),
+          showOnReady: true,
+          BrowserWindow: remote.BrowserWindow,
+          options: {
+            show: true,
+            title: 'Attachments',
+            webPreferences: {
+              devTools: true,
+            },
+          },
+        },
+      );
+      yield delay(500);
+    }
+    yield put(issuesActions.setAttachments({
+      attachments: issue?.fields?.attachment || [],
+      scope: [win.id],
+    }));
+    win.focus();
+  }
+}
 
 function getDispatchActionListener(channel) {
   return function* listenReFetchIssue() {

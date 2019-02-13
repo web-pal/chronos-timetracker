@@ -24,6 +24,10 @@ import {
   getIssueWorklogs,
 } from 'selectors';
 
+import {
+  issueSelectFlow,
+} from './issues';
+
 
 const LOG_LEVELS = {
   info: 'info',
@@ -142,4 +146,23 @@ export function* watchScrollToIndexRequest(): Generator<*, *, *> {
     actionTypes.ISSUE_WORKLOGS_SCROLL_TO_INDEX_REQUEST,
     scrollToIndexRequest,
   );
+}
+
+function* onUiChange({
+  payload: {
+    key,
+    value,
+  },
+}): Generator<*, *, *> {
+  try {
+    if (key === 'selectedIssueId') {
+      yield fork(issueSelectFlow, value);
+    }
+  } catch (err) {
+    yield call(throwError, err);
+  }
+}
+
+export function* takeUiStateChange(): Generator<*, *, *> {
+  yield takeEvery(actionTypes.SET_UI_STATE, onUiChange);
 }

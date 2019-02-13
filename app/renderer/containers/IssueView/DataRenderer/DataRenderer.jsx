@@ -9,29 +9,19 @@ import type {
   Node,
 } from 'react';
 
-function handleHTMLClick(e) {
-  const tag = e.target ? e.target.tagName.toLowerCase() : null;
-  if (tag && (tag === 'img' || tag === 'a')) {
-    e.preventDefault();
-    // external links only
-    const url = e.target.getAttribute(tag === 'a' ? 'href' : 'src');
-    if (url && url.includes('http')) {
-      shell.openExternal(url);
-    }
-  }
-}
-
 type Props = {
   html: string,
   source: string,
+  onAttachmentClick: any,
 };
 
 const DataRenderer: StatelessFunctionalComponent<Props> = ({
   html,
   source,
+  onAttachmentClick,
 }: Props): Node => (html ? (
   <div
-    onClick={handleHTMLClick}
+    onClick={onAttachmentClick}
     dangerouslySetInnerHTML={{
       __html: html,
     }}

@@ -77,6 +77,7 @@ const ISSUE_FIELDS = [
   'fixVersions',
   'versions',
   'components',
+  'attachment',
 ];
 
 /* eslint-disable */
@@ -309,6 +310,7 @@ export function* fetchIssues({
                   ) : []
                 ),
               ],
+              expand: ['renderedFields'],
             },
           },
         )
@@ -418,6 +420,7 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
                   ) : []
                 ),
               ],
+              expand: ['renderedFields'],
             },
           },
         )

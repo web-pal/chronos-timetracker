@@ -33,10 +33,10 @@ const plugins = [
     chunks: ['idleTimePopup'],
   }),
   new HtmlWebpackPlugin({
-    template: 'app/renderer/issueForm.tpl.html',
+    template: 'app/renderer/attachmentWindow.tpl.html',
     inject: 'body',
-    filename: 'issueForm.html',
-    chunks: ['issueForm'],
+    filename: 'attachmentWindow.html',
+    chunks: ['attachmentWindow'],
   }),
   new BundleAnalyzerPlugin({
     analyzerMode: 'static',

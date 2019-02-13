@@ -12,17 +12,14 @@ module.exports = env => ({
     idleTimePopup: [
       path.join(__dirname, 'app/renderer/idlePopup.jsx'),
     ],
-    issueForm: [
-      path.join(__dirname, 'app/renderer/issueForm.jsx'),
+    attachmentWindow: [
+      path.join(__dirname, 'app/renderer/attachmentWindow.jsx'),
     ],
     authPreload: [
       path.join(__dirname, 'app/renderer/authPreload.js'),
     ],
     issueFormPreload: [
       path.join(__dirname, 'app/renderer/issueFormPreload.js'),
-    ],
-    idlePopupPreload: [
-      path.join(__dirname, 'app/renderer/idlePopupPreload.js'),
     ],
   },
   resolve: {
