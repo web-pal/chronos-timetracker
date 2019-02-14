@@ -53,6 +53,7 @@ const initialState: UiState = {
 
   issueViewWorklogsScrollToIndex: 0,
   selectedIssueId: null,
+  trackingIssueId: null,
   selectedWorklogId: null,
   deleteWorklogId: null,
   editWorklogId: null,

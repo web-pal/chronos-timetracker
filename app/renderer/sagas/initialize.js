@@ -7,6 +7,8 @@ import {
   fork,
   select,
   delay,
+  cancel,
+  cancelled,
 } from 'redux-saga/effects';
 import {
   remote,
@@ -110,56 +112,66 @@ function* initializeMixpanel(): Generator<*, *, *> {
 }
 
 function* issueWindow(url) {
-  const win = yield call(
-    windowsManagerSagas.forkNewWindow,
-    {
-      url,
-      showOnReady: false,
-      BrowserWindow: remote.BrowserWindow,
-      options: {
-        backgroundColor: 'white',
-        show: false,
-        modal: true,
-        parent: remote.getCurrentWindow(),
-        useContentSize: true,
-        center: true,
-        title: 'Chronos',
-        webPreferences: {
-          nodeIntegration: false,
-          preload: getPreload('issueFormPreload'),
-          devTools: (
-            config.issueWindowDevTools
-            || process.env.DEBUG_PROD === 'true'
-          ),
+  let win = null;
+  try {
+    win = yield call(
+      windowsManagerSagas.forkNewWindow,
+      {
+        url,
+        showOnReady: false,
+        BrowserWindow: remote.BrowserWindow,
+        options: {
+          backgroundColor: 'white',
+          show: false,
+          modal: true,
+          parent: remote.getCurrentWindow(),
+          useContentSize: true,
+          center: true,
+          title: 'Issue window',
+          webPreferences: {
+            nodeIntegration: false,
+            preload: getPreload('issueFormPreload'),
+            devTools: (
+              config.issueWindowDevTools
+              || process.env.DEBUG_PROD === 'true'
+            ),
+          },
         },
       },
-    },
-  );
-  while (true) {
-    const {
-      showForm,
-      currentWindowClose,
-      hideWin,
-    } = yield race({
-      showForm: take(actionTypes.SHOW_ISSUE_FORM_WINDOW),
-      currentWindowClose: take(sharedActionTypes.WINDOW_BEFORE_UNLOAD),
-      hideWin: take(actionTypes.CLOSE_ISSUE_FORM_WINDOW),
-    });
-    if (showForm) {
-      win.show();
+    );
+    while (true) {
+      const {
+        showForm,
+        currentWindowClose,
+        hideWin,
+      } = yield race({
+        showForm: take(actionTypes.SHOW_ISSUE_FORM_WINDOW),
+        currentWindowClose: take(sharedActionTypes.WINDOW_BEFORE_UNLOAD),
+        hideWin: take(actionTypes.CLOSE_ISSUE_FORM_WINDOW),
+      });
+      if (showForm) {
+        win.show();
+      }
+      if (hideWin) {
+        win.hide();
+      }
+      if (currentWindowClose) {
+        yield call(savePersistStorage);
+        win.destroy();
+      }
     }
-    if (hideWin) {
-      win.hide();
-    }
-    if (currentWindowClose) {
-      yield call(savePersistStorage);
+  } finally {
+    if (
+      yield cancelled()
+      && win
+    ) {
       win.destroy();
     }
   }
 }
 
 export function* takeInitialConfigureApp() {
-  let issueWindowForkId = null;
+  let issueWindowTask = null;
   while (true) {
     const {
       protocol,
@@ -188,12 +200,13 @@ export function* takeInitialConfigureApp() {
 
       const baseUrl = yield select(getBaseUrl);
 
-      if (!issueWindowForkId) {
-        issueWindowForkId = yield fork(
-          issueWindow,
-          `${baseUrl}/issues`,
-        );
+      if (issueWindowTask) {
+        yield cancel(issueWindowTask);
       }
+      issueWindowTask = yield fork(
+        issueWindow,
+        `${baseUrl}/issues`,
+      );
 
       const userData = yield call(jiraApi.getMyself);
 

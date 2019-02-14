@@ -16,6 +16,16 @@ export const WINDOW_BEFORE_UNLOAD = 'windowsManager/BEFORE_UNLOAD';
 // ui
 export const SET_UI_STATE = 'ui/SET_UI_STATE';
 
-export const CLEAR_ALL_REDUCERS = 'CLEAR_ALL_REDUCERS';
+// tray
+export const TRAY_START_TIMER = 'tray/START_TIMER';
+export const TRAY_STOP_TIMER = 'tray/STOP_TIMER';
+export const TRAY_SELECT_ISSUE = 'tray/SELECT_ISSUE';
 
+// timer
+export const START_TIMER = 'timer/START';
+export const STOP_TIMER_REQUEST = 'timer/STOP_REQUEST';
+
+export const SET_MODAL_STATE = 'ui/SET_MODAL_STATE';
+
+export const CLEAR_ALL_REDUCERS = 'CLEAR_ALL_REDUCERS';
 export const CLEAR_ELECTRON_CACHE = 'settings/CLEAR_ELECTRON_CACHE';

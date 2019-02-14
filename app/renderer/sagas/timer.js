@@ -29,6 +29,9 @@ import {
   timerActions,
 } from 'actions';
 import {
+  trayActions,
+} from 'shared/actions';
+import {
   getTimerState,
   getSettingsState,
   getUiState,
@@ -125,12 +128,23 @@ function* idleWindow() {
   }
 }
 
+function* setTimeToTray() {
+  const time = yield select(getTimerState('time'));
+  const localDesktopSettings = yield select(getSettingsState('localDesktopSettings'));
+  const { trayShowTimer } = localDesktopSettings;
+  if (trayShowTimer) {
+    const humanFormat = new Date(time * 1000).toISOString().substr(11, 5);
+    remote.getGlobal('tray').setTitle(humanFormat);
+  }
+}
+
 function* handleTick(timerChannel) {
   let idleWindowTask = null;
   while (true) {
     yield take(timerChannel);
 
     yield put(timerActions.tick());
+    yield call(setTimeToTray);
     const showIdleWindow = yield call(checkIdle);
     if (
       showIdleWindow
@@ -147,6 +161,7 @@ function* handleTick(timerChannel) {
 function* timerFlow() {
   const selectedIssueId = yield select(getUiState('selectedIssueId'));
   yield put(uiActions.setUiState('trackingIssueId', selectedIssueId));
+  yield put(trayActions.trayStartTimer());
 
   const timerChannel = yield call(createTimerChannel);
   const tickTask = yield fork(handleTick, timerChannel);
@@ -164,6 +179,7 @@ function* timerFlow() {
       if (type === actionTypes.STOP_TIMER) {
         yield cancel(tickTask);
         yield put(timerActions.resetTimer());
+        yield put(trayActions.trayStopTimer());
       }
     } else {
       const { allowEmptyComment } = yield select(getSettingsState('localDesktopSettings'));
@@ -186,6 +202,7 @@ function* timerFlow() {
             timeSpentInSeconds,
           },
         );
+        yield put(trayActions.trayStopTimer());
         yield cancel();
       }
     }

@@ -19,11 +19,7 @@ import {
   actionTypes,
 } from 'shared/actions';
 
-import configureStore from './store';
-import rootSaga from './sagas';
-
-const store = configureStore();
-store.runSaga(rootSaga);
+import store from './store';
 
 if (
   process.env.NODE_ENV === 'development'
@@ -67,6 +63,7 @@ app.on('ready', async () => {
 app.on('activate', () => {
   BrowserWindow
     .getAllWindows()
+    .filter(win => win.id === 1)
     .forEach(win => win.show());
 });
 

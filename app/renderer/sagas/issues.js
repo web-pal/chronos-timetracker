@@ -39,6 +39,9 @@ import {
   resourcesActions,
   actionTypes,
 } from 'actions';
+import {
+  trayActions,
+} from 'shared/actions';
 
 import {
   throwError,
@@ -611,6 +614,8 @@ export function* getIssuePermissions(issueId: string | number): Generator<*, voi
 }
 
 export function* issueSelectFlow(issueId: string | number): Generator<*, *, *> {
+  const issue = yield select(getResourceItemById('issues', issueId));
+  yield put(trayActions.traySelectIssue(issue.key));
   yield fork(getIssueTransitions, issueId);
   yield fork(getIssueComments, issueId);
   yield fork(getIssuePermissions, issueId);

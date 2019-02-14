@@ -37,7 +37,7 @@ import {
   version,
 } from '../../../../../package.json';
 
-const { autoUpdater } = remote.require('electron-updater');
+// const { autoUpdater } = remote.require('electron-updater');
 
 
 type Props = {

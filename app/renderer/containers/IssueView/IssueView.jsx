@@ -46,6 +46,7 @@ import IssueViewTabs from './IssueViewTabs';
 
 type Props = {
   selectedIssueId: Id | null,
+  trackingIssueId: Id | null,
   issueForDebug: any,
   currentTab: string,
   timerRunning: boolean,
@@ -61,6 +62,7 @@ const tabs = [
 
 const IssueView: StatelessFunctionalComponent<Props> = ({
   selectedIssueId,
+  trackingIssueId,
   issueForDebug,
   currentTab,
   timerRunning,
@@ -75,7 +77,7 @@ const IssueView: StatelessFunctionalComponent<Props> = ({
       }}
     >
       <IssueViewContainer column>
-        {timerRunning
+        {(timerRunning && trackingIssueId)
           && <TrackingBar />
         }
         <IssueContainer>
@@ -114,6 +116,7 @@ function mapStateToProps(state) {
     selectedIssueId: getUiState('selectedIssueId')(state),
     issueForDebug: getSelectedIssue(state),
     currentTab: getUiState('issueViewTab')(state),
+    trackingIssueId: getUiState('trackingIssueId')(state),
     timerRunning: getTimerState('running')(state),
   };
 }
