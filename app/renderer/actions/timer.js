@@ -22,8 +22,9 @@ export const continueTimer = (): TimerAction => ({
   type: types.CONTINUE_TIMER,
 });
 
-export const stopTimerRequest = (): TimerAction => ({
+export const stopTimerRequest = (closeRequest = false): TimerAction => ({
   type: types.STOP_TIMER_REQUEST,
+  closeRequest,
 });
 
 export const setIdleState = (

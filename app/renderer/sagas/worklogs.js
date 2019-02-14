@@ -112,6 +112,10 @@ export function* saveWorklog({
 }: {
   payload: any,
 }): Generator<*, *, *> {
+  yield put(uiActions.setUiState(
+    'saveWorklogInProcess',
+    true,
+  ));
   const worklogsActions = createActionCreators(
     worklogId ? 'update' : 'create',
     {
@@ -153,6 +157,10 @@ export function* saveWorklog({
         infoLog,
         'uploadWorklog cancelled because timeSpentSeconds < 60',
       );
+      yield put(uiActions.setUiState(
+        'saveWorklogInProcess',
+        false,
+      ));
       yield cancel();
     }
 
@@ -237,11 +245,18 @@ export function* saveWorklog({
         timeSpentInSeconds,
       },
     );
+    yield put(uiActions.setUiState(
+      'saveWorklogInProcess',
+      false,
+    ));
     return worklog;
   } catch (err) {
+    yield put(uiActions.setUiState(
+      'saveWorklogInProcess',
+      false,
+    ));
     yield call(throwError, err);
   }
-  return null;
 }
 
 export function* uploadWorklog(options: any): Generator<*, *, *> {

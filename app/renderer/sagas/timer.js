@@ -167,43 +167,69 @@ function* timerFlow() {
   const tickTask = yield fork(handleTick, timerChannel);
 
   while (true) {
-    yield take(actionTypes.STOP_TIMER_REQUEST);
+    const { closeRequest } = yield take(actionTypes.STOP_TIMER_REQUEST);
+    let continueStop = true;
+    if (closeRequest) {
+      continueStop = window.confirm('Tracking in progress, save worklog before quit?');
+    }
 
-    const time = yield select(getTimerState('time'));
-    if (time < 60) {
-      yield put(uiActions.setModalState('alert', true));
-      const { type } = yield take([
-        actionTypes.CONTINUE_TIMER,
-        actionTypes.STOP_TIMER,
-      ]);
-      if (type === actionTypes.STOP_TIMER) {
-        yield cancel(tickTask);
-        yield put(timerActions.resetTimer());
-        yield put(trayActions.trayStopTimer());
-      }
-    } else {
-      const { allowEmptyComment } = yield select(getSettingsState('localDesktopSettings'));
-      const comment = yield select(getUiState('worklogComment'));
-      if (!allowEmptyComment && !comment) {
-        yield fork(notify, {
-          title: 'Please set comment for worklog',
-        });
-        yield put(uiActions.setUiState('isCommentDialogOpen', true));
+    if (continueStop) {
+      const time = yield select(getTimerState('time'));
+      if (time < 60) {
+        yield put(uiActions.setModalState('alert', true));
+        const { type } = yield take([
+          actionTypes.CONTINUE_TIMER,
+          actionTypes.STOP_TIMER,
+        ]);
+        if (type === actionTypes.STOP_TIMER) {
+          yield cancel(tickTask);
+          yield put(timerActions.resetTimer());
+          yield put(trayActions.trayStopTimer());
+        }
+        if (
+          closeRequest
+          && continueStop
+        ) {
+          if (process.env.NODE_ENV === 'development') {
+            window.location.reload();
+          } else {
+            remote.app.quit();
+          }
+        }
       } else {
-        const issue = yield select(getTrackingIssue);
-        const timeSpentInSeconds = yield select(getTimerState('time'));
-        yield cancel(tickTask);
-        yield put(timerActions.resetTimer());
-        yield call(
-          uploadWorklog,
-          {
-            issueId: issue.id,
-            comment,
-            timeSpentInSeconds,
-          },
-        );
-        yield put(trayActions.trayStopTimer());
-        yield cancel();
+        const { allowEmptyComment } = yield select(getSettingsState('localDesktopSettings'));
+        const comment = yield select(getUiState('worklogComment'));
+        if (!allowEmptyComment && !comment) {
+          yield fork(notify, {
+            title: 'Please set comment for worklog',
+          });
+          yield put(uiActions.setUiState('isCommentDialogOpen', true));
+        } else {
+          const issue = yield select(getTrackingIssue);
+          const timeSpentInSeconds = yield select(getTimerState('time'));
+          yield cancel(tickTask);
+          yield put(timerActions.resetTimer());
+          yield call(
+            uploadWorklog,
+            {
+              issueId: issue.id,
+              comment,
+              timeSpentInSeconds,
+            },
+          );
+          yield put(trayActions.trayStopTimer());
+          if (
+            closeRequest
+            && continueStop
+          ) {
+            if (process.env.NODE_ENV === 'development') {
+              window.location.reload();
+            } else {
+              remote.app.quit();
+            }
+          }
+          yield cancel();
+        }
       }
     }
   }

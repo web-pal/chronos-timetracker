@@ -6,6 +6,9 @@ import {
 import {
   actionTypes,
 } from 'shared/actions';
+import {
+  timerActions,
+} from 'actions';
 
 const isNumber = n => typeof n === 'number';
 
@@ -16,9 +19,27 @@ const rendererEnhancer = (store) => {
 
   ipcRenderer.on(channel, handler);
 
-  window.addEventListener('beforeunload', () => {
-    store.dispatch({ type: actionTypes.WINDOW_BEFORE_UNLOAD });
-    ipcRenderer.removeListener(channel, handler);
+  window.addEventListener('beforeunload', (ev) => {
+    const stopClose = (
+      store.getState()?.timer?.running
+      || store.getState()?.ui?.saveWorklogInProcess
+    );
+    if (stopClose) {
+      if (store.getState()?.timer?.running) {
+        setTimeout(() => {
+          store.dispatch(timerActions.stopTimerRequest(true));
+        }, 100);
+      }
+      if (store.getState()?.ui?.saveWorklogInProcess) {
+        setTimeout(() => {
+          window.alert('Currently app in process of saving worklog, wait few seconds please');
+        }, 100);
+      }
+      ev.returnValue = false;
+    } else {
+      store.dispatch({ type: actionTypes.WINDOW_BEFORE_UNLOAD });
+      ipcRenderer.removeListener(channel, handler);
+    }
   });
 
   return next => (action) => {

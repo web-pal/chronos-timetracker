@@ -46,6 +46,7 @@ const initialState: UiState = {
 
   confirmUnload: false,
   updateCheckRunning: false,
+  saveWorklogInProcess: false,
   updateFetching: false,
   updateAvailable: null,
   saveWorklogInProcess: false,
