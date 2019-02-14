@@ -126,7 +126,6 @@ export const FileUploadDate = styled.span`
 export const FileSize = styled.span`
   color: #5e6c84;
   font-size: 12px;
-
 `;
 
 export const DescriptionSectionHeader = styled.div`
@@ -142,7 +141,6 @@ export const SectionHeader = styled.div`
   padding-top: 10px;
   margin-bottom: 10px;
 `;
-
 
 export const DetailsColumn = styled.div`
   display: flex;

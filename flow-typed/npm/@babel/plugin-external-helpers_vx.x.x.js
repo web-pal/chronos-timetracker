@@ -27,6 +27,6 @@ declare module '@babel/plugin-external-helpers/lib/index' {
 }
 
 // Filename aliases
-declare module '@babel/plugin-external-helpers/lib/index.js' {
+declare module '@babel/plugin-external-helpers/lib/index.jsx' {
   declare module.exports: $Exports<'@babel/plugin-external-helpers/lib/index'>;
 }

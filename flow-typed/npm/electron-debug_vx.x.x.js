@@ -28,6 +28,6 @@ declare module 'electron-debug' {
 declare module 'electron-debug/index' {
   declare module.exports: $Exports<'electron-debug'>;
 }
-declare module 'electron-debug/index.js' {
+declare module 'electron-debug/index.jsx' {
   declare module.exports: $Exports<'electron-debug'>;
 }

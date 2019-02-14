@@ -814,7 +814,7 @@ declare module 'less/Gruntfile.js' {
 declare module 'less/index' {
   declare module.exports: $Exports<'less'>;
 }
-declare module 'less/index.js' {
+declare module 'less/index.jsx' {
   declare module.exports: $Exports<'less'>;
 }
 declare module 'less/lib/less-browser/add-default-options.js' {
@@ -838,7 +838,7 @@ declare module 'less/lib/less-browser/file-manager.js' {
 declare module 'less/lib/less-browser/image-size.js' {
   declare module.exports: $Exports<'less/lib/less-browser/image-size'>;
 }
-declare module 'less/lib/less-browser/index.js' {
+declare module 'less/lib/less-browser/index.jsx' {
   declare module.exports: $Exports<'less/lib/less-browser/index'>;
 }
 declare module 'less/lib/less-browser/log-listener.js' {
@@ -862,7 +862,7 @@ declare module 'less/lib/less-node/fs.js' {
 declare module 'less/lib/less-node/image-size.js' {
   declare module.exports: $Exports<'less/lib/less-node/image-size'>;
 }
-declare module 'less/lib/less-node/index.js' {
+declare module 'less/lib/less-node/index.jsx' {
   declare module.exports: $Exports<'less/lib/less-node/index'>;
 }
 declare module 'less/lib/less-node/lessc-helper.js' {
@@ -883,7 +883,7 @@ declare module 'less/lib/less/contexts.js' {
 declare module 'less/lib/less/data/colors.js' {
   declare module.exports: $Exports<'less/lib/less/data/colors'>;
 }
-declare module 'less/lib/less/data/index.js' {
+declare module 'less/lib/less/data/index.jsx' {
   declare module.exports: $Exports<'less/lib/less/data/index'>;
 }
 declare module 'less/lib/less/data/unit-conversions.js' {
@@ -928,7 +928,7 @@ declare module 'less/lib/less/functions/function-caller.js' {
 declare module 'less/lib/less/functions/function-registry.js' {
   declare module.exports: $Exports<'less/lib/less/functions/function-registry'>;
 }
-declare module 'less/lib/less/functions/index.js' {
+declare module 'less/lib/less/functions/index.jsx' {
   declare module.exports: $Exports<'less/lib/less/functions/index'>;
 }
 declare module 'less/lib/less/functions/list.js' {
@@ -955,7 +955,7 @@ declare module 'less/lib/less/functions/types.js' {
 declare module 'less/lib/less/import-manager.js' {
   declare module.exports: $Exports<'less/lib/less/import-manager'>;
 }
-declare module 'less/lib/less/index.js' {
+declare module 'less/lib/less/index.jsx' {
   declare module.exports: $Exports<'less/lib/less/index'>;
 }
 declare module 'less/lib/less/less-error.js' {
@@ -1045,7 +1045,7 @@ declare module 'less/lib/less/tree/extend.js' {
 declare module 'less/lib/less/tree/import.js' {
   declare module.exports: $Exports<'less/lib/less/tree/import'>;
 }
-declare module 'less/lib/less/tree/index.js' {
+declare module 'less/lib/less/tree/index.jsx' {
   declare module.exports: $Exports<'less/lib/less/tree/index'>;
 }
 declare module 'less/lib/less/tree/javascript.js' {
@@ -1123,7 +1123,7 @@ declare module 'less/lib/less/visitors/import-sequencer.js' {
 declare module 'less/lib/less/visitors/import-visitor.js' {
   declare module.exports: $Exports<'less/lib/less/visitors/import-visitor'>;
 }
-declare module 'less/lib/less/visitors/index.js' {
+declare module 'less/lib/less/visitors/index.jsx' {
   declare module.exports: $Exports<'less/lib/less/visitors/index'>;
 }
 declare module 'less/lib/less/visitors/join-selector-visitor.js' {
@@ -1276,7 +1276,7 @@ declare module 'less/test/browser/vendor/promise.js' {
 declare module 'less/test/copy-bom.js' {
   declare module.exports: $Exports<'less/test/copy-bom'>;
 }
-declare module 'less/test/index.js' {
+declare module 'less/test/index.jsx' {
   declare module.exports: $Exports<'less/test/index'>;
 }
 declare module 'less/test/less-bom/errors/plugin/plugin-error-2.js' {
@@ -1375,15 +1375,15 @@ declare module 'less/test/less/plugin/plugin-tree-nodes.js' {
 declare module 'less/test/modify-vars.js' {
   declare module.exports: $Exports<'less/test/modify-vars'>;
 }
-declare module 'less/test/plugins/filemanager/index.js' {
+declare module 'less/test/plugins/filemanager/index.jsx' {
   declare module.exports: $Exports<'less/test/plugins/filemanager/index'>;
 }
-declare module 'less/test/plugins/postprocess/index.js' {
+declare module 'less/test/plugins/postprocess/index.jsx' {
   declare module.exports: $Exports<'less/test/plugins/postprocess/index'>;
 }
-declare module 'less/test/plugins/preprocess/index.js' {
+declare module 'less/test/plugins/preprocess/index.jsx' {
   declare module.exports: $Exports<'less/test/plugins/preprocess/index'>;
 }
-declare module 'less/test/plugins/visitor/index.js' {
+declare module 'less/test/plugins/visitor/index.jsx' {
   declare module.exports: $Exports<'less/test/plugins/visitor/index'>;
 }

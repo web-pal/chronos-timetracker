@@ -33,6 +33,6 @@ declare module 'eslint-import-resolver-webpack/config.js' {
 declare module 'eslint-import-resolver-webpack/index' {
   declare module.exports: $Exports<'eslint-import-resolver-webpack'>;
 }
-declare module 'eslint-import-resolver-webpack/index.js' {
+declare module 'eslint-import-resolver-webpack/index.jsx' {
   declare module.exports: $Exports<'eslint-import-resolver-webpack'>;
 }

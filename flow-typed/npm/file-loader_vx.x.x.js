@@ -34,6 +34,6 @@ declare module 'file-loader/dist/index' {
 declare module 'file-loader/dist/cjs.js' {
   declare module.exports: $Exports<'file-loader/dist/cjs'>;
 }
-declare module 'file-loader/dist/index.js' {
+declare module 'file-loader/dist/index.jsx' {
   declare module.exports: $Exports<'file-loader/dist/index'>;
 }

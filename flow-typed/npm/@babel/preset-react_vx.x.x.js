@@ -27,6 +27,6 @@ declare module '@babel/preset-react/lib/index' {
 }
 
 // Filename aliases
-declare module '@babel/preset-react/lib/index.js' {
+declare module '@babel/preset-react/lib/index.jsx' {
   declare module.exports: $Exports<'@babel/preset-react/lib/index'>;
 }

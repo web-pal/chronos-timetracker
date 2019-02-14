@@ -566,7 +566,7 @@ declare module 'jira-connector/docs/jira-connector/1.9.0/scripts/prettify/pretti
 declare module 'jira-connector/index' {
   declare module.exports: $Exports<'jira-connector'>;
 }
-declare module 'jira-connector/index.js' {
+declare module 'jira-connector/index.jsx' {
   declare module.exports: $Exports<'jira-connector'>;
 }
 declare module 'jira-connector/lib/error.js' {

@@ -62,7 +62,7 @@ declare module 'css-loader/locals' {
 declare module 'css-loader/index' {
   declare module.exports: $Exports<'css-loader'>;
 }
-declare module 'css-loader/index.js' {
+declare module 'css-loader/index.jsx' {
   declare module.exports: $Exports<'css-loader'>;
 }
 declare module 'css-loader/lib/compile-exports.js' {

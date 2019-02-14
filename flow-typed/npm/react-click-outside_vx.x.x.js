@@ -38,13 +38,13 @@ declare module 'react-click-outside/test/test' {
 declare module 'react-click-outside/demo/app.js' {
   declare module.exports: $Exports<'react-click-outside/demo/app'>;
 }
-declare module 'react-click-outside/dist/index.js' {
+declare module 'react-click-outside/dist/index.jsx' {
   declare module.exports: $Exports<'react-click-outside/dist/index'>;
 }
 declare module 'react-click-outside/index' {
   declare module.exports: $Exports<'react-click-outside'>;
 }
-declare module 'react-click-outside/index.js' {
+declare module 'react-click-outside/index.jsx' {
   declare module.exports: $Exports<'react-click-outside'>;
 }
 declare module 'react-click-outside/test/test.js' {

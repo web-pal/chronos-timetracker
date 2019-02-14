@@ -34,6 +34,7 @@ import {
 } from 'utils/jiraColors-util';
 
 import DataRenderer from '../DataRenderer';
+import DescriptionSectionAttachment from 'components/DescriptionSectionAttachment'
 
 import {
   IssueDetailsContainer,
@@ -54,7 +55,7 @@ type Props = {
     color: string,
     name: string,
   },
-}
+};
 
 const IssueDetails: StatelessFunctionalComponent<Props> = ({
   issue,
@@ -284,6 +285,9 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
               }
             }
           }}
+        />
+        <DescriptionSectionAttachment
+          attachment={issue.renderedFields.attachment}
         />
       </DescriptionSectionHeader>
     </IssueDetailsContainer>

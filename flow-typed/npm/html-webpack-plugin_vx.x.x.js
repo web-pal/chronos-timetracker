@@ -42,7 +42,7 @@ declare module 'html-webpack-plugin/lib/loader' {
 declare module 'html-webpack-plugin/index' {
   declare module.exports: $Exports<'html-webpack-plugin'>;
 }
-declare module 'html-webpack-plugin/index.js' {
+declare module 'html-webpack-plugin/index.jsx' {
   declare module.exports: $Exports<'html-webpack-plugin'>;
 }
 declare module 'html-webpack-plugin/lib/chunksorter.js' {

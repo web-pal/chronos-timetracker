@@ -40,6 +40,6 @@ declare module 'react-stickynode/Gruntfile.js' {
 declare module 'react-stickynode/index' {
   declare module.exports: $Exports<'react-stickynode'>;
 }
-declare module 'react-stickynode/index.js' {
+declare module 'react-stickynode/index.jsx' {
   declare module.exports: $Exports<'react-stickynode'>;
 }

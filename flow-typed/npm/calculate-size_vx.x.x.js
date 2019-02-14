@@ -27,6 +27,6 @@ declare module 'calculate-size/lib/index' {
 }
 
 // Filename aliases
-declare module 'calculate-size/lib/index.js' {
+declare module 'calculate-size/lib/index.jsx' {
   declare module.exports: $Exports<'calculate-size/lib/index'>;
 }

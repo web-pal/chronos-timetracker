@@ -50,7 +50,7 @@ declare module 'electron-devtools-installer/src/utils' {
 declare module 'electron-devtools-installer/dist/downloadChromeExtension.js' {
   declare module.exports: $Exports<'electron-devtools-installer/dist/downloadChromeExtension'>;
 }
-declare module 'electron-devtools-installer/dist/index.js' {
+declare module 'electron-devtools-installer/dist/index.jsx' {
   declare module.exports: $Exports<'electron-devtools-installer/dist/index'>;
 }
 declare module 'electron-devtools-installer/dist/utils.js' {
@@ -59,7 +59,7 @@ declare module 'electron-devtools-installer/dist/utils.js' {
 declare module 'electron-devtools-installer/src/downloadChromeExtension.js' {
   declare module.exports: $Exports<'electron-devtools-installer/src/downloadChromeExtension'>;
 }
-declare module 'electron-devtools-installer/src/index.js' {
+declare module 'electron-devtools-installer/src/index.jsx' {
   declare module.exports: $Exports<'electron-devtools-installer/src/index'>;
 }
 declare module 'electron-devtools-installer/src/utils.js' {

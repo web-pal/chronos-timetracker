@@ -52,15 +52,15 @@ declare module 'eslint-plugin-flowtype-errors/dist/format.js' {
 declare module 'eslint-plugin-flowtype-errors/dist/get-program.js' {
   declare module.exports: $Exports<'eslint-plugin-flowtype-errors/dist/get-program'>;
 }
-declare module 'eslint-plugin-flowtype-errors/dist/index.js' {
+declare module 'eslint-plugin-flowtype-errors/dist/index.jsx' {
   declare module.exports: $Exports<'eslint-plugin-flowtype-errors/dist/index'>;
 }
 declare module 'eslint-plugin-flowtype-errors/index' {
   declare module.exports: $Exports<'eslint-plugin-flowtype-errors'>;
 }
-declare module 'eslint-plugin-flowtype-errors/index.js' {
+declare module 'eslint-plugin-flowtype-errors/index.jsx' {
   declare module.exports: $Exports<'eslint-plugin-flowtype-errors'>;
 }
-declare module 'eslint-plugin-flowtype-errors/src/index.js' {
+declare module 'eslint-plugin-flowtype-errors/src/index.jsx' {
   declare module.exports: $Exports<'eslint-plugin-flowtype-errors/src/index'>;
 }

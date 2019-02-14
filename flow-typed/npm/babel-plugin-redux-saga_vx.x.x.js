@@ -211,7 +211,7 @@ declare module 'babel-plugin-redux-saga/test/runner.test' {
 }
 
 // Filename aliases
-declare module 'babel-plugin-redux-saga/src/index.js' {
+declare module 'babel-plugin-redux-saga/src/index.jsx' {
   declare module.exports: $Exports<'babel-plugin-redux-saga/src/index'>;
 }
 declare module 'babel-plugin-redux-saga/test/fixtures/declaration-es6-modules/babel6-expected.js' {

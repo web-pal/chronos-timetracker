@@ -243,10 +243,10 @@ declare module 'redux-resource/es/action-types/action-types.js' {
 declare module 'redux-resource/es/action-types/deprecated.js' {
   declare module.exports: $Exports<'redux-resource/es/action-types/deprecated'>;
 }
-declare module 'redux-resource/es/action-types/index.js' {
+declare module 'redux-resource/es/action-types/index.jsx' {
   declare module.exports: $Exports<'redux-resource/es/action-types/index'>;
 }
-declare module 'redux-resource/es/index.js' {
+declare module 'redux-resource/es/index.jsx' {
   declare module.exports: $Exports<'redux-resource/es/index'>;
 }
 declare module 'redux-resource/es/request-statuses-plugin/action-reducers-map.js' {
@@ -258,7 +258,7 @@ declare module 'redux-resource/es/request-statuses-plugin/create.js' {
 declare module 'redux-resource/es/request-statuses-plugin/delete.js' {
   declare module.exports: $Exports<'redux-resource/es/request-statuses-plugin/delete'>;
 }
-declare module 'redux-resource/es/request-statuses-plugin/index.js' {
+declare module 'redux-resource/es/request-statuses-plugin/index.jsx' {
   declare module.exports: $Exports<'redux-resource/es/request-statuses-plugin/index'>;
 }
 declare module 'redux-resource/es/request-statuses-plugin/read.js' {
@@ -270,7 +270,7 @@ declare module 'redux-resource/es/request-statuses-plugin/update.js' {
 declare module 'redux-resource/es/resource-reducer.js' {
   declare module.exports: $Exports<'redux-resource/es/resource-reducer'>;
 }
-declare module 'redux-resource/es/update-resources-plugin/index.js' {
+declare module 'redux-resource/es/update-resources-plugin/index.jsx' {
   declare module.exports: $Exports<'redux-resource/es/update-resources-plugin/index'>;
 }
 declare module 'redux-resource/es/utils/compose-reducers.js' {
@@ -318,10 +318,10 @@ declare module 'redux-resource/lib/action-types/action-types.js' {
 declare module 'redux-resource/lib/action-types/deprecated.js' {
   declare module.exports: $Exports<'redux-resource/lib/action-types/deprecated'>;
 }
-declare module 'redux-resource/lib/action-types/index.js' {
+declare module 'redux-resource/lib/action-types/index.jsx' {
   declare module.exports: $Exports<'redux-resource/lib/action-types/index'>;
 }
-declare module 'redux-resource/lib/index.js' {
+declare module 'redux-resource/lib/index.jsx' {
   declare module.exports: $Exports<'redux-resource/lib/index'>;
 }
 declare module 'redux-resource/lib/request-statuses-plugin/action-reducers-map.js' {
@@ -333,7 +333,7 @@ declare module 'redux-resource/lib/request-statuses-plugin/create.js' {
 declare module 'redux-resource/lib/request-statuses-plugin/delete.js' {
   declare module.exports: $Exports<'redux-resource/lib/request-statuses-plugin/delete'>;
 }
-declare module 'redux-resource/lib/request-statuses-plugin/index.js' {
+declare module 'redux-resource/lib/request-statuses-plugin/index.jsx' {
   declare module.exports: $Exports<'redux-resource/lib/request-statuses-plugin/index'>;
 }
 declare module 'redux-resource/lib/request-statuses-plugin/read.js' {
@@ -345,7 +345,7 @@ declare module 'redux-resource/lib/request-statuses-plugin/update.js' {
 declare module 'redux-resource/lib/resource-reducer.js' {
   declare module.exports: $Exports<'redux-resource/lib/resource-reducer'>;
 }
-declare module 'redux-resource/lib/update-resources-plugin/index.js' {
+declare module 'redux-resource/lib/update-resources-plugin/index.jsx' {
   declare module.exports: $Exports<'redux-resource/lib/update-resources-plugin/index'>;
 }
 declare module 'redux-resource/lib/utils/compose-reducers.js' {

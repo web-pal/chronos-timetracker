@@ -43,7 +43,7 @@ declare module 'webpack-merge/lib/unite-rules' {
 }
 
 // Filename aliases
-declare module 'webpack-merge/lib/index.js' {
+declare module 'webpack-merge/lib/index.jsx' {
   declare module.exports: $Exports<'webpack-merge/lib/index'>;
 }
 declare module 'webpack-merge/lib/join-arrays-smart.js' {
