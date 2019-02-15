@@ -6,6 +6,7 @@ import {
 import {
   Provider,
 } from 'react-redux';
+import * as Sentry from '@sentry/electron';
 
 import {
   createStore,
@@ -23,6 +24,13 @@ import {
 import rendererEnhancer from './store/middleware';
 
 import AttachmentPopup from './containers/Popups/AttachmentPopup';
+
+if (process.env.NODE_ENV === 'production') {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    enableNative: false,
+  });
+}
 
 const initialState = {
   attachments: [],

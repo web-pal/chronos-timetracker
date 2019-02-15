@@ -1,11 +1,19 @@
 /* eslint-disable no-param-reassign */
 import * as eff from 'redux-saga/effects';
+import * as Sentry from '@sentry/electron';
 import {
   actionTypes,
   issuesActions,
 } from 'actions';
 
 import configureStore from './store/configurePreloadStore';
+
+if (process.env.NODE_ENV === 'production') {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    enableNative: false,
+  });
+}
 
 const store = configureStore();
 

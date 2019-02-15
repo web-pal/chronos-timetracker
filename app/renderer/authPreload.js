@@ -2,8 +2,16 @@
 import {
   uiActions,
 } from 'actions';
+import * as Sentry from '@sentry/electron';
 
 import configureStore from './store/configurePreloadStore';
+
+if (process.env.NODE_ENV === 'production') {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    enableNative: false,
+  });
+}
 
 const store = configureStore();
 
