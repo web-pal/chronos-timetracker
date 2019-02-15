@@ -7,7 +7,7 @@ import {
   fork,
   select,
 } from 'redux-saga/effects';
-import Raven from 'raven-js';
+import * as Sentry from '@sentry/electron';
 import moment from 'moment';
 
 import config from 'config';
@@ -63,7 +63,7 @@ export function* infoLog(...argw: any): Generator<*, void, *> {
 
 export function* throwError(err: any): Generator<*, void, *> {
   yield call(console.error, err);
-  Raven.captureException(err);
+  Sentry.captureException(err);
 }
 
 

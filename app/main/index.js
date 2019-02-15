@@ -14,6 +14,9 @@ import {
   app,
   BrowserWindow,
 } from 'electron';
+import {
+  init,
+} from '@sentry/electron/dist/main';
 
 import {
   actionTypes,
@@ -30,6 +33,12 @@ if (
   const p = path.join(__dirname, '..', 'app', 'node_modules');
   require('module').globalPaths.push(p);
 }
+if (process.env.NODE_ENV === 'production') {
+  init({
+    dsn: process.env.SENTRY_DSN,
+    enableNative: false,
+  });
+}
 
 const installExtensions = async () => {
   const installer = require('electron-devtools-installer');
@@ -40,10 +49,6 @@ const installExtensions = async () => {
     extensions.map(name => installer.default(installer[name], forceDownload)),
   ).catch(console.log);
 };
-
-/**
- * Add event listeners...
- */
 
 app.on('window-all-closed', () => {
   app.quit();

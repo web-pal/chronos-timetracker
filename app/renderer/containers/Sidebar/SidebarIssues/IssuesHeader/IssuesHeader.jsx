@@ -74,9 +74,7 @@ const IssuesHeader: StatelessFunctionalComponent<Props> = ({
     />
     <SearchOptions>
       <span className="pointer">
-        <AddIcon
-          label="Add"
-          size="medium"
+        <span
           onClick={() => {
             dispatch(
               issuesActions.showIssueFormWindow({
@@ -84,7 +82,12 @@ const IssuesHeader: StatelessFunctionalComponent<Props> = ({
               }),
             );
           }}
-        />
+        >
+          <AddIcon
+            label="Add"
+            size="medium"
+          />
+        </span>
         {
           currentProjectId
           && (

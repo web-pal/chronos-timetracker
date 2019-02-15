@@ -52,13 +52,13 @@ function createUpdaterChannel({ updater, event }) {
 
 function* onUpdateAvailable({ channel }) {
   const update = yield take(channel);
-  yield call(setRendererUiState, 'hasUpdate', update);
+  yield call(setRendererUiState, 'updateAvailable', update.releaseName);
   channel.close();
 }
 
 function* onUpdateNotAvailable({ channel }) {
   yield take(channel);
-  yield call(setRendererUiState, 'hasUpdate', false);
+  yield call(setRendererUiState, 'updateAvailable', false);
   channel.close();
 }
 
@@ -72,14 +72,32 @@ function showMessageBoxAsync(options) {
 }
 
 function* onUpdateDownloaded({ channel }) {
-  yield take(channel);
+  const update = yield take(channel);
 
   yield call(setRendererUiState, 'downloadedUpdate', true);
 
+  function parseReleaseNotes(releaseNotes) {
+    return releaseNotes
+      .replace(/<style([\s\S]*?)<\/style>/gi, '')
+      .replace(/<script([\s\S]*?)<\/script>/gi, '')
+      .replace(/<\/div>/ig, '\n')
+      .replace(/<\/li>/ig, '\n')
+      .replace(/<li>/ig, '  *  ')
+      .replace(/<\/ul>/ig, '\n')
+      .replace(/<\/h2>/ig, '\n')
+      .replace(/<\/h3>/ig, '\n')
+      .replace(/<\/p>/ig, '\n')
+      .replace(/<br\s*[/]?>/gi, '\n')
+      .replace(/<[^>]+>/ig, '');
+  }
+
+  const releaseNotes = parseReleaseNotes(update.releaseNotes.trim());
   const buttonIndex = yield call(showMessageBoxAsync, {
     type: 'info',
     title: 'Install Updates',
-    message: 'Do you want update now?',
+    message: (
+      `New version is available:\n\n${releaseNotes}\nWould you like to install it now?`
+    ),
     buttons: ['Sure', 'No'],
   });
   if (buttonIndex === 0) {
@@ -99,7 +117,7 @@ function* onUpdateDownloaded({ channel }) {
 function* onDownloadProgress({ channel }) {
   while (true) {
     const progress = yield take(channel);
-    yield call(setRendererUiState, 'downloadUpdateProgress', progress);
+    yield call(setRendererUiState, 'downloadUpdateProgress', progress.percent);
     if (progress.percent === 100) {
       channel.close();
     }
@@ -135,11 +153,15 @@ function* checkUpdates() {
 
 function* onError({ channel }) {
   const message = yield take(channel);
+  console.log('DOWNLOAD ERROR');
   console.error('There was a problem updating the application');
   console.log(message);
 }
 
 export function* downloadUpdate() {
+  console.log('***********');
+  console.log('DOWNLOAD REQUEST');
+  console.log('***********');
   const downloadProgress = createUpdaterChannel({
     updater: autoUpdater,
     event: 'download-progress',
@@ -175,7 +197,16 @@ export function* downloadUpdate() {
   }
 }
 
+function setUpdateSettings({
+  autoDownload,
+  allowPrerelease,
+}) {
+  autoUpdater.autoDownload = autoDownload;
+  autoUpdater.allowPrerelease = allowPrerelease;
+}
+
 export function* updaterFlow() {
   yield takeEvery(actionTypes.CHECK_UPDATES_REQUEST, checkUpdates);
   yield takeEvery(actionTypes.DOWNLOAD_UPDATE_REQUEST, downloadUpdate);
+  yield takeEvery(actionTypes.SET_UPDATE_SETTINGS, setUpdateSettings);
 }

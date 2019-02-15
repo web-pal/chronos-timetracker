@@ -52,3 +52,5 @@ worklogs/*
 screenshots/*
 
 package-lock\.json
+
+sentry.properties

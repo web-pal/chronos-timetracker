@@ -31,6 +31,7 @@ export const persistInitialState = {
 
 const initialState: UiState = {
   initializeInProcess: false,
+  readyToQuit: false,
   authorized: false,
   accounts: [],
   acknowlegdedFeatures: [],
@@ -45,12 +46,12 @@ const initialState: UiState = {
   authDebugMessages: [],
 
   confirmUnload: false,
-  updateCheckRunning: false,
-  saveWorklogInProcess: false,
-  updateFetching: false,
-  updateAvailable: null,
   saveWorklogInProcess: false,
   saveFilterDialogOpen: false,
+
+  updateAvailable: null,
+  downloadedUpdate: false,
+  downloadUpdateProgress: null,
 
   issueViewWorklogsScrollToIndex: 0,
   selectedIssueId: null,

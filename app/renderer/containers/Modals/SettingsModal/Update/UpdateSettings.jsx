@@ -1,8 +1,5 @@
 // @flow
 import React from 'react';
-import {
-  remote,
-} from 'electron';
 
 import type {
   StatelessFunctionalComponent,
@@ -16,6 +13,9 @@ import Button, {
   ButtonGroup,
 } from '@atlaskit/button';
 import Spinner from '@atlaskit/spinner';
+import {
+  Line,
+} from 'rc-progress';
 
 import {
   Flex,
@@ -37,17 +37,15 @@ import {
   version,
 } from '../../../../../package.json';
 
-// const { autoUpdater } = remote.require('electron-updater');
-
-
 type Props = {
   channel: string,
   updateCheckRunning: boolean,
   updateAvailable: string,
-  updateFetching: boolean,
+  downloadUpdateProgress: any,
   automaticUpdate: boolean,
   setAutomaticUpdate: (automaticUpdate: boolean) => void,
   setChannel: (channel: string) => void,
+  checkForUpdates: () => void,
   onUpdateClick: () => void,
 };
 
@@ -57,8 +55,9 @@ const UpdateSettings: StatelessFunctionalComponent<Props> = ({
   setChannel,
   updateCheckRunning,
   updateAvailable,
-  updateFetching,
+  downloadUpdateProgress,
   automaticUpdate,
+  checkForUpdates,
   onUpdateClick,
 } : Props): Node => (
   <SettingsSectionContent style={{ width: '100%' }}>
@@ -73,6 +72,18 @@ const UpdateSettings: StatelessFunctionalComponent<Props> = ({
             : `You have latest version (${version}).`
           }
         </H100>
+        {downloadUpdateProgress
+          && (
+          <Line
+            percent={downloadUpdateProgress}
+            strokeWidth="4"
+            strokeColor="#D3D3D3"
+            style={{
+              marginBottom: '10px',
+            }}
+          />
+          )
+        }
         <ButtonGroup>
           {updateAvailable
             ? (
@@ -81,16 +92,16 @@ const UpdateSettings: StatelessFunctionalComponent<Props> = ({
                   <Button
                     appearance="primary"
                     onClick={() => {
-                      if (!updateFetching) {
+                      if (!downloadUpdateProgress) {
                         onUpdateClick();
                       }
                     }}
                     iconAfter={
-                    updateFetching
+                    downloadUpdateProgress
                       && <Spinner invertColor />
                     }
                   >
-                    {updateFetching
+                    {downloadUpdateProgress
                       ? 'Updating'
                       : 'Update now'
                     }
@@ -113,16 +124,25 @@ const UpdateSettings: StatelessFunctionalComponent<Props> = ({
               </Flex>
             )
             : (
-              <Button
-                isDisabled={updateCheckRunning}
-                onClick={() => autoUpdater.checkForUpdates()}
-                iconAfter={updateCheckRunning ? <Spinner /> : false}
-              >
-                {updateCheckRunning
-                  ? 'Checking for updates'
-                  : 'Check for updates'
-                }
-              </Button>
+              <div>
+                <Button
+                  isDisabled={updateCheckRunning}
+                  onClick={() => {
+                    checkForUpdates();
+                  }}
+                  iconAfter={updateCheckRunning ? <Spinner /> : false}
+                >
+                  {updateCheckRunning
+                    ? 'Checking for updates'
+                    : 'Check for updates'
+                  }
+                </Button>
+                {updateAvailable === false && (
+                  <H100 style={{ padding: '6px 0 10px 5px' }}>
+                    No update available
+                  </H100>
+                )}
+              </div>
             )
           }
         </ButtonGroup>

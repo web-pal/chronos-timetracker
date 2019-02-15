@@ -29,6 +29,7 @@ import {
 import {
   uiActions,
   settingsActions,
+  updaterActions,
 } from 'actions';
 
 import {
@@ -57,7 +58,7 @@ type Props = {
   settings: SettingsGeneral,
   updateCheckRunning: boolean,
   updateAvailable: string,
-  updateFetching: boolean,
+  downloadUpdateProgress: any,
   dispatch: Dispatch,
 }
 
@@ -66,7 +67,7 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
   tab,
   settings,
   updateAvailable,
-  updateFetching,
+  downloadUpdateProgress,
   updateCheckRunning,
   dispatch,
 }: Props): Node => isOpen && (
@@ -167,7 +168,16 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
         {tab === 'Updates' &&
           <UpdateSettings
             channel={settings.updateChannel}
+            updateCheckRunning={updateCheckRunning}
+            checkForUpdates={() => {
+              dispatch(uiActions.setUiState('updateAvailable', null));
+              dispatch(updaterActions.checkUpdates());
+            }}
             setChannel={(value) => {
+              dispatch(updaterActions.setUpdateSettings({
+                autoDownload: settings.updateAutomatically,
+                allowPrerelease: value !== 'stable',
+              }));
               dispatch(settingsActions.setLocalDesktopSetting(
                 value,
                 'updateChannel',
@@ -175,16 +185,20 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
             }}
             automaticUpdate={settings.updateAutomatically}
             setAutomaticUpdate={(value) => {
+              dispatch(updaterActions.setUpdateSettings({
+                autoDownload: value,
+                allowPrerelease: settings.updateChannel !== 'stable',
+              }));
               dispatch(settingsActions.setLocalDesktopSetting(
                 value,
                 'updateAutomatically',
               ));
             }}
-            updateCheckRunning={updateCheckRunning}
             updateAvailable={updateAvailable}
-            updateFetching={updateFetching}
+            downloadUpdateProgress={downloadUpdateProgress}
             onUpdateClick={() => {
-              dispatch(uiActions.installUpdateRequest());
+              console.log('uuuuuuuuuu');
+              dispatch(updaterActions.downloadUpdate());
             }}
           />
         }
@@ -194,13 +208,14 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
 );
 
 function mapStateToProps(state) {
+  const updateAvailable = getUiState('updateAvailable')(state);
   return {
     isOpen: getModalState('settings')(state),
     settings: getSettingsState('localDesktopSettings')(state),
     tab: getSettingsState('modalTab')(state),
-    updateCheckRunning: getUiState('updateCheckRunning')(state),
-    updateAvailable: getUiState('updateAvailable')(state),
-    updateFetching: getUiState('updateFetching')(state),
+    updateAvailable,
+    updateCheckRunning: updateAvailable === null,
+    downloadUpdateProgress: getUiState('downloadUpdateProgress')(state),
   };
 }
 

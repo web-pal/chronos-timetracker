@@ -6,7 +6,7 @@ import {
   takeLatest,
   fork,
 } from 'redux-saga/effects';
-import Raven from 'raven-js';
+import * as Sentry from '@sentry/electron';
 import createActionCreators from 'redux-resource-action-creators';
 
 import {
@@ -83,7 +83,7 @@ export function* fetchProjectStatuses(): Generator<*, *, *> {
         || !metadata.projects[0]
         || !metadata.projects[0].issuetypes
       ) {
-        Raven.captureMessage('Issue types empty!', {
+        Sentry.captureMessage('Issue types empty!', {
           level: 'error',
           extra: {
             metadata,

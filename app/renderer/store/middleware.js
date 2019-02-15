@@ -21,18 +21,26 @@ const rendererEnhancer = (store) => {
 
   window.addEventListener('beforeunload', (ev) => {
     const stopClose = (
-      store.getState()?.timer?.running
-      || store.getState()?.ui?.saveWorklogInProcess
+      store.getState().timer !== undefined
+      && !store.getState()?.ui?.readyToQuit
     );
     if (stopClose) {
+      let continueclose = true;
       if (store.getState()?.timer?.running) {
+        continueclose = false;
         setTimeout(() => {
           store.dispatch(timerActions.stopTimerRequest(true));
         }, 100);
       }
       if (store.getState()?.ui?.saveWorklogInProcess) {
+        continueclose = false;
         setTimeout(() => {
           window.alert('Currently app in process of saving worklog, wait few seconds please');
+        }, 100);
+      }
+      if (continueclose) {
+        setTimeout(() => {
+          store.dispatch({ type: actionTypes.QUIT_REQUEST });
         }, 100);
       }
       ev.returnValue = false;

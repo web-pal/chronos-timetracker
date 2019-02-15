@@ -13,7 +13,7 @@ import {
 import {
   remote,
 } from 'electron';
-import Raven from 'raven-js';
+import * as Sentry from '@sentry/electron';
 import mixpanel from 'mixpanel-browser';
 
 import {
@@ -36,6 +36,7 @@ import {
   settingsActions,
   resourcesActions,
   issuesActions,
+  updaterActions,
 } from 'actions';
 import config from 'config';
 import {
@@ -89,12 +90,14 @@ function identifyInSentryAndMixpanel(host: string, userData: any): void {
       $email: userData.emailAddress,
       $distinct_id: `${host} - ${userData.emailAddress}`,
     });
-    Raven.setUserContext({
-      host,
-      locale: userData.locale,
-      timeZone: userData.timeZone,
-      name: userData.displayName,
-      email: userData.emailAddress,
+    Sentry.configureScope((scope) => {
+      scope.setUser({
+        host,
+        locale: userData.locale,
+        timeZone: userData.timeZone,
+        name: userData.displayName,
+        email: userData.emailAddress,
+      });
     });
   }
 }
@@ -106,8 +109,16 @@ function* initializeMixpanel(): Generator<*, *, *> {
   if (!process.env.MIXPANEL_API_TOKEN) {
     yield call(throwError, 'MIXPANEL_API_TOKEN not set!');
   }
-  if (process.env.DISABLE_MIXPANEL !== '1' && process.env.MIXPANEL_API_TOKEN) {
-    yield call(mixpanel.init, process.env.MIXPANEL_API_TOKEN);
+  if (
+    process.env.DISABLE_MIXPANEL !== '1'
+    && process.env.MIXPANEL_API_TOKEN
+  ) {
+    yield call(
+      mixpanel.init,
+      process.env.MIXPANEL_API_TOKEN,
+    );
+    trackMixpanel('Application was initialized');
+    incrementMixpanel('Initialize', 1);
   }
 }
 
@@ -156,7 +167,6 @@ function* issueWindow(url) {
         win.hide();
       }
       if (currentWindowClose) {
-        yield call(savePersistStorage);
         win.destroy();
       }
     }
@@ -238,6 +248,11 @@ export function* takeInitialConfigureApp() {
         settingsActions.fillLocalDesktopSettings(persistSettings),
       );
 
+      yield put(updaterActions.setUpdateSettings({
+        autoDownload: persistSettings.updateAutomatically,
+        allowPrerelease: persistSettings.updateChannel !== 'stable',
+      }));
+      yield put(updaterActions.checkUpdates());
       yield call(fetchIssueFields);
       yield fork(fetchEpics);
       yield fork(fetchProjects);
@@ -285,7 +300,7 @@ export function* initializeApp(): Generator<*, *, *> {
         const cookies = JSON.parse(cookiesStr);
         authCredentials.cookies = cookies;
       } catch (error) {
-        Raven.captureMessage('keytar error!', {
+        Sentry.captureMessage('keytar error!', {
           level: 'error',
           extra: {
             error,
@@ -329,8 +344,6 @@ export function* initializeApp(): Generator<*, *, *> {
     } else {
       yield put(uiActions.setUiState('initializeInProcess', false));
     }
-    trackMixpanel('Application was initialized');
-    incrementMixpanel('Initialize', 1);
   } catch (err) {
     yield call(throwError, err);
     yield put(uiActions.setUiState('authorized', false));
@@ -373,6 +386,19 @@ export function* handleAttachmentWindow(): Generator<*, *, *> {
       scope: [win.id],
     }));
     win.focus();
+  }
+}
+
+export function* handleQuitRequest(): Generator<*, *, *> {
+  while (true) {
+    yield take(sharedActionTypes.QUIT_REQUEST);
+    yield call(savePersistStorage);
+    yield put(uiActions.setUiState('readyToQuit', true));
+    if (process.env.NODE_ENV === 'development') {
+      window.location.reload();
+    } else {
+      remote.app.quit();
+    }
   }
 }
 

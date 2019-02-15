@@ -10,7 +10,7 @@ import {
   takeEvery,
   cancel,
 } from 'redux-saga/effects';
-import Raven from 'raven-js';
+import * as Sentry from '@sentry/electron';
 import createActionCreators from 'redux-resource-action-creators';
 
 import {
@@ -109,7 +109,7 @@ const normalizeIssues = issues => {
       result: [],
     });
   } catch (err) {
-    Raven.captureMessage('normalizedIssues error!', {
+    Sentry.captureMessage('normalizedIssues error!', {
       level: 'error',
       extra: {
         issues,
@@ -223,7 +223,7 @@ function* fetchAdditionalWorklogsForIssues(issues) {
     }
     return issues;
   } catch (err) {
-    Raven.captureMessage('Fetch additional worklog issue', {
+    Sentry.captureMessage('Fetch additional worklog issue', {
       level: 'error',
       extra: {
         issues,
@@ -431,14 +431,6 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
         total: 0,
         issues: [],
       });
-    if (response.warningMessages) {
-      Raven.captureMessage('Issues warningMessages!', {
-        level: 'error',
-        extra: {
-          response,
-        },
-      });
-    }
     yield call(
       infoLog,
       'fetchRecentIssues response',
