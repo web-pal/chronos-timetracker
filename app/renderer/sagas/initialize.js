@@ -354,7 +354,7 @@ export function* initializeApp(): Generator<*, *, *> {
 export function* handleAttachmentWindow(): Generator<*, *, *> {
   let win = null;
   while (true) {
-    const { issueId } = yield take(actionTypes.SHOW_ATTACHMENT_WINDOW);
+    const { issueId, activeIndex } = yield take(actionTypes.SHOW_ATTACHMENT_WINDOW);
     const issue = yield select(getResourceItemById('issues', issueId));
     if (
       !win
@@ -383,6 +383,7 @@ export function* handleAttachmentWindow(): Generator<*, *, *> {
     }
     yield put(issuesActions.setAttachments({
       attachments: issue?.fields?.attachment || [],
+      activeIndex,
       scope: [win.id],
     }));
     win.focus();

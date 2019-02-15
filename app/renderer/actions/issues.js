@@ -94,16 +94,19 @@ export const closeIssueFormWindow = (): IssuesAction => ({
   scope: 'allRenderer',
 });
 
-export const showAttachmentWindow = ({ issueId }): IssuesAction => ({
+export const showAttachmentWindow = ({ issueId, activeIndex }): IssuesAction => ({
   type: actionTypes.SHOW_ATTACHMENT_WINDOW,
   issueId,
+  activeIndex,
 });
 
 export const setAttachments = ({
   attachments,
+  activeIndex,
   scope,
 }): IssuesAction => ({
   type: actionTypes.SET_ATTACHMENTS,
   attachments,
+  activeIndex,
   scope,
 });

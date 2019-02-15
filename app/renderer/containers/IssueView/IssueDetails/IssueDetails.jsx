@@ -33,8 +33,8 @@ import {
   getEpicColor,
 } from 'utils/jiraColors-util';
 
+import DescriptionSectionAttachment from 'components/DescriptionSectionAttachment';
 import DataRenderer from '../DataRenderer';
-import DescriptionSectionAttachment from 'components/DescriptionSectionAttachment'
 
 import {
   IssueDetailsContainer,
@@ -275,7 +275,7 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
             if (tag && (tag === 'img' || tag === 'a')) {
               e.preventDefault();
               if (tag === 'img') {
-                dispatch(issuesActions.showAttachmentWindow({ issueId: issue.id }));
+                dispatch(issuesActions.showAttachmentWindow({ issueId: issue.id, activeIndex: null }));
               } else {
                 // external links only
                 const url = e.target.getAttribute(tag === 'a' ? 'href' : 'src');
@@ -287,6 +287,9 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
           }}
         />
         <DescriptionSectionAttachment
+          showAttachmentWindow={index => dispatch(
+            issuesActions.showAttachmentWindow({ issueId: issue.id, activeIndex: index }),
+          )}
           attachment={issue.renderedFields.attachment}
         />
       </DescriptionSectionHeader>

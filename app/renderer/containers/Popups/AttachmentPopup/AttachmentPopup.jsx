@@ -22,7 +22,14 @@ class AttachmentPopup extends Component {
         activeIndex: 0,
       });
     }
+
+    if (nextProps.activeIndex !== null) {
+      this.setState({
+        activeIndex: nextProps.activeIndex,
+      });
+    }
   }
+
 
   selectAttachment = (index) => {
     this.setState({
@@ -46,6 +53,7 @@ class AttachmentPopup extends Component {
   render() {
     const { activeIndex } = this.state;
     const { attachments } = this.props;
+
 
     return (
       <React.Fragment>
@@ -75,6 +83,7 @@ class AttachmentPopup extends Component {
 function mapStateToProps(state) {
   return {
     attachments: state.attachmentReducer.attachments,
+    activeIndex: state.attachmentReducer.activeIndex,
   };
 }
 

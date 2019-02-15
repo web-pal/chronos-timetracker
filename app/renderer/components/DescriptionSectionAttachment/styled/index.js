@@ -3,6 +3,7 @@ import styled from 'styled-components';
 export const DescriptionAttachmentTitle = styled.span`
   padding-bottom: 10px;
   font-size:16px;
+  cursor: pointer;
 `;
 
 export const MainDescriptionAttachmentContainer = styled.div`
