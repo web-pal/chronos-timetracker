@@ -82,7 +82,6 @@ See also the list of [contributors][contributors] who participated in this proje
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
-
 [OSX]: https://chronos-api.web-pal.com/release/dmg
 [Linux]: https://chronos-api.web-pal.com/release/AppImage
 [Windows]: https://chronos-api.web-pal.com/release/exe
