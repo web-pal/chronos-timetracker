@@ -2386,7 +2386,7 @@ declare module 'eslint/lib/token-store/forward-token-comment-cursor.js' {
 declare module 'eslint/lib/token-store/forward-token-cursor.js' {
   declare module.exports: $Exports<'eslint/lib/token-store/forward-token-cursor'>;
 }
-declare module 'eslint/lib/token-store/index.js' {
+declare module 'eslint/lib/token-store/index.jsx' {
   declare module.exports: $Exports<'eslint/lib/token-store/index'>;
 }
 declare module 'eslint/lib/token-store/limit-cursor.js' {
@@ -2476,7 +2476,7 @@ declare module 'eslint/lib/util/timing.js' {
 declare module 'eslint/lib/util/traverser.js' {
   declare module.exports: $Exports<'eslint/lib/util/traverser'>;
 }
-declare module 'eslint/lib/util/unicode/index.js' {
+declare module 'eslint/lib/util/unicode/index.jsx' {
   declare module.exports: $Exports<'eslint/lib/util/unicode/index'>;
 }
 declare module 'eslint/lib/util/unicode/is-combining-character.js' {

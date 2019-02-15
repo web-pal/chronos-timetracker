@@ -28,6 +28,7 @@ module.exports = env => ({
       actions: path.join(__dirname, 'app/renderer/actions'),
       api: path.join(__dirname, 'app/renderer/api'),
       components: path.join(__dirname, 'app/renderer/components'),
+      images: path.join(__dirname, 'app/renderer/assets/images'),
       config: path.resolve(__dirname, 'app/config'),
       sagas: path.join(__dirname, 'app/renderer/sagas'),
       selectors: path.join(__dirname, 'app/renderer/selectors'),

@@ -13,7 +13,7 @@ module.exports = () => ({
   mode: 'production',
   devtool: 'source-map',
   target: 'electron-main',
-  entry: path.join(__dirname, 'app/main/index.js'),
+  entry: path.join(__dirname, 'app/main/index.jsx'),
 
   output: {
     path: path.resolve(__dirname, 'app/dist'),

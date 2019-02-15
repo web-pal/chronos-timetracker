@@ -118,7 +118,7 @@ declare module '@babel/preset-env/lib/default-includes.js' {
 declare module '@babel/preset-env/lib/defaults.js' {
   declare module.exports: $Exports<'@babel/preset-env/lib/defaults'>;
 }
-declare module '@babel/preset-env/lib/index.js' {
+declare module '@babel/preset-env/lib/index.jsx' {
   declare module.exports: $Exports<'@babel/preset-env/lib/index'>;
 }
 declare module '@babel/preset-env/lib/module-transformations.js' {

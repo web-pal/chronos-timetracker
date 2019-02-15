@@ -62,6 +62,6 @@ declare module 'redux-logger/src/diff.js' {
 declare module 'redux-logger/src/helpers.js' {
   declare module.exports: $Exports<'redux-logger/src/helpers'>;
 }
-declare module 'redux-logger/src/index.js' {
+declare module 'redux-logger/src/index.jsx' {
   declare module.exports: $Exports<'redux-logger/src/index'>;
 }

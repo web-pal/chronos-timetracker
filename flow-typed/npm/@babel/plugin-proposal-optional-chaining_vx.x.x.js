@@ -27,6 +27,6 @@ declare module '@babel/plugin-proposal-optional-chaining/lib/index' {
 }
 
 // Filename aliases
-declare module '@babel/plugin-proposal-optional-chaining/lib/index.js' {
+declare module '@babel/plugin-proposal-optional-chaining/lib/index.jsx' {
   declare module.exports: $Exports<'@babel/plugin-proposal-optional-chaining/lib/index'>;
 }

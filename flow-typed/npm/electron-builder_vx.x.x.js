@@ -62,6 +62,6 @@ declare module 'electron-builder/out/cli/install-app-deps.js' {
 declare module 'electron-builder/out/cli/start.js' {
   declare module.exports: $Exports<'electron-builder/out/cli/start'>;
 }
-declare module 'electron-builder/out/index.js' {
+declare module 'electron-builder/out/index.jsx' {
   declare module.exports: $Exports<'electron-builder/out/index'>;
 }

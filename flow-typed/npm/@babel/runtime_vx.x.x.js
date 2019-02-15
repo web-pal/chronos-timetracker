@@ -923,6 +923,6 @@ declare module '@babel/runtime/helpers/wrapAsyncGenerator.js' {
 declare module '@babel/runtime/helpers/wrapNativeSuper.js' {
   declare module.exports: $Exports<'@babel/runtime/helpers/wrapNativeSuper'>;
 }
-declare module '@babel/runtime/regenerator/index.js' {
+declare module '@babel/runtime/regenerator/index.jsx' {
   declare module.exports: $Exports<'@babel/runtime/regenerator/index'>;
 }

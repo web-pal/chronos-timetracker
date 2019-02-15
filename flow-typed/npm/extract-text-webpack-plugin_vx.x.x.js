@@ -54,7 +54,7 @@ declare module 'extract-text-webpack-plugin/dist/loader' {
 declare module 'extract-text-webpack-plugin/dist/cjs.js' {
   declare module.exports: $Exports<'extract-text-webpack-plugin/dist/cjs'>;
 }
-declare module 'extract-text-webpack-plugin/dist/index.js' {
+declare module 'extract-text-webpack-plugin/dist/index.jsx' {
   declare module.exports: $Exports<'extract-text-webpack-plugin/dist/index'>;
 }
 declare module 'extract-text-webpack-plugin/dist/lib/ExtractedModule.js' {

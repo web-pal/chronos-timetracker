@@ -46,7 +46,7 @@ declare module 'style-loader/useable' {
 declare module 'style-loader/index' {
   declare module.exports: $Exports<'style-loader'>;
 }
-declare module 'style-loader/index.js' {
+declare module 'style-loader/index.jsx' {
   declare module.exports: $Exports<'style-loader'>;
 }
 declare module 'style-loader/lib/addStyles.js' {

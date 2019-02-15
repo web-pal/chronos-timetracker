@@ -91,7 +91,7 @@ declare module 'webpack-dev-server/bin/webpack-dev-server.js' {
 declare module 'webpack-dev-server/client/index.bundle.js' {
   declare module.exports: $Exports<'webpack-dev-server/client/index.bundle'>;
 }
-declare module 'webpack-dev-server/client/index.js' {
+declare module 'webpack-dev-server/client/index.jsx' {
   declare module.exports: $Exports<'webpack-dev-server/client/index'>;
 }
 declare module 'webpack-dev-server/client/live.bundle.js' {

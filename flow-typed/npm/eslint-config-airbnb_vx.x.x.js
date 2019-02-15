@@ -61,7 +61,7 @@ declare module 'eslint-config-airbnb/base.js' {
 declare module 'eslint-config-airbnb/index' {
   declare module.exports: $Exports<'eslint-config-airbnb'>;
 }
-declare module 'eslint-config-airbnb/index.js' {
+declare module 'eslint-config-airbnb/index.jsx' {
   declare module.exports: $Exports<'eslint-config-airbnb'>;
 }
 declare module 'eslint-config-airbnb/legacy.js' {

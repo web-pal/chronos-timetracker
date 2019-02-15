@@ -34,6 +34,6 @@ declare module '@babel/plugin-transform-runtime/lib/index' {
 declare module '@babel/plugin-transform-runtime/lib/definitions.js' {
   declare module.exports: $Exports<'@babel/plugin-transform-runtime/lib/definitions'>;
 }
-declare module '@babel/plugin-transform-runtime/lib/index.js' {
+declare module '@babel/plugin-transform-runtime/lib/index.jsx' {
   declare module.exports: $Exports<'@babel/plugin-transform-runtime/lib/index'>;
 }

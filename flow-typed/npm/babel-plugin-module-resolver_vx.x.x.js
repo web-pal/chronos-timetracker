@@ -55,7 +55,7 @@ declare module 'babel-plugin-module-resolver/lib/utils' {
 }
 
 // Filename aliases
-declare module 'babel-plugin-module-resolver/lib/index.js' {
+declare module 'babel-plugin-module-resolver/lib/index.jsx' {
   declare module.exports: $Exports<'babel-plugin-module-resolver/lib/index'>;
 }
 declare module 'babel-plugin-module-resolver/lib/log.js' {

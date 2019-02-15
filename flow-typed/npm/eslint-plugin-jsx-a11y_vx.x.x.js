@@ -862,7 +862,7 @@ declare module 'eslint-plugin-jsx-a11y/__tests__/src/util/parserOptionsMapper-te
 declare module 'eslint-plugin-jsx-a11y/__tests__/src/util/schemas-test.js' {
   declare module.exports: $Exports<'eslint-plugin-jsx-a11y/__tests__/src/util/schemas-test'>;
 }
-declare module 'eslint-plugin-jsx-a11y/lib/index.js' {
+declare module 'eslint-plugin-jsx-a11y/lib/index.jsx' {
   declare module.exports: $Exports<'eslint-plugin-jsx-a11y/lib/index'>;
 }
 declare module 'eslint-plugin-jsx-a11y/lib/rules/accessible-emoji.js' {
@@ -1045,7 +1045,7 @@ declare module 'eslint-plugin-jsx-a11y/lib/util/implicitRoles/hr.js' {
 declare module 'eslint-plugin-jsx-a11y/lib/util/implicitRoles/img.js' {
   declare module.exports: $Exports<'eslint-plugin-jsx-a11y/lib/util/implicitRoles/img'>;
 }
-declare module 'eslint-plugin-jsx-a11y/lib/util/implicitRoles/index.js' {
+declare module 'eslint-plugin-jsx-a11y/lib/util/implicitRoles/index.jsx' {
   declare module.exports: $Exports<'eslint-plugin-jsx-a11y/lib/util/implicitRoles/index'>;
 }
 declare module 'eslint-plugin-jsx-a11y/lib/util/implicitRoles/input.js' {
