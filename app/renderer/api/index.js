@@ -51,7 +51,7 @@ export function authSelfHosted(
   return new Promise((resolve, reject) => {
     request.on('response', (response) => {
       const cookie = response.headers['set-cookie'];
-      if (response.headers['x-seraph-loginreason'].includes('OK')) {
+      if (response?.headers['x-seraph-loginreason']?.includes('OK')) {
         resolve(cookie.map((d) => {
           const name = d.split('=')[0];
           const value = d.split(`${name}=`)[1].split(';')[0];
