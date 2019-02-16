@@ -34,6 +34,7 @@ if (process.env.NODE_ENV === 'production') {
 
 const initialState = {
   attachments: [],
+  activeIndex: null,
 };
 
 const attachmentReducer = (
@@ -45,6 +46,7 @@ const attachmentReducer = (
       return {
         ...state,
         attachments: action.attachments,
+        activeIndex: action.activeIndex,
       };
     default:
       return state;

@@ -13,7 +13,8 @@ import {
   SizeAttachment,
 } from './styled';
 
-const DescriptionSectionAttachment = ({ attachment }) => (
+
+const DescriptionSectionAttachment = ({ attachment, showAttachmentWindow }) => (
   <MainDescriptionAttachmentContainer>
     <DescriptionAttachmentTitle>
       {
@@ -25,8 +26,9 @@ const DescriptionSectionAttachment = ({ attachment }) => (
       attachment.length === 0 ? null : (
         <DescriptionAttachmentsList>
           {
-            attachment.map(item => (
+            attachment.map((item, index) => (
               <DescriptionAttachmentItem
+                onClick={() => showAttachmentWindow(index)}
                 key={item.id}
               >
                 <ItemContainer>
