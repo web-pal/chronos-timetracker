@@ -41,6 +41,7 @@ export function* fetchSprints(): Generator<*, *, *> {
       {
         params: {
           boardId,
+          state: 'active',
         },
       },
     );
