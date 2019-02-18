@@ -170,7 +170,9 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
             channel={settings.updateChannel}
             updateCheckRunning={updateCheckRunning}
             checkForUpdates={() => {
-              dispatch(uiActions.setUiState('updateAvailable', null));
+              dispatch(uiActions.setUiState({
+                updateAvailable: null,
+              }));
               dispatch(updaterActions.checkUpdates());
             }}
             setChannel={(value) => {
@@ -197,7 +199,6 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
             updateAvailable={updateAvailable}
             downloadUpdateProgress={downloadUpdateProgress}
             onUpdateClick={() => {
-              console.log('uuuuuuuuuu');
               dispatch(updaterActions.downloadUpdate());
             }}
           />

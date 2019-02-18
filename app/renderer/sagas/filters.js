@@ -105,9 +105,11 @@ export function* saveFilter({
     yield put(actions.succeeded({
       resources: [filter],
     }));
-    yield put(uiActions.setUiState('saveFilterDialogOpen', false));
-    yield put(uiActions.setUiState('issuesSourceId', filter.id));
-    yield put(uiActions.setUiState('filterStatusesIsFetched', false));
+    yield put(uiActions.setUiState({
+      saveFilterDialogOpen: false,
+      issuesSourceId: filter.id,
+      filterStatusesIsFetched: false,
+    }));
     yield put(resourcesActions.clearResourceList({
       resourceType: 'issues',
       list: 'recentIssues',
@@ -121,7 +123,9 @@ export function* saveFilter({
         title: 'Failed to save filter',
         description: `${errObj.body.errorMessages.length} errors`,
       });
-      yield put(uiActions.setUiState('newJQLFilterErrors', errObj.body.errorMessages));
+      yield put(uiActions.setUiState({
+        newJQLFilterErrors: errObj.body.errorMessages,
+      }));
     } else {
       yield fork(notify, {
         title: 'Failed to save filter',

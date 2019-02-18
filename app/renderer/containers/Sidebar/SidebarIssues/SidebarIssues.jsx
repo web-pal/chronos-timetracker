@@ -138,15 +138,14 @@ const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
                             tracking={trackingIssueId === item.id}
                             baseUrl={baseUrl}
                             selectIssue={(issueId) => {
-                              dispatch(
-                                uiActions.setUiState('selectedIssueId', issueId),
-                              );
-                              dispatch(
-                                uiActions.setUiState('selectedWorklogId', null),
-                              );
+                              dispatch(uiActions.setUiState({
+                                selectedIssueId: issueId,
+                                selectedWorklogId: null,
+                              }));
                             }}
-                          /> :
-                          <IssueItemPlaceholder />
+                          /> : (
+                            <IssueItemPlaceholder />
+                          )
                         }
                       </ErrorBoundary>
                     </div>

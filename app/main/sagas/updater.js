@@ -29,12 +29,15 @@ if (process.env.NODE_ENV === 'development') {
   autoUpdater.allowDowngrade = true;
 }
 
-function* setRendererUiState(key, value) {
+function* setRendererUiState(
+  keyOrRootValues,
+  maybeValues,
+) {
   yield put({
     type: actionTypes.SET_UI_STATE,
     payload: {
-      key,
-      value,
+      keyOrRootValues,
+      maybeValues,
     },
     scope: 'mainRenderer',
   });
@@ -52,13 +55,23 @@ function createUpdaterChannel({ updater, event }) {
 
 function* onUpdateAvailable({ channel }) {
   const update = yield take(channel);
-  yield call(setRendererUiState, 'updateAvailable', update.releaseName);
+  yield call(
+    setRendererUiState,
+    {
+      updateAvailable: update.releaseName,
+    },
+  );
   channel.close();
 }
 
 function* onUpdateNotAvailable({ channel }) {
   yield take(channel);
-  yield call(setRendererUiState, 'updateAvailable', false);
+  yield call(
+    setRendererUiState,
+    {
+      updateAvailable: false,
+    },
+  );
   channel.close();
 }
 
@@ -74,7 +87,12 @@ function showMessageBoxAsync(options) {
 function* onUpdateDownloaded({ channel }) {
   const update = yield take(channel);
 
-  yield call(setRendererUiState, 'downloadedUpdate', true);
+  yield call(
+    setRendererUiState,
+    {
+      downloadedUpdate: true,
+    },
+  );
 
   function parseReleaseNotes(releaseNotes) {
     return releaseNotes
@@ -117,7 +135,12 @@ function* onUpdateDownloaded({ channel }) {
 function* onDownloadProgress({ channel }) {
   while (true) {
     const progress = yield take(channel);
-    yield call(setRendererUiState, 'downloadUpdateProgress', progress.percent);
+    yield call(
+      setRendererUiState,
+      {
+        downloadUpdateProgress: progress.percent,
+      },
+    );
     if (progress.percent === 100) {
       channel.close();
     }

@@ -84,7 +84,9 @@ export function* addIssueComment({
   });
   try {
     yield call(infoLog, 'adding comment', text, issueId);
-    yield put(uiActions.setUiState('commentAdding', true));
+    yield put(uiActions.setUiState({
+      commentAdding: true,
+    }));
     const newComment = yield call(
       jiraApi.addIssueComment,
       {
@@ -100,9 +102,13 @@ export function* addIssueComment({
     yield put(actions.succeeded({
       resources: [newComment],
     }));
-    yield put(uiActions.setUiState('commentAdding', false));
+    yield put(uiActions.setUiState({
+      commentAdding: false,
+    }));
   } catch (err) {
-    yield put(uiActions.setUiState('commentAdding', false));
+    yield put(uiActions.setUiState({
+      commentAdding: false,
+    }));
     yield fork(notify, {
       title: 'failed to add comment',
     });

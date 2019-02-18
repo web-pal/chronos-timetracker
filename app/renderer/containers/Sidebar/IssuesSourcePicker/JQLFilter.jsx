@@ -62,11 +62,17 @@ const JQLFilter = ({
       isLabelHidden
       invalidMessage={newJQLFilterErrors.join(', ')}
       onChange={(e) => {
-        dispatch(uiActions.setUiState('newJQLFilterErrors', []));
+        dispatch(uiActions.setUiState({
+          newJQLFilterErrors: [],
+        }));
         if (e.target.value === R.path(['meta', 'filter', 'jql'], selectedFilter)) {
-          dispatch(uiActions.setUiState('newJQLFilterValue', null));
+          dispatch(uiActions.setUiState({
+            newJQLFilterValue: null,
+          }));
         } else {
-          dispatch(uiActions.setUiState('newJQLFilterValue', e.target.value));
+          dispatch(uiActions.setUiState({
+            newJQLFilterValue: e.target.value,
+          }));
         }
       }}
       shouldFitContainer
@@ -74,7 +80,11 @@ const JQLFilter = ({
     <Flex justifyContent="flex-end">
       <InlineDialog
         isOpen={saveFilterDialogOpen}
-        onClose={() => dispatch(uiActions.setUiState('saveFilterDialogOpen', false))}
+        onClose={() => {
+          dispatch(uiActions.setUiState({
+            saveFilterDialogOpen: false,
+          }));
+        }}
         content={(
           <Flex column>
             <InputLabel>New filter name</InputLabel>
@@ -83,7 +93,11 @@ const JQLFilter = ({
                 placeholder="New filter name"
                 isLabelHidden
                 value={newJQLFilterName}
-                onChange={e => dispatch(uiActions.setUiState('newJQLFilterName', e.target.value))}
+                onChange={(e) => {
+                  dispatch(uiActions.setUiState({
+                    newJQLFilterName: e.target.value,
+                  }));
+                }}
                 shouldFitContainer
               />
               <Button
@@ -104,7 +118,11 @@ const JQLFilter = ({
       >
         <Button
           appearance="link"
-          onClick={() => dispatch(uiActions.setUiState('saveFilterDialogOpen', !saveFilterDialogOpen))}
+          onClick={() => {
+            dispatch(uiActions.setUiState({
+              saveFilterDialogOpen: !saveFilterDialogOpen,
+            }));
+          }}
           isDisabled={!newJQLFilterValue}
         >
           New
@@ -126,7 +144,11 @@ const JQLFilter = ({
       <Button
         appearance="subtle-link"
         isDisabled={newJQLFilterValue === null}
-        onClick={() => dispatch(uiActions.setUiState('newJQLFilterValue', null))}
+        onClick={() => {
+          dispatch(uiActions.setUiState({
+            newJQLFilterValue: null,
+          }));
+        }}
       >
         Reset
       </Button>

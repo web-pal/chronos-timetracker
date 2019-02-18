@@ -238,7 +238,9 @@ class WorklogModal extends Component<Props, State> {
       <ModalDialog
         onClose={() => {
           dispatch(uiActions.setModalState('worklog', false));
-          dispatch(uiActions.setUiState('editWorklogId', null));
+          dispatch(uiActions.setUiState({
+            editWorklogId: null,
+          }));
         }}
         footer={() => (
           <ModalFooter>
@@ -276,7 +278,9 @@ class WorklogModal extends Component<Props, State> {
                   appearance="subtle"
                   onClick={() => {
                     dispatch(uiActions.setModalState('worklog', false));
-                    dispatch(uiActions.setUiState('editWorklogId', null));
+                    dispatch(uiActions.setUiState({
+                      editWorklogId: null,
+                    }));
                   }}
                 >
                   Cancel

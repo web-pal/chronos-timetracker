@@ -99,8 +99,10 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
                     active={selectedWorklogId === worklog.id}
                     showShowButton={currentIssueViewTab !== 'Worklogs'}
                     selectIssue={(issueId) => {
-                      dispatch(uiActions.setUiState('selectedIssueId', issueId));
-                      dispatch(uiActions.setUiState('selectedWorklogId', worklog.id));
+                      dispatch(uiActions.setUiState({
+                        selectedIssueId: issueId,
+                        selectedWorklogId: worklog.id,
+                      }));
                       dispatch(uiActions.issueWorklogsScrollToIndexRequest(
                         worklog.id,
                         issueId,
@@ -108,10 +110,9 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
                     }}
                     onClickShow={
                       (issueId) => {
-                        dispatch(uiActions.setUiState(
-                          'issueViewTab',
-                          'Worklogs',
-                        ));
+                        dispatch(uiActions.setUiState({
+                          issueViewTab: 'Worklogs',
+                        }));
                         dispatch(uiActions.issueWorklogsScrollToIndexRequest(
                           worklog.id,
                           issueId,

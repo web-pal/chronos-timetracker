@@ -778,10 +778,9 @@ function* fetchNewIssue({ issueIdOrKey }): Generator<*, *, *> {
     yield put(actions.succeeded({
       resources: [issue],
     }));
-    yield put(uiActions.setUiState(
-      'selectedIssueId',
-      issue.id,
-    ));
+    yield put(uiActions.setUiState({
+      selectedIssueId: issue.id,
+    }));
     yield fork(refetchIssues, false);
     trackMixpanel('New issue was created');
   } catch (err) {
@@ -821,10 +820,9 @@ function* fetchUpdateIssue({ issueIdOrKey }): Generator<*, *, *> {
     yield put(actions.succeeded({
       resources: [issue],
     }));
-    yield put(uiActions.setUiState(
-      'selectedIssueId',
-      issue.id,
-    ));
+    yield put(uiActions.setUiState({
+      selectedIssueId: issue.id,
+    }));
   } catch (err) {
     yield call(throwError, err);
   }

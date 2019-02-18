@@ -77,10 +77,14 @@ const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
         if (item.meta.board) type = item.meta.board.type;
         if (item.meta.project) type = 'project';
         if (item.meta.filter) type = 'filter';
-        dispatch(uiActions.setUiState('issuesSprintId', null));
-        dispatch(uiActions.setUiState('issuesSourceId', item.value));
-        dispatch(uiActions.setUiState('issuesSourceType', type));
-        dispatch(uiActions.setUiState('sidebarFiltersIsOpen', false));
+
+        dispatch(uiActions.setUiState({
+          issuesSprintId: null,
+          issuesSourceId: item.value,
+          issuesSourceType: type,
+          sidebarFiltersIsOpen: false,
+        }));
+
         dispatch(uiActions.setIssuesFilters('assignee', []));
         dispatch(uiActions.setIssuesFilters('status', []));
         dispatch(uiActions.setIssuesFilters('type', []));
@@ -91,7 +95,9 @@ const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
           }));
           dispatch(sprintsActions.fetchSprintsRequest());
         } else if (item.value) {
-          dispatch(uiActions.setUiState('filterStatusesIsFetched', false));
+          dispatch(uiActions.setUiState({
+            filterStatusesIsFetched: false,
+          }));
           dispatch(resourcesActions.clearResourceList({
             resourceType: 'issues',
             list: 'recentIssues',
@@ -113,8 +119,10 @@ const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
         defaultSelected={selectedSprintOption || undefined}
         placeholder="Select sprint"
         onSelected={({ item }) => {
-          dispatch(uiActions.setUiState('issuesSprintId', item.value));
-          dispatch(uiActions.setUiState('sidebarFiltersIsOpen', false));
+          dispatch(uiActions.setUiState({
+            issuesSprintId: item.value,
+            sidebarFiltersIsOpen: false,
+          }));
           dispatch(issuesActions.refetchIssuesRequest());
         }}
         isLoading={sprintsFetching}

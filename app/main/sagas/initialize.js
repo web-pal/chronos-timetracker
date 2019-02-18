@@ -198,7 +198,7 @@ function* forkInitialRendererProcess() {
           minHeight: 800,
           webPreferences: {
             devTools: (
-              process.env.NODE_ENV === 'develolment'
+              process.env.NODE_ENV === 'development'
               || process.env.DEBUG_PROD === 'true'
             ),
             webSecurity: false,

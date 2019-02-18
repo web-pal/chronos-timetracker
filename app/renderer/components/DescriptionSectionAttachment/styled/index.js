@@ -27,6 +27,7 @@ export const DescriptionAttachmentsList = styled.ul`
 `;
 
 export const DescriptionAttachmentItem = styled.li`
+  cursor: pointer;
   float: left;
   margin: 10px;
   width: 170px;

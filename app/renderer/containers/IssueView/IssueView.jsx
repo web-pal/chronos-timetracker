@@ -84,7 +84,9 @@ const IssueView: StatelessFunctionalComponent<Props> = ({
           <IssueViewHeader />
           <IssueViewTabs
             onTabClick={(tab) => {
-              dispatch(uiActions.setUiState('issueViewTab', tab));
+              dispatch(uiActions.setUiState({
+                issueViewTab: tab,
+              }));
             }}
             currentTab={currentTab}
             tabs={tabs}

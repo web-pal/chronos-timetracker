@@ -106,12 +106,7 @@ export default function ui(
   action: Action,
 ) {
   switch (action.type) {
-    case actionTypes.SET_UI_STATE:
-      return {
-        ...state,
-        [action.payload.key]: action.payload.value,
-      };
-    case actionTypes.SET_UI_STATE2: {
+    case actionTypes.SET_UI_STATE: {
       const {
         keyOrRootValues,
         maybeValues,

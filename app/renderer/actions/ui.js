@@ -22,23 +22,10 @@ export const initialConfigureApp = ({
 });
 
 export const setUiState = (
-  key: string,
-  value: any,
-  scope: string,
-): UiAction => ({
-  type: actionTypes.SET_UI_STATE,
-  payload: {
-    key,
-    value,
-  },
-  scope,
-});
-
-export const setUiState2 = (
   keyOrRootValues: any,
   maybeValues: any,
 ): UiAction => ({
-  type: actionTypes.SET_UI_STATE2,
+  type: actionTypes.SET_UI_STATE,
   payload: {
     keyOrRootValues,
     maybeValues,

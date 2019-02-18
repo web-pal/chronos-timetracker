@@ -38,7 +38,7 @@ type Props = {
 const WorklogCommentOptions: StatelessFunctionalComponent<Props> = ({
   postAlsoAsIssueComment,
   changePostOption,
-}: Props): Node =>
+}: Props): Node => (
   <IssueCommentCheckboxWrapper>
     <CheckboxGroup>
       <Checkbox
@@ -49,7 +49,8 @@ const WorklogCommentOptions: StatelessFunctionalComponent<Props> = ({
         onChange={changePostOption}
       />
     </CheckboxGroup>
-  </IssueCommentCheckboxWrapper>;
+  </IssueCommentCheckboxWrapper>
+);
 
 export default compose(
   connect(
@@ -65,6 +66,10 @@ export default compose(
     }: {
       postAlsoAsIssueComment: boolean,
       dispatch: Dispatch,
-    }) => () => dispatch(uiActions.setUiState('postAlsoAsIssueComment', !postAlsoAsIssueComment))
-  })
+    }) => () => {
+      dispatch(uiActions.setUiState({
+        postAlsoAsIssueComment: !postAlsoAsIssueComment,
+      }));
+    },
+  }),
 )(WorklogCommentOptions);

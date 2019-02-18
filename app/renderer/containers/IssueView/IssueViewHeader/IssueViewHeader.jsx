@@ -148,14 +148,10 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
       <ButtonGroup>
         <Button
           onClick={() => {
-            dispatch(uiActions.setUiState(
-              'editWorklogId',
-              null,
-            ));
-            dispatch(uiActions.setUiState(
-              'worklogFormIssueId',
-              selectedIssue.id,
-            ));
+            dispatch(uiActions.setUiState({
+              editWorklogId: null,
+              worklogFormIssueId: selectedIssue.id,
+            }));
             dispatch(uiActions.setModalState(
               'worklog',
               true,

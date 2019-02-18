@@ -54,7 +54,9 @@ export function* authSelfHostedFlow(): Generator<*, *, *> {
       },
     } = yield take(actionTypes.AUTH_SELF_HOST_REQUEST);
     try {
-      yield put(uiActions.setUiState('authRequestInProcess', true));
+      yield put(uiActions.setUiState({
+        authRequestInProcess: true,
+      }));
       const { href, hostname, port, pathname } = host;
       const protocol = host.protocol.slice(0, -1);
       const cookies = yield call(authSelfHosted, {
@@ -73,15 +75,18 @@ export function* authSelfHostedFlow(): Generator<*, *, *> {
       }));
     } catch (err) {
       if (err && err.message) {
-        yield put(uiActions.setUiState('authError', err.message));
+        yield put(uiActions.setUiState({
+          authError: err.message,
+        }));
       } else {
-        yield put(uiActions.setUiState(
-          'authError',
-          'Can not authenticate user. Please try again',
-        ));
+        yield put(uiActions.setUiState({
+          authError: 'Can not authenticate user. Please try again',
+        }));
       }
       yield call(throwError, err);
-      yield put(uiActions.setUiState('authRequestInProcess', false));
+      yield put(uiActions.setUiState({
+        authRequestInProcess: false,
+      }));
     }
   }
 }
@@ -113,7 +118,9 @@ export function* authFlow(): Generator<*, *, *> {
         pathname,
         cookies,
       } = yield take(actionTypes.AUTH_REQUEST);
-      yield put(uiActions.setUiState('authRequestInProcess', true));
+      yield put(uiActions.setUiState({
+        authRequestInProcess: true,
+      }));
 
       const clearedCookies = (
         cookies.map(cookie => ({
@@ -205,15 +212,14 @@ export function* authFlow(): Generator<*, *, *> {
           },
         ]));
       }
-      yield put(uiActions.setUiState('authRequestInProcess', false));
-      yield put(uiActions.setUiState('authFormStep', 1));
-      yield put(uiActions.setUiState('authFormIsComplete', false));
-      yield put(uiActions.setUiState('initializeInProcess', false));
-      yield put(uiActions.setUiState('authorized', false));
-      yield put(uiActions.setUiState(
-        'authError',
-        'Can not authenticate user. Please try again',
-      ));
+      yield put(uiActions.setUiState({
+        authRequestInProcess: false,
+        authFormStep: 1,
+        authFormIsComplete: false,
+        initializeInProcess: false,
+        authorized: false,
+        authError: 'Can not authenticate user. Please try again',
+      }));
       yield call(throwError, err.result ? err.result : err);
     }
   }
@@ -283,7 +289,9 @@ export function* logoutFlow(): Generator<*, *, *> {
               && a.hostname !== lastUsedAccount.hostname
             ),
           );
-          yield put(uiActions.setUiState('accounts', accounts));
+          yield put(uiActions.setUiState({
+            accounts,
+          }));
           yield call(
             setElectronStorage,
             'accounts',
@@ -295,7 +303,9 @@ export function* logoutFlow(): Generator<*, *, *> {
       yield put({
         type: actionTypes.__CLEAR_ALL_REDUCERS__,
       });
-      yield put(uiActions.setUiState('accounts', accounts));
+      yield put(uiActions.setUiState({
+        accounts,
+      }));
       trackMixpanel('Logout');
       incrementMixpanel('Logout', 1);
     } catch (err) {
@@ -359,7 +369,9 @@ export function* switchAccountFlow(): Generator<*, *, *> {
         yield put({
           type: actionTypes.__CLEAR_ALL_REDUCERS__,
         });
-        yield put(uiActions.setUiState('initializeInProcess', true));
+        yield put(uiActions.setUiState({
+          initializeInProcess: true,
+        }));
         yield put(authActions.authRequest({
           protocol,
           hostname,

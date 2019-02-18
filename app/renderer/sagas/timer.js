@@ -160,7 +160,9 @@ function* handleTick(timerChannel) {
 
 function* timerFlow() {
   const selectedIssueId = yield select(getUiState('selectedIssueId'));
-  yield put(uiActions.setUiState('trackingIssueId', selectedIssueId));
+  yield put(uiActions.setUiState({
+    trackingIssueId: selectedIssueId,
+  }));
   yield put(trayActions.trayStartTimer());
 
   const timerChannel = yield call(createTimerChannel);
@@ -203,7 +205,9 @@ function* timerFlow() {
           yield fork(notify, {
             title: 'Please set comment for worklog',
           });
-          yield put(uiActions.setUiState('isCommentDialogOpen', true));
+          yield put(uiActions.setUiState({
+            isCommentDialogOpen: true,
+          }));
         } else {
           const issue = yield select(getTrackingIssue);
           const timeSpentInSeconds = yield select(getTimerState('time'));

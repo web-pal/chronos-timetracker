@@ -65,10 +65,9 @@ const IssuesHeader: StatelessFunctionalComponent<Props> = ({
       type="text"
       value={searchValue}
       onChange={(ev) => {
-        dispatch(uiActions.setUiState(
-          'issuesSearch',
-          ev.target.value,
-        ));
+        dispatch(uiActions.setUiState({
+          issuesSearch: ev.target.value,
+        }));
         dispatch(issuesActions.refetchIssuesRequest(true));
       }}
     />
@@ -99,10 +98,9 @@ const IssuesHeader: StatelessFunctionalComponent<Props> = ({
               if (!filterStatusesIsFetched) {
                 dispatch(projectsActions.fetchProjectStatusesRequest());
               }
-              dispatch(uiActions.setUiState(
-                'sidebarFiltersIsOpen',
-                !sidebarFiltersIsOpen,
-              ));
+              dispatch(uiActions.setUiState({
+                sidebarFiltersIsOpen: !sidebarFiltersIsOpen,
+              }));
             }}
           />
           )

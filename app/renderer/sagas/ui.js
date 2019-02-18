@@ -132,10 +132,11 @@ export function* scrollToIndexRequest({
 }): Generator<*, *, *> {
   try {
     const worklogs = yield select(getIssueWorklogs(issueId));
-    yield put(uiActions.setUiState(
-      'issueViewWorklogsScrollToIndex',
-      worklogs.findIndex(w => worklogId === w.id),
-    ));
+    yield put(uiActions.setUiState({
+      issueViewWorklogsScrollToIndex: (
+        worklogs.findIndex(w => worklogId === w.id)
+      ),
+    }));
   } catch (err) {
     yield call(throwError, err);
   }
@@ -150,13 +151,30 @@ export function* watchScrollToIndexRequest(): Generator<*, *, *> {
 
 function* onUiChange({
   payload: {
-    key,
-    value,
+    keyOrRootValues,
+    maybeValues,
   },
 }): Generator<*, *, *> {
   try {
+    const [
+      values,
+      key,
+    ] = (
+      maybeValues === undefined
+        ? [
+          keyOrRootValues,
+          null,
+        ]
+        : [
+          maybeValues,
+          keyOrRootValues,
+        ]
+    );
     if (key === 'selectedIssueId') {
-      yield fork(issueSelectFlow, value);
+      yield fork(issueSelectFlow, values);
+    }
+    if (values.selectedIssueId) {
+      yield fork(issueSelectFlow, values.selectedIssueId);
     }
   } catch (err) {
     yield call(throwError, err);

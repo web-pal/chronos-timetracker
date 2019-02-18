@@ -112,10 +112,9 @@ export function* saveWorklog({
 }: {
   payload: any,
 }): Generator<*, *, *> {
-  yield put(uiActions.setUiState(
-    'saveWorklogInProcess',
-    true,
-  ));
+  yield put(uiActions.setUiState({
+    saveWorklogInProcess: true,
+  }));
   const worklogsActions = createActionCreators(
     worklogId ? 'update' : 'create',
     {
@@ -157,10 +156,9 @@ export function* saveWorklog({
         infoLog,
         'uploadWorklog cancelled because timeSpentSeconds < 60',
       );
-      yield put(uiActions.setUiState(
-        'saveWorklogInProcess',
-        false,
-      ));
+      yield put(uiActions.setUiState({
+        saveWorklogInProcess: false,
+      }));
       yield cancel();
     }
 
@@ -222,18 +220,11 @@ export function* saveWorklog({
       }],
     }));
 
-    yield put(uiActions.setUiState(
-      'selectedIssueId',
-      issueId,
-    ));
-    yield put(uiActions.setUiState(
-      'issueViewTab',
-      'Worklogs',
-    ));
-    yield put(uiActions.setUiState(
-      'selectedWorklogId',
-      worklog.id,
-    ));
+    yield put(uiActions.setUiState({
+      selectedIssueId: issueId,
+      issueViewTab: 'Worklogs',
+      selectedWorklogId: worklog.id,
+    }));
     yield fork(scrollToIndexRequest, {
       issueId,
       worklogId: worklog.id,
@@ -245,16 +236,14 @@ export function* saveWorklog({
         timeSpentInSeconds,
       },
     );
-    yield put(uiActions.setUiState(
-      'saveWorklogInProcess',
-      false,
-    ));
+    yield put(uiActions.setUiState({
+      saveWorklogInProcess: false,
+    }));
     return worklog;
   } catch (err) {
-    yield put(uiActions.setUiState(
-      'saveWorklogInProcess',
-      false,
-    ));
+    yield put(uiActions.setUiState({
+      saveWorklogInProcess: false,
+    }));
     yield call(throwError, err);
   }
 }

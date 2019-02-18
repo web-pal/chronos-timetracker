@@ -116,7 +116,9 @@ export function* fetchProjectStatuses(): Generator<*, *, *> {
       yield put(statusesActions.succeeded({
         resources: Object.keys(uniqueStatuses).map(id => uniqueStatuses[id]),
       }));
-      yield put(uiActions.setUiState('filterStatusesIsFetched', true));
+      yield put(uiActions.setUiState({
+        filterStatusesIsFetched: true,
+      }));
     }
   } catch (err) {
     yield put(typesActions.succeeded({
@@ -125,7 +127,9 @@ export function* fetchProjectStatuses(): Generator<*, *, *> {
     yield put(statusesActions.succeeded({
       resources: [],
     }));
-    yield put(uiActions.setUiState('filterStatusesIsFetched', true));
+    yield put(uiActions.setUiState({
+      filterStatusesIsFetched: true,
+    }));
     yield call(throwError, err);
   }
 }

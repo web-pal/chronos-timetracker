@@ -203,10 +203,12 @@ export function* takeInitialConfigureApp() {
         callback({ cancel: false, requestHeaders: details.requestHeaders });
       });
 
-      yield put(uiActions.setUiState('protocol', protocol));
-      yield put(uiActions.setUiState('hostname', hostname));
-      yield put(uiActions.setUiState('port', port));
-      yield put(uiActions.setUiState('pathname', pathname));
+      yield put(uiActions.setUiState({
+        protocol,
+        hostname,
+        port,
+        pathname,
+      }));
 
       const baseUrl = yield select(getBaseUrl);
 
@@ -234,7 +236,7 @@ export function* takeInitialConfigureApp() {
         `persistUiState_${hostname}`,
         {},
       );
-      yield put(uiActions.setUiState2({
+      yield put(uiActions.setUiState({
         ...persistUiState,
         accounts,
       }));
@@ -259,8 +261,10 @@ export function* takeInitialConfigureApp() {
       yield fork(fetchFilters);
       yield fork(fetchBoards);
 
-      yield put(uiActions.setUiState('authorized', true));
-      yield put(uiActions.setUiState('authRequestInProcess', false));
+      yield put(uiActions.setUiState({
+        authorized: true,
+        authRequestInProcess: false,
+      }));
 
       yield put(resourcesActions.setResourceMeta({
         resourceType: 'issues',
@@ -268,17 +272,23 @@ export function* takeInitialConfigureApp() {
           refetchFilterIssuesMarker: false,
         },
       }));
-      yield put(uiActions.setUiState('initializeInProcess', false));
+      yield put(uiActions.setUiState({
+        initializeInProcess: false,
+      }));
     } catch (err) {
       yield call(throwError, err);
-      yield put(uiActions.setUiState('authorized', false));
-      yield put(uiActions.setUiState('initializeInProcess', false));
+      yield put(uiActions.setUiState({
+        authorized: false,
+        initializeInProcess: false,
+      }));
     }
   }
 }
 
 export function* initializeApp(): Generator<*, *, *> {
-  yield put(uiActions.setUiState('initializeInProcess', true));
+  yield put(uiActions.setUiState({
+    initializeInProcess: true,
+  }));
   try {
     const authCredentials = yield call(
       getElectronStorage,
@@ -342,12 +352,16 @@ export function* initializeApp(): Generator<*, *, *> {
         rootApiUrl,
       }));
     } else {
-      yield put(uiActions.setUiState('initializeInProcess', false));
+      yield put(uiActions.setUiState({
+        initializeInProcess: false,
+      }));
     }
   } catch (err) {
     yield call(throwError, err);
-    yield put(uiActions.setUiState('authorized', false));
-    yield put(uiActions.setUiState('initializeInProcess', false));
+    yield put(uiActions.setUiState({
+      authorized: false,
+      initializeInProcess: false,
+    }));
   }
 }
 
@@ -394,7 +408,9 @@ export function* handleQuitRequest(): Generator<*, *, *> {
   while (true) {
     yield take(sharedActionTypes.QUIT_REQUEST);
     yield call(savePersistStorage);
-    yield put(uiActions.setUiState('readyToQuit', true));
+    yield put(uiActions.setUiState({
+      readyToQuit: true,
+    }));
     if (process.env.NODE_ENV === 'development') {
       window.location.reload();
     } else {

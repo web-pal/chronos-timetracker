@@ -1,6 +1,5 @@
 // @flow
 export const SET_UI_STATE = 'ui/SET_UI_STATE';
-export const SET_UI_STATE2 = 'ui/SET_UI_STATE2';
 export const RESET_UI_STATE = 'ui/RESET_UI_STATE';
 export const SET_MODAL_STATE = 'ui/SET_MODAL_STATE';
 export const SET_ISSUES_FILTER = 'ui/SET_ISSUES_FILTER';

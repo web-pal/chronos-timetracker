@@ -82,7 +82,13 @@ const AuthDebugger: StatelessFunctionalComponent<Props> = ({
           <ShortcutIcon onClick={openURLInBrowser('https://github.com/web-pal/chronos-timetracker/issues/new')} />
         </Tooltip>
         <Tooltip content="Close dialog">
-          <CrossIcon onClick={() => dispatch(uiActions.setUiState('showAuthDebugConsole', false))} />
+          <CrossIcon
+            onClick={() => {
+              dispatch(uiActions.setUiState({
+                showAuthDebugConsole: false,
+              }));
+            }}
+          />
         </Tooltip>
       </DebugActions>
     </DebugHeader>

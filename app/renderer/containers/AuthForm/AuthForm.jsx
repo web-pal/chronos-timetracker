@@ -92,7 +92,9 @@ const AuthForm: StatelessFunctionalComponent<Props> = ({
             accounts={accounts}
             authError={authError}
             onBack={() => {
-              dispatch(uiActions.setUiState('authFormStep', 1));
+              dispatch(uiActions.setUiState({
+                authFormStep: 1,
+              }));
             }}
           />
           )
@@ -103,15 +105,18 @@ const AuthForm: StatelessFunctionalComponent<Props> = ({
           onContinue={() => {
             const host = transformValidHost(team);
             if (host) {
-              dispatch(
-                uiActions.setUiState(
-                  'authFormStep',
-                  host.origin.endsWith('.atlassian.net') ? 2 : 3,
+              dispatch(uiActions.setUiState({
+                authFormStep: (
+                  host.origin.endsWith('.atlassian.net')
+                    ? 2
+                    : 3
                 ),
-              );
-              dispatch(uiActions.setUiState('authError', null));
+                authError: null,
+              }));
             } else {
-              dispatch(uiActions.setUiState('authError', 'Invalid Jira url'));
+              dispatch(uiActions.setUiState({
+                authError: 'Invalid Jira url',
+              }));
             }
           }}
           dispatch={dispatch}
@@ -127,11 +132,15 @@ const AuthForm: StatelessFunctionalComponent<Props> = ({
             dispatch(authActions.authRequest(data));
           }}
           onError={(err) => {
-            dispatch(uiActions.setUiState('authError', err));
+            dispatch(uiActions.setUiState({
+              authError: err,
+            }));
           }}
           onBack={() => {
-            dispatch(uiActions.setUiState('authFormStep', 1));
-            dispatch(uiActions.setUiState('authFormIsComplete', false));
+            dispatch(uiActions.setUiState({
+              authFormStep: 1,
+              authFormIsComplete: false,
+            }));
           }}
         />
         <SelfHostLoginStep
@@ -145,19 +154,20 @@ const AuthForm: StatelessFunctionalComponent<Props> = ({
             }));
           }}
           onBack={() => {
-            dispatch(uiActions.setUiState('authError', null));
-            dispatch(uiActions.setUiState('authFormStep', 1));
-            dispatch(uiActions.setUiState('authFormIsComplete', false));
+            dispatch(uiActions.setUiState({
+              authError: null,
+              authFormStep: 1,
+              authFormIsComplete: false,
+            }));
           }}
         />
       </ContentOuter>
     </Flex>
     <Hint
       onClick={() => {
-        dispatch(uiActions.setUiState(
-          'showAuthDebugConsole',
-          true,
-        ));
+        dispatch(uiActions.setUiState({
+          showAuthDebugConsole: true,
+        }));
       }}
     >
       Can not log in?
