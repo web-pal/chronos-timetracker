@@ -1,6 +1,6 @@
 {
   "name": "Chronos",
-  "version": "3.0.0-alpha",
+  "version": "3.0.0-beta",
   "description": "Full functionality time tracking software with direct JIRA integration",
   "scripts": {
     "dev": "yarn start-renderer-dev",
