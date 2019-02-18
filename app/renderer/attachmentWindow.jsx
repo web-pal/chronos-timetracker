@@ -48,6 +48,21 @@ const attachmentReducer = (
         attachments: action.attachments,
         activeIndex: action.activeIndex,
       };
+    case actionTypes.NEXT_ATTACHMENT:
+      return {
+        ...state,
+        activeIndex: state.activeIndex + 1,
+      };
+    case actionTypes.PREV_ATTACHMENT:
+      return {
+        ...state,
+        activeIndex: state.activeIndex - 1,
+      };
+    case actionTypes.SELECT_ATTACHMENT:
+      return {
+        ...state,
+        activeIndex: action.payload,
+      };
     default:
       return state;
   }

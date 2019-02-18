@@ -77,7 +77,6 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
     <IssueDetailsContainer>
       <Flex row spaceBetween>
         <DetailsColumn>
-
           <Flex row spaceBetween>
             <DetailsLabel>
               Type:
@@ -275,7 +274,15 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
             if (tag && (tag === 'img' || tag === 'a')) {
               e.preventDefault();
               if (tag === 'img') {
-                dispatch(issuesActions.showAttachmentWindow({ issueId: issue.id, activeIndex: null }));
+                const imgName = e.target.getAttribute('data-attachment-name');
+                const attachments = issue.fields.attachment;
+                const activeIndex = attachments.findIndex(item => item.filename === imgName);
+                dispatch(issuesActions.showAttachmentWindow(
+                  {
+                    issueId: issue.id,
+                    activeIndex,
+                  },
+                ));
               } else {
                 // external links only
                 const url = e.target.getAttribute(tag === 'a' ? 'href' : 'src');
