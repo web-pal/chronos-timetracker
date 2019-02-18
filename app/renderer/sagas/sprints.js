@@ -16,6 +16,7 @@ import {
 } from 'api';
 import {
   getUiState,
+  getResourceItemById,
 } from 'selectors';
 import {
   actionTypes,
@@ -36,18 +37,29 @@ export function* fetchSprints(): Generator<*, *, *> {
     yield put(actions.pending());
 
     const boardId: Id = yield select(getUiState('issuesSourceId'));
-    const response = yield call(
-      jiraApi.getBoardSprints,
-      {
-        params: {
-          boardId,
-          state: 'active',
+    const board = yield select(getResourceItemById('boards', boardId));
+    if (
+      boardId
+      && board
+      && board.type === 'scrum'
+    ) {
+      const response = yield call(
+        jiraApi.getBoardSprints,
+        {
+          params: {
+            boardId,
+            state: 'active',
+          },
         },
-      },
-    );
-    yield put(actions.succeeded({
-      resources: response.values,
-    }));
+      );
+      yield put(actions.succeeded({
+        resources: response.values,
+      }));
+    } else {
+      yield put(actions.succeeded({
+        resources: [],
+      }));
+    }
   } catch (err) {
     yield put(actions.succeeded({
       resources: [],

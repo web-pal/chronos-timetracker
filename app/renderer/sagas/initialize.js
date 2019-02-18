@@ -9,6 +9,7 @@ import {
   delay,
   cancel,
   cancelled,
+  join,
 } from 'redux-saga/effects';
 import {
   remote,
@@ -62,6 +63,9 @@ import {
 import {
   fetchBoards,
 } from './boards';
+import {
+  fetchSprints,
+} from './sprints';
 import {
   throwError,
   infoLog,
@@ -255,11 +259,14 @@ export function* takeInitialConfigureApp() {
         allowPrerelease: persistSettings.updateChannel !== 'stable',
       }));
       yield put(updaterActions.checkUpdates());
+      const boardsTask = yield fork(fetchBoards);
       yield call(fetchIssueFields);
       yield fork(fetchEpics);
       yield fork(fetchProjects);
       yield fork(fetchFilters);
-      yield fork(fetchBoards);
+
+      yield join(boardsTask);
+      yield fork(fetchSprints);
 
       yield put(uiActions.setUiState({
         authorized: true,
