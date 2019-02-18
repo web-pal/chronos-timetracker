@@ -36,7 +36,10 @@ export default function settings(
     case actionTypes.FILL_LOCAL_DESKTOP_SETTINGS:
       return {
         ...state,
-        localDesktopSettings: action.payload,
+        localDesktopSettings: {
+          ...state.localDesktopSettings,
+          ...action.payload,
+        },
       };
     case actionTypes.SET_SETTINGS_MODAL_TAB:
       return {
