@@ -43,12 +43,14 @@ export const ItemContainer = styled.div`
   
   &:hover {
     background: rgb(239,239,239);
+    cursor:pointer;
   }
 `;
 
 export const ItemImage = styled.img`
-  width: 150px;
-  height: 120px;
+  display:block;
+  max-width: 50%;
+  height: auto;
 `;
 
 export const InfoConatiner = styled.div`
