@@ -64,28 +64,39 @@ const WorklogItem: StatelessFunctionalComponent<Props> = ({
       )}
       <WorklogActions>
         <Tooltip description="Open worklog in JIRA" position="left">
-          <LinkIcon
+          <span
             onClick={openWorklogInBrowser(worklog.id, issueKey, baseUrl)}
-            label="Open in browser"
-            size="small"
-            primaryColor="#707070"
-          />
+          >
+            <LinkIcon
+              label="Open in browser"
+              size="small"
+              primaryColor="#707070"
+            />
+          </span>
         </Tooltip>
         <Tooltip description="Edit worklog" position="left">
-          <EditFilledIcon
-            onClick={() => onEditWorklog()}
-            label="Edit"
-            size="small"
-            primaryColor="#707070"
-          />
+          <span
+            onClick={() => {
+              onEditWorklog();
+            }}
+          >
+            <EditFilledIcon
+              label="Edit"
+              size="small"
+              primaryColor="#707070"
+            />
+          </span>
         </Tooltip>
         <Tooltip description="Delete worklog" position="left">
-          <TrashIcon
+          <span
             onClick={() => onDeleteWorklog()}
-            label="Delete"
-            size="small"
-            primaryColor="#707070"
-          />
+          >
+            <TrashIcon
+              label="Delete"
+              size="small"
+              primaryColor="#707070"
+            />
+          </span>
         </Tooltip>
       </WorklogActions>
     </Flex>

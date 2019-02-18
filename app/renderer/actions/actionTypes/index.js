@@ -11,6 +11,7 @@ export * from './sprints';
 export * from './issues';
 export * from './timer';
 export * from './worklogs';
+export * from './attachments';
 
 export const INITIAL_CONFIGURE_APP = 'INITIAL_CONFIGURE_APP';
 export const __CLEAR_ALL_REDUCERS__ = '__CLEAR_ALL_REDUCERS__';

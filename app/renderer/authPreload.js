@@ -1,5 +1,8 @@
 /* eslint-disable no-param-reassign */
 import {
+  remote,
+} from 'electron';
+import {
   actionTypes,
 } from 'actions';
 import * as Sentry from '@sentry/electron';
@@ -84,14 +87,29 @@ function initGoogle(base) {
   }));
 }
 
+function init2F(base) {
+  hideNode('header', base);
+  hideNode('footer', base);
+
+  store.dispatch(setRendererUiState({
+    authFormIsComplete: true,
+  }));
+}
+
 function init() {
   store.dispatch(setRendererUiState({
     authFormIsComplete: false,
   }));
-  if (global.location.host === 'id.atlassian.com' && global.location.pathname === '/login') {
+  if (
+    global.location.host === 'id.atlassian.com'
+    && global.location.pathname === '/login'
+  ) {
     const base = document.getElementById('root');
     const reset = document.getElementById('resetPassword');
-    if (base && reset) {
+    if (
+      base
+      && reset
+    ) {
       initAtlassian(base, reset);
     } else {
       setTimeout(init, 500);
@@ -100,6 +118,13 @@ function init() {
     const base = document.getElementById('view_container');
     if (base) {
       initGoogle(base);
+    } else {
+      setTimeout(init, 500);
+    }
+  } else if (global.location.host === 'auth.atlassian.com') {
+    const base = document.getElementById('root');
+    if (base) {
+      init2F(base);
     } else {
       setTimeout(init, 500);
     }
