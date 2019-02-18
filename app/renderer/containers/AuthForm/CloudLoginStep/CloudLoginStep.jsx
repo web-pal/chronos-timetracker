@@ -1,3 +1,6 @@
+import {
+  remote,
+} from 'electron';
 import React, {
   Component,
 } from 'react';
@@ -76,10 +79,13 @@ class CloudLoginStep extends Component<Props, {}> {
             });
           }
         });
-        webview.focus();
         if (config.loginWindowDevTools) {
           webview.openDevTools();
         }
+        /* Focus will not work on webview without this blur */
+        remote.getCurrentWindow().blur();
+        remote.getCurrentWindow().focus();
+        webview.focus();
 
         if (url.includes('login.jsp')) {
           this.props.onError('Team not found');
