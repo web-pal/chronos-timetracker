@@ -1,11 +1,5 @@
 // @flow
-import {
-  put,
-  call,
-  select,
-  takeLatest,
-  fork,
-} from 'redux-saga/effects';
+import * as eff from 'redux-saga/effects';
 import * as Sentry from '@sentry/electron';
 import createActionCreators from 'redux-resource-action-creators';
 
@@ -35,16 +29,16 @@ export function* fetchProjects(): Generator<*, *, *> {
       request: 'allProjects',
       list: 'allProjects',
     });
-    yield put(actions.pending());
-    const projects = yield call(jiraApi.getAllProjects);
-    yield put(actions.succeeded({
+    yield eff.put(actions.pending());
+    const projects = yield eff.call(jiraApi.getAllProjects);
+    yield eff.put(actions.succeeded({
       resources: projects,
     }));
   } catch (err) {
-    yield fork(notify, {
+    yield eff.fork(notify, {
       title: 'Failed to load projects, check your permissions',
     });
-    yield call(throwError, err);
+    yield eff.call(throwError, err);
   }
 }
 
@@ -63,12 +57,12 @@ export function* fetchProjectStatuses(): Generator<*, *, *> {
     mergeListIds: false,
   });
   try {
-    const projectId = yield select(getCurrentProjectId);
+    const projectId = yield eff.select(getCurrentProjectId);
     if (projectId) {
-      yield put(typesActions.pending());
-      yield put(statusesActions.pending());
+      yield eff.put(typesActions.pending());
+      yield eff.put(statusesActions.pending());
 
-      const metadata = yield call(
+      const metadata = yield eff.call(
         jiraApi.getCreateIssueMetadata,
         {
           params: {
@@ -92,12 +86,12 @@ export function* fetchProjectStatuses(): Generator<*, *, *> {
         });
       } else {
         const issuesTypes = metadata.projects[0].issuetypes;
-        yield put(typesActions.succeeded({
+        yield eff.put(typesActions.succeeded({
           resources: issuesTypes,
         }));
       }
 
-      const statusesResponse = yield call(
+      const statusesResponse = yield eff.call(
         jiraApi.getProjectStatuses,
         {
           params: {
@@ -113,24 +107,24 @@ export function* fetchProjectStatuses(): Generator<*, *, *> {
         }, {})
       );
 
-      yield put(statusesActions.succeeded({
+      yield eff.put(statusesActions.succeeded({
         resources: Object.keys(uniqueStatuses).map(id => uniqueStatuses[id]),
       }));
-      yield put(uiActions.setUiState('filterStatusesIsFetched', true));
+      yield eff.put(uiActions.setUiState('filterStatusesIsFetched', true));
     }
   } catch (err) {
-    yield put(typesActions.succeeded({
+    yield eff.put(typesActions.succeeded({
       resources: [],
     }));
-    yield put(statusesActions.succeeded({
+    yield eff.put(statusesActions.succeeded({
       resources: [],
     }));
-    yield put(uiActions.setUiState('filterStatusesIsFetched', true));
-    yield call(throwError, err);
+    yield eff.put(uiActions.setUiState('filterStatusesIsFetched', true));
+    yield eff.call(throwError, err);
   }
 }
 
 
 export function* watchFetchProjectStatusesRequest(): Generator<*, *, *> {
-  yield takeLatest(actionTypes.FETCH_PROJECT_STATUSES_REQUEST, fetchProjectStatuses);
+  yield eff.takeLatest(actionTypes.FETCH_PROJECT_STATUSES_REQUEST, fetchProjectStatuses);
 }

@@ -1,11 +1,6 @@
 // @flow
-import {
-  put,
-  call,
-  fork,
-  all,
-} from 'redux-saga/effects';
 
+import * as eff from 'redux-saga/effects';
 import createActionCreators from 'redux-resource-action-creators';
 import {
   openURLInBrowser,
@@ -29,7 +24,7 @@ function* fetchAllBoardsWithoutTotal({
   startAt: 0,
   maxResults: 50,
 }): Generator<*, *, *> {
-  const response = yield call(
+  const response = yield eff.call(
     jiraApi.getAllBoards,
     {
       params: {
@@ -41,7 +36,7 @@ function* fetchAllBoardsWithoutTotal({
   if (response.isLast) {
     return [response];
   }
-  const responses = yield call(
+  const responses = yield eff.call(
     fetchAllBoardsWithoutTotal,
     {
       startAt: startAt + response.values.length,
@@ -58,10 +53,10 @@ export function* fetchBoards(): Generator<*, void, *> {
       request: 'allBoards',
       list: 'allBoards',
     });
-    yield put(actions.pending());
+    yield eff.put(actions.pending());
 
     let boards = [];
-    const response = yield call(
+    const response = yield eff.call(
       jiraApi.getAllBoards,
       {
         params: {
@@ -75,10 +70,10 @@ export function* fetchBoards(): Generator<*, void, *> {
         /* Some servers do not send total */
         response.total
           ? (
-            yield all(
+            yield eff.all(
               Array.from(Array(Math.floor(response.total / response.maxResults)).keys()).map(
                 i => (
-                  call(
+                  eff.call(
                     jiraApi.getAllBoards,
                     {
                       params: {
@@ -92,7 +87,7 @@ export function* fetchBoards(): Generator<*, void, *> {
             )
           ) : (
             /* Test it */
-            yield call(fetchAllBoardsWithoutTotal)
+            yield eff.call(fetchAllBoardsWithoutTotal)
           )
       );
       boards = (
@@ -107,12 +102,12 @@ export function* fetchBoards(): Generator<*, void, *> {
     const boardsWithoutProjects = boards.filter(b => !b.location);
     /* In some jira servers boards without location(project), so we have to fetch it additionaly */
     const projectsResponse = (
-      yield all(
+      yield eff.all(
         boardsWithoutProjects.reduce(
           (acc, b) => ({
             ...acc,
             [b.id]: (
-              call(
+              eff.call(
                 jiraApi.getBoardProjects,
                 {
                   params: {
@@ -127,7 +122,7 @@ export function* fetchBoards(): Generator<*, void, *> {
       )
     );
     const additionalProjects = (
-      yield all(
+      yield eff.all(
         Object.keys(projectsResponse)
           .filter(
             boardId => (
@@ -139,14 +134,14 @@ export function* fetchBoards(): Generator<*, void, *> {
             (acc, bId) => ({
               ...acc,
               [bId]: (
-                all(
+                eff.all(
                   Array.from(
                     Array(
                       Math.floor(projectsResponse[bId].total / projectsResponse[bId].maxResults),
                     ).keys(),
                   ).map(
                     i => (
-                      call(
+                      eff.call(
                         jiraApi.getBoardProjects,
                         {
                           params: {
@@ -177,7 +172,7 @@ export function* fetchBoards(): Generator<*, void, *> {
         {},
       )
     );
-    yield put(actions.succeeded({
+    yield eff.put(actions.succeeded({
       resources: (
         boards.map(
           board => (
@@ -200,7 +195,7 @@ export function* fetchBoards(): Generator<*, void, *> {
       ),
     }));
   } catch (err) {
-    yield call(throwError, err);
+    yield eff.call(throwError, err);
     if (err.response.statusCode === 403) {
       const helpUrl = (
         'https://web-pal.atlassian.net/wiki/spaces/CHRONOS/pages/173899778/Problem+with+loading+boards'
@@ -211,7 +206,7 @@ export function* fetchBoards(): Generator<*, void, *> {
           onClick: openURLInBrowser(helpUrl),
         },
       ];
-      yield fork(notify, {
+      yield eff.fork(notify, {
         title: 'Can not load boards',
         actions: flagActions,
       });

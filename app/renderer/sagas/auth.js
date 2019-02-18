@@ -1,11 +1,5 @@
 // @flow
-import {
-  take,
-  call,
-  all,
-  select,
-  put,
-} from 'redux-saga/effects';
+import * as eff from 'redux-saga/effects';
 import {
   remote,
 } from 'electron';
@@ -52,19 +46,19 @@ export function* authSelfHostedFlow(): Generator<*, *, *> {
         password,
         host,
       },
-    } = yield take(actionTypes.AUTH_SELF_HOST_REQUEST);
+    } = yield eff.take(actionTypes.AUTH_SELF_HOST_REQUEST);
     try {
       yield put(uiActions.setUiState('authRequestInProcess', true));
       const { href, hostname, port, pathname } = host;
       const protocol = host.protocol.slice(0, -1);
-      const cookies = yield call(authSelfHosted, {
+      const cookies = yield eff.call(authSelfHosted, {
         pathname,
         protocol,
         username,
         password,
         baseUrl: href.replace(/\/$/, ''),
       });
-      yield put(authActions.authRequest({
+      yield eff.put(authActions.authRequest({
         protocol,
         hostname,
         port,
@@ -73,15 +67,15 @@ export function* authSelfHostedFlow(): Generator<*, *, *> {
       }));
     } catch (err) {
       if (err && err.message) {
-        yield put(uiActions.setUiState('authError', err.message));
+        yield eff.put(uiActions.setUiState('authError', err.message));
       } else {
-        yield put(uiActions.setUiState(
+        yield eff.put(uiActions.setUiState(
           'authError',
           'Can not authenticate user. Please try again',
         ));
       }
-      yield call(throwError, err);
-      yield put(uiActions.setUiState('authRequestInProcess', false));
+      yield eff.call(throwError, err);
+      yield eff.put(uiActions.setUiState('authRequestInProcess', false));
     }
   }
 }
@@ -112,8 +106,8 @@ export function* authFlow(): Generator<*, *, *> {
         port,
         pathname,
         cookies,
-      } = yield take(actionTypes.AUTH_REQUEST);
-      yield put(uiActions.setUiState('authRequestInProcess', true));
+      } = yield eff.take(actionTypes.AUTH_REQUEST);
+      yield eff.put(uiActions.setUiState('authRequestInProcess', true));
 
       const clearedCookies = (
         cookies.map(cookie => ({
@@ -126,9 +120,9 @@ export function* authFlow(): Generator<*, *, *> {
         }))
       );
       try {
-        yield all(
+        yield eff.all(
           clearedCookies.map(cookie => (
-            call(
+            eff.call(
               setCookie,
               cookie,
             )
@@ -140,13 +134,13 @@ export function* authFlow(): Generator<*, *, *> {
 
       const p = port ? `:${port}` : '';
       const rootApiUrl = `${protocol}://${hostname}${p}${pathname.replace(/\/$/, '')}`;
-      yield call(
+      yield eff.call(
         jiraApi.setRootUrl,
         rootApiUrl,
       );
 
       /* Test request for check auth */
-      const { name } = yield call(jiraApi.getMyself);
+      const { name } = yield eff.call(jiraApi.getMyself);
       const account = {
         name,
         protocol,
@@ -155,34 +149,34 @@ export function* authFlow(): Generator<*, *, *> {
         pathname,
       };
 
-      yield call(
+      yield eff.call(
         setElectronStorage,
         'last_used_account',
         account,
       );
 
-      const accounts = yield call(
+      const accounts = yield eff.call(
         getElectronStorage,
         'accounts',
         [],
       );
       if (!R.find(R.whereEq({ name, hostname }), accounts)) {
         accounts.push(account);
-        yield call(
+        yield eff.call(
           setElectronStorage,
           'accounts',
           accounts,
         );
       }
 
-      yield call(
+      yield eff.call(
         keytar.setPassword,
         'Chronos',
         `${name}_${hostname}`,
         JSON.stringify(clearedCookies),
       );
 
-      yield put(
+      yield eff.put(
         uiActions.initialConfigureApp(
           {
             protocol,
@@ -199,22 +193,22 @@ export function* authFlow(): Generator<*, *, *> {
     } catch (err) {
       if (err.debug) {
         console.log(err.debug);
-        yield put(authActions.addAuthDebugMessage([
+        yield eff.put(authActions.addAuthDebugMessage([
           {
             json: err.debug,
           },
         ]));
       }
-      yield put(uiActions.setUiState('authRequestInProcess', false));
-      yield put(uiActions.setUiState('authFormStep', 1));
-      yield put(uiActions.setUiState('authFormIsComplete', false));
-      yield put(uiActions.setUiState('initializeInProcess', false));
-      yield put(uiActions.setUiState('authorized', false));
-      yield put(uiActions.setUiState(
+      yield eff.put(uiActions.setUiState('authRequestInProcess', false));
+      yield eff.put(uiActions.setUiState('authFormStep', 1));
+      yield eff.put(uiActions.setUiState('authFormIsComplete', false));
+      yield eff.put(uiActions.setUiState('initializeInProcess', false));
+      yield eff.put(uiActions.setUiState('authorized', false));
+      yield eff.put(uiActions.setUiState(
         'authError',
         'Can not authenticate user. Please try again',
       ));
-      yield call(throwError, err.result ? err.result : err);
+      yield eff.call(throwError, err.result ? err.result : err);
     }
   }
 }
@@ -222,10 +216,10 @@ export function* authFlow(): Generator<*, *, *> {
 
 export function* logoutFlow(): Generator<*, *, *> {
   while (true) {
-    const { forget } = yield take(actionTypes.LOGOUT_REQUEST);
+    const { forget } = yield eff.take(actionTypes.LOGOUT_REQUEST);
     try {
-      const running = yield select(getTimerState('running'));
-      const saveWorklogInProcess = yield select(getUiState2('saveWorklogInProcess'));
+      const running = yield eff.select(getTimerState('running'));
+      const saveWorklogInProcess = yield eff.select(getUiState2('saveWorklogInProcess'));
 
       if (running) {
         // eslint-disable-next-line no-alert
@@ -235,7 +229,7 @@ export function* logoutFlow(): Generator<*, *, *> {
         // eslint-disable-next-line no-alert
         window.alert('Currently app in process of saving worklog, wait few seconds please');
       }
-      yield call(
+      yield eff.call(
         remote.session.defaultSession.clearStorageData,
         {
           quotas: [
@@ -257,12 +251,12 @@ export function* logoutFlow(): Generator<*, *, *> {
         },
       );
 
-      const lastUsedAccount = yield call(
+      const lastUsedAccount = yield eff.call(
         getElectronStorage,
         'last_used_account',
         null,
       );
-      let accounts = yield call(
+      let accounts = yield eff.call(
         getElectronStorage,
         'accounts',
         [],
@@ -272,7 +266,7 @@ export function* logoutFlow(): Generator<*, *, *> {
         && !saveWorklogInProcess
         && lastUsedAccount
       ) {
-        yield call(
+        yield eff.call(
           removeElectronStorage,
           'last_used_account',
         );
@@ -283,23 +277,23 @@ export function* logoutFlow(): Generator<*, *, *> {
               && a.hostname !== lastUsedAccount.hostname
             ),
           );
-          yield put(uiActions.setUiState('accounts', accounts));
-          yield call(
+          yield eff.put(uiActions.setUiState('accounts', accounts));
+          yield eff.call(
             setElectronStorage,
             'accounts',
             accounts,
           );
         }
       }
-      yield call(savePersistStorage);
-      yield put({
+      yield eff.call(savePersistStorage);
+      yield eff.put({
         type: actionTypes.__CLEAR_ALL_REDUCERS__,
       });
-      yield put(uiActions.setUiState('accounts', accounts));
+      yield eff.put(uiActions.setUiState('accounts', accounts));
       trackMixpanel('Logout');
       incrementMixpanel('Logout', 1);
     } catch (err) {
-      yield call(throwError, err);
+      yield eff.call(throwError, err);
     }
   }
 }
@@ -312,10 +306,10 @@ export function* switchAccountFlow(): Generator<*, *, *> {
       hostname,
       port,
       pathname,
-    } = yield take(actionTypes.SWITCH_ACCOUNT);
+    } = yield eff.take(actionTypes.SWITCH_ACCOUNT);
     try {
-      const saveWorklogInProcess = yield select(getUiState2('saveWorklogInProcess'));
-      const running = yield select(getTimerState('running'));
+      const saveWorklogInProcess = yield eff.select(getUiState2('saveWorklogInProcess'));
+      const running = yield eff.select(getTimerState('running'));
 
       if (running) {
         // eslint-disable-next-line no-alert
@@ -329,13 +323,13 @@ export function* switchAccountFlow(): Generator<*, *, *> {
         !running
         && !saveWorklogInProcess
       ) {
-        const cookiesStr = yield call(
+        const cookiesStr = yield eff.call(
           keytar.getPassword,
           'Chronos',
           `${name}_${hostname}`,
         );
         const cookies = JSON.parse(cookiesStr);
-        yield call(
+        yield eff.call(
           remote.session.defaultSession.clearStorageData,
           {
             quotas: [
@@ -356,11 +350,11 @@ export function* switchAccountFlow(): Generator<*, *, *> {
             ],
           },
         );
-        yield put({
+        yield eff.put({
           type: actionTypes.__CLEAR_ALL_REDUCERS__,
         });
-        yield put(uiActions.setUiState('initializeInProcess', true));
-        yield put(authActions.authRequest({
+        yield eff.put(uiActions.setUiState('initializeInProcess', true));
+        yield eff.put(authActions.authRequest({
           protocol,
           hostname,
           port,
@@ -371,7 +365,7 @@ export function* switchAccountFlow(): Generator<*, *, *> {
         incrementMixpanel('SwitchAccounts', 1);
       }
     } catch (err) {
-      yield call(throwError, err);
+      yield eff.call(throwError, err);
     }
   }
 }

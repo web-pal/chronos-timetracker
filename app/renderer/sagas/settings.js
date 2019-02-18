@@ -1,12 +1,5 @@
 // @flow
-import {
-  call,
-  select,
-  put,
-  takeEvery,
-  cps,
-  all,
-} from 'redux-saga/effects';
+import * as eff from 'redux-saga/effects';
 import {
   remote,
 } from 'electron';
@@ -35,7 +28,7 @@ export function* onChangeLocalDesktopSettings({
   value: any,
 }): Generator<*, *, *> {
   try {
-    yield call(
+    yield eff.call(
       infoLog,
       'set local desktop setting request',
       {
@@ -48,51 +41,51 @@ export function* onChangeLocalDesktopSettings({
     }
 
     if (settingName === 'updateAutomatically') {
-      yield call(
+      yield eff.call(
         infoLog,
         `switched updateAutomatically to ${value}`,
       );
 
       if (value) {
-        yield put(uiActions.checkForUpdatesRequest());
+        yield eff.put(uiActions.checkForUpdatesRequest());
       }
     }
 
     if (settingName === 'updateChannel') {
-      yield call(
+      yield eff.call(
         infoLog,
         `switched updateChannel to ${value}, checking for updates...`,
       );
-      yield put(uiActions.checkForUpdatesRequest());
+      yield eff.put(uiActions.checkForUpdatesRequest());
     }
   } catch (err) {
-    yield call(throwError, err);
+    yield eff.call(throwError, err);
   }
 }
 
 export function* watchLocalDesktopSettingsChange(): Generator<*, *, *> {
-  yield takeEvery(actionTypes.SET_LOCAL_DESKTOP_SETTING, onChangeLocalDesktopSettings);
+  yield eff.takeEvery(actionTypes.SET_LOCAL_DESKTOP_SETTING, onChangeLocalDesktopSettings);
 }
 
 function* removeAllIn(dir, pathName) {
   const p = path.join(dir, pathName);
-  const stat = yield cps(fs.lstat, p);
+  const stat = yield eff.cps(fs.lstat, p);
   if (stat.isDirectory()) {
-    yield call(removeDir, p); // eslint-disable-line
+    yield eff.call(removeDir, p); // eslint-disable-line
   } else {
-    yield cps(fs.unlink, p);
+    yield eff.cps(fs.unlink, p);
     console.log(`Removed file ${p}`);
   }
 }
 
 function* removeDir(dir) {
-  const exists = yield cps(fs.lstat, dir);
+  const exists = yield eff.cps(fs.lstat, dir);
   if (exists) {
-    const files = yield cps(fs.readdir, dir);
-    yield all(
-      files.map(fileName => call(removeAllIn, dir, fileName)),
+    const files = yield eff.cps(fs.readdir, dir);
+    yield eff.all(
+      files.map(fileName => eff.call(removeAllIn, dir, fileName)),
     );
-    yield cps(fs.rmdir, dir);
+    yield eff.cps(fs.rmdir, dir);
     console.log(`Removed dir ${dir}`);
   }
 }
@@ -100,7 +93,7 @@ function* removeDir(dir) {
 const keytar = remote.require('keytar');
 function* clearElectronCacheSaga(): Generator<*, *, *> {
   try {
-    yield call(
+    yield eff.call(
       remote.session.defaultSession.clearStorageData,
       {
         quotas: [
@@ -121,14 +114,14 @@ function* clearElectronCacheSaga(): Generator<*, *, *> {
         ],
       },
     );
-    const accounts = yield call(
+    const accounts = yield eff.call(
       keytar.findCredentials,
       'Chronos',
     );
-    yield all(
+    yield eff.call(
       accounts.map(
         ({ account }) => (
-          call(
+          eff.call(
             keytar.deletePassword,
             'Chronos',
             account,
@@ -137,20 +130,20 @@ function* clearElectronCacheSaga(): Generator<*, *, *> {
       ),
     );
 
-    const hostname = yield select(
+    const hostname = yield eff.select(
       uiActions.getUiState2('hostname'),
     );
-    yield call(
+    yield eff.call(
       setElectronStorage,
       `persistUiState_${hostname}`,
       {},
     );
-    yield call(
+    yield eff.call(
       setElectronStorage,
       'accounts',
       [],
     );
-    yield call(
+    yield eff.call(
       setElectronStorage,
       `localDesktopSettings_${hostname}`,
       {},
@@ -167,5 +160,5 @@ function* clearElectronCacheSaga(): Generator<*, *, *> {
 }
 
 export function* watchClearElectronChanheRequest(): Generator<*, *, *> {
-  yield takeEvery(actionTypes.CLEAR_ELECTRON_CACHE, clearElectronCacheSaga);
+  yield eff.takeEvery(actionTypes.CLEAR_ELECTRON_CACHE, clearElectronCacheSaga);
 }

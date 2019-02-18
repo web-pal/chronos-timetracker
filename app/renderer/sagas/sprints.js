@@ -1,10 +1,5 @@
 // @flow
-import {
-  call,
-  select,
-  put,
-  takeEvery,
-} from 'redux-saga/effects';
+import * as eff from 'redux-saga/effects';
 import createActionCreators from 'redux-resource-action-creators';
 
 import type {
@@ -33,10 +28,10 @@ export function* fetchSprints(): Generator<*, *, *> {
     list: 'allSprints',
   });
   try {
-    yield put(actions.pending());
+    yield eff.put(actions.pending());
 
-    const boardId: Id = yield select(getUiState('issuesSourceId'));
-    const response = yield call(
+    const boardId: Id = yield eff.select(getUiState('issuesSourceId'));
+    const response = yield eff.call(
       jiraApi.getBoardSprints,
       {
         params: {
@@ -44,17 +39,17 @@ export function* fetchSprints(): Generator<*, *, *> {
         },
       },
     );
-    yield put(actions.succeeded({
+    yield eff.put(actions.succeeded({
       resources: response.values,
     }));
   } catch (err) {
-    yield put(actions.succeeded({
+    yield eff.put(actions.succeeded({
       resources: [],
     }));
-    yield call(throwError, err);
+    yield eff.call(throwError, err);
   }
 }
 
 export function* watchFetchSprintsRequest(): Generator<*, *, *> {
-  yield takeEvery(actionTypes.FETCH_SPRINTS_REQUEST, fetchSprints);
+  yield eff.takeEvery(actionTypes.FETCH_SPRINTS_REQUEST, fetchSprints);
 }

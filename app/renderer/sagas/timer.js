@@ -1,15 +1,5 @@
 // @flow
-import {
-  call,
-  take,
-  takeEvery,
-  fork,
-  select,
-  put,
-  race,
-  cancel,
-  cancelled,
-} from 'redux-saga/effects';
+import * as eff from 'redux-saga/effects';
 import {
   eventChannel,
 } from 'redux-saga';
@@ -64,18 +54,18 @@ function createTimerChannel() {
 
 function* checkIdle() {
   const idleTime = system.getIdleTime();
-  const idleState = yield select(getTimerState('idleState'));
+  const idleState = yield eff.select(getTimerState('idleState'));
   if (
     idleState
     && idleTime < config.idleTimeThreshold
   ) {
-    yield put(timerActions.setIdleState(false));
+    yield eff.put(timerActions.setIdleState(false));
   }
   if (
     !idleState
     && idleTime >= config.idleTimeThreshold
   ) {
-    yield put(timerActions.setIdleState(true));
+    yield eff.put(timerActions.setIdleState(true));
     return true;
   }
   return false;
@@ -84,7 +74,7 @@ function* checkIdle() {
 function* idleWindow() {
   let win = null;
   try {
-    win = yield call(
+    win = yield eff.call(
       windowsManagerSagas.forkNewWindow,
       {
         url: (
@@ -112,15 +102,15 @@ function* idleWindow() {
       },
     );
     while (true) {
-      yield race({
-        keep: take(actionTypes.KEEP_IDLE_TIME),
-        dismiss: take(actionTypes.DISMISS_IDLE_TIME),
+      yield eff.race({
+        keep: eff.take(actionTypes.KEEP_IDLE_TIME),
+        dismiss: eff.take(actionTypes.DISMISS_IDLE_TIME),
       });
-      yield cancel();
+      yield eff.cancel();
     }
   } finally {
     if (
-      yield cancelled()
+      yield eff.cancelled()
       && win
     ) {
       win.destroy();
@@ -129,8 +119,8 @@ function* idleWindow() {
 }
 
 function* setTimeToTray() {
-  const time = yield select(getTimerState('time'));
-  const localDesktopSettings = yield select(getSettingsState('localDesktopSettings'));
+  const time = yield eff.select(getTimerState('time'));
+  const localDesktopSettings = yield eff.select(getSettingsState('localDesktopSettings'));
   const { trayShowTimer } = localDesktopSettings;
   if (trayShowTimer) {
     const humanFormat = new Date(time * 1000).toISOString().substr(11, 5);
@@ -141,11 +131,11 @@ function* setTimeToTray() {
 function* handleTick(timerChannel) {
   let idleWindowTask = null;
   while (true) {
-    yield take(timerChannel);
+    yield eff.take(timerChannel);
 
-    yield put(timerActions.tick());
-    yield call(setTimeToTray);
-    const showIdleWindow = yield call(checkIdle);
+    yield eff.put(timerActions.tick());
+    yield eff.call(setTimeToTray);
+    const showIdleWindow = yield eff.call(checkIdle);
     if (
       showIdleWindow
       && (
@@ -153,38 +143,38 @@ function* handleTick(timerChannel) {
         || idleWindowTask.isCancelled()
       )
     ) {
-      idleWindowTask = yield fork(idleWindow);
+      idleWindowTask = yield eff.fork(idleWindow);
     }
   }
 }
 
 function* timerFlow() {
-  const selectedIssueId = yield select(getUiState('selectedIssueId'));
-  yield put(uiActions.setUiState('trackingIssueId', selectedIssueId));
-  yield put(trayActions.trayStartTimer());
+  const selectedIssueId = yield eff.select(getUiState('selectedIssueId'));
+  yield eff.put(uiActions.setUiState('trackingIssueId', selectedIssueId));
+  yield eff.put(trayActions.trayStartTimer());
 
-  const timerChannel = yield call(createTimerChannel);
-  const tickTask = yield fork(handleTick, timerChannel);
+  const timerChannel = yield eff.call(createTimerChannel);
+  const tickTask = yield eff.fork(handleTick, timerChannel);
 
   while (true) {
-    const { closeRequest } = yield take(actionTypes.STOP_TIMER_REQUEST);
+    const { closeRequest } = yield eff.take(actionTypes.STOP_TIMER_REQUEST);
     let continueStop = true;
     if (closeRequest) {
       continueStop = window.confirm('Tracking in progress, save worklog before quit?');
     }
 
     if (continueStop) {
-      const time = yield select(getTimerState('time'));
+      const time = yield eff.select(getTimerState('time'));
       if (time < 60) {
-        yield put(uiActions.setModalState('alert', true));
-        const { type } = yield take([
+        yield eff.put(uiActions.setModalState('alert', true));
+        const { type } = yield eff.take([
           actionTypes.CONTINUE_TIMER,
           actionTypes.STOP_TIMER,
         ]);
         if (type === actionTypes.STOP_TIMER) {
-          yield cancel(tickTask);
-          yield put(timerActions.resetTimer());
-          yield put(trayActions.trayStopTimer());
+          yield eff.cancel(tickTask);
+          yield eff.put(timerActions.resetTimer());
+          yield eff.put(trayActions.trayStopTimer());
         }
         if (
           closeRequest
@@ -197,19 +187,19 @@ function* timerFlow() {
           }
         }
       } else {
-        const { allowEmptyComment } = yield select(getSettingsState('localDesktopSettings'));
-        const comment = yield select(getUiState('worklogComment'));
+        const { allowEmptyComment } = yield eff.select(getSettingsState('localDesktopSettings'));
+        const comment = yield eff.select(getUiState('worklogComment'));
         if (!allowEmptyComment && !comment) {
-          yield fork(notify, {
+          yield eff.fork(notify, {
             title: 'Please set comment for worklog',
           });
-          yield put(uiActions.setUiState('isCommentDialogOpen', true));
+          yield eff.put(uiActions.setUiState('isCommentDialogOpen', true));
         } else {
-          const issue = yield select(getTrackingIssue);
-          const timeSpentInSeconds = yield select(getTimerState('time'));
-          yield cancel(tickTask);
-          yield put(timerActions.resetTimer());
-          yield call(
+          const issue = yield eff.select(getTrackingIssue);
+          const timeSpentInSeconds = yield eff.select(getTimerState('time'));
+          yield eff.cancel(tickTask);
+          yield eff.put(timerActions.resetTimer());
+          yield eff.call(
             uploadWorklog,
             {
               issueId: issue.id,
@@ -217,7 +207,7 @@ function* timerFlow() {
               timeSpentInSeconds,
             },
           );
-          yield put(trayActions.trayStopTimer());
+          yield eff.put(trayActions.trayStopTimer());
           if (
             closeRequest
             && continueStop
@@ -228,7 +218,7 @@ function* timerFlow() {
               remote.app.quit();
             }
           }
-          yield cancel();
+          yield eff.cancel();
         }
       }
     }
@@ -236,5 +226,5 @@ function* timerFlow() {
 }
 
 export function* takeStartTimer(): Generator<*, *, *> {
-  yield takeEvery(actionTypes.START_TIMER, timerFlow);
+  yield eff.takeEvery(actionTypes.START_TIMER, timerFlow);
 }

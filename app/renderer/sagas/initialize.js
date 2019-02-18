@@ -1,15 +1,5 @@
 // @flow
-import {
-  call,
-  put,
-  take,
-  race,
-  fork,
-  select,
-  delay,
-  cancel,
-  cancelled,
-} from 'redux-saga/effects';
+import * as eff from 'redux-saga/effects';
 import {
   remote,
 } from 'electron';
@@ -104,16 +94,16 @@ function identifyInSentryAndMixpanel(host: string, userData: any): void {
 
 function* initializeMixpanel(): Generator<*, *, *> {
   if (process.env.DISABLE_MIXPANEL === '1') {
-    yield call(infoLog, 'mixpanel disabled with ENV var');
+    yield eff.call(infoLog, 'mixpanel disabled with ENV var');
   }
   if (!process.env.MIXPANEL_API_TOKEN) {
-    yield call(throwError, 'MIXPANEL_API_TOKEN not set!');
+    yield eff.call(throwError, 'MIXPANEL_API_TOKEN not set!');
   }
   if (
     process.env.DISABLE_MIXPANEL !== '1'
     && process.env.MIXPANEL_API_TOKEN
   ) {
-    yield call(
+    yield eff.call(
       mixpanel.init,
       process.env.MIXPANEL_API_TOKEN,
     );
@@ -125,7 +115,7 @@ function* initializeMixpanel(): Generator<*, *, *> {
 function* issueWindow(url) {
   let win = null;
   try {
-    win = yield call(
+    win = yield eff.call(
       windowsManagerSagas.forkNewWindow,
       {
         url,
@@ -155,10 +145,10 @@ function* issueWindow(url) {
         showForm,
         currentWindowClose,
         hideWin,
-      } = yield race({
-        showForm: take(actionTypes.SHOW_ISSUE_FORM_WINDOW),
-        currentWindowClose: take(sharedActionTypes.WINDOW_BEFORE_UNLOAD),
-        hideWin: take(actionTypes.CLOSE_ISSUE_FORM_WINDOW),
+      } = yield eff.race({
+        showForm: eff.take(actionTypes.SHOW_ISSUE_FORM_WINDOW),
+        currentWindowClose: eff.take(sharedActionTypes.WINDOW_BEFORE_UNLOAD),
+        hideWin: eff.take(actionTypes.CLOSE_ISSUE_FORM_WINDOW),
       });
       if (showForm) {
         win.show();
@@ -172,7 +162,7 @@ function* issueWindow(url) {
     }
   } finally {
     if (
-      yield cancelled()
+      yield eff.cancelled()
       && win
     ) {
       win.destroy();
@@ -189,7 +179,7 @@ export function* takeInitialConfigureApp() {
       port,
       pathname,
       rootApiUrl,
-    } = yield take(actionTypes.INITIAL_CONFIGURE_APP);
+    } = yield eff.take(actionTypes.INITIAL_CONFIGURE_APP);
     try {
       const filter = {
         urls: [`${rootApiUrl}/*`],
@@ -203,84 +193,84 @@ export function* takeInitialConfigureApp() {
         callback({ cancel: false, requestHeaders: details.requestHeaders });
       });
 
-      yield put(uiActions.setUiState('protocol', protocol));
-      yield put(uiActions.setUiState('hostname', hostname));
-      yield put(uiActions.setUiState('port', port));
-      yield put(uiActions.setUiState('pathname', pathname));
+      yield eff.put(uiActions.setUiState('protocol', protocol));
+      yield eff.put(uiActions.setUiState('hostname', hostname));
+      yield eff.put(uiActions.setUiState('port', port));
+      yield eff.put(uiActions.setUiState('pathname', pathname));
 
-      const baseUrl = yield select(getBaseUrl);
+      const baseUrl = yield eff.select(getBaseUrl);
 
       if (issueWindowTask) {
-        yield cancel(issueWindowTask);
+        yield eff.cancel(issueWindowTask);
       }
-      issueWindowTask = yield fork(
+      issueWindowTask = yield eff.fork(
         issueWindow,
         `${baseUrl}/issues`,
       );
 
-      const userData = yield call(jiraApi.getMyself);
+      const userData = yield eff.call(jiraApi.getMyself);
 
-      yield put(profileActions.fillUserData(userData));
-      yield call(initializeMixpanel);
-      yield call(identifyInSentryAndMixpanel, hostname, userData);
+      yield eff.put(profileActions.fillUserData(userData));
+      yield eff.call(initializeMixpanel);
+      yield eff.call(identifyInSentryAndMixpanel, hostname, userData);
 
-      const accounts = yield call(
+      const accounts = yield eff.call(
         getElectronStorage,
         'accounts',
         [],
       );
-      const persistUiState = yield call(
+      const persistUiState = yield eff.call(
         getElectronStorage,
         `persistUiState_${hostname}`,
         {},
       );
-      yield put(uiActions.setUiState2({
+      yield eff.put(uiActions.setUiState2({
         ...persistUiState,
         accounts,
       }));
 
-      const persistSettings = yield call(
+      const persistSettings = yield eff.call(
         getElectronStorage,
         `localDesktopSettings_${hostname}`,
         {},
       );
-      yield put(
+      yield eff.put(
         settingsActions.fillLocalDesktopSettings(persistSettings),
       );
 
-      yield put(updaterActions.setUpdateSettings({
+      yield eff.put(updaterActions.setUpdateSettings({
         autoDownload: persistSettings.updateAutomatically,
         allowPrerelease: persistSettings.updateChannel !== 'stable',
       }));
-      yield put(updaterActions.checkUpdates());
-      yield call(fetchIssueFields);
-      yield fork(fetchEpics);
-      yield fork(fetchProjects);
-      yield fork(fetchFilters);
-      yield fork(fetchBoards);
+      yield eff.put(updaterActions.checkUpdates());
+      yield eff.call(fetchIssueFields);
+      yield eff.fork(fetchEpics);
+      yield eff.fork(fetchProjects);
+      yield eff.fork(fetchFilters);
+      yield eff.fork(fetchBoards);
 
-      yield put(uiActions.setUiState('authorized', true));
-      yield put(uiActions.setUiState('authRequestInProcess', false));
+      yield eff.put(uiActions.setUiState('authorized', true));
+      yield eff.put(uiActions.setUiState('authRequestInProcess', false));
 
-      yield put(resourcesActions.setResourceMeta({
+      yield eff.put(resourcesActions.setResourceMeta({
         resourceType: 'issues',
         meta: {
           refetchFilterIssuesMarker: false,
         },
       }));
-      yield put(uiActions.setUiState('initializeInProcess', false));
+      yield eff.put(uiActions.setUiState('initializeInProcess', false));
     } catch (err) {
-      yield call(throwError, err);
-      yield put(uiActions.setUiState('authorized', false));
-      yield put(uiActions.setUiState('initializeInProcess', false));
+      yield err.call(throwError, err);
+      yield eff.put(uiActions.setUiState('authorized', false));
+      yield eff.put(uiActions.setUiState('initializeInProcess', false));
     }
   }
 }
 
 export function* initializeApp(): Generator<*, *, *> {
-  yield put(uiActions.setUiState('initializeInProcess', true));
+  yield eff.put(uiActions.setUiState('initializeInProcess', true));
   try {
-    const authCredentials = yield call(
+    const authCredentials = yield eff.call(
       getElectronStorage,
       'last_used_account',
     );
@@ -292,7 +282,7 @@ export function* initializeApp(): Generator<*, *, *> {
     );
     if (authDataExist) {
       try {
-        const cookiesStr = yield call(
+        const cookiesStr = yield eff.call(
           keytar.getPassword,
           'Chronos',
           `${authCredentials.name}_${authCredentials.hostname}`,
@@ -306,12 +296,12 @@ export function* initializeApp(): Generator<*, *, *> {
             error,
           },
         });
-        yield call(
+        yield eff.call(
           throwError,
           error,
         );
         if (process.platform === 'linux') {
-          yield fork(
+          yield eff.fork(
             notify,
             {
               type: 'libSecretError',
@@ -333,34 +323,34 @@ export function* initializeApp(): Generator<*, *, *> {
       } = authCredentials;
       const p = port ? `:${port}` : '';
       const rootApiUrl = `${protocol}://${hostname}${p}${pathname.replace(/\/$/, '')}`;
-      yield call(
+      yield eff.call(
         jiraApi.setRootUrl,
         rootApiUrl,
       );
-      yield put(uiActions.initialConfigureApp({
+      yield eff.put(uiActions.initialConfigureApp({
         ...authCredentials,
         rootApiUrl,
       }));
     } else {
-      yield put(uiActions.setUiState('initializeInProcess', false));
+      yield eff.put(uiActions.setUiState('initializeInProcess', false));
     }
   } catch (err) {
-    yield call(throwError, err);
-    yield put(uiActions.setUiState('authorized', false));
-    yield put(uiActions.setUiState('initializeInProcess', false));
+    yield eff.call(throwError, err);
+    yield eff.put(uiActions.setUiState('authorized', false));
+    yield eff.put(uiActions.setUiState('initializeInProcess', false));
   }
 }
 
 export function* handleAttachmentWindow(): Generator<*, *, *> {
   let win = null;
   while (true) {
-    const { issueId, activeIndex } = yield take(actionTypes.SHOW_ATTACHMENT_WINDOW);
-    const issue = yield select(getResourceItemById('issues', issueId));
+    const { issueId, activeIndex } = yield eff.take(actionTypes.SHOW_ATTACHMENT_WINDOW);
+    const issue = yield eff.select(getResourceItemById('issues', issueId));
     if (
       !win
       || win.isDestroyed()
     ) {
-      win = yield call(
+      win = yield eff.call(
         windowsManagerSagas.forkNewWindow,
         {
           url: (
@@ -379,9 +369,9 @@ export function* handleAttachmentWindow(): Generator<*, *, *> {
           },
         },
       );
-      yield delay(500);
+      yield eff.delay(500);
     }
-    yield put(issuesActions.setAttachments({
+    yield eff.put(issuesActions.setAttachments({
       attachments: issue?.fields?.attachment || [],
       activeIndex,
       scope: [win.id],
@@ -392,9 +382,9 @@ export function* handleAttachmentWindow(): Generator<*, *, *> {
 
 export function* handleQuitRequest(): Generator<*, *, *> {
   while (true) {
-    yield take(sharedActionTypes.QUIT_REQUEST);
-    yield call(savePersistStorage);
-    yield put(uiActions.setUiState('readyToQuit', true));
+    yield eff.take(sharedActionTypes.QUIT_REQUEST);
+    yield eff.call(savePersistStorage);
+    yield eff.put(uiActions.setUiState('readyToQuit', true));
     if (process.env.NODE_ENV === 'development') {
       window.location.reload();
     } else {
@@ -406,13 +396,13 @@ export function* handleQuitRequest(): Generator<*, *, *> {
 function getDispatchActionListener(channel) {
   return function* listenReFetchIssue() {
     while (true) {
-      const { payload } = yield take(channel);
-      yield put(payload[0]);
+      const { payload } = yield eff.take(channel);
+      yield eff.put(payload[0]);
     }
   };
 }
 
 export function* createDispatchActionListener(): Generator<*, *, *> {
-  const dispatchChannel = yield call(createIpcChannel, 'dispatch');
-  yield fork(getDispatchActionListener(dispatchChannel));
+  const dispatchChannel = yield eff.call(createIpcChannel, 'dispatch');
+  yield eff.fork(getDispatchActionListener(dispatchChannel));
 }
