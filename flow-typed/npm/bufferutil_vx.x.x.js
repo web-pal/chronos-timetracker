@@ -33,6 +33,6 @@ declare module 'bufferutil/fallback.js' {
 declare module 'bufferutil/index' {
   declare module.exports: $Exports<'bufferutil'>;
 }
-declare module 'bufferutil/index.js' {
+declare module 'bufferutil/index.jsx' {
   declare module.exports: $Exports<'bufferutil'>;
 }

@@ -49,9 +49,9 @@ const Sidebar: StatelessFunctionalComponent<Props> = ({
       <Tab
         active={sidebarType === 'recent'}
         onClick={() => {
-          dispatch(
-            uiActions.setUiState('sidebarType', 'recent'),
-          );
+          dispatch(uiActions.setUiState({
+            sidebarType: 'recent',
+          }));
         }}
       >
         Recent worklogs
@@ -60,7 +60,9 @@ const Sidebar: StatelessFunctionalComponent<Props> = ({
         active={sidebarType === 'all'}
         onClick={() => {
           dispatch(
-            uiActions.setUiState('sidebarType', 'all'),
+            uiActions.setUiState({
+              sidebarType: 'all',
+            }),
           );
         }}
       >

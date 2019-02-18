@@ -1,8 +1,9 @@
 import {
   put,
+  select,
   call,
   fork,
-  take,
+  takeEvery,
 } from 'redux-saga/effects';
 
 import createActionCreators from 'redux-resource-action-creators';
@@ -13,8 +14,13 @@ import {
   resourcesActions,
   issuesActions,
 } from 'actions';
+import {
+  getResourceItemById,
+} from 'selectors';
 
-import * as Api from 'api';
+import {
+  jiraApi,
+} from 'api';
 import * as R from 'ramda';
 
 import {
@@ -30,9 +36,7 @@ export function* fetchFilters(): Generator<*, *, *> {
       list: 'allFilters',
     });
     yield put(actions.pending());
-    // console.log('fetchFilters');
-    const filters = yield call(Api.fetchFilters);
-    // console.log(filters);
+    const filters = yield call(jiraApi.getFavouriteFilters);
     yield put(actions.succeeded({
       resources: filters,
     }));
@@ -44,105 +48,94 @@ export function* fetchFilters(): Generator<*, *, *> {
   }
 }
 
-export function* createFilterFlow(): Generator<*, *, *> {
-  while (true) {
-    const actions = createActionCreators('create', {
+export function* saveFilter({
+  name,
+  jql,
+  filterId,
+}): Generator<*, *, *> {
+  const actions = createActionCreators(
+    filterId
+      ? 'update'
+      : 'create',
+    {
       resourceType: 'filters',
-      request: 'createFilter',
+      request: (
+        filterId
+          ? 'updateFilter'
+          : 'createFilter'
+      ),
       list: 'allFilters',
+    },
+  );
+  try {
+    yield put(actions.pending());
+    const data = (
+      filterId
+        ? yield select(getResourceItemById('filters', filterId))
+        : {
+          name,
+          description: 'Filter created in Chronos desktop',
+          jql,
+          favourite: true,
+          favouritedCount: 0,
+        }
+    );
+    const filter = yield call(
+      filterId
+        ? jiraApi.updateFilter
+        : jiraApi.createFilter,
+      {
+        ...(
+          filterId
+            ? {
+              params: {
+                filterId,
+              },
+            } : {}
+        ),
+        body: {
+          ...data,
+          jql,
+        },
+      },
+    );
+    yield fork(notify, {
+      title: `Save filter ${filter.name}`,
     });
-    try {
-      const { payload: { name, jql } } = yield take(types.CREATE_FILTER_REQUEST);
-      const newFilter = {
-        name,
-        description: 'Filter created in Chronos desktop',
-        jql,
-        favourite: true,
-        favouritedCount: 0,
-      };
-      yield put(actions.pending());
-      const created = yield call(Api.createFilter, newFilter);
+    yield put(actions.succeeded({
+      resources: [filter],
+    }));
+    yield put(uiActions.setUiState({
+      saveFilterDialogOpen: false,
+      issuesSourceId: filter.id,
+      filterStatusesIsFetched: false,
+    }));
+    yield put(resourcesActions.clearResourceList({
+      resourceType: 'issues',
+      list: 'recentIssues',
+    }));
+    yield put(issuesActions.refetchIssuesRequest());
+  } catch (err) {
+    yield put(actions.failed());
+    const errObj = JSON.parse(err);
+    if (errObj.body.errorMessages.length > 0) {
       yield fork(notify, {
-        title: `Created filter ${name}`,
+        title: 'Failed to save filter',
+        description: `${errObj.body.errorMessages.length} errors`,
       });
-      yield put(actions.succeeded({
-        resources: [created],
+      yield put(uiActions.setUiState({
+        newJQLFilterErrors: errObj.body.errorMessages,
       }));
-      yield put(uiActions.setUiState('saveFilterDialogOpen', false));
-      yield put(uiActions.setUiState('issuesSourceId', created.id));
-      yield put(uiActions.setUiState('filterStatusesIsFetched', false));
-      yield put(resourcesActions.clearResourceList({
-        resourceType: 'issues',
-        list: 'recentIssues',
-      }));
-      yield put(issuesActions.refetchIssuesRequest());
-    } catch (err) {
-      yield put(actions.failed());
-      const errObj = JSON.parse(err);
-      if (errObj.body.errorMessages.length > 0) {
-        yield fork(notify, {
-          title: 'Failed to create filter',
-          description: `${errObj.body.errorMessages.length} errors`,
-        });
-        yield put(uiActions.setUiState('newJQLFilterErrors', errObj.body.errorMessages));
-      } else {
-        yield fork(notify, {
-          title: 'Failed to create filter',
-          description: R.values(errObj.body.errors).join('\n'),
-        });
-      }
-      yield call(throwError, err);
+    } else {
+      yield fork(notify, {
+        title: 'Failed to save filter',
+        description: R.values(errObj.body.errors).join('\n'),
+      });
     }
+    yield call(throwError, err);
   }
 }
 
-export function* updateFilterFlow(): Generator<*, *, *> {
-  while (true) {
-    const actions = createActionCreators('update', {
-      resourceType: 'filters',
-      request: 'updateFilter',
-      list: 'allFilters',
-    });
-    try {
-      const { payload: { oldFilter, newJQLString } } = yield take(types.UPDATE_FILTER_REQUEST);
-      const newFilter = {
-        name: oldFilter.name,
-        description: oldFilter.description,
-        jql: newJQLString,
-        favourite: oldFilter.favourite,
-        favouritedCount: oldFilter.favouritedCount,
-      };
-      yield put(actions.pending());
-      const updated = yield call(Api.updateFilter, oldFilter.id, newFilter);
-      yield fork(notify, {
-        title: `Updated filter ${oldFilter.name}`,
-      });
-      yield put(uiActions.setUiState('newJQLFilterValue', null));
-      yield put(actions.succeeded({
-        resources: [updated],
-      }));
-      yield put(uiActions.setUiState('filterStatusesIsFetched', false));
-      yield put(resourcesActions.clearResourceList({
-        resourceType: 'issues',
-        list: 'recentIssues',
-      }));
-      yield put(issuesActions.refetchIssuesRequest());
-    } catch (err) {
-      yield put(actions.failed());
-      const errObj = JSON.parse(err);
-      if (errObj.body.errorMessages.length > 0) {
-        yield fork(notify, {
-          title: 'Failed to update filter',
-          description: `${errObj.body.errorMessages.length} errors`,
-        });
-        yield put(uiActions.setUiState('newJQLFilterErrors', errObj.body.errorMessages));
-      } else {
-        yield fork(notify, {
-          title: 'Failed to update filter',
-          description: R.values(errObj.body.errors).join('\n'),
-        });
-      }
-      yield call(throwError, err);
-    }
-  }
+export function* takeSaveFilterRequest(): Generator<*, *, *> {
+  yield takeEvery(types.SAVE_FILTER_REQUEST, saveFilter);
 }

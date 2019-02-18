@@ -6,18 +6,30 @@ import type {
 
 import * as actionTypes from './actionTypes';
 
+export const initialConfigureApp = ({
+  protocol,
+  hostname,
+  port,
+  pathname,
+  rootApiUrl,
+}) => ({
+  type: actionTypes.INITIAL_CONFIGURE_APP,
+  protocol,
+  hostname,
+  port,
+  pathname,
+  rootApiUrl,
+});
 
 export const setUiState = (
-  key: string,
-  value: any,
-  scope: string,
+  keyOrRootValues: any,
+  maybeValues: any,
 ): UiAction => ({
   type: actionTypes.SET_UI_STATE,
   payload: {
-    key,
-    value,
+    keyOrRootValues,
+    maybeValues,
   },
-  scope,
 });
 
 export const resetUiState = (

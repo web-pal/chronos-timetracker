@@ -105,19 +105,31 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
           remainingEstimateReduceByValue={remainingEstimateReduceByValue}
           issue={trackingIssue}
           onSetComment={(comment) => {
-            dispatch(uiActions.setUiState('worklogComment', comment));
+            dispatch(uiActions.setUiState({
+              worklogComment: comment,
+            }));
           }}
           onRemainingEstimateChange={(value) => {
-            dispatch(uiActions.setUiState('remainingEstimateValue', value));
+            dispatch(uiActions.setUiState({
+              remainingEstimateValue: value,
+            }));
           }}
           onRemainingEstimateNewChange={(value) => {
-            dispatch(uiActions.setUiState('remainingEstimateNewValue', value));
+            dispatch(uiActions.setUiState({
+              remainingEstimateNewValue: value,
+            }));
           }}
           onRemainingEstimateReduceByChange={(value) => {
-            dispatch(uiActions.setUiState('remainingEstimateReduceByValue', value));
+            dispatch(uiActions.setUiState({
+              remainingEstimateReduceByValue: value,
+            }));
           }}
           dialogOpen={isCommentDialogOpen}
-          setDialogState={value => dispatch(uiActions.setUiState('isCommentDialogOpen', value))}
+          setDialogState={(value) => {
+            dispatch(uiActions.setUiState({
+              isCommentDialogOpen: value,
+            }));
+          }}
         />
         {screenshotsAllowed &&
           <div style={{ marginLeft: 10 }}>
@@ -137,10 +149,9 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
       <Flex row alignCenter>
         <IssueName
           onClick={() => {
-            dispatch(uiActions.setUiState(
-              'selectedIssueId',
-              trackingIssue.id,
-            ));
+            dispatch(uiActions.setUiState({
+              selectedIssueId: trackingIssue.id,
+            }));
           }}
         >
           {trackingIssue.key}

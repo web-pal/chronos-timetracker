@@ -46,7 +46,7 @@ declare module 'uglifyjs-webpack-plugin/dist/worker' {
 declare module 'uglifyjs-webpack-plugin/dist/cjs.js' {
   declare module.exports: $Exports<'uglifyjs-webpack-plugin/dist/cjs'>;
 }
-declare module 'uglifyjs-webpack-plugin/dist/index.js' {
+declare module 'uglifyjs-webpack-plugin/dist/index.jsx' {
   declare module.exports: $Exports<'uglifyjs-webpack-plugin/dist/index'>;
 }
 declare module 'uglifyjs-webpack-plugin/dist/minify.js' {

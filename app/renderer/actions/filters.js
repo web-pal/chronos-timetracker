@@ -1,14 +1,12 @@
 import * as types from './actionTypes';
 
-export const createFilterRequest = ({ name, jql }) => ({
-  type: types.CREATE_FILTER_REQUEST,
-  payload: { name, jql },
-});
-
-export const updateFilterRequest = ({ oldFilter, newJQLString }) => ({
-  type: types.UPDATE_FILTER_REQUEST,
-  payload: {
-    oldFilter,
-    newJQLString,
-  },
+export const saveFilterRequest = ({
+  name,
+  jql,
+  filterId,
+}) => ({
+  type: types.SAVE_FILTER_REQUEST,
+  name,
+  jql,
+  filterId,
 });

@@ -83,7 +83,7 @@ declare module 'redux-resource-plugins/es/http-status-codes.js' {
 declare module 'redux-resource-plugins/es/included-resources.js' {
   declare module.exports: $Exports<'redux-resource-plugins/es/included-resources'>;
 }
-declare module 'redux-resource-plugins/es/index.js' {
+declare module 'redux-resource-plugins/es/index.jsx' {
   declare module.exports: $Exports<'redux-resource-plugins/es/index'>;
 }
 declare module 'redux-resource-plugins/es/reset.js' {
@@ -98,7 +98,7 @@ declare module 'redux-resource-plugins/lib/http-status-codes.js' {
 declare module 'redux-resource-plugins/lib/included-resources.js' {
   declare module.exports: $Exports<'redux-resource-plugins/lib/included-resources'>;
 }
-declare module 'redux-resource-plugins/lib/index.js' {
+declare module 'redux-resource-plugins/lib/index.jsx' {
   declare module.exports: $Exports<'redux-resource-plugins/lib/index'>;
 }
 declare module 'redux-resource-plugins/lib/reset.js' {

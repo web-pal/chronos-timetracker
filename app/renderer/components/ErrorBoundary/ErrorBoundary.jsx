@@ -1,9 +1,9 @@
 // @flow
-import React, { Component } from 'react';
-import Raven from 'raven-js';
-
-import { connect } from 'react-redux';
-
+import React from 'react';
+import {
+  connect,
+} from 'react-redux';
+import * as Sentry from '@sentry/electron';
 
 import Button from '@atlaskit/button';
 
@@ -12,7 +12,7 @@ import {
 } from 'actions';
 
 
-class ErrorBoundary extends Component<any, any> {
+class ErrorBoundary extends React.Component<any, any> {
   state = {
     hasError: false,
   }
@@ -22,7 +22,7 @@ class ErrorBoundary extends Component<any, any> {
     this.setState({
       hasError: true,
     });
-    Raven.captureException(
+    Sentry.captureException(
       error,
       {
         extra: {

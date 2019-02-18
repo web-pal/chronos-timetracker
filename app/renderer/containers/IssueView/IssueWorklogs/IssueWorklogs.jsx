@@ -87,13 +87,17 @@ const IssueWorklogs: StatelessFunctionalComponent<Props> = ({
                 issueKey={issue.key}
                 baseUrl={baseUrl}
                 onEditWorklog={() => {
-                  dispatch(uiActions.setUiState('editWorklogId', worklog.id));
-                  dispatch(uiActions.setUiState('worklogFormIssueId', issue.id));
-                  dispatch(uiActions.setModalState('worklog', true));
+                  dispatch(uiActions.setUiState({
+                    editWorklogId: worklog.id,
+                    worklogFormIssueId: issue.id,
+                    worklog: true,
+                  }));
                 }}
                 onDeleteWorklog={() => {
-                  dispatch(uiActions.setModalState('confirmDeleteWorklog', true));
-                  dispatch(uiActions.setUiState('deleteWorklogId', worklog.id));
+                  dispatch(uiActions.setUiState({
+                    confirmDeleteWorklog: true,
+                    deleteWorklogId: worklog.id,
+                  }));
                 }}
               />
             );

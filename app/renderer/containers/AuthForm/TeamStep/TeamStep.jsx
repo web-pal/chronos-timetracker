@@ -101,9 +101,15 @@ class TeamStep extends Component<Props> {
           </PrimaryButton>
           {accounts.length > 0
           && (
-          <DefaultButton onClick={() => dispatch(uiActions.setUiState('authFormStep', 0))}>
-            Login to existing account
-          </DefaultButton>
+            <DefaultButton
+              onClick={() => {
+                dispatch(uiActions.setUiState({
+                  authFormStep: 0,
+                }));
+              }}
+            >
+              Login to existing account
+            </DefaultButton>
           )
         }
         </Form>

@@ -1,22 +1,16 @@
 // @flow
 import {
-  delay,
-} from 'redux-saga';
-import {
-  takeLatest,
   takeEvery,
   put,
   call,
+  delay,
   fork,
   select,
 } from 'redux-saga/effects';
-import Raven from 'raven-js';
+import * as Sentry from '@sentry/electron';
 import moment from 'moment';
 
 import config from 'config';
-import {
-  trackMixpanel,
-} from 'utils/stat';
 
 import type {
   Id,
@@ -24,20 +18,12 @@ import type {
 
 import {
   uiActions,
-  issuesActions,
-  sprintsActions,
   actionTypes,
 } from 'actions';
 import {
-  getResourceIds,
   getIssueWorklogs,
-  getUiState,
 } from 'selectors';
 
-import {
-  setToStorage,
-  getFromStorage,
-} from './storage';
 import {
   issueSelectFlow,
 } from './issues';
@@ -77,7 +63,7 @@ export function* infoLog(...argw: any): Generator<*, void, *> {
 
 export function* throwError(err: any): Generator<*, void, *> {
   yield call(console.error, err);
-  Raven.captureException(err);
+  Sentry.captureException(err);
 }
 
 
@@ -92,7 +78,7 @@ function uuidv4() {
 /* eslint-enable */
 
 function* autoDeleteFlag(id) {
-  yield call(delay, 5 * 1000);
+  yield delay(5 * 1000);
   yield put(uiActions.deleteFlag(id));
 }
 
@@ -137,55 +123,6 @@ export function* notify({
   }
 }
 
-function* onSidebarChange(sidebarType) {
-  if (sidebarType === 'recent') {
-    const recentIssues = yield select(getResourceIds('issues', 'recentIssues'));
-    if (!recentIssues.length) {
-      yield put(issuesActions.fetchRecentIssuesRequest());
-    }
-  }
-  yield put(uiActions.setUiState('sidebarFiltersIsOpen', false));
-}
-
-function* onUiChange({
-  payload: {
-    key,
-    value,
-  },
-}): Generator<*, *, *> {
-  try {
-    if (key === 'issuesSourceType') {
-      yield call(setToStorage, key, value);
-      yield put(uiActions.setUiState('issuesSearch', ''));
-      if (value === 'scrum') {
-        yield put(sprintsActions.fetchSprintsRequest());
-      }
-    }
-    if (['issuesSourceId', 'issuesSprintId'].includes(key)) {
-      yield put(uiActions.setUiState('issuesSearch', ''));
-      yield call(setToStorage, key, value);
-    }
-    if (key === 'selectedIssueId') {
-      yield fork(issueSelectFlow, value);
-    }
-    if (key === 'sidebarType') {
-      yield fork(onSidebarChange, value);
-      trackMixpanel(`Issue was changed on ${value}`);
-    }
-  } catch (err) {
-    yield call(throwError, err);
-  }
-}
-
-function* onIssuesFilterChange(): Generator<*, *, *> {
-  const filters = yield select(getUiState('issuesFilters'));
-  yield call(
-    setToStorage,
-    'issuesFilters',
-    filters,
-  );
-}
-
 export function* scrollToIndexRequest({
   worklogId,
   issueId,
@@ -195,17 +132,14 @@ export function* scrollToIndexRequest({
 }): Generator<*, *, *> {
   try {
     const worklogs = yield select(getIssueWorklogs(issueId));
-    yield put(uiActions.setUiState(
-      'issueViewWorklogsScrollToIndex',
-      worklogs.findIndex(w => worklogId === w.id),
-    ));
+    yield put(uiActions.setUiState({
+      issueViewWorklogsScrollToIndex: (
+        worklogs.findIndex(w => worklogId === w.id)
+      ),
+    }));
   } catch (err) {
     yield call(throwError, err);
   }
-}
-
-export function* watchUiStateChange(): Generator<*, *, *> {
-  yield takeEvery(actionTypes.SET_UI_STATE, onUiChange);
 }
 
 export function* watchScrollToIndexRequest(): Generator<*, *, *> {
@@ -215,21 +149,38 @@ export function* watchScrollToIndexRequest(): Generator<*, *, *> {
   );
 }
 
-export function* watchSetIssuesFilter(): Generator<*, *, *> {
-  yield takeLatest(
-    actionTypes.SET_ISSUES_FILTER,
-    onIssuesFilterChange,
-  );
+function* onUiChange({
+  payload: {
+    keyOrRootValues,
+    maybeValues,
+  },
+}): Generator<*, *, *> {
+  try {
+    const [
+      values,
+      key,
+    ] = (
+      maybeValues === undefined
+        ? [
+          keyOrRootValues,
+          null,
+        ]
+        : [
+          maybeValues,
+          keyOrRootValues,
+        ]
+    );
+    if (key === 'selectedIssueId') {
+      yield fork(issueSelectFlow, values);
+    }
+    if (values.selectedIssueId) {
+      yield fork(issueSelectFlow, values.selectedIssueId);
+    }
+  } catch (err) {
+    yield call(throwError, err);
+  }
 }
 
-export function* newFeaturesFlow(): Generator<*, *, *> {
-  function* flow({ payload: { featureId } }): Generator<*, void, *> {
-    let acknowlegdedFeatures = yield call(getFromStorage, 'acknowlegdedFeatures');
-    if (!acknowlegdedFeatures) acknowlegdedFeatures = [];
-    acknowlegdedFeatures.push(featureId);
-    yield call(setToStorage, 'acknowlegdedFeatures', acknowlegdedFeatures);
-    yield call(delay, 10000);
-    yield put(uiActions.setUiState('acknowlegdedFeatures', acknowlegdedFeatures));
-  }
-  yield takeLatest(actionTypes.ACKNOWLEDGE_FEATURE, flow);
+export function* takeUiStateChange(): Generator<*, *, *> {
+  yield takeEvery(actionTypes.SET_UI_STATE, onUiChange);
 }

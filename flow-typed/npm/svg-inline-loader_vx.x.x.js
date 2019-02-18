@@ -45,7 +45,7 @@ declare module 'svg-inline-loader/config.js' {
 declare module 'svg-inline-loader/index' {
   declare module.exports: $Exports<'svg-inline-loader'>;
 }
-declare module 'svg-inline-loader/index.js' {
+declare module 'svg-inline-loader/index.jsx' {
   declare module.exports: $Exports<'svg-inline-loader'>;
 }
 declare module 'svg-inline-loader/lib/component.jsx' {

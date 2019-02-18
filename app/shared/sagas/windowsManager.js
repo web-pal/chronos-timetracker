@@ -29,7 +29,7 @@ export function* onEventLogger({
     });
 
     /*
-     * Channel should be close if current window is reloading or close(WINDOW_BEFORE_UNLOAD)
+     * Channel should be closed if current window is reloading or close(WINDOW_BEFORE_UNLOAD)
      * Or if target window closed
       * */
     if (unload || (res && res.event === 'closed')) {

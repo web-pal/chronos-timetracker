@@ -1,11 +1,33 @@
 /* eslint-disable no-param-reassign */
 import {
-  uiActions,
+  actionTypes,
 } from 'actions';
+import * as Sentry from '@sentry/electron';
 
 import configureStore from './store/configurePreloadStore';
 
+if (process.env.NODE_ENV === 'production') {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    enableNative: false,
+  });
+}
+
 const store = configureStore();
+
+function setRendererUiState(
+  keyOrRootValues,
+  maybeValues,
+) {
+  return {
+    type: actionTypes.SET_UI_STATE,
+    payload: {
+      keyOrRootValues,
+      maybeValues,
+    },
+    scope: 'allRenderer',
+  };
+}
 
 function hideNode(el, scope) {
   const node = (scope || document).querySelector(el);
@@ -15,13 +37,11 @@ function hideNode(el, scope) {
 }
 
 function back(error = null) {
-  store.dispatch(
-    uiActions.setUiState('authFormStep', 1, 'allRenderer'),
-  );
-  store.dispatch(
-    uiActions.setUiState('authFormIsComplete', false, 'allRenderer'),
-  );
-  store.dispatch(uiActions.setUiState('authError', error, 'allRenderer'));
+  store.dispatch(setRendererUiState({
+    authFormStep: 1,
+    authFormIsComplete: false,
+    authError: error,
+  }));
 }
 
 function initAtlassian(base, reset) {
@@ -43,9 +63,9 @@ function initAtlassian(base, reset) {
     ev.preventDefault();
     back();
   });
-  store.dispatch(
-    uiActions.setUiState('authFormIsComplete', true, 'allRenderer'),
-  );
+  store.dispatch(setRendererUiState({
+    authFormIsComplete: true,
+  }));
 }
 
 function initGoogle(base) {
@@ -59,15 +79,15 @@ function initGoogle(base) {
     ev.preventDefault();
     back();
   });
-  store.dispatch(
-    uiActions.setUiState('authFormIsComplete', true, 'allRenderer'),
-  );
+  store.dispatch(setRendererUiState({
+    authFormIsComplete: true,
+  }));
 }
 
 function init() {
-  store.dispatch(
-    uiActions.setUiState('authFormIsComplete', false, 'allRenderer'),
-  );
+  store.dispatch(setRendererUiState({
+    authFormIsComplete: false,
+  }));
   if (global.location.host === 'id.atlassian.com' && global.location.pathname === '/login') {
     const base = document.getElementById('root');
     const reset = document.getElementById('resetPassword');

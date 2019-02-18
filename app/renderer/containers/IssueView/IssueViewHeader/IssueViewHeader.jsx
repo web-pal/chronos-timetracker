@@ -6,9 +6,6 @@ import {
 import {
   getStatus as getResourceStatus,
 } from 'redux-resource';
-import {
-  ipcRenderer,
-} from 'electron';
 
 import type {
   StatelessFunctionalComponent,
@@ -151,14 +148,10 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
       <ButtonGroup>
         <Button
           onClick={() => {
-            dispatch(uiActions.setUiState(
-              'editWorklogId',
-              null,
-            ));
-            dispatch(uiActions.setUiState(
-              'worklogFormIssueId',
-              selectedIssue.id,
-            ));
+            dispatch(uiActions.setUiState({
+              editWorklogId: null,
+              worklogFormIssueId: selectedIssue.id,
+            }));
             dispatch(uiActions.setModalState(
               'worklog',
               true,
@@ -228,11 +221,10 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
           <Button
             isDisabled={!allowEdit}
             onClick={() => {
-              ipcRenderer.send(
-                'show-issue-window',
-                {
+              dispatch(
+                issuesActions.showIssueFormWindow({
                   issueId: selectedIssue.id,
-                },
+                }),
               );
             }}
           >
@@ -249,7 +241,11 @@ function mapStateToProps(state) {
   let allowEdit = false;
   if (selectedIssue) {
     const issueMeta = getResourceMeta('issues', selectedIssue.id)(state);
-    allowEdit = issueMeta.permissions ? issueMeta.permissions.EDIT_ISSUE.havePermission : false;
+    allowEdit = (
+      issueMeta.permissions
+        ? issueMeta.permissions.EDIT_ISSUE.havePermission
+        : false
+    );
   }
   return {
     baseUrl: getBaseUrl(state),

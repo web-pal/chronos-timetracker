@@ -31,7 +31,7 @@ declare module 'babel-plugin-import/lib/Plugin' {
 }
 
 // Filename aliases
-declare module 'babel-plugin-import/lib/index.js' {
+declare module 'babel-plugin-import/lib/index.jsx' {
   declare module.exports: $Exports<'babel-plugin-import/lib/index'>;
 }
 declare module 'babel-plugin-import/lib/Plugin.js' {

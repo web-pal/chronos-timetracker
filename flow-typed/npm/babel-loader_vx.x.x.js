@@ -45,7 +45,7 @@ declare module 'babel-loader/lib/cache.js' {
 declare module 'babel-loader/lib/Error.js' {
   declare module.exports: $Exports<'babel-loader/lib/Error'>;
 }
-declare module 'babel-loader/lib/index.js' {
+declare module 'babel-loader/lib/index.jsx' {
   declare module.exports: $Exports<'babel-loader/lib/index'>;
 }
 declare module 'babel-loader/lib/transform.js' {

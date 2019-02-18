@@ -198,7 +198,7 @@ declare module '@babel/core/lib/config/files/configuration.js' {
 declare module '@babel/core/lib/config/files/index-browser.js' {
   declare module.exports: $Exports<'@babel/core/lib/config/files/index-browser'>;
 }
-declare module '@babel/core/lib/config/files/index.js' {
+declare module '@babel/core/lib/config/files/index.jsx' {
   declare module.exports: $Exports<'@babel/core/lib/config/files/index'>;
 }
 declare module '@babel/core/lib/config/files/package.js' {
@@ -222,7 +222,7 @@ declare module '@babel/core/lib/config/helpers/config-api.js' {
 declare module '@babel/core/lib/config/helpers/environment.js' {
   declare module.exports: $Exports<'@babel/core/lib/config/helpers/environment'>;
 }
-declare module '@babel/core/lib/config/index.js' {
+declare module '@babel/core/lib/config/index.jsx' {
   declare module.exports: $Exports<'@babel/core/lib/config/index'>;
 }
 declare module '@babel/core/lib/config/item.js' {
@@ -252,7 +252,7 @@ declare module '@babel/core/lib/config/validation/plugins.js' {
 declare module '@babel/core/lib/config/validation/removed.js' {
   declare module.exports: $Exports<'@babel/core/lib/config/validation/removed'>;
 }
-declare module '@babel/core/lib/index.js' {
+declare module '@babel/core/lib/index.jsx' {
   declare module.exports: $Exports<'@babel/core/lib/index'>;
 }
 declare module '@babel/core/lib/parse.js' {
@@ -288,7 +288,7 @@ declare module '@babel/core/lib/transformation/file/generate.js' {
 declare module '@babel/core/lib/transformation/file/merge-map.js' {
   declare module.exports: $Exports<'@babel/core/lib/transformation/file/merge-map'>;
 }
-declare module '@babel/core/lib/transformation/index.js' {
+declare module '@babel/core/lib/transformation/index.jsx' {
   declare module.exports: $Exports<'@babel/core/lib/transformation/index'>;
 }
 declare module '@babel/core/lib/transformation/normalize-file.js' {

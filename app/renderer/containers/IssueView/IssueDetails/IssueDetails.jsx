@@ -3,6 +3,9 @@ import React from 'react';
 import {
   connect,
 } from 'react-redux';
+import {
+  shell,
+} from 'electron';
 
 import type {
   StatelessFunctionalComponent,
@@ -20,6 +23,9 @@ import {
   getSelectedIssueEpic,
 } from 'selectors';
 import {
+  issuesActions,
+} from 'actions';
+import {
   Flex,
 } from 'components';
 import {
@@ -27,6 +33,7 @@ import {
   getEpicColor,
 } from 'utils/jiraColors-util';
 
+import DescriptionSectionAttachment from 'components/DescriptionSectionAttachment';
 import DataRenderer from '../DataRenderer';
 
 import {
@@ -43,15 +50,17 @@ import {
 
 type Props = {
   issue: Issue,
+  dispatch: any,
   epic: Issue & {
     color: string,
     name: string,
   },
-}
+};
 
 const IssueDetails: StatelessFunctionalComponent<Props> = ({
   issue,
   epic,
+  dispatch,
 }: Props): Node => {
   const {
     versions,
@@ -261,6 +270,27 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
         <DataRenderer
           html={issue.renderedFields ? issue.renderedFields.description : null}
           source={issue.fields.description || '*No description*'}
+          onAttachmentClick={(e) => {
+            const tag = e.target ? e.target.tagName.toLowerCase() : null;
+            if (tag && (tag === 'img' || tag === 'a')) {
+              e.preventDefault();
+              if (tag === 'img') {
+                dispatch(issuesActions.showAttachmentWindow({ issueId: issue.id, activeIndex: null }));
+              } else {
+                // external links only
+                const url = e.target.getAttribute(tag === 'a' ? 'href' : 'src');
+                if (url && url.includes('http')) {
+                  shell.openExternal(url);
+                }
+              }
+            }
+          }}
+        />
+        <DescriptionSectionAttachment
+          showAttachmentWindow={index => dispatch(
+            issuesActions.showAttachmentWindow({ issueId: issue.id, activeIndex: index }),
+          )}
+          attachment={issue.renderedFields.attachment}
         />
       </DescriptionSectionHeader>
     </IssueDetailsContainer>

@@ -27,6 +27,6 @@ declare module '@babel/plugin-proposal-do-expressions/lib/index' {
 }
 
 // Filename aliases
-declare module '@babel/plugin-proposal-do-expressions/lib/index.js' {
+declare module '@babel/plugin-proposal-do-expressions/lib/index.jsx' {
   declare module.exports: $Exports<'@babel/plugin-proposal-do-expressions/lib/index'>;
 }

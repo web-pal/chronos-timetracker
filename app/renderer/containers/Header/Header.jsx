@@ -73,7 +73,7 @@ type Props = {
   |}>,
   hostname: string,
   updateAvailable: string,
-  updateFetching: boolean,
+  downloadUpdateProgress: boolean,
   issuesFetching: boolean,
   dispatch: Dispatch,
 };
@@ -83,7 +83,7 @@ const Header: StatelessFunctionalComponent<Props> = ({
   accounts,
   hostname,
   updateAvailable,
-  updateFetching,
+  downloadUpdateProgress,
   issuesFetching,
   dispatch,
 }: Props): Node => (
@@ -121,7 +121,8 @@ const Header: StatelessFunctionalComponent<Props> = ({
             );
           })}
           <DropdownItem
-            onClick={() => dispatch(authActions.logoutRequest({ dontForget: true }))}
+            key="addAccount"
+            onClick={() => dispatch(authActions.logoutRequest({ forget: false }))}
           >
             <span style={{ display: 'inline-flex', alignItems: 'center' }}>
               <EditorAddIcon /> Add account
@@ -174,8 +175,9 @@ const Header: StatelessFunctionalComponent<Props> = ({
           </DropdownItem>
           <DropdownSeparator />
 
-          {updateAvailable && !updateFetching && [
+          {updateAvailable && !downloadUpdateProgress && [
             <DropdownUpdateItem
+              key="update"
               onClick={() => {
                 dispatch(uiActions.setModalState('settings', true));
                 dispatch(settingsActions.setSettingsModalTab('Updates'));
@@ -183,12 +185,14 @@ const Header: StatelessFunctionalComponent<Props> = ({
             >
               {updateAvailable} is out! Update now.
             </DropdownUpdateItem>,
-            <DropdownSeparator />,
+            <DropdownSeparator key="separator" />,
           ]}
 
           <DropdownLogoutItem
             onClick={() => {
-              dispatch(authActions.logoutRequest());
+              dispatch(authActions.logoutRequest({
+                forget: true,
+              }));
             }}
           >
             Logout
@@ -208,7 +212,7 @@ function mapStateToProps(state) {
     hostname: getUiState('hostname')(state),
     accounts: getUiState('accounts')(state),
     updateAvailable: getUiState('updateAvailable')(state),
-    updateFetching: getUiState('updateFetching')(state),
+    downloadUpdateProgress: getUiState('downloadUpdateProgress')(state),
     issuesFetching: getResourceStatus(
       state,
       `issues.requests.${request}.status`,

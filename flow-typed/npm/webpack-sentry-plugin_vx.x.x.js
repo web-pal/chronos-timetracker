@@ -27,6 +27,6 @@ declare module 'webpack-sentry-plugin/dist/index' {
 }
 
 // Filename aliases
-declare module 'webpack-sentry-plugin/dist/index.js' {
+declare module 'webpack-sentry-plugin/dist/index.jsx' {
   declare module.exports: $Exports<'webpack-sentry-plugin/dist/index'>;
 }

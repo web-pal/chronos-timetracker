@@ -70,7 +70,7 @@ declare module 'electron-log/renderer' {
 declare module 'electron-log/index' {
   declare module.exports: $Exports<'electron-log'>;
 }
-declare module 'electron-log/index.js' {
+declare module 'electron-log/index.jsx' {
   declare module.exports: $Exports<'electron-log'>;
 }
 declare module 'electron-log/lib/format.js' {
@@ -91,7 +91,7 @@ declare module 'electron-log/lib/transports/file/find-log-path.js' {
 declare module 'electron-log/lib/transports/file/get-app-name.js' {
   declare module.exports: $Exports<'electron-log/lib/transports/file/get-app-name'>;
 }
-declare module 'electron-log/lib/transports/file/index.js' {
+declare module 'electron-log/lib/transports/file/index.jsx' {
   declare module.exports: $Exports<'electron-log/lib/transports/file/index'>;
 }
 declare module 'electron-log/lib/transports/log-s.js' {

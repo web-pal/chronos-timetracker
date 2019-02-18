@@ -65,7 +65,7 @@ declare module 'react-hot-loader/dist/react-hot-loader.production.min.js' {
 declare module 'react-hot-loader/index' {
   declare module.exports: $Exports<'react-hot-loader'>;
 }
-declare module 'react-hot-loader/index.js' {
+declare module 'react-hot-loader/index.jsx' {
   declare module.exports: $Exports<'react-hot-loader'>;
 }
 declare module 'react-hot-loader/patch.js' {

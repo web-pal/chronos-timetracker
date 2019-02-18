@@ -1,5 +1,4 @@
 // @flow
-
 export * as profileActions from './profile';
 export * as authActions from './auth';
 export * as uiActions from './ui';
@@ -11,6 +10,7 @@ export * as worklogsActions from './worklogs';
 export * as sprintsActions from './sprints';
 export * as resourcesActions from './resources';
 export * as filtersActions from './filters';
+export * as updaterActions from './updater';
 
-export * as types from './actionTypes/';
+export * as types from './actionTypes';
 export * as actionTypes from './actionTypes';

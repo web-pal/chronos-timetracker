@@ -37,12 +37,9 @@ module.exports = () => ({
      */
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
+      'process.env.BABEL_ENV': JSON.stringify(process.env.BABEL_ENV || 'production'),
       'process.env.DEBUG_PROD': JSON.stringify(process.env.DEBUG_PROD || 'false'),
-      'process.env.SENTRY_API_KEY': JSON.stringify(process.env.SENTRY_API_KEY || ''),
-      'process.env.SENTRY_LINK': JSON.stringify(process.env.SENTRY_LINK || ''),
-      'process.env.MIXPANEL_API_TOKEN': JSON.stringify(process.env.MIXPANEL_API_TOKEN || ''),
-      'process.env.DISABLE_MIXPANEL': JSON.stringify(process.env.DISABLE_MIXPANEL || ''),
-      'process.env.DISABLE_SENTRY': JSON.stringify(process.env.DISABLE_SENTRY || ''),
+      'process.env.SENTRY_DSN': JSON.stringify(process.env.SENTRY_DSN),
     }),
     new BundleAnalyzerPlugin({
       analyzerMode: 'static',

@@ -6,19 +6,48 @@ import {
 import {
   actionTypes,
 } from 'shared/actions';
+import {
+  timerActions,
+} from 'actions';
 
 const isNumber = n => typeof n === 'number';
 
-export default function rendererEnhancer(store) {
+const rendererEnhancer = (store) => {
   const channel = 'electron-actions';
-  const sourceId = remote.getCurrentWindow().id;
+  const sourceId = remote.getCurrentWindow()?.id;
   const handler = (event, action) => (store.dispatch(action));
 
   ipcRenderer.on(channel, handler);
 
-  window.addEventListener('beforeunload', () => {
-    store.dispatch({ type: actionTypes.WINDOW_BEFORE_UNLOAD });
-    ipcRenderer.removeListener(channel, handler);
+  window.addEventListener('beforeunload', (ev) => {
+    const stopClose = (
+      store.getState().timer !== undefined
+      && !store.getState()?.ui?.readyToQuit
+    );
+    if (stopClose) {
+      let continueclose = true;
+      if (store.getState()?.timer?.running) {
+        continueclose = false;
+        setTimeout(() => {
+          store.dispatch(timerActions.stopTimerRequest(true));
+        }, 100);
+      }
+      if (store.getState()?.ui?.saveWorklogInProcess) {
+        continueclose = false;
+        setTimeout(() => {
+          window.alert('Currently app in process of saving worklog, wait few seconds please');
+        }, 100);
+      }
+      if (continueclose) {
+        setTimeout(() => {
+          store.dispatch({ type: actionTypes.QUIT_REQUEST });
+        }, 100);
+      }
+      ev.returnValue = false;
+    } else {
+      store.dispatch({ type: actionTypes.WINDOW_BEFORE_UNLOAD });
+      ipcRenderer.removeListener(channel, handler);
+    }
   });
 
   return next => (action) => {
@@ -101,4 +130,5 @@ export default function rendererEnhancer(store) {
       next(action);
     }
   };
-}
+};
+export default rendererEnhancer;

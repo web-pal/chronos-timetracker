@@ -10,30 +10,9 @@ import {
   mapObjIndexed as mapObj,
 } from 'ramda';
 
-
-const initialState: UiState = {
-  initializeInProcess: false,
-  authorized: false,
-  accounts: [],
-  acknowlegdedFeatures: [],
-  authFormStep: 1,
-  authFormIsComplete: false,
-  authError: null,
-  authRequestInProcess: false,
-  host: null,
-  protocol: null,
-  isPaidUser: false,
-
-  showAuthDebugConsole: false,
-  authDebugMessages: [],
-
-  updateCheckRunning: false,
-  updateFetching: false,
-  updateAvailable: null,
-
+export const persistInitialState = {
   sidebarType: 'all',
   issueViewTab: 'Details',
-  issueViewWorklogsScrollToIndex: 0,
   issuesSearch: '',
   issuesFilters: {
     type: [],
@@ -41,29 +20,58 @@ const initialState: UiState = {
     assignee: [],
   },
 
+  postAlsoAsIssueComment: false,
+  screenshotsAllowed: false,
+
+  issuesSourceType: null,
+  issuesSourceId: null,
+  issuesSprintId: null,
+};
+
+
+const initialState: UiState = {
+  initializeInProcess: false,
+  readyToQuit: false,
+  authorized: false,
+  accounts: [],
+  acknowlegdedFeatures: [],
+  authFormStep: 1,
+  authFormIsComplete: false,
+  authError: null,
+  authRequestInProcess: false,
+  hostname: null,
+  protocol: null,
+
+  showAuthDebugConsole: false,
+  authDebugMessages: [],
+
+  confirmUnload: false,
+  saveWorklogInProcess: false,
+  saveFilterDialogOpen: false,
+
+  updateAvailable: null,
+  downloadedUpdate: false,
+  downloadUpdateProgress: null,
+
+  issueViewWorklogsScrollToIndex: 0,
+  selectedIssueId: null,
+  trackingIssueId: null,
   selectedWorklogId: null,
   deleteWorklogId: null,
   editWorklogId: null,
   worklogFormIssueId: null,
   worklogComment: '',
-  postAlsoAsIssueComment: false,
-  remainingEstimateValue: 'auto',
-  remainingEstimateNewValue: '',
-  remainingEstimateReduceByValue: '',
-  isCommentDialogOpen: false,
-
-  selectedIssueId: null,
-  issuesSourceType: null,
-  issuesSourceId: null,
-  issuesSprintId: null,
 
   newJQLFilterErrors: [],
   newJQLFilterName: null,
   newJQLFilterValue: null,
-  saveFilterDialogOpen: false,
 
-  screenshotsAllowed: false,
+  remainingEstimateValue: 'auto',
+  remainingEstimateNewValue: '',
+  remainingEstimateReduceByValue: '',
+
   sidebarFiltersIsOpen: false,
+  isCommentDialogOpen: false,
   filterStatusesIsFetched: false,
   commentAdding: false,
 
@@ -74,20 +82,71 @@ const initialState: UiState = {
     worklog: false,
     accounts: false,
   },
-
   flags: [],
+  ...persistInitialState,
 };
+
+const mergeValues = (
+  values,
+  state,
+) => (
+  Object.keys(values).reduce((s, v) => ({
+    ...s,
+    [v]: values[v]?._merge ? ({ /* eslint-disable-line */
+      ...state[v],
+      ...values[v],
+    }) : (
+      values[v]
+    ),
+  }), {})
+);
 
 export default function ui(
   state: UiState = initialState,
   action: Action,
 ) {
   switch (action.type) {
-    case actionTypes.SET_UI_STATE:
+    case actionTypes.SET_UI_STATE: {
+      const {
+        keyOrRootValues,
+        maybeValues,
+      } = action.payload;
+      const [
+        values,
+        key,
+      ] = (
+        maybeValues === undefined
+          ? [
+            keyOrRootValues,
+            null,
+          ]
+          : [
+            maybeValues,
+            keyOrRootValues,
+          ]
+      );
       return {
         ...state,
-        [action.payload.key]: action.payload.value,
+        ...(
+          key
+            ? ({
+              [key]: {
+                ...state[key],
+                ...mergeValues(
+                  values,
+                  state[key],
+                ),
+              },
+            })
+            : (
+              mergeValues(
+                values,
+                state,
+              )
+            )
+        ),
       };
+    }
     case actionTypes.RESET_UI_STATE:
       // $FlowFixMe
       return mapObj((v, k) => (action.payload.keys.includes(k) ? initialState[k] : v), state);

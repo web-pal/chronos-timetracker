@@ -132,10 +132,9 @@ const SidebarFilters: StatelessFunctionalComponent<Props> = ({
         <Button
           appearance="primary"
           onClick={() => {
-            dispatch(uiActions.setUiState(
-              'sidebarFiltersIsOpen',
-              false,
-            ));
+            dispatch(uiActions.setUiState({
+              sidebarFiltersIsOpen: false,
+            }));
           }}
         >
           Close

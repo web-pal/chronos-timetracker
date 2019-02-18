@@ -37,7 +37,7 @@ declare module 'electron/cli.js' {
 declare module 'electron/index' {
   declare module.exports: $Exports<'electron'>;
 }
-declare module 'electron/index.js' {
+declare module 'electron/index.jsx' {
   declare module.exports: $Exports<'electron'>;
 }
 declare module 'electron/install.js' {

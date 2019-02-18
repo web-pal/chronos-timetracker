@@ -67,7 +67,7 @@ declare module 'less-loader/dist/formatLessError.js' {
 declare module 'less-loader/dist/getOptions.js' {
   declare module.exports: $Exports<'less-loader/dist/getOptions'>;
 }
-declare module 'less-loader/dist/index.js' {
+declare module 'less-loader/dist/index.jsx' {
   declare module.exports: $Exports<'less-loader/dist/index'>;
 }
 declare module 'less-loader/dist/processResult.js' {

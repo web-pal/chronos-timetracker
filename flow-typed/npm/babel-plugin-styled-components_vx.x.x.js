@@ -86,10 +86,10 @@ declare module 'babel-plugin-styled-components/lib/visitors/templateLiterals/tra
 declare module 'babel-plugin-styled-components/lib/css/placeholderUtils.js' {
   declare module.exports: $Exports<'babel-plugin-styled-components/lib/css/placeholderUtils'>;
 }
-declare module 'babel-plugin-styled-components/lib/index.js' {
+declare module 'babel-plugin-styled-components/lib/index.jsx' {
   declare module.exports: $Exports<'babel-plugin-styled-components/lib/index'>;
 }
-declare module 'babel-plugin-styled-components/lib/minify/index.js' {
+declare module 'babel-plugin-styled-components/lib/minify/index.jsx' {
   declare module.exports: $Exports<'babel-plugin-styled-components/lib/minify/index'>;
 }
 declare module 'babel-plugin-styled-components/lib/utils/detectors.js' {
@@ -122,7 +122,7 @@ declare module 'babel-plugin-styled-components/lib/visitors/minify.js' {
 declare module 'babel-plugin-styled-components/lib/visitors/rewriteStyledImport.js' {
   declare module.exports: $Exports<'babel-plugin-styled-components/lib/visitors/rewriteStyledImport'>;
 }
-declare module 'babel-plugin-styled-components/lib/visitors/templateLiterals/index.js' {
+declare module 'babel-plugin-styled-components/lib/visitors/templateLiterals/index.jsx' {
   declare module.exports: $Exports<'babel-plugin-styled-components/lib/visitors/templateLiterals/index'>;
 }
 declare module 'babel-plugin-styled-components/lib/visitors/templateLiterals/transpile.js' {

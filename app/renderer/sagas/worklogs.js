@@ -1,6 +1,7 @@
 // @flow
 import {
   call,
+  all,
   select,
   put,
   cancel,
@@ -9,7 +10,6 @@ import {
 } from 'redux-saga/effects';
 import moment from 'moment';
 import createActionCreators from 'redux-resource-action-creators';
-import * as Api from 'api';
 
 import {
   trackMixpanel,
@@ -35,9 +35,9 @@ import {
   getUiState,
 } from 'selectors';
 import {
-  getFromStorage,
-  setToStorage,
-} from './storage';
+  jiraApi,
+} from 'api';
+
 import {
   throwError,
   notify,
@@ -45,22 +45,34 @@ import {
   scrollToIndexRequest,
 } from './ui';
 
-export function* saveWorklogAsOffline(worklog: any): Generator<*, *, *> {
-  let offlineWorklogs = yield call(getFromStorage, 'offlineWorklogs');
-  if (!Array.isArray(offlineWorklogs)) {
-    offlineWorklogs = [];
-  }
-  offlineWorklogs.push(worklog);
-  yield call(setToStorage, 'offlineWorklogs', offlineWorklogs);
-}
-
 
 export function* getAdditionalWorklogsForIssues(
   incompleteIssues: Array<any>,
 ): Generator<*, *, *> {
   try {
-    yield call(infoLog, 'getting additional worklogs for issues', incompleteIssues);
-    const worklogs = yield call(Api.fetchWorklogs, incompleteIssues);
+    const worklogsArr = yield all(
+      incompleteIssues.map(
+        i => (
+          call(
+            jiraApi.getIssueWorklogs,
+            {
+              params: {
+                issueIdOrKey: i.id,
+              },
+            },
+          )
+        ),
+      ),
+    );
+    const worklogs = (
+      worklogsArr.reduce(
+        (acc, w) => ([
+          ...acc,
+          ...w.worklogs,
+        ]),
+        [],
+      )
+    );
     const issues = incompleteIssues.map((issue) => {
       const additionalWorklogs = worklogs.filter(w => w.issueId === issue.id);
       if (additionalWorklogs.length) {
@@ -77,10 +89,7 @@ export function* getAdditionalWorklogsForIssues(
       }
       return issue;
     });
-    return {
-      additionalIssuesArr: issues,
-      additionalIssuesMap: issues.reduce((map, issue) => ({ ...map, [issue.id]: issue }), {}),
-    };
+    return issues;
   } catch (err) {
     yield call(throwError, err);
     return incompleteIssues;
@@ -103,7 +112,10 @@ export function* saveWorklog({
 }: {
   payload: any,
 }): Generator<*, *, *> {
-  const worklogsA = createActionCreators(
+  yield put(uiActions.setUiState({
+    saveWorklogInProcess: true,
+  }));
+  const worklogsActions = createActionCreators(
     worklogId ? 'update' : 'create',
     {
       resourceType: 'worklogs',
@@ -118,14 +130,14 @@ export function* saveWorklog({
   if (recentIssues.length) {
     issuesActionsConfig.list = 'recentIssues';
   }
-  const issuesA = createActionCreators(
+  const issueActions = createActionCreators(
     'update',
     issuesActionsConfig,
   );
   try {
-    yield put(worklogsA.pending());
+    yield put(worklogsActions.pending());
     if (!worklogId) {
-      yield put(issuesA.pending());
+      yield put(issueActions.pending());
     }
     yield put(uiActions.setModalState(
       'worklog',
@@ -144,56 +156,75 @@ export function* saveWorklog({
         infoLog,
         'uploadWorklog cancelled because timeSpentSeconds < 60',
       );
+      yield put(uiActions.setUiState({
+        saveWorklogInProcess: false,
+      }));
       yield cancel();
     }
-    const jiraUploadOptions = {
-      worklogId,
-      issueId,
-      adjustEstimate,
-      worklog: {
-        started,
-        timeSpentSeconds,
-        comment,
-      },
-    };
-
-    if (adjustEstimate === 'new') jiraUploadOptions.newEstimate = newEstimate;
-    if (adjustEstimate === 'manual') jiraUploadOptions.reduceBy = reduceBy;
 
     const worklog = yield call(
-      worklogId ? Api.updateWorklog : Api.addWorklog,
-      jiraUploadOptions,
+      worklogId
+        ? jiraApi.updateIssueWorklog
+        : jiraApi.addIssueWorklog,
+      {
+        params: {
+          issueIdOrKey: issueId,
+          adjustEstimate,
+          worklogId,
+          ...(
+            adjustEstimate === 'new'
+              ? {
+                newEstimate,
+              } : {}
+          ),
+          ...(
+            adjustEstimate === 'manual'
+              ? {
+                reduceBy,
+              } : {}
+          ),
+        },
+        body: {
+          started,
+          timeSpentSeconds,
+          comment,
+        },
+      },
     );
-    yield put(worklogsA.succeeded({
+    yield put(worklogsActions.succeeded({
       resources: [worklog],
     }));
 
-    if (!worklogId) {
-      const issuesMap = yield select(getResourceMap('issues'));
-      const issue = issuesMap[issueId];
-      const updatedIssue = yield call(Api.fetchIssueByKey, issue.key);
-      yield put(issuesA.succeeded({
-        resources: [{
-          ...updatedIssue,
-          fields: {
-            ...updatedIssue.fields,
-            worklogs: [worklog.id, ...issue.fields.worklogs],
-          },
-        }],
-      }));
-    }
-    yield put(uiActions.setUiState(
-      'selectedIssueId',
-      issueId,
-    ));
-    yield put(uiActions.setUiState(
-      'issueViewTab',
-      'Worklogs',
-    ));
-    yield put(uiActions.setUiState(
-      'selectedWorklogId',
-      worklog.id,
-    ));
+    const issuesMap = yield select(getResourceMap('issues'));
+    const issue = issuesMap[issueId];
+    const savedIssue = yield call(
+      jiraApi.getIssueByIdOrKey,
+      {
+        params: {
+          issueIdOrKey: issue.key,
+        },
+      },
+    );
+    yield put(issueActions.succeeded({
+      resources: [{
+        ...savedIssue,
+        fields: {
+          ...savedIssue.fields,
+          worklogs: [
+            ...new Set([
+              worklog.id,
+              ...issue.fields.worklogs,
+            ]),
+          ],
+        },
+      }],
+    }));
+
+    yield put(uiActions.setUiState({
+      selectedIssueId: issueId,
+      issueViewTab: 'Worklogs',
+      selectedWorklogId: worklog.id,
+    }));
     yield fork(scrollToIndexRequest, {
       issueId,
       worklogId: worklog.id,
@@ -205,21 +236,14 @@ export function* saveWorklog({
         timeSpentInSeconds,
       },
     );
+    yield put(uiActions.setUiState({
+      saveWorklogInProcess: false,
+    }));
     return worklog;
   } catch (err) {
-    yield call(throwError, err);
-  }
-  return null;
-}
-
-export function* chronosBackendUploadWorklog(options: any): Generator<*, *, *> {
-  try {
-    const jwt = yield call(getFromStorage, 'desktop_tracker_jwt');
-    if (!jwt) {
-      throw new Error('Attempt to upload worklog on chronos backend!');
-    }
-    yield call(Api.chronosBackendUploadWorklog, options);
-  } catch (err) {
+    yield put(uiActions.setUiState({
+      saveWorklogInProcess: false,
+    }));
     yield call(throwError, err);
   }
 }
@@ -344,20 +368,17 @@ export function* deleteWorklog({ worklogId }: {
     const worklog = worklogsMap[worklogId];
     const issue = issuesMap[worklog.issueId];
 
-    yield call(
-      infoLog,
-      'requested to delete worklog',
-      worklogId,
-    );
-    const opts = {
-      issueId: worklog.issueId,
+    const params = {
+      issueIdOrKey: worklog.issueId,
       worklogId,
       adjustEstimate: 'auto',
     };
-    yield call(Api.deleteWorklog, opts);
-    yield put(worklogsA.succeeded({
-      resources: [worklog.issueId],
-    }));
+    yield call(
+      jiraApi.deleteIssueWorklog,
+      {
+        params,
+      },
+    );
     yield put(issuesA.succeeded({
       resources: [{
         ...issue,
@@ -367,8 +388,9 @@ export function* deleteWorklog({ worklogId }: {
         },
       }],
     }));
-    yield call(infoLog, 'worklog deleted', worklog);
-    trackMixpanel('Worklog deleted');
+    yield put(worklogsA.succeeded({
+      resources: [worklog.id],
+    }));
   } catch (err) {
     yield fork(notify, {
       title: 'Failed to delete worklog',

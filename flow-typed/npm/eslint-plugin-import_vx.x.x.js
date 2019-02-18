@@ -271,7 +271,7 @@ declare module 'eslint-plugin-import/lib/ExportMap.js' {
 declare module 'eslint-plugin-import/lib/importDeclaration.js' {
   declare module.exports: $Exports<'eslint-plugin-import/lib/importDeclaration'>;
 }
-declare module 'eslint-plugin-import/lib/index.js' {
+declare module 'eslint-plugin-import/lib/index.jsx' {
   declare module.exports: $Exports<'eslint-plugin-import/lib/index'>;
 }
 declare module 'eslint-plugin-import/lib/rules/default.js' {
@@ -391,6 +391,6 @@ declare module 'eslint-plugin-import/lib/rules/prefer-default-export.js' {
 declare module 'eslint-plugin-import/lib/rules/unambiguous.js' {
   declare module.exports: $Exports<'eslint-plugin-import/lib/rules/unambiguous'>;
 }
-declare module 'eslint-plugin-import/memo-parser/index.js' {
+declare module 'eslint-plugin-import/memo-parser/index.jsx' {
   declare module.exports: $Exports<'eslint-plugin-import/memo-parser/index'>;
 }

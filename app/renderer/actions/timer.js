@@ -22,8 +22,9 @@ export const continueTimer = (): TimerAction => ({
   type: types.CONTINUE_TIMER,
 });
 
-export const stopTimerRequest = (): TimerAction => ({
+export const stopTimerRequest = (closeRequest = false): TimerAction => ({
   type: types.STOP_TIMER_REQUEST,
+  closeRequest,
 });
 
 export const setIdleState = (
@@ -60,11 +61,12 @@ export const setScreenshotPeriods = (
   payload,
 });
 
-export const addIdleTime = (
+export const keepIdleTime = (
   payload: any,
 ): TimerAction => ({
-  type: types.ADD_IDLE_TIME,
+  type: types.KEEP_IDLE_TIME,
   payload,
+  scope: 'allRenderer',
 });
 
 export const dismissIdleTime = (
@@ -72,4 +74,5 @@ export const dismissIdleTime = (
 ): TimerAction => ({
   type: types.DISMISS_IDLE_TIME,
   payload,
+  scope: 'allRenderer',
 });

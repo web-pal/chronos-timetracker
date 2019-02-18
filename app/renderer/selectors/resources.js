@@ -50,6 +50,8 @@ export const getResourceMappedList = (
 export const getResourceItemById = (
   resourceType: string,
   id: Id,
-) =>
-  (state: State) =>
-    state[resourceType].resources[id] || null;
+) => (
+  (state: State) => (
+    state[resourceType].resources[id] || null
+  )
+);

@@ -38,7 +38,7 @@ declare module 'url-loader/dist/utils/normalizeFallback' {
 declare module 'url-loader/dist/cjs.js' {
   declare module.exports: $Exports<'url-loader/dist/cjs'>;
 }
-declare module 'url-loader/dist/index.js' {
+declare module 'url-loader/dist/index.jsx' {
   declare module.exports: $Exports<'url-loader/dist/index'>;
 }
 declare module 'url-loader/dist/utils/normalizeFallback.js' {

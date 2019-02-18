@@ -3,8 +3,16 @@ import React from 'react';
 import {
   render,
 } from 'react-dom';
+import * as Sentry from '@sentry/electron';
 
-import IdlePopup from './containers/Popups/IdlePopup/IdlePopup';
+import IdlePopup from './containers/Popups/IdlePopup';
+
+if (process.env.NODE_ENV === 'production') {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    enableNative: false,
+  });
+}
 
 render(
   <IdlePopup />,

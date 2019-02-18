@@ -53,13 +53,13 @@ declare module 'redux-resource-action-creators/dist/redux-resource-action-creato
 declare module 'redux-resource-action-creators/dist/redux-resource-action-creators.min.js' {
   declare module.exports: $Exports<'redux-resource-action-creators/dist/redux-resource-action-creators.min'>;
 }
-declare module 'redux-resource-action-creators/es/index.js' {
+declare module 'redux-resource-action-creators/es/index.jsx' {
   declare module.exports: $Exports<'redux-resource-action-creators/es/index'>;
 }
 declare module 'redux-resource-action-creators/es/utils/warning.js' {
   declare module.exports: $Exports<'redux-resource-action-creators/es/utils/warning'>;
 }
-declare module 'redux-resource-action-creators/lib/index.js' {
+declare module 'redux-resource-action-creators/lib/index.jsx' {
   declare module.exports: $Exports<'redux-resource-action-creators/lib/index'>;
 }
 declare module 'redux-resource-action-creators/lib/utils/warning.js' {

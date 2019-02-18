@@ -1,9 +1,8 @@
 // @flow
 import {
-  delay,
-} from 'redux-saga';
-import {
   call,
+  delay,
+  all,
   take,
   select,
   put,
@@ -11,10 +10,12 @@ import {
   takeEvery,
   cancel,
 } from 'redux-saga/effects';
-import Raven from 'raven-js';
+import * as Sentry from '@sentry/electron';
 import createActionCreators from 'redux-resource-action-creators';
 
-import * as Api from 'api';
+import {
+  jiraApi,
+} from 'api';
 import {
   trackMixpanel,
 } from 'utils/stat';
@@ -38,6 +39,9 @@ import {
   resourcesActions,
   actionTypes,
 } from 'actions';
+import {
+  trayActions,
+} from 'shared/actions';
 
 import {
   throwError,
@@ -50,7 +54,6 @@ import {
 import {
   getIssueComments,
 } from './comments';
-import createIpcChannel from './ipc';
 
 
 const JQL_RESTRICTED_CHARS_REGEX = /[+.,;?|*/%^$#@[\]]/;
@@ -58,6 +61,27 @@ const JQL_RESTRICTED_CHARS_REGEX = /[+.,;?|*/%^$#@[\]]/;
 export function transformFilterValue(value: string): string {
   return JQL_RESTRICTED_CHARS_REGEX.test(value) ? `"${value}"` : String(value);
 }
+
+const ISSUE_FIELDS = [
+  'issuetype',
+  'project',
+  'labels',
+  'priority',
+  'status',
+  'resolution',
+  'summary',
+  'reporter',
+  'assignee',
+  'description',
+  'worklog',
+  'timeestimate',
+  'timespent',
+  'timeoriginalestimate',
+  'fixVersions',
+  'versions',
+  'components',
+  'attachment',
+];
 
 /* eslint-disable */
 const normalizeIssues = issues => {
@@ -85,7 +109,7 @@ const normalizeIssues = issues => {
       result: [],
     });
   } catch (err) {
-    Raven.captureMessage('normalizedIssues error!', {
+    Sentry.captureMessage('normalizedIssues error!', {
       level: 'error',
       extra: {
         issues,
@@ -165,27 +189,31 @@ function buildJQLQuery({
 
 function* fetchAdditionalWorklogsForIssues(issues) {
   try {
-    const incompleteIssues = issues.filter(issue => issue.fields.worklog.total > 20);
+    const incompleteIssues = issues.filter(
+      issue => (
+        issue.fields.worklog === undefined
+        || (issue.fields?.worklog?.total || 0) > 20
+      ),
+    );
     if (incompleteIssues.length) {
       yield call(
         infoLog,
         'found issues lacking worklogs',
         incompleteIssues,
       );
-      const { additionalIssuesArr } = yield call(
+      const additionalIssuesArr = yield call(
         getAdditionalWorklogsForIssues,
         incompleteIssues,
       );
+      const withAdditionalWorklogs = [
+        ...issues.filter(i => (i.fields?.worklog?.total || 0) <= 20),
+        ...additionalIssuesArr,
+      ];
       yield call(
         infoLog,
         'getAdditionalWorklogsForIssues response:',
         additionalIssuesArr,
       );
-
-      const withAdditionalWorklogs = [
-        ...issues,
-        ...additionalIssuesArr,
-      ];
       yield call(
         infoLog,
         'filled issues with lacking worklogs: ',
@@ -195,7 +223,7 @@ function* fetchAdditionalWorklogsForIssues(issues) {
     }
     return issues;
   } catch (err) {
-    Raven.captureMessage('Fetch additional worklog issue', {
+    Sentry.captureMessage('Fetch additional worklog issue', {
       level: 'error',
       extra: {
         issues,
@@ -266,14 +294,27 @@ export function* fetchIssues({
       )
     ) ? (
         yield call(
-          Api.fetchIssues,
+          jiraApi.searchForIssues,
           {
-            startIndex,
-            stopIndex,
-            jql,
-            boardId: ['board', 'kanban'].includes(issuesSourceType) ? issuesSourceId : null,
-            additionalFields: epicLinkFieldId ? [epicLinkFieldId] : [],
-            timeout: tryCount ? 8000 : 3000,
+            params: {
+              startAt: startIndex,
+              maxResults: (
+                ((stopIndex - startIndex) + 1) < 10
+                  ? 10
+                  : (stopIndex - startIndex) + 1
+              ),
+              jql,
+              boardId: ['board', 'kanban'].includes(issuesSourceType) ? issuesSourceId : null,
+              fields: [
+                ...ISSUE_FIELDS,
+                ...(
+                  epicLinkFieldId ? (
+                    [epicLinkFieldId]
+                  ) : []
+                ),
+              ],
+              expand: ['renderedFields'],
+            },
           },
         )
       ) : ({
@@ -367,27 +408,29 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
       || jql.length
     ) ? (
         yield call(
-          Api.fetchIssues,
+          jiraApi.searchForIssues,
           {
-            startIndex: 0,
-            stopIndex: 1000,
-            jql,
-            boardId: ['board', 'kanban'].includes(issuesSourceType) ? issuesSourceId : null,
-            additionalFields: epicLinkFieldId ? [epicLinkFieldId] : [],
+            params: {
+              startAt: 0,
+              maxResults: 1000,
+              jql,
+              boardId: ['board', 'kanban'].includes(issuesSourceType) ? issuesSourceId : null,
+              fields: [
+                ...ISSUE_FIELDS,
+                ...(
+                  epicLinkFieldId ? (
+                    [epicLinkFieldId]
+                  ) : []
+                ),
+              ],
+              expand: ['renderedFields'],
+            },
           },
         )
       ) : ({
         total: 0,
         issues: [],
       });
-    if (response.warningMessages) {
-      Raven.captureMessage('Issues warningMessages!', {
-        level: 'error',
-        extra: {
-          response,
-        },
-      });
-    }
     yield call(
       infoLog,
       'fetchRecentIssues response',
@@ -464,7 +507,14 @@ export function* getIssueTransitions(issueId: string | number): Generator<*, voi
       infoLog,
       `getting available issue transitions for ${issueId}`,
     );
-    const { transitions } = yield call(Api.getIssueTransitions, issueId);
+    const { transitions } = yield call(
+      jiraApi.getIssueTransitions,
+      {
+        params: {
+          issueIdOrKey: issueId,
+        },
+      },
+    );
     yield put(actions.succeeded({
       resources: transitions,
     }));
@@ -502,9 +552,15 @@ export function* transitionIssue({
       title: `Moved issue ${issue.key} to ${transition.to.name}`,
     });
     yield call(
-      Api.transitionIssue,
-      issueId,
-      transitionId,
+      jiraApi.transitionIssue,
+      {
+        params: {
+          issueIdOrKey: issueId,
+        },
+        body: {
+          transition: transitionId,
+        },
+      },
     );
 
     yield put(issuesA.succeeded({
@@ -529,9 +585,14 @@ export function* transitionIssue({
 
 export function* getIssuePermissions(issueId: string | number): Generator<*, void, *> {
   try {
-    const {
-      permissions,
-    } = yield call(Api.getPermissions, { issueId });
+    const { permissions } = yield call(
+      jiraApi.getMyPermissions,
+      {
+        params: {
+          issueId,
+        },
+      },
+    );
     yield put(resourcesActions.setResourceMeta({
       resourceType: 'issues',
       resources: [issueId],
@@ -545,14 +606,14 @@ export function* getIssuePermissions(issueId: string | number): Generator<*, voi
 }
 
 export function* issueSelectFlow(issueId: string | number): Generator<*, *, *> {
+  const issue = yield select(getResourceItemById('issues', issueId));
+  yield put(trayActions.traySelectIssue(issue.key));
   yield fork(getIssueTransitions, issueId);
   yield fork(getIssueComments, issueId);
   yield fork(getIssuePermissions, issueId);
 }
 
-export function* assignIssue({
-  issueId,
-}: {
+export function* assignIssueToUser({ issueId }: {
   issueId: Id,
 }): Generator<*, void, *> {
   const issuesA = createActionCreators('update', {
@@ -569,7 +630,17 @@ export function* assignIssue({
       infoLog,
       `assigning issue ${issue.key} to self (${userData.key})`,
     );
-    yield call(Api.assignIssue, { issueKey: issue.key, assignee: userData.key });
+    yield call(
+      jiraApi.assignIssue,
+      {
+        params: {
+          issueIdOrKey: issue.key,
+        },
+        body: {
+          key: userData.key,
+        },
+      },
+    );
     yield call(
       infoLog,
       `succesfully assigned issue ${issue.key} to self (${userData.key})`,
@@ -607,7 +678,7 @@ export function* fetchIssueFields(): Generator<*, void, *> {
   try {
     yield put(actions.pending());
     yield call(infoLog, 'fetching issue fields');
-    const issuesFields = yield call(Api.fetchIssueFields);
+    const issuesFields = yield call(jiraApi.getAllIssueFields);
     yield put(actions.succeeded({
       resources: issuesFields,
     }));
@@ -627,7 +698,43 @@ export function* fetchEpics(): Generator<*, void, *> {
   try {
     yield put(actions.pending());
     yield call(infoLog, 'fetching epics');
-    const { issues } = yield call(Api.fetchEpics);
+    const response = yield call(
+      jiraApi.searchForIssues,
+      {
+        params: {
+          startAt: 0,
+          maxResults: 100,
+          jql: "issuetype = 'Epic'",
+          fields: ISSUE_FIELDS,
+        },
+      },
+    );
+    const additionalIssues = (
+      response.total > response.issues.length
+        ? (
+          yield all(
+            Array.from(Array(Math.ceil(response.total / response.maxResults) - 1).keys()).map(
+              i => (
+                call(
+                  jiraApi.searchForIssues,
+                  {
+                    params: {
+                      startAt: (i + 1) * response.maxResults,
+                      maxResults: response.maxResults,
+                      jql: "issuetype = 'Epic'",
+                      fields: ISSUE_FIELDS,
+                    },
+                  },
+                )),
+            ),
+          )
+        ) : (
+          []
+        )
+    );
+    const issues = [
+      ...response.issues,
+    ].concat(...additionalIssues.map(i => i.issues));
     yield put(actions.succeeded({
       resources: issues,
     }));
@@ -640,13 +747,29 @@ export function* fetchEpics(): Generator<*, void, *> {
   }
 }
 
-function* onNewIssue(issueKey): Generator<*, *, *> {
+function* fetchNewIssue({ issueIdOrKey }): Generator<*, *, *> {
   const actions = createActionCreators('create', {
     resourceType: 'issues',
     request: 'createIssue',
   });
   try {
-    const issue = yield call(Api.fetchIssueByKey, issueKey);
+    const epicLinkFieldId: string | null = yield select(getFieldIdByName('Epic Link'));
+    const issue = yield call(
+      jiraApi.getIssueByIdOrKey,
+      {
+        params: {
+          issueIdOrKey,
+          fields: [
+            ...ISSUE_FIELDS,
+            ...(
+              epicLinkFieldId ? (
+                [epicLinkFieldId]
+              ) : []
+            ),
+          ],
+        },
+      },
+    );
     yield put(actions.pending());
     yield fork(notify, {
       title: `${issue.key} was created`,
@@ -655,10 +778,9 @@ function* onNewIssue(issueKey): Generator<*, *, *> {
     yield put(actions.succeeded({
       resources: [issue],
     }));
-    yield put(uiActions.setUiState(
-      'selectedIssueId',
-      issue.id,
-    ));
+    yield put(uiActions.setUiState({
+      selectedIssueId: issue.id,
+    }));
     yield fork(refetchIssues, false);
     trackMixpanel('New issue was created');
   } catch (err) {
@@ -666,15 +788,31 @@ function* onNewIssue(issueKey): Generator<*, *, *> {
   }
 }
 
-function* reFetchIssue(issueId): Generator<*, *, *> {
+function* fetchUpdateIssue({ issueIdOrKey }): Generator<*, *, *> {
   const actions = createActionCreators('update', {
     resourceType: 'issues',
-    resources: [issueId],
+    resources: [issueIdOrKey],
   });
   try {
     yield put(actions.pending());
-    const prevIssue = yield select(getResourceItemById('issues', issueId));
-    const issue = yield call(Api.fetchIssue, issueId);
+    const prevIssue = yield select(getResourceItemById('issues', issueIdOrKey));
+    const epicLinkFieldId: string | null = yield select(getFieldIdByName('Epic Link'));
+    const issue = yield call(
+      jiraApi.getIssueByIdOrKey,
+      {
+        params: {
+          issueIdOrKey,
+          fields: [
+            ...ISSUE_FIELDS,
+            ...(
+              epicLinkFieldId ? (
+                [epicLinkFieldId]
+              ) : []
+            ),
+          ],
+        },
+      },
+    );
     yield fork(notify, {
       title: `${issue.key} was updated`,
     });
@@ -682,41 +820,20 @@ function* reFetchIssue(issueId): Generator<*, *, *> {
     yield put(actions.succeeded({
       resources: [issue],
     }));
-    yield put(uiActions.setUiState(
-      'selectedIssueId',
-      issue.id,
-    ));
+    yield put(uiActions.setUiState({
+      selectedIssueId: issue.id,
+    }));
   } catch (err) {
     yield call(throwError, err);
   }
 }
 
-function getNewIssueChannelListener(channel) {
-  return function* listenNewIssue() {
-    while (true) {
-      const { payload } = yield take(channel);
-      yield fork(onNewIssue, payload[0]);
-    }
-  };
+export function* takeFetchNewIssue(): Generator<*, *, *> {
+  yield takeEvery(actionTypes.FETCH_NEW_ISSUE_REQUEST, fetchNewIssue);
 }
 
-function getReFetchIssueChannelListener(channel) {
-  return function* listenReFetchIssue() {
-    while (true) {
-      const { payload } = yield take(channel);
-      yield fork(reFetchIssue, payload[0]);
-    }
-  };
-}
-
-export function* createIpcNewIssueListener(): Generator<*, *, *> {
-  const newIssueChannel = yield call(createIpcChannel, 'newIssue');
-  yield fork(getNewIssueChannelListener(newIssueChannel));
-}
-
-export function* createIpcReFetchIssueListener(): Generator<*, *, *> {
-  const reFetchIssueChannel = yield call(createIpcChannel, 'reFetchIssue');
-  yield fork(getReFetchIssueChannelListener(reFetchIssueChannel));
+export function* takeFetchUpdateIssue(): Generator<*, *, *> {
+  yield takeEvery(actionTypes.FETCH_UPDATE_ISSUE_REQUEST, fetchUpdateIssue);
 }
 
 export function* watchFetchIssuesRequest(): Generator<*, *, *> {
@@ -732,7 +849,7 @@ export function* watchTransitionIssueRequest(): Generator<*, *, *> {
 }
 
 export function* watchAssignIssueRequest(): Generator<*, *, *> {
-  yield takeEvery(actionTypes.ASSIGN_ISSUE_REQUEST, assignIssue);
+  yield takeEvery(actionTypes.ASSIGN_ISSUE_REQUEST, assignIssueToUser);
 }
 
 export function* watchReFetchIssuesRequest(): Generator<*, *, *> {

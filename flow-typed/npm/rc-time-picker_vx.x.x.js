@@ -85,7 +85,7 @@ declare module 'rc-time-picker/es/Combobox.js' {
 declare module 'rc-time-picker/es/Header.js' {
   declare module.exports: $Exports<'rc-time-picker/es/Header'>;
 }
-declare module 'rc-time-picker/es/index.js' {
+declare module 'rc-time-picker/es/index.jsx' {
   declare module.exports: $Exports<'rc-time-picker/es/index'>;
 }
 declare module 'rc-time-picker/es/Panel.js' {
@@ -106,7 +106,7 @@ declare module 'rc-time-picker/lib/Combobox.js' {
 declare module 'rc-time-picker/lib/Header.js' {
   declare module.exports: $Exports<'rc-time-picker/lib/Header'>;
 }
-declare module 'rc-time-picker/lib/index.js' {
+declare module 'rc-time-picker/lib/index.jsx' {
   declare module.exports: $Exports<'rc-time-picker/lib/index'>;
 }
 declare module 'rc-time-picker/lib/Panel.js' {

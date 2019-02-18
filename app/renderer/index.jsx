@@ -1,14 +1,15 @@
 import React from 'react';
 import {
-  render,
+  render as reactRender,
 } from 'react-dom';
 import {
   Provider,
 } from 'react-redux';
 import {
-  AppContainer,
+  hot,
+  setConfig,
 } from 'react-hot-loader';
-import Raven from 'raven-js';
+import * as Sentry from '@sentry/electron';
 import {
   ipcRenderer,
 } from 'electron';
@@ -18,45 +19,30 @@ import store from './store';
 
 import './assets/stylesheets/main.less';
 
-import pjson from '../package.json';
-
 require('smoothscroll-polyfill').polyfill();
 
-Raven.addPlugin(require('./raven-electron-plugin')); // eslint-disable-line
-if (process.env.UPLOAD_SENTRY !== '0') {
-  if (process.env.SENTRY_LINK) {
-    Raven
-      .config(process.env.SENTRY_LINK, {
-        release: `${pjson.version}_${process.platform}`,
-      })
-      .install();
-  }
+setConfig({
+  pureSFC: true,
+});
+
+if (process.env.NODE_ENV === 'production') {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    enableNative: false,
+  });
 }
 
 window.onerror = (...argw) => {
   ipcRenderer.send('errorInWindow', argw);
 };
 
-render(
-  <AppContainer>
+const render = Component => (
+  reactRender(
     <Provider store={store}>
-      <App />
-    </Provider>
-  </AppContainer>,
-  document.getElementById('root') || document.createElement('div'),
+      <Component />
+    </Provider>,
+    document.getElementById('root') || document.createElement('div'),
+  )
 );
 
-if (module.hot) {
-  // $FlowFixMe
-  module.hot.accept('./containers/App', () => {
-    const App = require('./containers/App'); // eslint-disable-line
-    render(
-      <AppContainer>
-        <Provider store={store}>
-          <App />
-        </Provider>
-      </AppContainer>,
-      document.getElementById('root') || document.createElement('div'),
-    );
-  });
-}
+render(hot(module)(App));
