@@ -91,7 +91,7 @@ class SelfHostLoginStep extends Component<Props> {
               name="username"
               type="text"
               placeholder="Enter username"
-              withRef
+              forwardRef
               ref={(el) => {
                 this.usernameInput = el;
               }}
