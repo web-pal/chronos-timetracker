@@ -20,6 +20,7 @@ import {
 import {
   actionTypes,
 } from 'actions';
+import './assets/stylesheets/main.less';
 
 import rendererEnhancer from './store/middleware';
 

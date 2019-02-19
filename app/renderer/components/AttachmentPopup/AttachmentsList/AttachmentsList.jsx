@@ -10,7 +10,7 @@ import {
 
 import DownloadAttachment from '../DownloadAttachment/DownloadAttachment';
 
-const ShowAllAttachment = ({ attachment, selectAttachment }) => (
+const AttachmentsList = ({ attachment, selectAttachment }) => (
   <ShowAllContainer>
     <ItemContainer>
       {
@@ -44,4 +44,4 @@ const ShowAllAttachment = ({ attachment, selectAttachment }) => (
   </ShowAllContainer>
 );
 
-export default ShowAllAttachment;
+export default AttachmentsList;
