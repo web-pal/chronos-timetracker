@@ -45,7 +45,7 @@ export function* getAdditionalWorklogsForIssues(
     const worklogsArr = yield eff.all(
       incompleteIssues.map(
         i => (
-          eff.all(
+          eff.call(
             jiraApi.getIssueWorklogs,
             {
               params: {
