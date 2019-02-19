@@ -16,6 +16,7 @@ if (process.env.NODE_ENV === 'production') {
     release: `${pjson.version}_${process.platform}`,
   });
 }
+window.CHRONOS_ISSUE_WINDOW = true;
 
 const store = configureStore();
 

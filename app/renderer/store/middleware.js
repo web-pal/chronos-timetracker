@@ -23,6 +23,8 @@ const rendererEnhancer = (store) => {
     const stopClose = (
       store.getState().timer !== undefined
       && !store.getState()?.ui?.readyToQuit
+    ) || (
+      window.CHRONOS_ISSUE_WINDOW
     );
     if (stopClose) {
       let continueclose = true;
@@ -42,6 +44,17 @@ const rendererEnhancer = (store) => {
         setTimeout(() => {
           store.dispatch({ type: actionTypes.QUIT_REQUEST });
         }, 100);
+      }
+      if (window.CHRONOS_ISSUE_WINDOW) {
+        try {
+          document.getElementsByClassName('cancel')[0].click();
+          (
+            document.getElementById('edit-issue-submit')
+            || document.getElementById('create-issue-submit')
+          ).nextElementSibling.click();
+        } catch (err) {
+          console.log(err);
+        }
       }
       ev.returnValue = false;
     } else {
