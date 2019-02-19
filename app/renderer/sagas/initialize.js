@@ -286,6 +286,14 @@ export function* initializeApp(): Generator<*, *, *> {
     initializeInProcess: true,
   }));
   try {
+    const accounts = yield eff.call(
+      getElectronStorage,
+      'accounts',
+      [],
+    );
+    yield eff.put(uiActions.setUiState({
+      accounts,
+    }));
     const authCredentials = yield eff.call(
       getElectronStorage,
       'last_used_account',
