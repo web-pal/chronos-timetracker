@@ -1,7 +1,4 @@
-import {
-  call,
-} from 'redux-saga/effects';
-
+import * as eff from 'redux-saga/effects';
 import * as Api from 'api';
 
 import {
@@ -11,10 +8,10 @@ import {
 
 export function* getWorklogTypes() {
   try {
-    const { payload } = yield call(Api.fetchWorklogTypes);
-    yield call(infoLog, 'got worklog types', payload);
-    // yield put(worklogTypesActions.fill);
+    const { payload } = yield eff.call(Api.fetchWorklogTypes);
+    yield eff.call(infoLog, 'got worklog types', payload);
   } catch (err) {
     console.log(err);
   }
 }
+
