@@ -293,12 +293,17 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
             }
           }}
         />
-        <DescriptionSectionAttachment
-          showAttachmentWindow={index => dispatch(
-            issuesActions.showAttachmentWindow({ issueId: issue.id, activeIndex: index }),
-          )}
-          attachment={issue.renderedFields.attachment}
-        />
+        {issue?.renderedFields?.attachment && (
+          <DescriptionSectionAttachment
+            showAttachmentWindow={index => dispatch(
+              issuesActions.showAttachmentWindow({
+                issueId: issue.id,
+                activeIndex: index,
+              }),
+            )}
+            attachment={issue.renderedFields.attachment}
+          />
+        )}
       </DescriptionSectionHeader>
     </IssueDetailsContainer>
   );

@@ -18,10 +18,7 @@ import {
 import Header from '../Header';
 import Sidebar from '../Sidebar';
 import IssueView from '../IssueView';
-import {
-  MainContainer,
-  LeftContainer,
-} from './styled';
+import * as S from './styled';
 
 
 const theme = {
@@ -30,20 +27,21 @@ const theme = {
 
 type Props = {};
 
-const Main: StatelessFunctionalComponent<Props> = (): Node =>
+const Main: StatelessFunctionalComponent<Props> = (): Node => (
   <ThemeProvider theme={theme}>
-    <MainContainer>
-      <LeftContainer>
+    <S.Main>
+      <S.Left>
         <Header />
         <Sidebar />
-      </LeftContainer>
+      </S.Left>
       <IssueView />
 
       <AlertModal />
       <SettingsModal />
       <WorklogModal />
       <ConfirmDeleteWorklogModal />
-    </MainContainer>
-  </ThemeProvider>;
+    </S.Main>
+  </ThemeProvider>
+);
 
 export default Main;

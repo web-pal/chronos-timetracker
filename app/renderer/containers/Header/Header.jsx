@@ -48,21 +48,7 @@ import config from 'config';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import EditorAddIcon from '@atlaskit/icon/glyph/editor/add';
 
-import {
-  HeaderContainer,
-  ProfileContainer,
-  IconsContainer,
-  ProfileInfo,
-  SettingsIcon,
-  ProfilePicture,
-  ProfileName,
-  ProfileTeam,
-  DropdownSeparator,
-  UpdateAvailableBadge,
-  DropdownLogoutItem,
-  DropdownUpdateItem,
-  RefreshIcon,
-} from './styled';
+import * as S from './styled';
 
 
 type Props = {
@@ -87,23 +73,23 @@ const Header: StatelessFunctionalComponent<Props> = ({
   issuesFetching,
   dispatch,
 }: Props): Node => (
-  <HeaderContainer className="webkit-drag">
-    <ProfileContainer>
-      <ProfilePicture
+  <S.Header className="webkit-drag">
+    <S.Profile>
+      <S.ProfilePicture
         src={userData.avatarUrls['48x48']}
         alt="User avatar"
       />
-      <ProfileInfo>
-        <ProfileName>
+      <S.ProfileInfo>
+        <S.ProfileName>
           {userData.displayName}
-        </ProfileName>
+        </S.ProfileName>
         <DropdownMenu
           triggerType="default"
           position="right top"
           trigger={(
-            <ProfileTeam>
+            <S.ProfileTeam>
               {hostname} <ChevronDownIcon />
-            </ProfileTeam>
+            </S.ProfileTeam>
           )}
         >
           {accounts.map((ac) => {
@@ -129,11 +115,11 @@ const Header: StatelessFunctionalComponent<Props> = ({
             </span>
           </DropdownItem>
         </DropdownMenu>
-      </ProfileInfo>
-    </ProfileContainer>
+      </S.ProfileInfo>
+    </S.Profile>
 
-    <IconsContainer>
-      <RefreshIcon
+    <S.Icons>
+      <S.RefreshIcon
         src={refreshWhite}
         onClick={() => {
           if (!issuesFetching) {
@@ -143,13 +129,13 @@ const Header: StatelessFunctionalComponent<Props> = ({
         alt="Refresh"
       />
       {updateAvailable
-        && <UpdateAvailableBadge />
+        && <S.UpdateAvailableBadge />
       }
       <DropdownMenu
         triggerType="default"
         position="bottom right"
         trigger={(
-          <SettingsIcon
+          <S.SettingsIcon
             src={cogIcon}
             alt="Settings"
           />
@@ -173,10 +159,10 @@ const Header: StatelessFunctionalComponent<Props> = ({
           >
             Github
           </DropdownItem>
-          <DropdownSeparator />
+          <S.DropdownSeparator />
 
           {updateAvailable && !downloadUpdateProgress && [
-            <DropdownUpdateItem
+            <S.DropdownUpdateItem
               key="update"
               onClick={() => {
                 dispatch(uiActions.setModalState('settings', true));
@@ -184,11 +170,11 @@ const Header: StatelessFunctionalComponent<Props> = ({
               }}
             >
               {updateAvailable} is out! Update now.
-            </DropdownUpdateItem>,
-            <DropdownSeparator key="separator" />,
+            </S.DropdownUpdateItem>,
+            <S.DropdownSeparator key="separator" />,
           ]}
 
-          <DropdownLogoutItem
+          <S.DropdownLogoutItem
             onClick={() => {
               dispatch(authActions.logoutRequest({
                 forget: true,
@@ -196,11 +182,11 @@ const Header: StatelessFunctionalComponent<Props> = ({
             }}
           >
             Logout
-          </DropdownLogoutItem>
+          </S.DropdownLogoutItem>
         </DropdownItemGroup>
       </DropdownMenu>
-    </IconsContainer>
-  </HeaderContainer>
+    </S.Icons>
+  </S.Header>
 );
 
 
