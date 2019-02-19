@@ -4,15 +4,14 @@ import {
 } from 'components';
 
 
-export const MainContainer = styled(Flex).attrs({
+export const Main = styled(Flex).attrs({
   row: true,
 })`
   height: 100%;
 `;
 
-export const LeftContainer = styled(Flex).attrs({
+export const Left = styled(Flex).attrs({
   column: true,
 })`
   flex: 0 0 435px;
 `;
-
