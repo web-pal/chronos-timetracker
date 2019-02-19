@@ -7,11 +7,13 @@ import {
 } from 'actions';
 
 import configureStore from './store/configurePreloadStore';
+import pjson from '../package.json';
 
 if (process.env.NODE_ENV === 'production') {
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
     enableNative: false,
+    release: `${pjson.version}_${process.platform}`,
   });
 }
 
