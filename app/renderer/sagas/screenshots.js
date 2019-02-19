@@ -1,6 +1,4 @@
-import {
-  put, call, cps, select,
-} from 'redux-saga/effects';
+import * as eff from 'redux-saga/effects';
 import path from 'path';
 import fs from 'fs';
 import {
@@ -37,22 +35,22 @@ export function* uploadScreenshot({
     const thumbFilename = path.basename(lastScreenshotThumbPath);
 
     if (!isOffline) {
-      yield put(timerActions.setLastScreenshotTime(screenshotTime));
+      yield eff.put(timerActions.setLastScreenshotTime(screenshotTime));
     }
 
     // upload screenshot
-    const image = yield cps(fs.readFile, lastScreenshotPath);
-    const { url } = yield call(Api.signUploadUrlForS3Bucket, fileName);
-    yield call(Api.uploadScreenshotOnS3Bucket, { url, image });
+    const image = yield eff.cps(fs.readFile, lastScreenshotPath);
+    const { url } = yield eff.call(Api.signUploadUrlForS3Bucket, fileName);
+    yield eff.call(Api.uploadScreenshotOnS3Bucket, { url, image });
 
     // upload thumb
-    const thumbImage = yield cps(fs.readFile, lastScreenshotThumbPath);
-    const thumbUrlData = yield call(Api.signUploadUrlForS3Bucket, thumbFilename);
-    yield call(Api.uploadScreenshotOnS3Bucket, { url: thumbUrlData.url, image: thumbImage });
+    const thumbImage = yield eff.cps(fs.readFile, lastScreenshotThumbPath);
+    const thumbUrlData = yield eff.call(Api.signUploadUrlForS3Bucket, thumbFilename);
+    yield eff.call(Api.uploadScreenshotOnS3Bucket, { url: thumbUrlData.url, image: thumbImage });
 
     const currentScreenshot = `${remote.getGlobal('appDir')}/current_screenshots/${fileName}`;
 
-    yield call(fs.writeFileSync, currentScreenshot, image);
+    yield eff.call(fs.writeFileSync, currentScreenshot, image);
 
     const screenshot = {
       fileName,
@@ -61,11 +59,11 @@ export function* uploadScreenshot({
       timestamp,
     };
 
-    yield put(timerActions.addScreenshot(screenshot, screenshotTime));
-    yield cps(fs.unlink, lastScreenshotPath);
+    yield eff.put(timerActions.addScreenshot(screenshot, screenshotTime));
+    yield eff.cps(fs.unlink, lastScreenshotPath);
 
     if (lastScreenshotThumbPath.length) {
-      yield cps(fs.unlink, lastScreenshotThumbPath);
+      yield eff.cps(fs.unlink, lastScreenshotThumbPath);
     }
 
     // yield put({ type: types.SET_SCREENSHOT_UPLOAD_STATE, payload: false });
@@ -91,26 +89,26 @@ export function* uploadScreenshot({
         );
       }
     }
-    yield call(throwError, err);
+    yield eff.call(throwError, err);
     Raven.captureException(err);
   }
 }
 
 export function* rejectScreenshot(screenshotPath) {
-  const lastScreenshotTime = yield select(getTimerState('lastScreenshotTime'));
-  const time = yield select(getTimerState('time'));
+  const lastScreenshotTime = yield eff.select(getTimerState('lastScreenshotTime'));
+  const time = yield eff.select(getTimerState('time'));
   const timeDiff = time - lastScreenshotTime;
-  yield put(timerActions.dismissIdleTime(timeDiff));
-  yield cps(fs.unlink, screenshotPath);
+  yield eff.put(timerActions.dismissIdleTime(timeDiff));
+  yield eff.cps(fs.unlink, screenshotPath);
 }
 
 export function* takeScreenshot() {
   try {
-    const screenshotTime = yield select(getTimerState('time'));
-    const userData = yield select(getUserData);
-    const host = yield select(getUiState('host'));
-    const localDesktopSettings = yield select(getSettingsState('localDesktopSettings'));
-    yield call(
+    const screenshotTime = yield eff.select(getTimerState('time'));
+    const userData = yield eff.select(getUserData);
+    const host = yield eff.select(getUiState('host'));
+    const localDesktopSettings = yield eff.select(getSettingsState('localDesktopSettings'));
+    yield eff.call(
       Api.makeScreenshot,
       screenshotTime,
       userData.key,
@@ -120,15 +118,15 @@ export function* takeScreenshot() {
       localDesktopSettings.nativeNotifications,
     );
   } catch (err) {
-    yield call(throwError, err);
+    yield eff.call(throwError, err);
     Raven.captureException(err);
   }
 }
 
 export function* cleanExcessScreenshotPeriods() {
-  const currentTime = yield select(getTimerState('time'));
-  const periods = yield select(getSettingsState('screenshotsPeriod'));
+  const currentTime = yield eff.select(getTimerState('time'));
+  const periods = yield eff.select(getSettingsState('screenshotsPeriod'));
   const newPeriods = periods.filter(p => p > currentTime);
 
-  yield put(timerActions.setScreenshotPeriods(newPeriods));
+  yield eff.put(timerActions.setScreenshotPeriods(newPeriods));
 }
