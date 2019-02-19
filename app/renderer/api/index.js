@@ -27,7 +27,7 @@ export function authSelfHosted(
     'Error: net::ERR_CONNECTION_RESET': 'Connection reset',
     'Error: net::ERR_CONNECTION_CLOSE': 'Connection close',
     'Error: net::ERR_NAME_NOT_RESOLVED': 'Page unavailable',
-    'Error: net::ERR_CONNECTION_TIMED_OUT': 'Nonnection timed out',
+    'Error: net::ERR_CONNECTION_TIMED_OUT': 'Connection timed out',
   }[error] || 'Unknown Error');
 
   const {
