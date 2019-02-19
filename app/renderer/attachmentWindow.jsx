@@ -20,15 +20,18 @@ import {
 import {
   actionTypes,
 } from 'actions';
+import './assets/stylesheets/main.less';
 
 import rendererEnhancer from './store/middleware';
 
 import AttachmentPopup from './containers/Popups/AttachmentPopup';
+import pjson from '../package.json';
 
 if (process.env.NODE_ENV === 'production') {
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
     enableNative: false,
+    release: `${pjson.version}_${process.platform}`,
   });
 }
 

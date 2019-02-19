@@ -1,13 +1,5 @@
 // @flow
-import {
-  call,
-  all,
-  select,
-  put,
-  cancel,
-  takeEvery,
-  fork,
-} from 'redux-saga/effects';
+import * as eff from 'redux-saga/effects';
 import moment from 'moment';
 import createActionCreators from 'redux-resource-action-creators';
 
@@ -50,10 +42,10 @@ export function* getAdditionalWorklogsForIssues(
   incompleteIssues: Array<any>,
 ): Generator<*, *, *> {
   try {
-    const worklogsArr = yield all(
+    const worklogsArr = yield eff.all(
       incompleteIssues.map(
         i => (
-          call(
+          eff.call(
             jiraApi.getIssueWorklogs,
             {
               params: {
@@ -91,7 +83,7 @@ export function* getAdditionalWorklogsForIssues(
     });
     return issues;
   } catch (err) {
-    yield call(throwError, err);
+    yield eff.call(throwError, err);
     return incompleteIssues;
   }
 }
@@ -112,9 +104,10 @@ export function* saveWorklog({
 }: {
   payload: any,
 }): Generator<*, *, *> {
-  yield put(uiActions.setUiState({
+  yield eff.put(uiActions.setUiState({
     saveWorklogInProcess: true,
   }));
+
   const worklogsActions = createActionCreators(
     worklogId ? 'update' : 'create',
     {
@@ -126,7 +119,7 @@ export function* saveWorklog({
     resourceType: 'issues',
     request: 'updateIssue',
   };
-  const recentIssues = yield select(getResourceIds('issues', 'recentIssues'));
+  const recentIssues = yield eff.select(getResourceIds('issues', 'recentIssues'));
   if (recentIssues.length) {
     issuesActionsConfig.list = 'recentIssues';
   }
@@ -135,15 +128,15 @@ export function* saveWorklog({
     issuesActionsConfig,
   );
   try {
-    yield put(worklogsActions.pending());
+    yield eff.put(worklogsActions.pending());
     if (!worklogId) {
-      yield put(issueActions.pending());
+      yield eff.put(issueActions.pending());
     }
-    yield put(uiActions.setModalState(
+    yield eff.put(uiActions.setModalState(
       'worklog',
       false,
     ));
-    yield fork(notify, {
+    yield eff.fork(notify, {
       resourceType: 'worklogs',
       request: 'saveWorklog',
       spinnerTitle: worklogId ? 'Edit worklog' : 'Add worklog',
@@ -152,17 +145,17 @@ export function* saveWorklog({
     const started = moment(startTime).utc().format().replace('Z', '.000+0000');
     const timeSpentSeconds = timeSpentInSeconds || jts(timeSpent);
     if (timeSpentSeconds < 60) {
-      yield call(
+      yield eff.call(
         infoLog,
         'uploadWorklog cancelled because timeSpentSeconds < 60',
       );
-      yield put(uiActions.setUiState({
+      yield eff.put(uiActions.setUiState({
         saveWorklogInProcess: false,
       }));
-      yield cancel();
+      yield eff.cancel();
     }
 
-    const worklog = yield call(
+    const worklog = yield eff.call(
       worklogId
         ? jiraApi.updateIssueWorklog
         : jiraApi.addIssueWorklog,
@@ -191,13 +184,13 @@ export function* saveWorklog({
         },
       },
     );
-    yield put(worklogsActions.succeeded({
+    yield eff.put(worklogsActions.succeeded({
       resources: [worklog],
     }));
 
-    const issuesMap = yield select(getResourceMap('issues'));
+    const issuesMap = yield eff.select(getResourceMap('issues'));
     const issue = issuesMap[issueId];
-    const savedIssue = yield call(
+    const savedIssue = yield eff.call(
       jiraApi.getIssueByIdOrKey,
       {
         params: {
@@ -205,7 +198,7 @@ export function* saveWorklog({
         },
       },
     );
-    yield put(issueActions.succeeded({
+    yield eff.put(issueActions.succeeded({
       resources: [{
         ...savedIssue,
         fields: {
@@ -219,13 +212,12 @@ export function* saveWorklog({
         },
       }],
     }));
-
-    yield put(uiActions.setUiState({
+    yield eff.put(uiActions.setUiState({
       selectedIssueId: issueId,
       issueViewTab: 'Worklogs',
       selectedWorklogId: worklog.id,
     }));
-    yield fork(scrollToIndexRequest, {
+    yield eff.fork(scrollToIndexRequest, {
       issueId,
       worklogId: worklog.id,
     });
@@ -236,37 +228,25 @@ export function* saveWorklog({
         timeSpentInSeconds,
       },
     );
-    yield put(uiActions.setUiState({
+    yield eff.put(uiActions.setUiState({
       saveWorklogInProcess: false,
     }));
     return worklog;
   } catch (err) {
-    yield put(uiActions.setUiState({
+    yield eff.put(uiActions.setUiState({
       saveWorklogInProcess: false,
     }));
-    yield call(throwError, err);
+    yield eff.call(throwError, err);
   }
 }
 
 export function* uploadWorklog(options: any): Generator<*, *, *> {
   try {
-    yield call(
+    yield eff.call(
       infoLog,
       'started uploading worklog with options:',
       options,
     );
-    /*
-    const {
-      issueId,
-      comment,
-      timeSpentInSeconds,
-      screenshotsPeriod,
-      worklogType,
-      screenshots,
-      activity,
-      keepedIdles,
-    } = options;
-    */
     const { timeSpentInSeconds } = options;
     const startTime = moment()
       .subtract({ seconds: timeSpentInSeconds })
@@ -274,11 +254,11 @@ export function* uploadWorklog(options: any): Generator<*, *, *> {
       .format()
       .replace('Z', '.000+0000');
 
-    const adjustEstimate = yield select(getUiState('remainingEstimateValue'));
-    const newEstimate = yield select(getUiState('remainingEstimateNewValue'));
-    const reduceBy = yield select(getUiState('remainingEstimateReduceByValue'));
+    const adjustEstimate = yield eff.select(getUiState('remainingEstimateValue'));
+    const newEstimate = yield eff.select(getUiState('remainingEstimateNewValue'));
+    const reduceBy = yield eff.select(getUiState('remainingEstimateReduceByValue'));
 
-    const worklog = yield call(saveWorklog, {
+    const worklog = yield eff.call(saveWorklog, {
       payload: {
         ...options,
         adjustEstimate,
@@ -289,56 +269,29 @@ export function* uploadWorklog(options: any): Generator<*, *, *> {
       },
     });
 
-    const postAlsoAsIssueComment = yield select(getUiState('postAlsoAsIssueComment'));
+    const postAlsoAsIssueComment = yield eff.select(getUiState('postAlsoAsIssueComment'));
     if (postAlsoAsIssueComment && options.comment) {
-      yield put(issuesActions.commentRequest(options.comment, options.issueId));
+      yield eff.put(issuesActions.commentRequest(options.comment, options.issueId));
     }
 
     // reset ui state
-    yield put(uiActions.resetUiState([
+    yield eff.put(uiActions.resetUiState([
       'worklogComment',
       'postAlsoAsIssueComment',
       'remainingEstimateValue',
       'remainingEstimateNewValue',
       'remainingEstimateReduceByValue',
     ]));
-
-    /*
-    const backendUploadOptions = {
-      worklogId: worklog.id,
-      issueId,
-      comment,
-      timeSpentSeconds: timeSpentInSeconds,
-      screenshotsPeriod,
-      worklogType,
-      screenshots,
-      activity,
-      keepedIdles,
-    };
-    yield fork(chronosBackendUploadWorklog, backendUploadOptions);
-    */
-    yield call(
+    yield eff.call(
       infoLog,
       'worklog uploaded',
       worklog,
     );
   } catch (err) {
-    /*
-    const { issueId, timeSpentSeconds, comment } = options;
-    const started = moment().utc().format().replace('Z', '.000+0000');
-    yield call(saveWorklogAsOffline, {
-      issueId,
-      worklog: {
-        started,
-        timeSpentSeconds,
-        comment,
-      },
-    });
-    */
-    yield fork(notify, {
+    yield eff.fork(notify, {
       title: 'Failed to upload worklog',
     });
-    yield call(throwError, err);
+    yield eff.call(throwError, err);
   }
 }
 
@@ -354,17 +307,17 @@ export function* deleteWorklog({ worklogId }: {
     request: 'deleteIssue',
   });
   try {
-    yield put(worklogsA.pending());
-    yield put(issuesA.pending());
-    yield fork(notify, {
+    yield eff.put(worklogsA.pending());
+    yield eff.put(issuesA.pending());
+    yield eff.fork(notify, {
       resourceType: 'worklogs',
       request: 'deleteWorklog',
       spinnerTitle: 'Delete worklog',
       title: 'Successfully deleted worklog',
     });
 
-    const worklogsMap = yield select(getResourceMap('worklogs'));
-    const issuesMap = yield select(getResourceMap('issues'));
+    const worklogsMap = yield eff.select(getResourceMap('worklogs'));
+    const issuesMap = yield eff.select(getResourceMap('issues'));
     const worklog = worklogsMap[worklogId];
     const issue = issuesMap[worklog.issueId];
 
@@ -373,13 +326,13 @@ export function* deleteWorklog({ worklogId }: {
       worklogId,
       adjustEstimate: 'auto',
     };
-    yield call(
+    yield eff.call(
       jiraApi.deleteIssueWorklog,
       {
         params,
       },
     );
-    yield put(issuesA.succeeded({
+    yield eff.put(issuesA.succeeded({
       resources: [{
         ...issue,
         fields: {
@@ -388,21 +341,21 @@ export function* deleteWorklog({ worklogId }: {
         },
       }],
     }));
-    yield put(worklogsA.succeeded({
+    yield eff.put(worklogsA.succeeded({
       resources: [worklog.id],
     }));
   } catch (err) {
-    yield fork(notify, {
+    yield eff.fork(notify, {
       title: 'Failed to delete worklog',
     });
-    yield call(throwError, err);
+    yield eff.call(throwError, err);
   }
 }
 
 export function* watchDeleteWorklogRequest(): Generator<*, void, *> {
-  yield takeEvery(types.DELETE_WORKLOG_REQUEST, deleteWorklog);
+  yield eff.takeEvery(types.DELETE_WORKLOG_REQUEST, deleteWorklog);
 }
 
 export function* watchSaveWorklogRequest(): Generator<*, void, *> {
-  yield takeEvery(types.SAVE_WORKLOG_REQUEST, saveWorklog);
+  yield eff.takeEvery(types.SAVE_WORKLOG_REQUEST, saveWorklog);
 }

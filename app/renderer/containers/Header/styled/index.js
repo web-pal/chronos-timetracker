@@ -8,7 +8,7 @@ import {
 
 // padding top is 15px to avoid OS X window bar
 // background-color: ${props => props.theme.primary};
-export const HeaderContainer = styled.header`
+export const Header = styled.header`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -38,7 +38,7 @@ export const DropdownSeparator = styled.div`
   background: #e1e4e9;
 `;
 
-export const ProfileContainer = styled(Flex).attrs({
+export const Profile = styled(Flex).attrs({
   row: true,
   alignCenter: true,
 })``;
@@ -119,7 +119,7 @@ export const UpdateAvailableBadge = styled.div`
   z-index: 2;
 `;
 
-export const IconsContainer = styled(Flex).attrs({
+export const Icons = styled(Flex).attrs({
   row: true,
 })`
   position: relative;

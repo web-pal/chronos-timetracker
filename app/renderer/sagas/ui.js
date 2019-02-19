@@ -1,12 +1,5 @@
 // @flow
-import {
-  takeEvery,
-  put,
-  call,
-  delay,
-  fork,
-  select,
-} from 'redux-saga/effects';
+import * as eff from 'redux-saga/effects';
 import * as Sentry from '@sentry/electron';
 import moment from 'moment';
 
@@ -48,7 +41,7 @@ const LOG_STYLE = {
 export function* infoLog(...argw: any): Generator<*, void, *> {
   if (config.infoLog) {
     const level = LOG_LEVELS.info;
-    yield call(
+    yield eff.call(
       console.groupCollapsed,
       `%c log %c ${level} %c ${argw[0]} %c @ ${moment().format('hh:mm:ss')}`,
       mutedText,
@@ -56,13 +49,13 @@ export function* infoLog(...argw: any): Generator<*, void, *> {
       'color: black;',
       mutedText,
     );
-    yield call(console[level], ...argw);
-    yield call(console.groupEnd);
+    yield eff.call(console[level], ...argw);
+    yield eff.call(console.groupEnd);
   }
 }
 
 export function* throwError(err: any): Generator<*, void, *> {
-  yield call(console.error, err);
+  yield eff.call(console.error, err);
   Sentry.captureException(err);
 }
 
@@ -78,8 +71,8 @@ function uuidv4() {
 /* eslint-enable */
 
 function* autoDeleteFlag(id) {
-  yield delay(5 * 1000);
-  yield put(uiActions.deleteFlag(id));
+  yield eff.delay(5 * 1000);
+  yield eff.put(uiActions.deleteFlag(id));
 }
 
 export function* notify({
@@ -117,9 +110,9 @@ export function* notify({
     spinnerTitle,
     type,
   };
-  yield put(uiActions.addFlag(newFlag));
+  yield eff.put(uiActions.addFlag(newFlag));
   if (autoDelete) {
-    yield fork(autoDeleteFlag, newFlag.id);
+    yield eff.fork(autoDeleteFlag, newFlag.id);
   }
 }
 
@@ -131,19 +124,19 @@ export function* scrollToIndexRequest({
   issueId: Id,
 }): Generator<*, *, *> {
   try {
-    const worklogs = yield select(getIssueWorklogs(issueId));
-    yield put(uiActions.setUiState({
+    const worklogs = yield eff.select(getIssueWorklogs(issueId));
+    yield eff.put(uiActions.setUiState({
       issueViewWorklogsScrollToIndex: (
         worklogs.findIndex(w => worklogId === w.id)
       ),
     }));
   } catch (err) {
-    yield call(throwError, err);
+    yield eff.call(throwError, err);
   }
 }
 
 export function* watchScrollToIndexRequest(): Generator<*, *, *> {
-  yield takeEvery(
+  yield eff.takeEvery(
     actionTypes.ISSUE_WORKLOGS_SCROLL_TO_INDEX_REQUEST,
     scrollToIndexRequest,
   );
@@ -171,16 +164,16 @@ function* onUiChange({
         ]
     );
     if (key === 'selectedIssueId') {
-      yield fork(issueSelectFlow, values);
+      yield eff.fork(issueSelectFlow, values);
     }
     if (values.selectedIssueId) {
-      yield fork(issueSelectFlow, values.selectedIssueId);
+      yield eff.fork(issueSelectFlow, values.selectedIssueId);
     }
   } catch (err) {
-    yield call(throwError, err);
+    yield eff.call(throwError, err);
   }
 }
 
 export function* takeUiStateChange(): Generator<*, *, *> {
-  yield takeEvery(actionTypes.SET_UI_STATE, onUiChange);
+  yield eff.takeEvery(actionTypes.SET_UI_STATE, onUiChange);
 }

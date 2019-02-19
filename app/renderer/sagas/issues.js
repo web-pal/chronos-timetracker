@@ -1,15 +1,5 @@
 // @flow
-import {
-  call,
-  delay,
-  all,
-  take,
-  select,
-  put,
-  fork,
-  takeEvery,
-  cancel,
-} from 'redux-saga/effects';
+import * as eff from 'redux-saga/effects';
 import * as Sentry from '@sentry/electron';
 import createActionCreators from 'redux-resource-action-creators';
 
@@ -95,7 +85,7 @@ const normalizeIssues = issues => {
             return wacc;
           },
           acc.entities.worklogs,
-        )
+        );
       issue.fields.worklogs = worklogs.map(w => w.id);
       delete issue.fields.worklog;
       acc.entities.issues[issue.id] = issue;
@@ -196,12 +186,12 @@ function* fetchAdditionalWorklogsForIssues(issues) {
       ),
     );
     if (incompleteIssues.length) {
-      yield call(
+      yield eff.call(
         infoLog,
         'found issues lacking worklogs',
         incompleteIssues,
       );
-      const additionalIssuesArr = yield call(
+      const additionalIssuesArr = yield eff.call(
         getAdditionalWorklogsForIssues,
         incompleteIssues,
       );
@@ -209,12 +199,12 @@ function* fetchAdditionalWorklogsForIssues(issues) {
         ...issues.filter(i => (i.fields?.worklog?.total || 0) <= 20),
         ...additionalIssuesArr,
       ];
-      yield call(
+      yield eff.call(
         infoLog,
         'getAdditionalWorklogsForIssues response:',
         additionalIssuesArr,
       );
-      yield call(
+      yield eff.call(
         infoLog,
         'filled issues with lacking worklogs: ',
         withAdditionalWorklogs,
@@ -229,7 +219,7 @@ function* fetchAdditionalWorklogsForIssues(issues) {
         issues,
       },
     });
-    yield call(throwError, err);
+    yield eff.call(throwError, err);
     return issues;
   }
 }
@@ -259,30 +249,30 @@ export function* fetchIssues({
     mergeListIds: true,
   });
   try {
-    yield call(
+    yield eff.call(
       infoLog,
       'started fetchIssues',
     );
-    yield put(actions.pending());
+    yield eff.put(actions.pending());
 
-    const issuesSourceId: string | null = yield select(getUiState('issuesSourceId'));
-    const issuesSourceType: string | null = yield select(getUiState('issuesSourceType'));
-    const issuesSprintId: string | null = yield select(getUiState('issuesSprintId'));
-    const searchValue: string = yield select(getUiState('issuesSearch'));
-    const issuesFilters = yield select(getUiState('issuesFilters'));
-    const projectId = yield select(getCurrentProjectId);
+    const issuesSourceId: string | null = yield eff.select(getUiState('issuesSourceId'));
+    const issuesSourceType: string | null = yield eff.select(getUiState('issuesSourceType'));
+    const issuesSprintId: string | null = yield eff.select(getUiState('issuesSprintId'));
+    const searchValue: string = yield eff.select(getUiState('issuesSearch'));
+    const issuesFilters = yield eff.select(getUiState('issuesFilters'));
+    const projectId = yield eff.select(getCurrentProjectId);
 
-    const projectsMap = yield select(getResourceMap('projects'));
+    const projectsMap = yield eff.select(getResourceMap('projects'));
     const project = projectsMap[projectId];
     const projectKey = project ? project.key : null;
 
-    const epicLinkFieldId: string | null = yield select(getFieldIdByName('Epic Link'));
+    const epicLinkFieldId: string | null = yield eff.select(getFieldIdByName('Epic Link'));
     const jql: string = buildJQLQuery({
       issuesFilters,
       searchValue,
       projectId: issuesSourceType === 'project' ? issuesSourceId : null,
       filterId: issuesSourceType === 'filter' ? issuesSourceId : null,
-      projectKeys: issuesSourceType === 'filter' ? yield select(getAllProjectsKeys) : [projectKey],
+      projectKeys: issuesSourceType === 'filter' ? yield eff.select(getAllProjectsKeys) : [projectKey],
       sprintId: issuesSourceType === 'scrum' ? issuesSprintId : null,
     });
 
@@ -293,7 +283,7 @@ export function* fetchIssues({
         && ['board', 'kanban'].includes(issuesSourceType)
       )
     ) ? (
-        yield call(
+        yield eff.call(
           jiraApi.searchForIssues,
           {
             params: {
@@ -321,23 +311,23 @@ export function* fetchIssues({
         total: 0,
         issues: [],
       });
-    yield call(
+    yield eff.call(
       infoLog,
       'fetchIssues response',
       response,
     );
-    const issues = yield call(
+    const issues = yield eff.call(
       fetchAdditionalWorklogsForIssues,
       response.issues,
     );
-    yield put(resourcesActions.setResourceMeta({
+    yield eff.put(resourcesActions.setResourceMeta({
       resourceType: 'issues',
       meta: {
         filterIssuesTotalCount: response.total,
       },
     }));
     const normalizedIssues = normalizeIssues(issues);
-    yield put(actions.succeeded({
+    yield eff.put(actions.succeeded({
       resources: normalizedIssues.result,
       includedResources: normalizedIssues.entities,
     }));
@@ -349,7 +339,7 @@ export function* fetchIssues({
       ['ETIMEDOUT', 'ECONNREFUSED', 'ESOCKETTIMEDOUT'].includes(err.code)
       && !tryCount
     ) {
-      yield fork(
+      yield eff.fork(
         fetchIssues,
         {
           tryCount: tryCount + 1,
@@ -361,16 +351,16 @@ export function* fetchIssues({
         },
       );
     } else {
-      yield put(resourcesActions.setResourceMeta({
+      yield eff.put(resourcesActions.setResourceMeta({
         resourceType: 'issues',
         meta: {
           filterIssuesTotalCount: 0,
         },
       }));
-      yield put(actions.succeeded({
+      yield eff.put(actions.succeeded({
         resources: [],
       }));
-      yield call(throwError, err);
+      yield eff.call(throwError, err);
     }
   }
 }
@@ -382,17 +372,17 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
     list: 'recentIssues',
   });
   try {
-    yield call(
+    yield eff.call(
       infoLog,
       'started fetchRecentIssues',
     );
-    yield put(actions.pending());
+    yield eff.put(actions.pending());
 
-    const issuesSourceId: string | null = yield select(getUiState('issuesSourceId'));
-    const issuesSourceType: string | null = yield select(getUiState('issuesSourceType'));
-    const issuesSprintId: string | null = yield select(getUiState('issuesSprintId'));
+    const issuesSourceId: string | null = yield eff.select(getUiState('issuesSourceId'));
+    const issuesSourceType: string | null = yield eff.select(getUiState('issuesSourceType'));
+    const issuesSprintId: string | null = yield eff.select(getUiState('issuesSprintId'));
 
-    const epicLinkFieldId: string | null = yield select(getFieldIdByName('Epic Link'));
+    const epicLinkFieldId: string | null = yield eff.select(getFieldIdByName('Epic Link'));
 
     const jql: string = buildJQLQuery({
       projectId: issuesSourceType === 'project' ? issuesSourceId : null,
@@ -407,7 +397,7 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
       || (!issuesSprintId && issuesSourceId)
       || jql.length
     ) ? (
-        yield call(
+        yield eff.call(
           jiraApi.searchForIssues,
           {
             params: {
@@ -431,66 +421,66 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
         total: 0,
         issues: [],
       });
-    yield call(
+    yield eff.call(
       infoLog,
       'fetchRecentIssues response',
       response,
     );
-    const issues = yield call(
+    const issues = yield eff.call(
       fetchAdditionalWorklogsForIssues,
       response.issues,
     );
     const normalizedIssues = normalizeIssues(issues);
-    yield put(actions.succeeded({
+    yield eff.put(actions.succeeded({
       resources: normalizedIssues.result,
       includedResources: normalizedIssues.entities,
     }));
   } catch (err) {
-    yield put(actions.succeeded({
+    yield eff.put(actions.succeeded({
       resources: [],
     }));
-    yield call(throwError, err);
+    yield eff.call(throwError, err);
   }
 }
 
 export function* refetchIssues(debouncing: boolean): Generator<*, void, *> {
   try {
     if (debouncing) {
-      yield call(delay, 500);
+      yield eff.delay(500);
     }
-    yield put(resourcesActions.clearResourceList({
+    yield eff.put(resourcesActions.clearResourceList({
       resourceType: 'issues',
       list: 'filterIssues',
     }));
-    const currentTotalCount = yield select(getResourceMeta(
+    const currentTotalCount = yield eff.select(getResourceMeta(
       'issues',
       'filterIssuesTotalCount',
     ));
     if (!currentTotalCount) {
-      yield put(resourcesActions.setResourceMeta({
+      yield eff.put(resourcesActions.setResourceMeta({
         resourceType: 'issues',
         meta: {
           filterIssuesTotalCount: 10,
         },
       }));
     }
-    yield put(resourcesActions.setResourceMeta({
+    yield eff.put(resourcesActions.setResourceMeta({
       resourceType: 'issues',
       meta: {
         refetchFilterIssuesMarker: true,
       },
     }));
 
-    const sidebarType = yield select(getUiState('sidebarType'));
+    const sidebarType = yield eff.select(getUiState('sidebarType'));
     if (sidebarType === 'recent') {
-      yield put(resourcesActions.clearResourceList({
+      yield eff.put(resourcesActions.clearResourceList({
         resourceType: 'issues',
         list: 'recentIssues',
       }));
-      yield call(fetchRecentIssues);
+      yield eff.call(fetchRecentIssues);
     }
   } catch (err) {
-    yield call(throwError, err);
+    yield eff.call(throwError, err);
   }
 }
 
@@ -502,12 +492,12 @@ export function* getIssueTransitions(issueId: string | number): Generator<*, voi
     mergeListIds: false,
   });
   try {
-    yield put(actions.pending());
-    yield call(
+    yield eff.put(actions.pending());
+    yield eff.call(
       infoLog,
       `getting available issue transitions for ${issueId}`,
     );
-    const { transitions } = yield call(
+    const { transitions } = yield eff.call(
       jiraApi.getIssueTransitions,
       {
         params: {
@@ -515,16 +505,16 @@ export function* getIssueTransitions(issueId: string | number): Generator<*, voi
         },
       },
     );
-    yield put(actions.succeeded({
+    yield eff.put(actions.succeeded({
       resources: transitions,
     }));
-    yield call(
+    yield eff.call(
       infoLog,
       `got issue ${issueId} available transitions`,
       transitions,
     );
   } catch (err) {
-    yield call(throwError, err);
+    yield eff.call(throwError, err);
   }
 }
 
@@ -540,18 +530,18 @@ export function* transitionIssue({
     request: 'updateIssue',
   });
   try {
-    const issue = yield select(getResourceItemById('issues', issueId));
-    const transition = yield select(getResourceItemById('issuesStatuses', transitionId));
+    const issue = yield eff.select(getResourceItemById('issues', issueId));
+    const transition = yield eff.select(getResourceItemById('issuesStatuses', transitionId));
 
-    yield put(issuesA.pending());
-    yield fork(notify, {
+    yield eff.put(issuesA.pending());
+    yield eff.fork(notify, {
       resourceType: 'issues',
       request: 'updateIssue',
       spinnerTitle: 'Please wait',
       description: '',
       title: `Moved issue ${issue.key} to ${transition.to.name}`,
     });
-    yield call(
+    yield eff.call(
       jiraApi.transitionIssue,
       {
         params: {
@@ -563,7 +553,7 @@ export function* transitionIssue({
       },
     );
 
-    yield put(issuesA.succeeded({
+    yield eff.put(issuesA.succeeded({
       resources: [{
         ...issue,
         fields: {
@@ -572,20 +562,20 @@ export function* transitionIssue({
         },
       }],
     }));
-    yield fork(getIssueTransitions, issueId);
+    yield eff.fork(getIssueTransitions, issueId);
 
     trackMixpanel('Transition of an issue was done');
   } catch (err) {
-    yield put(issuesA.succeeded({
+    yield eff.put(issuesA.succeeded({
       resources: [],
     }));
-    yield call(throwError, err);
+    yield eff.call(throwError, err);
   }
 }
 
 export function* getIssuePermissions(issueId: string | number): Generator<*, void, *> {
   try {
-    const { permissions } = yield call(
+    const { permissions } = yield eff.call(
       jiraApi.getMyPermissions,
       {
         params: {
@@ -593,7 +583,7 @@ export function* getIssuePermissions(issueId: string | number): Generator<*, voi
         },
       },
     );
-    yield put(resourcesActions.setResourceMeta({
+    yield eff.put(resourcesActions.setResourceMeta({
       resourceType: 'issues',
       resources: [issueId],
       meta: {
@@ -601,16 +591,16 @@ export function* getIssuePermissions(issueId: string | number): Generator<*, voi
       },
     }));
   } catch (err) {
-    yield call(throwError, err);
+    yield eff.call(throwError, err);
   }
 }
 
 export function* issueSelectFlow(issueId: string | number): Generator<*, *, *> {
-  const issue = yield select(getResourceItemById('issues', issueId));
-  yield put(trayActions.traySelectIssue(issue.key));
-  yield fork(getIssueTransitions, issueId);
-  yield fork(getIssueComments, issueId);
-  yield fork(getIssuePermissions, issueId);
+  const issue = yield eff.select(getResourceItemById('issues', issueId));
+  yield eff.put(trayActions.traySelectIssue(issue.key));
+  yield eff.fork(getIssueTransitions, issueId);
+  yield eff.fork(getIssueComments, issueId);
+  yield eff.fork(getIssuePermissions, issueId);
 }
 
 export function* assignIssueToUser({ issueId }: {
@@ -621,16 +611,16 @@ export function* assignIssueToUser({ issueId }: {
     request: 'updateIssue',
   });
   try {
-    yield put(issuesA.pending());
+    yield eff.put(issuesA.pending());
 
-    const issue = yield select(getResourceItemById('issues', issueId));
-    const userData = yield select(getUserData);
+    const issue = yield eff.select(getResourceItemById('issues', issueId));
+    const userData = yield eff.select(getUserData);
 
-    yield call(
+    yield eff.call(
       infoLog,
       `assigning issue ${issue.key} to self (${userData.key})`,
     );
-    yield call(
+    yield eff.call(
       jiraApi.assignIssue,
       {
         params: {
@@ -641,12 +631,12 @@ export function* assignIssueToUser({ issueId }: {
         },
       },
     );
-    yield call(
+    yield eff.call(
       infoLog,
       `succesfully assigned issue ${issue.key} to self (${userData.key})`,
     );
 
-    yield put(issuesA.succeeded({
+    yield eff.put(issuesA.succeeded({
       resources: [{
         ...issue,
         fields: {
@@ -656,15 +646,15 @@ export function* assignIssueToUser({ issueId }: {
       }],
     }));
 
-    yield fork(notify, {
+    yield eff.fork(notify, {
       title: `${issue.key} is assigned to you`,
     });
     trackMixpanel('Issue was assigned to user');
   } catch (err) {
-    yield fork(notify, {
+    yield eff.fork(notify, {
       title: 'Cannot assign issue. Probably no permission',
     });
-    yield call(throwError, err);
+    yield eff.call(throwError, err);
   }
 }
 
@@ -676,15 +666,15 @@ export function* fetchIssueFields(): Generator<*, void, *> {
     mergeListIds: true,
   });
   try {
-    yield put(actions.pending());
-    yield call(infoLog, 'fetching issue fields');
-    const issuesFields = yield call(jiraApi.getAllIssueFields);
-    yield put(actions.succeeded({
+    yield eff.put(actions.pending());
+    yield eff.call(infoLog, 'fetching issue fields');
+    const issuesFields = yield eff.call(jiraApi.getAllIssueFields);
+    yield eff.put(actions.succeeded({
       resources: issuesFields,
     }));
-    yield call(infoLog, 'got issue fields', issuesFields);
+    yield eff.call(infoLog, 'got issue fields', issuesFields);
   } catch (err) {
-    yield call(throwError, err);
+    yield eff.call(throwError, err);
   }
 }
 
@@ -696,9 +686,9 @@ export function* fetchEpics(): Generator<*, void, *> {
     mergeListIds: true,
   });
   try {
-    yield put(actions.pending());
-    yield call(infoLog, 'fetching epics');
-    const response = yield call(
+    yield eff.put(actions.pending());
+    yield eff.call(infoLog, 'fetching epics');
+    const response = yield eff.call(
       jiraApi.searchForIssues,
       {
         params: {
@@ -712,10 +702,10 @@ export function* fetchEpics(): Generator<*, void, *> {
     const additionalIssues = (
       response.total > response.issues.length
         ? (
-          yield all(
+          yield eff.all(
             Array.from(Array(Math.ceil(response.total / response.maxResults) - 1).keys()).map(
               i => (
-                call(
+                eff.call(
                   jiraApi.searchForIssues,
                   {
                     params: {
@@ -735,15 +725,15 @@ export function* fetchEpics(): Generator<*, void, *> {
     const issues = [
       ...response.issues,
     ].concat(...additionalIssues.map(i => i.issues));
-    yield put(actions.succeeded({
+    yield eff.put(actions.succeeded({
       resources: issues,
     }));
-    yield call(infoLog, 'got epics', issues);
+    yield eff.call(infoLog, 'got epics', issues);
   } catch (err) {
-    yield put(actions.succeeded({
+    yield eff.put(actions.succeeded({
       resources: [],
     }));
-    yield call(throwError, err);
+    yield eff.call(throwError, err);
   }
 }
 
@@ -753,8 +743,8 @@ function* fetchNewIssue({ issueIdOrKey }): Generator<*, *, *> {
     request: 'createIssue',
   });
   try {
-    const epicLinkFieldId: string | null = yield select(getFieldIdByName('Epic Link'));
-    const issue = yield call(
+    const epicLinkFieldId: string | null = yield eff.select(getFieldIdByName('Epic Link'));
+    const issue = yield eff.call(
       jiraApi.getIssueByIdOrKey,
       {
         params: {
@@ -770,21 +760,21 @@ function* fetchNewIssue({ issueIdOrKey }): Generator<*, *, *> {
         },
       },
     );
-    yield put(actions.pending());
-    yield fork(notify, {
+    yield eff.put(actions.pending());
+    yield eff.fork(notify, {
       title: `${issue.key} was created`,
     });
     issue.fields.worklogs = [];
-    yield put(actions.succeeded({
+    yield eff.put(actions.succeeded({
       resources: [issue],
     }));
-    yield put(uiActions.setUiState({
+    yield eff.put(uiActions.setUiState({
       selectedIssueId: issue.id,
     }));
-    yield fork(refetchIssues, false);
+    yield eff.fork(refetchIssues, false);
     trackMixpanel('New issue was created');
   } catch (err) {
-    yield call(throwError, err);
+    yield eff.call(throwError, err);
   }
 }
 
@@ -794,10 +784,10 @@ function* fetchUpdateIssue({ issueIdOrKey }): Generator<*, *, *> {
     resources: [issueIdOrKey],
   });
   try {
-    yield put(actions.pending());
-    const prevIssue = yield select(getResourceItemById('issues', issueIdOrKey));
-    const epicLinkFieldId: string | null = yield select(getFieldIdByName('Epic Link'));
-    const issue = yield call(
+    yield eff.put(actions.pending());
+    const prevIssue = yield eff.select(getResourceItemById('issues', issueIdOrKey));
+    const epicLinkFieldId: string | null = yield eff.select(getFieldIdByName('Epic Link'));
+    const issue = yield eff.call(
       jiraApi.getIssueByIdOrKey,
       {
         params: {
@@ -813,52 +803,52 @@ function* fetchUpdateIssue({ issueIdOrKey }): Generator<*, *, *> {
         },
       },
     );
-    yield fork(notify, {
+    yield eff.fork(notify, {
       title: `${issue.key} was updated`,
     });
     issue.fields.worklogs = prevIssue.fields.worklogs;
-    yield put(actions.succeeded({
+    yield eff.put(actions.succeeded({
       resources: [issue],
     }));
-    yield put(uiActions.setUiState({
+    yield eff.put(uiActions.setUiState({
       selectedIssueId: issue.id,
     }));
   } catch (err) {
-    yield call(throwError, err);
+    yield eff.call(throwError, err);
   }
 }
 
 export function* takeFetchNewIssue(): Generator<*, *, *> {
-  yield takeEvery(actionTypes.FETCH_NEW_ISSUE_REQUEST, fetchNewIssue);
+  yield eff.takeEvery(actionTypes.FETCH_NEW_ISSUE_REQUEST, fetchNewIssue);
 }
 
 export function* takeFetchUpdateIssue(): Generator<*, *, *> {
-  yield takeEvery(actionTypes.FETCH_UPDATE_ISSUE_REQUEST, fetchUpdateIssue);
+  yield eff.takeEvery(actionTypes.FETCH_UPDATE_ISSUE_REQUEST, fetchUpdateIssue);
 }
 
 export function* watchFetchIssuesRequest(): Generator<*, *, *> {
-  yield takeEvery(actionTypes.FETCH_ISSUES_REQUEST, fetchIssues);
+  yield eff.takeEvery(actionTypes.FETCH_ISSUES_REQUEST, fetchIssues);
 }
 
 export function* watchFetchRecentIssuesRequest(): Generator<*, *, *> {
-  yield takeEvery(actionTypes.FETCH_RECENT_ISSUES_REQUEST, fetchRecentIssues);
+  yield eff.takeEvery(actionTypes.FETCH_RECENT_ISSUES_REQUEST, fetchRecentIssues);
 }
 
 export function* watchTransitionIssueRequest(): Generator<*, *, *> {
-  yield takeEvery(actionTypes.TRANSITION_ISSUE_REQUEST, transitionIssue);
+  yield eff.takeEvery(actionTypes.TRANSITION_ISSUE_REQUEST, transitionIssue);
 }
 
 export function* watchAssignIssueRequest(): Generator<*, *, *> {
-  yield takeEvery(actionTypes.ASSIGN_ISSUE_REQUEST, assignIssueToUser);
+  yield eff.takeEvery(actionTypes.ASSIGN_ISSUE_REQUEST, assignIssueToUser);
 }
 
 export function* watchReFetchIssuesRequest(): Generator<*, *, *> {
   let task;
   while (true) {
-    const { debouncing } = yield take(actionTypes.REFETCH_ISSUES_REQUEST);
+    const { debouncing } = yield eff.take(actionTypes.REFETCH_ISSUES_REQUEST);
     if (task) {
-      yield cancel(task);
+      yield eff.cancel(task);
     }
-    task = yield fork(refetchIssues, debouncing);
+    task = yield eff.fork(refetchIssues, debouncing);
   }
 }

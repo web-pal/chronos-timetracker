@@ -20,6 +20,7 @@ const AttachmentPopup = (
   },
 ) => (
   <React.Fragment>
+    {console.log('test')}
     {
         attachments.length !== 0 ? (
           <AttachmentPopupComponent

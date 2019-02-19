@@ -58,7 +58,6 @@ export const DownloadButton = styled.a`
 export const DownloadButtonIcon = styled.img`
   width: 16px;
   height: 16px;
- 
 `;
 
 export const MainContentContainer = styled.div`
@@ -88,11 +87,15 @@ export const MainImageContainer = styled.div`
   justify-content: center;
   width: 60%;
   height: 100%;
+  overflow: auto;
 `;
 
 export const AttachmentImage = styled.img`
   width: 90%;
   height: 90%;
+  object-fit: contain;
+  transform: scale(${props => props.zoom});
+  cursor: ${props => (props.zoom < 4 ? 'zoom-in' : 'zoom-out')};
 `;
 
 export const LeftButton = styled.button`

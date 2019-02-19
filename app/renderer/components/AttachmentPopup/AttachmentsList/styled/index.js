@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 
 export const ShowAllContainer = styled.div`
-  width:100%;
-  align-items:center;
-  height:21%
+  width: 100%;
+  align-items: center;
+  height: 21%
 `;
 
 export const ItemContainer = styled.ul`
@@ -32,6 +32,7 @@ export const ItemImageContainer = styled.div`
   align-items:center;
   background: rgb(70,70,70);
   cursor:pointer;
+  overflow: hidden;
   
   &:hover{
     background: rgb(112,112,112);
@@ -41,10 +42,12 @@ export const ItemImageContainer = styled.div`
 export const ItemImage = styled.img`
   width:80px;
   height:60px;
+  object-fit: cover;
 `;
 
 export const DescriptionImage = styled.span`
   text-align:center;
+  white-space: normal;
   color: white;
   width:100%;
   font-size: 12px;

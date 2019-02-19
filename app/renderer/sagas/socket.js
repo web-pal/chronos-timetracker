@@ -1,4 +1,4 @@
-import { call, take, fork, select } from 'redux-saga/effects';
+import * as eff from 'redux-saga/effects';
 import moment from 'moment';
 import { eventChannel } from 'redux-saga';
 import io from 'socket.io-client';
@@ -49,53 +49,53 @@ let showWorklogChannel;
 
 export function* watchConnectChannel(socket) {
   while (true) {
-    const payload = yield take(connectChannel);
-    yield call(infoLog, 'socket connected', payload);
-    const jwt = yield call(getFromStorage, 'desktop_tracker_jwt');
-    yield call([socket, 'emit'], 'login', { jwt });
+    const payload = yield eff.take(connectChannel);
+    yield eff.call(infoLog, 'socket connected', payload);
+    const jwt = yield eff.call(getFromStorage, 'desktop_tracker_jwt');
+    yield eff.call([socket, 'emit'], 'login', { jwt });
   }
 }
 
 export function* watchConnectErrorChannel() {
   while (true) {
-    const { ev } = yield take(connectErrorChannel);
-    yield call(throwError, ev);
+    const { ev } = yield eff.take(connectErrorChannel);
+    yield eff.call(throwError, ev);
   }
 }
 
 export function* watchErrorChannel() {
   while (true) {
-    const { ev } = yield take(errorChannel);
-    yield call(throwError, ev);
+    const { ev } = yield eff.take(errorChannel);
+    yield eff.call(throwError, ev);
   }
 }
 
 export function* watchSettingsChannel() {
   while (true) {
-    const payload = yield take(settingsChannel);
-    yield call(infoLog, 'socket new-settings', payload);
+    const payload = yield eff.take(settingsChannel);
+    yield eff.call(infoLog, 'socket new-settings', payload);
   }
 }
 
 export function* watchShowWorklogChannel(socket) {
   while (true) {
-    const { ev, payload } = yield take(showWorklogChannel);
-    yield call(infoLog, 'socket showWorklog', payload, ev);
-    const timerRunning = yield select(getTimerRunning);
+    const { ev, payload } = yield eff.take(showWorklogChannel);
+    yield eff.call(infoLog, 'socket showWorklog', payload, ev);
+    const timerRunning = yield eff.select(getTimerRunning);
     if (timerRunning) {
-      const tempId = yield select(getTemporaryWorklogId);
-      const host = yield select(getHost);
+      const tempId = yield eff.select(getTemporaryWorklogId);
+      const host = yield eff.select(getHost);
 
-      const screenshots = yield select(getScreenshots);
-      const author = yield select(getUserData);
-      const comment = yield select(getWorklogComment);
-      const timeSpentSeconds = yield select(getTimerState('time'));
-      const timeSpent = yield call(stj, timeSpentSeconds);
-      const issue = yield select(getTrackingIssue);
+      const screenshots = yield eff.select(getScreenshots);
+      const author = yield eff.select(getUserData);
+      const comment = yield eff.select(getWorklogComment);
+      const timeSpentSeconds = yield eff.select(getTimerState('time'));
+      const timeSpent = yield eff.call(stj, timeSpentSeconds);
+      const issue = yield eff.select(getTrackingIssue);
       const issueId = issue.id;
       const self = `https://${host.hostname}/rest/api/2/issue/${issueId}/worklog/${tempId}`;
       const updateAuthor = author;
-      const currentProjectId = yield select(getSelectedProjectId);
+      const currentProjectId = yield eff.select(getSelectedProjectId);
 
       const updated = moment();
       const started = moment(updated).subtract(timeSpentSeconds, 's');
@@ -122,7 +122,7 @@ export function* watchShowWorklogChannel(socket) {
           toSocketId: ev.toSocketId,
         },
       };
-      yield call([socket, 'emit'], 'sendCurrentWorklog', socketPayload);
+      yield eff.call([socket, 'emit'], 'sendCurrentWorklog', socketPayload);
     }
   }
 }
@@ -136,23 +136,23 @@ export function* plugSocket() {
       reconnectionAttempts: 99999,
     };
 
-    const socket = yield call(io, config.socketUrl, options);
-    yield call(infoLog, 'socket plugged', socket);
+    const socket = yield eff.call(io, config.socketUrl, options);
+    yield eff.call(infoLog, 'socket plugged', socket);
 
-    connectErrorChannel = yield call(createIOChannel, 'connect_error', socket);
-    yield fork(watchConnectErrorChannel);
+    connectErrorChannel = yield eff.call(createIOChannel, 'connect_error', socket);
+    yield eff.fork(watchConnectErrorChannel);
 
-    errorChannel = yield call(createIOChannel, 'error', socket);
-    yield fork(watchErrorChannel);
+    errorChannel = yield eff.call(createIOChannel, 'error', socket);
+    yield eff.fork(watchErrorChannel);
 
-    connectChannel = yield call(createIOChannel, 'connect', socket);
-    yield fork(watchConnectChannel, socket);
+    connectChannel = yield eff.call(createIOChannel, 'connect', socket);
+    yield eff.fork(watchConnectChannel, socket);
 
-    settingsChannel = yield call(createIOChannel, 'new-settings', socket);
-    yield fork(watchSettingsChannel);
+    settingsChannel = yield eff.call(createIOChannel, 'new-settings', socket);
+    yield eff.fork(watchSettingsChannel);
 
-    showWorklogChannel = yield call(createIOChannel, 'showCurrentWorklog', socket);
-    yield fork(watchShowWorklogChannel, socket);
+    showWorklogChannel = yield eff.call(createIOChannel, 'showCurrentWorklog', socket);
+    yield eff.fork(watchShowWorklogChannel, socket);
   } catch (err) {
     Raven.captureException(err);
   }

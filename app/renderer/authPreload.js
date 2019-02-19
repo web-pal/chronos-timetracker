@@ -1,18 +1,17 @@
 /* eslint-disable no-param-reassign */
 import {
-  remote,
-} from 'electron';
-import {
   actionTypes,
 } from 'actions';
 import * as Sentry from '@sentry/electron';
 
 import configureStore from './store/configurePreloadStore';
+import pjson from '../package.json';
 
 if (process.env.NODE_ENV === 'production') {
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
     enableNative: false,
+    release: `${pjson.version}_${process.platform}`,
   });
 }
 
@@ -111,28 +110,26 @@ function init() {
       && reset
     ) {
       initAtlassian(base, reset);
-    } else {
-      setTimeout(init, 500);
     }
   } else if (global.location.host === 'accounts.google.com') {
     const base = document.getElementById('view_container');
     if (base) {
       initGoogle(base);
-    } else {
-      setTimeout(init, 500);
     }
   } else if (global.location.host === 'auth.atlassian.com') {
     const base = document.getElementById('root');
     if (base) {
       init2F(base);
-    } else {
-      setTimeout(init, 500);
     }
   } else if (global.location.pathname === '/login') {
     back('Something has gone wrong');
   } else {
-    setTimeout(init, 500);
+    store.dispatch(setRendererUiState({
+      authFormIsComplete: true,
+    }));
   }
 }
 
-init();
+document.addEventListener('DOMContentLoaded', () => {
+  init();
+});

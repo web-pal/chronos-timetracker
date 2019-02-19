@@ -1,6 +1,6 @@
 {
   "name": "Chronos",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Full functionality time tracking software with direct JIRA integration",
   "scripts": {
     "dev": "yarn start-renderer-dev",
@@ -175,10 +175,5 @@
     "node": ">=10.x",
     "npm": ">=6.x",
     "yarn": ">=1.x"
-  },
-  "config": {
-    "commitizen": {
-      "path": "node_modules/cz-customizable"
-    }
   }
 }

@@ -25,13 +25,35 @@ Use all init settings as default, except tag prefix, it must be 'v'.
 We use [conventional commits specification](https://conventionalcommits.org/) for commit messages.
 
 #### Commitizen
-To ensure that all commit messages are formatted correctly, we use [Commitizen](http://commitizen.github.io/cz-cli/) in this repository.
+To ensure that all commit messages are formatted correctly, you can use
+[Commitizen](http://commitizen.github.io/cz-cli/) cli tool.
 It provides interactive interface that creates your commit messages for you.
-Running commitizen is as simple as running yarn run commit from the root of the repo.
-You can pass all the same flags you would normally use with git commit.
 
+```sh
+sudo npm install -g commitizen cz-customizable
 ```
-  yarn run commit -- -a
+
+From now on, instead of `git commit` you type `git cz` and let the tool do the work for you.
+
+The following commit types are used on the project:
+- **feat** - A new feature
+- **fix**- A bug fix
+- **improvement** - Improve a current implementation without adding a new feature or fixing a bug
+- **docs** - Documentation only changes
+- **style** - Changes that do not affect the meaning of the code(white-space, formatting, missing semi-colons, etc)
+- **refactor** - A code change that neither fixes a bug nor adds a feature
+- **perf** - A code change that improves performance
+- **test** - Adding missing tests
+- **chore** - Changes to the build process or auxiliary tools and libraries such as documentation generation
+- **revert** - Revert to a commit
+- **WIP** - Work in progress
+
+You should strive for a clear informative commit message.
+Read **[How to Write a Git Commit Message](https://chris.beams.io/posts/git-commit/)**.
+
+**Helpful hint**: You can always edit your last commit message, before pushing, by using:
+```sh
+git commit --amend
 ```
 
 ## Developing

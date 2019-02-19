@@ -1,10 +1,5 @@
 // @flow
-import {
-  call,
-  select,
-  put,
-  takeEvery,
-} from 'redux-saga/effects';
+import * as eff from 'redux-saga/effects';
 import createActionCreators from 'redux-resource-action-creators';
 
 import type {
@@ -34,16 +29,15 @@ export function* fetchSprints(): Generator<*, *, *> {
     list: 'allSprints',
   });
   try {
-    yield put(actions.pending());
-
-    const boardId: Id = yield select(getUiState('issuesSourceId'));
-    const board = yield select(getResourceItemById('boards', boardId));
+    yield eff.put(actions.pending());
+    const boardId: Id = yield eff.select(getUiState('issuesSourceId'));
+    const board = yield eff.select(getResourceItemById('boards', boardId));
     if (
       boardId
       && board
       && board.type === 'scrum'
     ) {
-      const response = yield call(
+      const response = yield eff.call(
         jiraApi.getBoardSprints,
         {
           params: {
@@ -52,22 +46,23 @@ export function* fetchSprints(): Generator<*, *, *> {
           },
         },
       );
-      yield put(actions.succeeded({
+      yield eff.put(actions.succeeded({
         resources: response.values,
       }));
     } else {
-      yield put(actions.succeeded({
+      yield eff.put(actions.succeeded({
         resources: [],
       }));
     }
+
   } catch (err) {
-    yield put(actions.succeeded({
+    yield eff.put(actions.succeeded({
       resources: [],
     }));
-    yield call(throwError, err);
+    yield eff.call(throwError, err);
   }
 }
 
 export function* watchFetchSprintsRequest(): Generator<*, *, *> {
-  yield takeEvery(actionTypes.FETCH_SPRINTS_REQUEST, fetchSprints);
+  yield eff.takeEvery(actionTypes.FETCH_SPRINTS_REQUEST, fetchSprints);
 }

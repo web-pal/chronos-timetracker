@@ -41,6 +41,8 @@ export const ItemContainer = styled.div`
   align-items: center;
   width:100%;
   height:100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
   
   &:hover {
     background: rgb(239,239,239);
@@ -49,9 +51,9 @@ export const ItemContainer = styled.div`
 `;
 
 export const ItemImage = styled.img`
-  display:block;
-  max-width: 50%;
-  height: auto;
+  display: block;
+  height: 128px;
+  object-fit: cover;
 `;
 
 export const InfoConatiner = styled.div`
@@ -63,11 +65,13 @@ export const SizeAttachment = styled.span`
   text-align:right;
   width: 20%;
   font-size: 10px;
+  white-space: nowrap;
 `;
 
 export const DateAttachment = styled.span`
   width: 80%;
   font-size: 10px;
+  white-space: nowrap;
 `;
 
 export const AttachmentDescription = styled.span`
@@ -75,4 +79,5 @@ export const AttachmentDescription = styled.span`
   text-align: center;
   width: 100%;
   font-size: 12px;
+  white-space: nowrap;
 `;

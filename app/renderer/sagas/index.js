@@ -1,9 +1,5 @@
 // @flow
-import {
-  all,
-  fork,
-} from 'redux-saga/effects';
-
+import * as eff from 'redux-saga/effects';
 import * as authSagas from './auth';
 import * as settingsSagas from './settings';
 import * as projectSagas from './projects';
@@ -25,54 +21,54 @@ import {
 
 
 export default function* rootSaga(): Generator<*, void, *> {
-  yield all([
+  yield eff.all([
     // INITIALIZATION
-    fork(handleQuitRequest),
-    fork(takeInitialConfigureApp),
-    fork(initializeApp),
-    fork(handleAttachmentWindow),
-    fork(createDispatchActionListener),
+    eff.fork(handleQuitRequest),
+    eff.fork(takeInitialConfigureApp),
+    eff.fork(initializeApp),
+    eff.fork(handleAttachmentWindow),
+    eff.fork(createDispatchActionListener),
 
     // auth
-    fork(authSagas.authFlow),
-    fork(authSagas.authSelfHostedFlow),
-    fork(authSagas.logoutFlow),
-    fork(authSagas.switchAccountFlow),
+    eff.fork(authSagas.authFlow),
+    eff.fork(authSagas.authSelfHostedFlow),
+    eff.fork(authSagas.logoutFlow),
+    eff.fork(authSagas.switchAccountFlow),
 
     // projects
-    fork(projectSagas.watchFetchProjectStatusesRequest),
+    eff.fork(projectSagas.watchFetchProjectStatusesRequest),
 
     // issues
-    fork(issueSagas.watchFetchIssuesRequest),
-    fork(issueSagas.watchFetchRecentIssuesRequest),
-    fork(issueSagas.watchReFetchIssuesRequest),
-    fork(issueSagas.watchTransitionIssueRequest),
-    fork(issueSagas.watchAssignIssueRequest),
-    fork(issueSagas.takeFetchNewIssue),
-    fork(issueSagas.takeFetchUpdateIssue),
+    eff.fork(issueSagas.watchFetchIssuesRequest),
+    eff.fork(issueSagas.watchFetchRecentIssuesRequest),
+    eff.fork(issueSagas.watchReFetchIssuesRequest),
+    eff.fork(issueSagas.watchTransitionIssueRequest),
+    eff.fork(issueSagas.watchAssignIssueRequest),
+    eff.fork(issueSagas.takeFetchNewIssue),
+    eff.fork(issueSagas.takeFetchUpdateIssue),
 
     // issuesComments
-    fork(commentsSagas.watchIssueCommentRequest),
+    eff.fork(commentsSagas.watchIssueCommentRequest),
 
     // sprints
-    fork(sprintsSagas.watchFetchSprintsRequest),
+    eff.fork(sprintsSagas.watchFetchSprintsRequest),
 
     // timer
-    fork(timerSagas.takeStartTimer),
+    eff.fork(timerSagas.takeStartTimer),
 
     // settings
-    fork(settingsSagas.watchLocalDesktopSettingsChange),
-    fork(settingsSagas.watchClearElectronChanheRequest),
+    eff.fork(settingsSagas.watchLocalDesktopSettingsChange),
+    eff.fork(settingsSagas.watchClearElectronChanheRequest),
 
     // worklogs
-    fork(worklogsSagas.watchSaveWorklogRequest),
-    fork(worklogsSagas.watchDeleteWorklogRequest),
+    eff.fork(worklogsSagas.watchSaveWorklogRequest),
+    eff.fork(worklogsSagas.watchDeleteWorklogRequest),
 
     // filters
-    fork(filtersSagas.takeSaveFilterRequest),
+    eff.fork(filtersSagas.takeSaveFilterRequest),
 
     // ui
-    fork(uiSagas.watchScrollToIndexRequest),
-    fork(uiSagas.takeUiStateChange),
+    eff.fork(uiSagas.watchScrollToIndexRequest),
+    eff.fork(uiSagas.takeUiStateChange),
   ]);
 }
