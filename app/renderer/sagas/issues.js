@@ -446,7 +446,7 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
 export function* refetchIssues(debouncing: boolean): Generator<*, void, *> {
   try {
     if (debouncing) {
-      yield eff.call(delay, 500);
+      yield eff.delay(500);
     }
     yield eff.put(resourcesActions.clearResourceList({
       resourceType: 'issues',
