@@ -175,10 +175,5 @@
     "node": ">=10.x",
     "npm": ">=6.x",
     "yarn": ">=1.x"
-  },
-  "config": {
-    "commitizen": {
-      "path": "node_modules/cz-customizable"
-    }
   }
 }
