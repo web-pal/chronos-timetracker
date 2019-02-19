@@ -110,28 +110,26 @@ function init() {
       && reset
     ) {
       initAtlassian(base, reset);
-    } else {
-      setTimeout(init, 500);
     }
   } else if (global.location.host === 'accounts.google.com') {
     const base = document.getElementById('view_container');
     if (base) {
       initGoogle(base);
-    } else {
-      setTimeout(init, 500);
     }
   } else if (global.location.host === 'auth.atlassian.com') {
     const base = document.getElementById('root');
     if (base) {
       init2F(base);
-    } else {
-      setTimeout(init, 500);
     }
   } else if (global.location.pathname === '/login') {
     back('Something has gone wrong');
   } else {
-    setTimeout(init, 500);
+    store.dispatch(setRendererUiState({
+      authFormIsComplete: true,
+    }));
   }
 }
 
-init();
+document.addEventListener('DOMContentLoaded', () => {
+  init();
+});
