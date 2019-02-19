@@ -1,5 +1,4 @@
 // @flow
-
 import * as eff from 'redux-saga/effects';
 import {
   remote,

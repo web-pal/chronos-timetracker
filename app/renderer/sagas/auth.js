@@ -48,7 +48,7 @@ export function* authSelfHostedFlow(): Generator<*, *, *> {
       },
     } = yield eff.take(actionTypes.AUTH_SELF_HOST_REQUEST);
     try {
-      yield put(uiActions.setUiState({
+      yield eff.put(uiActions.setUiState({
         authRequestInProcess: true,
       }));
       const { href, hostname, port, pathname } = host;
@@ -109,7 +109,7 @@ export function* authFlow(): Generator<*, *, *> {
         pathname,
         cookies,
       } = yield eff.take(actionTypes.AUTH_REQUEST);
-      yield put(uiActions.setUiState({
+      yield eff.put(uiActions.setUiState({
         authRequestInProcess: true,
       }));
       const clearedCookies = (
