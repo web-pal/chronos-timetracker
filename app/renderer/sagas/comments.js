@@ -1,11 +1,5 @@
 // @flow
-import {
-  call,
-  select,
-  put,
-  takeEvery,
-  fork,
-} from 'redux-saga/effects';
+import * as eff from 'redux-saga/effects';
 import {
   getStatus as getResourceStatus,
 } from 'redux-resource';
@@ -40,7 +34,7 @@ export function* getIssueComments(issueId: Id): Generator<*, void, *> {
   });
   try {
     const alreadyFetched = (
-      yield select(
+      yield eff.select(
         state => (
           getResourceStatus(
             state,
@@ -50,10 +44,10 @@ export function* getIssueComments(issueId: Id): Generator<*, void, *> {
       )
     );
     if (!alreadyFetched) {
-      yield put(actions.pending());
+      yield eff.put(actions.pending());
     }
-    yield call(infoLog, `fetching comments for issue ${issueId}`);
-    const { comments } = yield call(
+    yield eff.call(infoLog, `fetching comments for issue ${issueId}`);
+    const { comments } = yield eff.call(
       jiraApi.getIssueComments,
       {
         params: {
@@ -61,12 +55,12 @@ export function* getIssueComments(issueId: Id): Generator<*, void, *> {
         },
       },
     );
-    yield put(actions.succeeded({
+    yield eff.put(actions.succeeded({
       resources: comments,
     }));
-    yield call(infoLog, `got comments for issue ${issueId}`, comments);
+    yield eff.call(infoLog, `got comments for issue ${issueId}`, comments);
   } catch (err) {
-    yield call(throwError, err);
+    yield eff.call(throwError, err);
   }
 }
 
@@ -83,11 +77,11 @@ export function* addIssueComment({
     list: `issue_${issueId}`,
   });
   try {
-    yield call(infoLog, 'adding comment', text, issueId);
-    yield put(uiActions.setUiState({
+    yield eff.call(infoLog, 'adding comment', text, issueId);
+    yield eff.put(uiActions.setUiState({
       commentAdding: true,
     }));
-    const newComment = yield call(
+    const newComment = yield eff.call(
       jiraApi.addIssueComment,
       {
         params: {
@@ -98,24 +92,25 @@ export function* addIssueComment({
         },
       },
     );
-    yield call(infoLog, 'comment added', newComment);
-    yield put(actions.succeeded({
+    yield eff.call(infoLog, 'comment added', newComment);
+    yield eff.put(actions.succeeded({
       resources: [newComment],
     }));
-    yield put(uiActions.setUiState({
+    yield eff.put(uiActions.setUiState({
       commentAdding: false,
     }));
   } catch (err) {
-    yield put(uiActions.setUiState({
+    yield eff.put(uiActions.setUiState({
       commentAdding: false,
     }));
-    yield fork(notify, {
+    yield eff.fork(notify, {
+
       title: 'failed to add comment',
     });
-    yield call(throwError, err);
+    yield eff.call(throwError, err);
   }
 }
 
 export function* watchIssueCommentRequest(): Generator<*, *, *> {
-  yield takeEvery(actionTypes.COMMENT_REQUEST, addIssueComment);
+  yield eff.takeEvery(actionTypes.COMMENT_REQUEST, addIssueComment);
 }

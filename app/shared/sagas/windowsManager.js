@@ -1,10 +1,4 @@
-import {
-  select,
-  put,
-  take,
-  spawn,
-  race,
-} from 'redux-saga/effects';
+import * as eff from 'redux-saga/effects';
 import {
   eventChannel,
 } from 'redux-saga';
@@ -23,9 +17,9 @@ export function* onEventLogger({
     const {
       res,
       unload,
-    } = yield race({
-      res: take(channel),
-      unload: take(actionTypes.WINDOW_BEFORE_UNLOAD),
+    } = yield eff.race({
+      res: eff.take(channel),
+      unload: eff.take(actionTypes.WINDOW_BEFORE_UNLOAD),
     });
 
     /*
@@ -35,7 +29,7 @@ export function* onEventLogger({
     if (unload || (res && res.event === 'closed')) {
       channel.close();
     } else {
-      yield put(windowsManagerActions.addWindowEvent({
+      yield eff.put(windowsManagerActions.addWindowEvent({
         id: windowId,
         log: {
           type: res.type,
@@ -115,7 +109,7 @@ function* onReadyToShow({
   channel,
   win,
 }) {
-  yield take(channel);
+  yield eff.take(channel);
   win.show();
   channel.close();
 }
@@ -125,13 +119,13 @@ function* onDomReady({
   win,
 }) {
   while (true) {
-    yield take(channel);
+    yield eff.take(channel);
     const {
       allIds,
       byId,
       scopes,
-    } = yield select(state => state.windowsManager);
-    yield put(windowsManagerActions.setWindowsState({
+    } = yield eff.select(state => state.windowsManager);
+    yield eff.put(windowsManagerActions.setWindowsState({
       allIds,
       byId,
       scopes,
@@ -147,9 +141,9 @@ export function* onClosed({
 }) {
   /* You can't work wtih instance after it was destroyed */
   const windowId = win.id;
-  yield take(channel);
+  yield eff.take(channel);
   channel.close();
-  yield put(windowsManagerActions.removeWindow({
+  yield eff.put(windowsManagerActions.removeWindow({
     id: windowId,
     scope: 'all',
   }));
@@ -165,7 +159,7 @@ export function* forkNewWindow({
 }) {
   const win = new BrowserWindow(options);
 
-  yield put(windowsManagerActions.addWindow({
+  yield eff.put(windowsManagerActions.addWindow({
     id: win.id,
     scopes,
     scope: 'all',
@@ -178,7 +172,7 @@ export function* forkNewWindow({
     ],
   });
 
-  yield spawn(onClosed, {
+  yield eff.spawn(onClosed, {
     channel: closedWindowChannel,
     win,
   });
@@ -190,7 +184,7 @@ export function* forkNewWindow({
     ],
   });
 
-  yield spawn(onDomReady, {
+  yield eff.spawn(onDomReady, {
     channel: domReadyChannel,
     win,
   });
@@ -202,7 +196,7 @@ export function* forkNewWindow({
         'ready-to-show',
       ],
     });
-    yield spawn(onReadyToShow, {
+    yield eff.spawn(onReadyToShow, {
       channel: readyToShowChannel,
       win,
     });
