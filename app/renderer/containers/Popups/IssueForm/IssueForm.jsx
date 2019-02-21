@@ -56,7 +56,7 @@ class IssueForm extends Component<{}, any> {
     } else {
       webview.src = url;
     }
-  }
+  };
 
   onHideForm = () => {
     const webview = document.querySelector('webview');
@@ -65,7 +65,7 @@ class IssueForm extends Component<{}, any> {
         window.issueForm.trigger('hide');
       }
     `);
-  }
+  };
 
   onShowForm = (
     ev,
@@ -143,7 +143,7 @@ class IssueForm extends Component<{}, any> {
       }, 500);
       window.issueForm = issueForm;
     `);
-  }
+  };
 
   render() {
     if (this.state.show) {

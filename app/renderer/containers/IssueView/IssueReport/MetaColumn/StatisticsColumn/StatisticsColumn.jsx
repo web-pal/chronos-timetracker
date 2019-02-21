@@ -15,11 +15,7 @@ import {
 import {
   MetaItem,
 } from './styled';
-import {
-  MetaItemName,
-  MetaItemValue,
-  BorderLeft,
-} from '../../styled';
+import * as S from '../../styled';
 
 
 type Props = {
@@ -47,26 +43,26 @@ const StatisticsRow: StatelessFunctionalComponent<Props> = ({
     }}
   >
     <MetaItem>
-      <BorderLeft color="#FFAB00" />
+      <S.BorderLeft color="#FFAB00" />
       <Flex column alignCenter>
-        <MetaItemName>Logged by you today</MetaItemName>
-        <MetaItemValue>{stj(youLoggedToday)}</MetaItemValue>
+        <S.MetaItemName>Logged by you today</S.MetaItemName>
+        <S.MetaItemValue>{stj(youLoggedToday)}</S.MetaItemValue>
       </Flex>
       <div />
     </MetaItem>
     <MetaItem>
-      <BorderLeft color="#FFF0B2" />
+      <S.BorderLeft color="#FFF0B2" />
       <Flex column alignCenter>
-        <MetaItemName>Total logged by you</MetaItemName>
-        <MetaItemValue>{stj(youLoggedTotal)}</MetaItemValue>
+        <S.MetaItemName>Total logged by you</S.MetaItemName>
+        <S.MetaItemValue>{stj(youLoggedTotal)}</S.MetaItemValue>
       </Flex>
       <div />
     </MetaItem>
     <MetaItem>
-      <BorderLeft color="#B2D4FF" />
+      <S.BorderLeft color="#B2D4FF" />
       <Flex column alignCenter>
-        <MetaItemName>Total logged</MetaItemName>
-        <MetaItemValue>{stj(loggedTotal)}</MetaItemValue>
+        <S.MetaItemName>Total logged</S.MetaItemName>
+        <S.MetaItemValue>{stj(loggedTotal)}</S.MetaItemValue>
       </Flex>
       <div />
     </MetaItem>

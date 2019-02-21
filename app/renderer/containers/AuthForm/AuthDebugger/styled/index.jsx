@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 
-export const AuthDebuggerContainer = styled.div`
+export const AuthDebugger = styled.div`
   position: absolute;
   display: flex;
   flex-flow: column nowrap;
@@ -14,11 +14,10 @@ export const AuthDebuggerContainer = styled.div`
   box-shadow: 0px 13px 17px -6px rgba(0, 0, 0, 0.38);
   text-align: left;
   color: #fff;
-  transform: ${props =>
-    (props.show ?
-      'translate3d(0px, 0px, 0px)' :
-      'translate3d(-100%, 0px, 0px)'
-    )};
+  transform: ${props => (props.show
+    ? 'translate3d(0px, 0px, 0px)'
+    : 'translate3d(-100%, 0px, 0px)'
+  )};
   transition: transform .3s ease-out;
 `;
 

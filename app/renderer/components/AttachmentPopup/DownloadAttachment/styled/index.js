@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const DownloadMainContainer = styled.div``;
+export const DownloadMain = styled.div``;
 
 export const DownloadLink = styled.a``;
 

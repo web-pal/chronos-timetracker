@@ -26,12 +26,7 @@ import IssuesSourcePicker from './IssuesSourcePicker';
 import SidebarIssues from './SidebarIssues';
 import SidebarRecentWorklogs from './SidebarRecentWorklogs';
 
-import {
-  SidebarContainer,
-  TabContainer,
-  ListContainer,
-  Tab,
-} from './styled';
+import * as S from './styled';
 
 
 type Props = {
@@ -43,10 +38,10 @@ const Sidebar: StatelessFunctionalComponent<Props> = ({
   sidebarType,
   dispatch,
 }: Props): Node => (
-  <SidebarContainer>
+  <S.Sidebar>
     <IssuesSourcePicker />
-    <TabContainer>
-      <Tab
+    <S.Tab>
+      <S.TabDesc
         active={sidebarType === 'recent'}
         onClick={() => {
           dispatch(uiActions.setUiState({
@@ -55,8 +50,8 @@ const Sidebar: StatelessFunctionalComponent<Props> = ({
         }}
       >
         Recent worklogs
-      </Tab>
-      <Tab
+      </S.TabDesc>
+      <S.TabDesc
         active={sidebarType === 'all'}
         onClick={() => {
           dispatch(
@@ -67,13 +62,13 @@ const Sidebar: StatelessFunctionalComponent<Props> = ({
         }}
       >
         Issues
-      </Tab>
-    </TabContainer>
-    <ListContainer sidebarType={sidebarType}>
+      </S.TabDesc>
+    </S.Tab>
+    <S.List sidebarType={sidebarType}>
       <SidebarRecentWorklogs />
       <SidebarIssues />
-    </ListContainer>
-  </SidebarContainer>
+    </S.List>
+  </S.Sidebar>
 );
 
 function mapStateToProps(state) {

@@ -9,23 +9,18 @@ import type {
 import {
   noIssuesImage,
 } from 'utils/data/assets';
-import {
-  NoWorklogsContainer,
-  NoIssuesImage,
-  Title,
-  Subtitle,
-} from './styled';
+import * as S from './styled';
 
 
 const NoWorklogs: StatelessFunctionalComponent<*> = (): Node =>
-  <NoWorklogsContainer>
-    <NoIssuesImage src={noIssuesImage} alt="Not found" />
-    <Title>
+  <S.NoWorklogs>
+    <S.NoIssuesImage src={noIssuesImage} alt="Not found" />
+    <S.Title>
       Nothing tracked recently
-    </Title>
-    <Subtitle>
+    </S.Title>
+    <S.Subtitle>
       Track any issue to see it in {'"Recent"'} tab
-    </Subtitle>
-  </NoWorklogsContainer>;
+    </S.Subtitle>
+  </S.NoWorklogs>;
 
 export default NoWorklogs;

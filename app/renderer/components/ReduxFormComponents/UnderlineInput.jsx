@@ -7,11 +7,7 @@ import type {
   FieldProps,
 } from 'redux-form';
 
-import {
-  FormGroup,
-  UnderlineStyledInput,
-  Error,
-} from './styled';
+import * as S from './styled';
 
 type Props = {
   autoFocus: boolean,
@@ -31,8 +27,8 @@ class UnderlineInput extends Component<Props> {
       placeholder,
     } = this.props;
     return (
-      <FormGroup>
-        <UnderlineStyledInput
+      <S.FormGroup>
+        <S.UnderlineStyledInput
           {...input}
           innerRef={(el) => {
             this.input = el;
@@ -41,8 +37,8 @@ class UnderlineInput extends Component<Props> {
           autoFocus={autoFocus}
           placeholder={placeholder}
         />
-        {meta.touched && meta.error && <Error>{meta.error}</Error>}
-      </FormGroup>
+        {meta.touched && meta.error && <S.Error>{meta.error}</S.Error>}
+      </S.FormGroup>
     );
   }
 }

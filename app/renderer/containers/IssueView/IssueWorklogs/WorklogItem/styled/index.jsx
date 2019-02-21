@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 
-export const WorklogContainer = styled.div`
+export const Worklog = styled.div`
   display: flex;
   flex-flow: column nowrap;
   background-color: ${props => (props.selected ? '#f4f5f7' : 'transparent')};

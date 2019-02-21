@@ -1,13 +1,15 @@
 // @flow
 import React from 'react';
-import { AutoSizer, List } from 'react-virtualized';
+import {
+  AutoSizer, List,
+} from 'react-virtualized';
 
 type Props = {
   listProps: any,
   autoSized?: boolean,
 };
 
-const AutosizableList = (props: Props) =>
+const AutosizableList = (props: Props) => (
   <AutoSizer
     {...props}
   >
@@ -18,7 +20,8 @@ const AutosizableList = (props: Props) =>
         height={props.autoSized ? height : props.listProps.height}
       />
     )}
-  </AutoSizer>;
+  </AutoSizer>
+);
 
 AutosizableList.defaultProps = {
   autoSized: false,

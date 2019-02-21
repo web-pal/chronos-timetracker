@@ -7,28 +7,24 @@ import type {
 
 import Spinner from '@atlaskit/spinner';
 
-import {
-  SpinnerWrapper,
-  SpinnerTitle,
-  SpinnerDot,
-} from './styled';
+import * as S from './styled';
 
 type Props = {
   spinnerTitle: string,
-}
+};
 
 const SpinnerContainer: StatelessFunctionalComponent<Props> = ({
   spinnerTitle,
 }: Props): Node => (
-  <SpinnerWrapper>
+  <S.SpinnerWrapper>
     <Spinner />
-    <SpinnerTitle>
+    <S.SpinnerTitle>
       {spinnerTitle}
-      <SpinnerDot>.</SpinnerDot>
-      <SpinnerDot>.</SpinnerDot>
-      <SpinnerDot>.</SpinnerDot>
-    </SpinnerTitle>
-  </SpinnerWrapper>
+      <S.SpinnerDot>.</S.SpinnerDot>
+      <S.SpinnerDot>.</S.SpinnerDot>
+      <S.SpinnerDot>.</S.SpinnerDot>
+    </S.SpinnerTitle>
+  </S.SpinnerWrapper>
 );
 
 export default SpinnerContainer;

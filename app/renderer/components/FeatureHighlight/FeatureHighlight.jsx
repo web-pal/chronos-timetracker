@@ -9,7 +9,7 @@ import Lozenge from '@atlaskit/lozenge';
 import { getUiState } from 'selectors';
 import { uiActions } from 'actions';
 
-import { FeatureContainer } from './styled';
+import * as S from './styled';
 
 type Props = {
   dispatch: Dispatch,
@@ -30,12 +30,12 @@ const FeatureHighlight = ({
     <Tooltip
       content={description}
     >
-      <FeatureContainer
+      <S.Feature
         onClick={() => dispatch(uiActions.acknowlegdeFeature({ featureId: 'multiAccounts' }))}
       >
         {children}
         <Lozenge appearance="new">New</Lozenge>
-      </FeatureContainer>
+      </S.Feature>
     </Tooltip>
   ) : (
     children

@@ -80,7 +80,7 @@ export default class AkSingleSelect extends PureComponent {
     shouldFlip: PropTypes.bool,
     /** Set the max height of the dropdown list in pixels. */
     maxHeight: PropTypes.number,
-  }
+  };
 
   static defaultProps = {
     appearance: appearances.default,
@@ -95,13 +95,13 @@ export default class AkSingleSelect extends PureComponent {
     position: 'bottom left',
     shouldFocus: false,
     shouldFlip: true,
-  }
+  };
 
   state = {
     isOpen: this.props.isDefaultOpen,
     selectedItem: this.props.defaultSelected,
     filterValue: this.props.defaultSelected ? this.props.defaultSelected.content : '',
-  }
+  };
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.selectedItem) {
@@ -115,17 +115,17 @@ export default class AkSingleSelect extends PureComponent {
   selectItem = (item) => {
     this.setState({ isOpen: false, selectedItem: item });
     this.props.onSelected({ item });
-  }
+  };
 
   handleOpenChange = (attrs) => {
     this.setState({ isOpen: attrs.isOpen });
     this.props.onOpenChange(attrs);
-  }
+  };
 
   handleFilterChange = (value) => {
     this.props.onFilterChange(value);
     this.setState({ filterValue: value });
-  }
+  };
 
   render() {
     return (

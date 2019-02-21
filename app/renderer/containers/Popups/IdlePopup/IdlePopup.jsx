@@ -15,9 +15,7 @@ import {
 } from 'actions';
 
 import configureStore from '../../../store/configurePreloadStore';
-import {
-  PopupContainer,
-} from './styled';
+import * as S from './styled';
 
 
 const system = remote.require('desktop-idle');
@@ -29,7 +27,7 @@ const awayTo = date.format('HH:mm');
 const awayFor = stj(idleTime, 'h [hours] m [minutes] s [seconds]');
 
 const IdlePopup = () => (
-  <PopupContainer>
+  <S.Popup>
     <Flag
       icon={(
         <RecentIcon
@@ -61,7 +59,7 @@ const IdlePopup = () => (
         </div>
       )}
     />
-  </PopupContainer>
+  </S.Popup>
 );
 
 export default IdlePopup;

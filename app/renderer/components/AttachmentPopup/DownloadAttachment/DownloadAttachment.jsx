@@ -1,25 +1,19 @@
 import React from 'react';
-
 import fileImages from 'images/file.png';
-
-import {
-  FileImage,
-  DownloadLink,
-  DownloadMainContainer,
-} from './styled';
+import * as S from './styled';
 
 const DownloadAttachment = ({ attachment }) => (
-  <DownloadMainContainer>
-    <DownloadLink
+  <S.DownloadMain>
+    <S.DownloadLink
       href={attachment.content}
       download={attachment.filename}
     >
-      <FileImage
+      <S.FileImage
         src={fileImages}
         alt="fileImages"
       />
-    </DownloadLink>
-  </DownloadMainContainer>
+    </S.DownloadLink>
+  </S.DownloadMain>
 );
 
 export default DownloadAttachment;

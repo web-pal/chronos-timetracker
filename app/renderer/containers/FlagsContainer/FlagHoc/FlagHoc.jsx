@@ -20,7 +20,7 @@ type Props = {
   render: (pending: boolean) => Node,
   resourceType: string,
   request: string,
-}
+};
 
 const FlagHoc: StatelessFunctionalComponent<Props> = ({
   pending,

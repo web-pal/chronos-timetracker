@@ -29,11 +29,7 @@ import {
   uiActions,
 } from 'actions';
 
-import {
-  IssueViewContainer,
-  IssueContainer,
-  IssueViewTabContainer,
-} from './styled';
+import * as S from './styled';
 
 import IssueDetails from './IssueDetails';
 import IssueComments from './IssueComments';
@@ -76,11 +72,11 @@ const IssueView: StatelessFunctionalComponent<Props> = ({
         issueForDebug,
       }}
     >
-      <IssueViewContainer column>
+      <S.IssueView column>
         {(timerRunning && trackingIssueId)
           && <TrackingBar />
         }
-        <IssueContainer>
+        <S.Issue>
           <IssueViewHeader />
           <IssueViewTabs
             onTabClick={(tab) => {
@@ -91,7 +87,7 @@ const IssueView: StatelessFunctionalComponent<Props> = ({
             currentTab={currentTab}
             tabs={tabs}
           />
-          <IssueViewTabContainer>
+          <S.IssueViewTab>
             {(() => {
               switch (currentTab) {
                 case 'Details':
@@ -106,9 +102,9 @@ const IssueView: StatelessFunctionalComponent<Props> = ({
                   return <IssueReport />;
               }
             })()}
-          </IssueViewTabContainer>
-        </IssueContainer>
-      </IssueViewContainer>
+          </S.IssueViewTab>
+        </S.Issue>
+      </S.IssueView>
     </ErrorBoundary>
   )
   : <IssueViewPlaceholder />);

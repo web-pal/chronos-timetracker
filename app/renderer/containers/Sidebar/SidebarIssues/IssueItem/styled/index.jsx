@@ -4,7 +4,7 @@ import {
 } from 'components';
 
 
-export const IssueContainer = styled.div`
+export const Issue = styled.div`
   display: flex;
   flex-direction: column;
   cursor: pointer;
@@ -22,13 +22,13 @@ export const IssueContainer = styled.div`
   }
 `;
 
-export const IssueNameContainer = styled(Flex).attrs({
+export const IssueName = styled(Flex).attrs({
   row: true,
 })`
   align-items: flex-end;
 `;
 
-export const IssueName = styled.a`
+export const IssueText = styled.a`
   font-weight: 700;
   color: ${props => props.theme.primary};
   font-size: 16px;
@@ -42,7 +42,7 @@ export const IssueDescription = styled.div`
   overflow: hidden;
 `;
 
-export const IssueFieldsContainer = styled(Flex).attrs({
+export const IssueFields = styled(Flex).attrs({
   row: true,
 })`
   margin-top: 8px;

@@ -40,9 +40,7 @@ import {
 
 import JQLFilter from './JQLFilter';
 
-import {
-  IssuesSourceContainer,
-} from './styled';
+import * as S from './styled';
 
 type Props = {
   options: Array<any>,
@@ -65,7 +63,7 @@ const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
   selectedSourceType,
   dispatch,
 }: Props): Node => (
-  <IssuesSourceContainer>
+  <S.IssuesSource>
     <SingleSelect
       items={options}
       hasAutocomplete
@@ -133,7 +131,7 @@ const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
       )
     }
     {selectedSourceType === 'filter' && <JQLFilter selectedFilter={selectedOption} />}
-  </IssuesSourceContainer>
+  </S.IssuesSource>
 );
 
 function mapStateToProps(state) {

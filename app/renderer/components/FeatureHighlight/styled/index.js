@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const FeatureContainer = styled.div`
+export const Feature = styled.div`
   position: relative;
   & > span:last-child {
     position: absolute;
