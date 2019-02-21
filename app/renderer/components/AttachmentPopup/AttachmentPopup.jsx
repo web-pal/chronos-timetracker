@@ -3,23 +3,7 @@ import rightArrow from 'images/rigth-arrow.png';
 import leftArrow from 'images/left-arrow.png';
 import DownloadIcon from '@atlaskit/icon/glyph/download';
 import DownloadAttachment from 'components/AttachmentPopup/DownloadAttachment';
-import {
-  MainAttachmentContainer,
-  HeaderContainer,
-  DownloadButtonContainer,
-  TitleContainer,
-  TitleText,
-  DownloadButton,
-  DownloadButtonIcon,
-  MainContentContainer,
-  RightButtonContainer,
-  MainImageContainer,
-  LeftButtonContainer,
-  AttachmentImage,
-  RightButton,
-  LeftButton,
-  Arrow,
-} from './styled/index';
+import * as S from './styled';
 
 import AttachmentsList from './AttachmentsList/AttachmentsList';
 
@@ -43,39 +27,39 @@ class AttachmentPopupComponent extends React.PureComponent {
     const { zoom } = this.state;
 
     return (
-      <MainAttachmentContainer>
-        <HeaderContainer>
-          <TitleContainer>
-            <TitleText>
+      <S.MainAttachment>
+        <S.Header>
+          <S.Title>
+            <S.TitleText>
               {attachmentItem.filename}
-            </TitleText>
-          </TitleContainer>
-          <DownloadButtonContainer>
-            <DownloadButton
+            </S.TitleText>
+          </S.Title>
+          <S.MainDownloadButton>
+            <S.DownloadButton
               href={attachmentItem.content}
               download={attachmentItem.filename}
             >
               <DownloadIcon />
-            </DownloadButton>
-          </DownloadButtonContainer>
-        </HeaderContainer>
-        <MainContentContainer>
-          <LeftButtonContainer>
-            <LeftButton
+            </S.DownloadButton>
+          </S.MainDownloadButton>
+        </S.Header>
+        <S.MainContent>
+          <S.LeftButton>
+            <S.LeftButtonView
               onClick={prevAttachment}
               disabled={activeIndex === 0}
             >
-              <Arrow
+              <S.Arrow
                 src={leftArrow}
                 alt="arrow"
               />
-            </LeftButton>
-          </LeftButtonContainer>
-          <MainImageContainer>
+            </S.LeftButtonView>
+          </S.LeftButton>
+          <S.MainImage>
             {
               /(jpeg|jpg|png|svg)/.test(attachmentItem.mimeType)
                 ? (
-                  <AttachmentImage
+                  <S.AttachmentImage
                     src={attachmentItem.content}
                     zoom={zoom}
                     onClick={() => this.setState(({ zoom }) => ({
@@ -90,24 +74,24 @@ class AttachmentPopupComponent extends React.PureComponent {
                   />
                 )
             }
-          </MainImageContainer>
-          <RightButtonContainer>
-            <RightButton
+          </S.MainImage>
+          <S.RightButton>
+            <S.RightButtonView
               onClick={nextAttachment}
               disabled={attachmentSize - 1 === activeIndex}
             >
-              <Arrow
+              <S.Arrow
                 src={rightArrow}
                 alt="arrow"
               />
-            </RightButton>
-          </RightButtonContainer>
-        </MainContentContainer>
+            </S.RightButtonView>
+          </S.RightButton>
+        </S.MainContent>
         <AttachmentsList
           selectAttachment={selectAttachment}
           attachment={attachment}
         />
-      </MainAttachmentContainer>
+      </S.MainAttachment>
     );
   }
 }

@@ -15,11 +15,7 @@ import {
   transformValidHost,
 } from '../utils';
 
-import {
-  ContentInner,
-  ContentStep,
-  WebViewContainer,
-} from '../styled';
+import * as S from '../styled';
 
 type Props = {
   team: string,
@@ -106,18 +102,18 @@ class CloudLoginStep extends Component<Props, {}> {
     const { isComplete, isActiveStep, authRequestInProcess } = this.props;
     const loading = isComplete || authRequestInProcess;
     return (
-      <ContentInner
+      <S.ContentInner
         isActiveStep={isActiveStep}
         step={2}
       >
-        <ContentStep>
+        <S.ContentStep>
           <Spinner size="xlarge" isCompleting={loading} />
-          <WebViewContainer
+          <S.WebView
             id="webviewContainer"
             isComplete={isComplete}
           />
-        </ContentStep>
-      </ContentInner>
+        </S.ContentStep>
+      </S.ContentInner>
     );
   }
 }

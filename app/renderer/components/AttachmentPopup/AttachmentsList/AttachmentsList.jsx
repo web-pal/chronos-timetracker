@@ -1,28 +1,21 @@
 import React from 'react';
-import {
-  ShowAllContainer,
-  ItemContainer,
-  Item,
-  ItemImageContainer,
-  ItemImage,
-  DescriptionImage,
-} from './styled';
+import * as S from './styled';
 
 import DownloadAttachment from '../DownloadAttachment/DownloadAttachment';
 
 const AttachmentsList = ({ attachment, selectAttachment }) => (
-  <ShowAllContainer>
-    <ItemContainer>
+  <S.ShowAll>
+    <S.Item>
       {
         attachment.map((item, index) => (
-          <Item key={item.id}>
-            <ItemImageContainer
+          <S.ItemInside key={item.id}>
+            <S.ItemImage
               onClick={() => selectAttachment(index)}
             >
               {
                 item.mimeType.indexOf('application')
                   ? (
-                    <ItemImage
+                    <S.Image
                       src={item.content}
                       alt="image"
                     />
@@ -33,15 +26,15 @@ const AttachmentsList = ({ attachment, selectAttachment }) => (
                     />
                   )
               }
-              <DescriptionImage>
+              <S.DescriptionImage>
                 {item.filename}
-              </DescriptionImage>
-            </ItemImageContainer>
-          </Item>
+              </S.DescriptionImage>
+            </S.ItemImage>
+          </S.ItemInside>
         ))
       }
-    </ItemContainer>
-  </ShowAllContainer>
+    </S.Item>
+  </S.ShowAll>
 );
 
 export default AttachmentsList;

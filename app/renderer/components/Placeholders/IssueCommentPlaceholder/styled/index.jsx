@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { AnimatedPlaceholder } from '../../styled';
 
-export const PlaceholderContainer = styled.div`
+export const MainPlaceholder = styled.div`
   padding: 10px;
 `;
 

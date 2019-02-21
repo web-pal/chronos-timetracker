@@ -1,9 +1,15 @@
 // @flow
 import React from 'react';
-import type { StatelessFunctionalComponent, Node } from 'react';
+import type {
+  StatelessFunctionalComponent, Node,
+} from 'react';
 
-import { PlaceholderContainer, Placeholder } from './styled';
-import { AnimatedPlaceholder } from '../styled';
+import {
+  PlaceholderContainer, Placeholder,
+} from './styled';
+import {
+  AnimatedPlaceholder,
+} from '../styled';
 
 const IssueItemPlaceholder: StatelessFunctionalComponent<{}> = (): Node => (
   <PlaceholderContainer>

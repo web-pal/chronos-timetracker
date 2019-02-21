@@ -14,9 +14,7 @@ import {
   stj,
 } from 'utils/time-util';
 
-import {
-  TimestampContainer,
-} from './styled';
+import * as S from './styled';
 
 
 type Props = {
@@ -28,13 +26,13 @@ const TimestampItem: StatelessFunctionalComponent<Props> = ({
   date,
   worklogs,
 }: Props): Node =>
-  <TimestampContainer>
+  <S.Timestamp>
     <span>
       {moment(date).calendar()}&nbsp;
     </span>
     <span>
       {stj(worklogs.reduce((total, item) => total + item.timeSpentSeconds, 0), 'h[h] m[m]')}
     </span>
-  </TimestampContainer>;
+  </S.Timestamp>;
 
 export default TimestampItem;

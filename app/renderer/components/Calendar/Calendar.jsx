@@ -19,7 +19,7 @@ export default class Calendar extends Component {
 
   static defaultProps: {
     onUpdate: () => {},
-  }
+  };
 
   constructor(props) {
     super(props);
@@ -34,7 +34,7 @@ export default class Calendar extends Component {
   }
 
   handleBlur = () => this.setState({
-  })
+  });
 
   handleChange = ({ day, month, year }) => {
     this.setState({
@@ -42,7 +42,7 @@ export default class Calendar extends Component {
       month,
       year,
     });
-  }
+  };
 
   handleSelect = ({ iso, day, month, year }) => {
     const { selected } = this.state;
@@ -53,7 +53,7 @@ export default class Calendar extends Component {
     } else {
       this.setState({ selected: [] });
     }
-  }
+  };
 
   render() {
     return (

@@ -1,6 +1,10 @@
-import React, { PureComponent } from 'react';
+import React, {
+  PureComponent,
+} from 'react';
 import Input from '@atlaskit/input';
-import { FieldBaseStateless } from '@atlaskit/field-base';
+import {
+  FieldBaseStateless,
+} from '@atlaskit/field-base';
 
 /* eslint-disable react/prop-types */
 export default class extends PureComponent {
@@ -8,11 +12,11 @@ export default class extends PureComponent {
     onChange: () => {},
     onFocus: () => {},
     onBlur: () => {},
-  }
+  };
 
   state = {
     value: this.props.value,
-  }
+  };
 
   componentWillReceiveProps(nextProps) {
     this.setState({
@@ -23,11 +27,11 @@ export default class extends PureComponent {
   handleOnChange = (e) => {
     this.setState({ value: e.target.value });
     this.props.onChange(e);
-  }
+  };
 
   focus = () => {
     this.input.inputRef.focus();
-  }
+  };
 
   render() {
     return (

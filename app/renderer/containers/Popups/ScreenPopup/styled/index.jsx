@@ -3,7 +3,7 @@ import styled from 'styled-components';
 export const TrackingViewContainer = styled.div`
 `;
 
-export const PopupContainer = styled.div`
+export const Popup = styled.div`
   display: flex;
   flex-flow: row nowrap;
   justify-content: flex-center;

@@ -41,7 +41,7 @@ import FlagHoc from './FlagHoc';
 type Props = {
   flags: Array<any>,
   dispatch: Dispatch,
-}
+};
 
 function getIcon(iconName) {
   return iconName === 'errorIcon'

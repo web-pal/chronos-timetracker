@@ -40,13 +40,7 @@ import AccountsStep from './AccountsStep';
 
 import AuthDebugger from './AuthDebugger';
 
-import {
-  Hint,
-  ContentOuter,
-  Container,
-  Logo,
-  LoginInfo,
-} from './styled';
+import * as S from './styled';
 
 import {
   transformValidHost,
@@ -73,17 +67,17 @@ const AuthForm: StatelessFunctionalComponent<Props> = ({
   step,
   dispatch,
 }: Props): Node => (
-  <Container>
+  <S.Container>
     <AuthDebugger show={showAuthDebugConsole} />
-    <Logo
+    <S.Logo
       src={logoShadowed}
       alt="Chronos"
     />
     <Flex column alignCenter>
-      <LoginInfo>
+      <S.LoginInfo>
         Log in to your account
-      </LoginInfo>
-      <ContentOuter>
+      </S.LoginInfo>
+      <S.ContentOuter>
         {accounts.length > 0
           && (
           <AccountsStep
@@ -161,9 +155,9 @@ const AuthForm: StatelessFunctionalComponent<Props> = ({
             }));
           }}
         />
-      </ContentOuter>
+      </S.ContentOuter>
     </Flex>
-    <Hint
+    <S.Hint
       onClick={() => {
         dispatch(uiActions.setUiState({
           showAuthDebugConsole: true,
@@ -171,8 +165,8 @@ const AuthForm: StatelessFunctionalComponent<Props> = ({
       }}
     >
       Can not log in?
-    </Hint>
-  </Container>
+    </S.Hint>
+  </S.Container>
 );
 
 const selector = formValueSelector('TeamStep');

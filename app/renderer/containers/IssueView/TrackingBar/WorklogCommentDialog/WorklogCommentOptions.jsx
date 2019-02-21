@@ -26,9 +26,7 @@ import type {
   Dispatch,
 } from 'types';
 
-import {
-  IssueCommentCheckboxWrapper,
-} from './styled';
+import * as S from './styled';
 
 type Props = {
   postAlsoAsIssueComment: boolean,
@@ -39,7 +37,7 @@ const WorklogCommentOptions: StatelessFunctionalComponent<Props> = ({
   postAlsoAsIssueComment,
   changePostOption,
 }: Props): Node => (
-  <IssueCommentCheckboxWrapper>
+  <S.IssueCommentCheckboxWrapper>
     <CheckboxGroup>
       <Checkbox
         isChecked={postAlsoAsIssueComment}
@@ -49,7 +47,7 @@ const WorklogCommentOptions: StatelessFunctionalComponent<Props> = ({
         onChange={changePostOption}
       />
     </CheckboxGroup>
-  </IssueCommentCheckboxWrapper>
+  </S.IssueCommentCheckboxWrapper>
 );
 
 export default compose(

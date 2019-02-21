@@ -41,12 +41,7 @@ import Tooltip from '@atlaskit/tooltip';
 
 import WorklogCommentDialog from './WorklogCommentDialog';
 import ProgressBar from './ProgressBar/ProgressBar';
-import {
-  IssueName,
-  Dot,
-  Time,
-  Container,
-} from './styled';
+import * as S from './styled';
 
 
 type Props = {
@@ -96,7 +91,7 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
     enter={false}
     expit={false}
   >
-    <Container>
+    <S.Container>
       <Flex row alignCenter>
         <WorklogCommentDialog
           comment={worklogComment}
@@ -147,7 +142,7 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
         }
       </Flex>
       <Flex row alignCenter>
-        <IssueName
+        <S.IssueName
           onClick={() => {
             dispatch(uiActions.setUiState({
               selectedIssueId: trackingIssue.id,
@@ -155,11 +150,11 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
           }}
         >
           {trackingIssue.key}
-        </IssueName>
-        <Dot />
-        <Time>
+        </S.IssueName>
+        <S.Dot />
+        <S.Time>
           {getTimeString(time)}
-        </Time>
+        </S.Time>
       </Flex>
       <div className="worklog-edit-popup-shouldNotCLose">
         <ProgressBar
@@ -178,7 +173,7 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
           }}
         />
       </div>
-    </Container>
+    </S.Container>
   </Transition>
 );
 

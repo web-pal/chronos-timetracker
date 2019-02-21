@@ -4,7 +4,7 @@ import {
 } from 'components';
 
 
-export const NoWorklogsContainer = styled(Flex).attrs({
+export const NoWorklogs = styled(Flex).attrs({
   column: true,
   justifyCenter: true,
   alignCenter: true,

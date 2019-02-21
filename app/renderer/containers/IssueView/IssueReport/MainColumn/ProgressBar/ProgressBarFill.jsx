@@ -5,12 +5,7 @@ import type {
   Node,
 } from 'react';
 
-import {
-  ProgressBarItem,
-  ProgressBarFill,
-  Time,
-  TimeLabel,
-} from './styled';
+import * as S from './styled';
 
 
 type Props = {
@@ -31,11 +26,11 @@ const ProgressBarFillContainer: StatelessFunctionalComponent<Props> = ({
   time,
   style,
 }: Props): Node => (
-  <ProgressBarItem width={width} style={style}>
-    <Time isHighlighted={name === 'you-logged-today'}>{time}</Time>
-    <ProgressBarFill color={color} />
-    <TimeLabel>{label}</TimeLabel>
-  </ProgressBarItem>
+  <S.ProgressBarItem width={width} style={style}>
+    <S.Time isHighlighted={name === 'you-logged-today'}>{time}</S.Time>
+    <S.ProgressBarFill color={color} />
+    <S.TimeLabel>{label}</S.TimeLabel>
+  </S.ProgressBarItem>
 );
 
 export default ProgressBarFillContainer;

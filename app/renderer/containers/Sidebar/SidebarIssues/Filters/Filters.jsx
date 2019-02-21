@@ -37,17 +37,9 @@ import {
   FullPageSpinner,
 } from 'styles';
 
-import {
-  FiltersContainer,
-  FilterName,
-  FilterItems,
-  FilterItem,
-  FilterOptions,
-  FilterActionsContainer,
-  IssuesFoundContainer,
-  IssuesFoundText,
-} from './styled';
+import * as S from './styled';
 import FilterOption from './FilterOption';
+
 
 
 type Props = {
@@ -67,18 +59,18 @@ const SidebarFilters: StatelessFunctionalComponent<Props> = ({
   optionsFetching,
   dispatch,
 }: Props): Node => (
-  <FiltersContainer>
+  <S.Filters>
     {optionsFetching ?
       <FullPageSpinner>
         <Spinner size="xlarge" />
       </FullPageSpinner> :
       <FilterItems>
         {options.map(type =>
-          <FilterItem key={type.key}>
-            <FilterName>
+          <S.FilterItem key={type.key}>
+            <S.FilterName>
               {type.name}
-            </FilterName>
-            <FilterOptions>
+            </S.FilterName>
+            <S.FilterOptions>
               {type.options.map(option => (
                 <FilterOption
                   key={option.id}
@@ -103,21 +95,21 @@ const SidebarFilters: StatelessFunctionalComponent<Props> = ({
                   showIcons={type.showIcons}
                 />
               ))}
-            </FilterOptions>
-          </FilterItem>)
+            </S.FilterOptions>
+          </S.FilterItem>)
         }
       </FilterItems>
     }
-    <FilterActionsContainer>
-      <IssuesFoundContainer>
-        <IssuesFoundText>
+    <S.FilterActions>
+      <S.IssuesFoundContainer>
+        <S.IssuesFoundText>
           Issues found:
-        </IssuesFoundText>
+        </S.IssuesFoundText>
         {issuesFetching ?
           <Spinner size="small" /> :
           <span>{issuesCount}</span>
         }
-      </IssuesFoundContainer>
+      </S.IssuesFoundContainer>
       <ButtonGroup>
         <Button
           onClick={() => {
@@ -140,8 +132,8 @@ const SidebarFilters: StatelessFunctionalComponent<Props> = ({
           Close
         </Button>
       </ButtonGroup>
-    </FilterActionsContainer>
-  </FiltersContainer>
+    </S.FilterActions>
+  </S.Filters>
 );
 
 function mapStateToProps(state) {

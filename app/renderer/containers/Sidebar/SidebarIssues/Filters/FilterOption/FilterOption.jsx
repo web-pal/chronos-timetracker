@@ -10,11 +10,7 @@ import {
   Checkbox,
 } from '@atlaskit/checkbox';
 
-import {
-  OptionContainer,
-  OptionLabel,
-  OptionImage,
-} from './styled';
+import * as S from './styled';
 
 
 type Props = {
@@ -22,7 +18,7 @@ type Props = {
   onChange: (id: string, isChecked: boolean) => void,
   showIcons: boolean,
   isChecked: boolean,
-}
+};
 
 const FilterItem: StatelessFunctionalComponent<Props> = ({
   option,
@@ -36,22 +32,22 @@ const FilterItem: StatelessFunctionalComponent<Props> = ({
     name,
   } = option;
   return (
-    <OptionContainer>
+    <S.Option>
       <Checkbox
         isChecked={isChecked}
         value={isChecked ? 'true' : 'false'}
         name={name}
         label={(
-          <OptionLabel>
-            {showIcons && iconUrl && iconUrl[iconUrl.length - 1] !== '/' &&
-              <OptionImage alt="" src={iconUrl} />
+          <S.OptionLabel>
+            {showIcons && iconUrl && iconUrl[iconUrl.length - 1] !== '/'
+              && <S.OptionImage alt="" src={iconUrl} />
             }
             {name}
-          </OptionLabel>
+          </S.OptionLabel>
         )}
         onChange={() => onChange(id, isChecked)}
       />
-    </OptionContainer>
+    </S.Option>
   );
 };
 

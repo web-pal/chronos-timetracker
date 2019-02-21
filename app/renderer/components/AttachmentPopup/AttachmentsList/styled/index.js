@@ -1,12 +1,12 @@
 import styled from 'styled-components';
 
-export const ShowAllContainer = styled.div`
+export const ShowAll = styled.div`
   width: 100%;
   align-items: center;
   height: 21%
 `;
 
-export const ItemContainer = styled.ul`
+export const Item = styled.ul`
   margin: 0;
   padding: 0;
   height: 90%; 
@@ -15,7 +15,7 @@ export const ItemContainer = styled.ul`
   overflow-y: auto;
 `;
 
-export const Item = styled.li`
+export const ItemInside = styled.li`
   padding-top:20px;
   padding-left:10px;
   display: inline-block;
@@ -23,7 +23,7 @@ export const Item = styled.li`
   height:100px; 
 `;
 
-export const ItemImageContainer = styled.div`
+export const ItemImage = styled.div`
   width:100%;
   height:100%;
   display:flex;
@@ -39,7 +39,7 @@ export const ItemImageContainer = styled.div`
   }
 `;
 
-export const ItemImage = styled.img`
+export const Image = styled.img`
   width:80px;
   height:60px;
   object-fit: cover;

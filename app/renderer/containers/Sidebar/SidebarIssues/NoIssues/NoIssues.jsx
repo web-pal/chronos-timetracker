@@ -9,26 +9,21 @@ import type {
 import {
   noIssuesImage,
 } from 'utils/data/assets';
-import {
-  NoIssuesContainer,
-  NoIssuesImage,
-  Title,
-  Subtitle,
-} from './styled';
+import * as S from './styled';
 
 
 const NoIssues: StatelessFunctionalComponent<*> = (): Node =>
-  <NoIssuesContainer>
-    <NoIssuesImage
+  <S.NoIssues>
+    <S.NoIssuesImage
       src={noIssuesImage}
       alt="Not found"
     />
-    <Title>
+    <S.Title>
       No issues found
-    </Title>
-    <Subtitle>
+    </S.Title>
+    <S.Subtitle>
       Try to change filters and try again
-    </Subtitle>
-  </NoIssuesContainer>;
+    </S.Subtitle>
+  </S.NoIssues>;
 
 export default NoIssues;

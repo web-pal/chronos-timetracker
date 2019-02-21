@@ -42,18 +42,7 @@ import {
 
 import DataRenderer from '../DataRenderer';
 
-import {
-  ActivitySection,
-  Actions,
-  CommentInputContainer,
-  CommentInput,
-  Commentd,
-  CommentDate,
-  CommentBody,
-  CommentAvatar,
-  CommentAuthor,
-  YourComment,
-} from './styled';
+import * as S from './styled';
 
 
 type Props = {
@@ -72,7 +61,7 @@ type State = {
 class IssueComments extends Component<Props, State> {
   state = {
     comment: '',
-  }
+  };
 
   render() {
     const {
@@ -84,7 +73,7 @@ class IssueComments extends Component<Props, State> {
       dispatch,
     }: Props = this.props;
     return (
-      <ActivitySection>
+      <S.Activity>
         <Flex column>
           <Flex column>
             {commentsFetching
@@ -100,41 +89,41 @@ class IssueComments extends Component<Props, State> {
               )
             }
             {!commentsFetching && comments.map(comment => (
-              <Commentd key={comment.id}>
+              <S.Commentd key={comment.id}>
                 <Flex row alignCenter spaceBetween style={{ marginBottom: 5 }}>
                   <Flex row alignCenter>
-                    <CommentAvatar src={comment.author.avatarUrls['48x48']} alt="" />
+                    <S.CommentAvatar src={comment.author.avatarUrls['48x48']} alt="" />
                     <Flex row>
-                      <CommentAuthor>
+                      <S.CommentAuthor>
                         {comment.author.displayName}
-                      </CommentAuthor>
-                      <CommentDate>
+                      </S.CommentAuthor>
+                      <S.CommentDate>
                         {moment(comment.updated).format('DD, MMMM YYYY')}
-                      </CommentDate>
+                      </S.CommentDate>
                     </Flex>
                   </Flex>
                 </Flex>
                 <Flex column>
-                  <CommentBody>
+                  <S.CommentBody>
                     <DataRenderer
                       html={comment.renderedBody ? comment.renderedBody : null}
                       source={comment.body}
                     />
-                  </CommentBody>
+                  </S.CommentBody>
                 </Flex>
-              </Commentd>
+              </S.Commentd>
             ))}
           </Flex>
           {!commentsFetching
             && (
-            <CommentInput>
+            <S.CommentInput>
               <Flex row alignCenter style={{ marginBottom: 5 }}>
-                <CommentAvatar src={self.avatarUrls['48x48']} alt="" />
-                <YourComment>
+                <S.CommentAvatar src={self.avatarUrls['48x48']} alt="" />
+                <S.YourComment>
                   Comment
-                </YourComment>
+                </S.YourComment>
               </Flex>
-              <CommentInputContainer>
+              <S.CommentInputContainer>
                 <FieldTextAreaStateless
                   shouldFitContainer
                   label=""
@@ -144,7 +133,7 @@ class IssueComments extends Component<Props, State> {
                   value={this.state.comment}
                   onChange={ev => this.setState({ comment: ev.target.value })}
                 />
-                <Actions>
+                <S.Actions>
                   <Button
                     onClick={() => {
                       dispatch(issuesActions.commentRequest(
@@ -158,13 +147,13 @@ class IssueComments extends Component<Props, State> {
                   >
                     Add
                   </Button>
-                </Actions>
-              </CommentInputContainer>
-            </CommentInput>
+                </S.Actions>
+              </S.CommentInputContainer>
+            </S.CommentInput>
             )
           }
         </Flex>
-      </ActivitySection>
+      </S.Activity>
     );
   }
 }

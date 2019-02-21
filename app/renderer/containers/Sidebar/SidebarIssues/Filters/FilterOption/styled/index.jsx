@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 
-export const OptionContainer = styled.label`
+export const Option = styled.label`
   width: 50%;
   display: inline-block;
 `;

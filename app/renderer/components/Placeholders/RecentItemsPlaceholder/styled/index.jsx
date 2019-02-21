@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { AnimatedPlaceholder } from '../../styled';
 
-export const TimestampPlaceholderContainer = styled.div`
+export const TimestampPlaceholder = styled.div`
   height: 24px;
   padding: 0px 20px;
   background: #fff;
@@ -15,7 +15,7 @@ export const TimestampPlaceholderContainer = styled.div`
   align-items: center;
 `;
 
-export const TimestampPlaceholder = styled(AnimatedPlaceholder)`
+export const TimestampPlaceholderInfo = styled(AnimatedPlaceholder)`
   background: #F4F5F7;
   border-radius: 15px;
   width: 94px;

@@ -29,10 +29,7 @@ import type {
 } from 'types';
 
 import * as R from 'ramda';
-
-import {
-  InputLabel,
-} from './styled';
+import * as S from './styled';
 
 type Props = {
   newJQLFilterName: string | null,
@@ -87,7 +84,7 @@ const JQLFilter = ({
         }}
         content={(
           <Flex column>
-            <InputLabel>New filter name</InputLabel>
+            <S.InputLabel>New filter name</S.InputLabel>
             <Flex alignItems="center">
               <FieldText
                 placeholder="New filter name"

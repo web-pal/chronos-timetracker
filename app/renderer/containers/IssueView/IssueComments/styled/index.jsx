@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import styledOld from 'styled-components';
 import FieldTextArea from '@atlaskit/field-text-area';
 
-export const ActivitySection = styled.div`
+export const Activity = styled.div`
 `;
 
 export const AddCommentContainer = styled.div`

@@ -38,10 +38,7 @@ import {
 import {
   danger,
 } from 'utils/data/svg';
-import {
-  DangerIcon,
-  ModalContentContainer,
-} from './styled';
+import * as S from './styled';
 
 
 type Props = {
@@ -88,18 +85,18 @@ const AlertModal: StatelessFunctionalComponent<Props> = ({
     header={() => (
       <ModalHeader>
         <ModalTitle>
-          <DangerIcon src={danger} alt="Danger" />
+          <S.DangerIcon src={danger} alt="Danger" />
           Time would not be saved
         </ModalTitle>
       </ModalHeader>
     )}
   >
-    <ModalContentContainer>
+    <S.ModalContent>
       <p>
         Worklogs under 1 minute can not be saved in JIRA.
         Do you want to stop timer or continue tracking?
       </p>
-    </ModalContentContainer>
+    </S.ModalContent>
   </ModalDialog>
 );
 
