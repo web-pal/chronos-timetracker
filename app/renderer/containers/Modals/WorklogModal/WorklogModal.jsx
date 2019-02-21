@@ -64,12 +64,7 @@ import {
   jts,
 } from 'utils/time-util';
 
-import {
-  InputLabel,
-  CalendarContainer,
-  CalendarIconContainer,
-  InputExample,
-} from './styled';
+import * as S from './styled';
 
 type Props = {
   isOpen: boolean,
@@ -150,7 +145,7 @@ class WorklogModal extends Component<Props, State> {
       startTime: now,
       date: now.format('MM/DD/YYYY'),
     });
-  }
+  };
 
   setError = (fieldName, error) => this.setState({
     errors: {
@@ -161,7 +156,7 @@ class WorklogModal extends Component<Props, State> {
 
   handleTimeChange = (label: 'startTime') => (value) => {
     this.setState({ [label]: value });
-  }
+  };
 
   timeInput: any;
 
@@ -181,7 +176,7 @@ class WorklogModal extends Component<Props, State> {
         timeSpent,
       };
     });
-  }
+  };
 
   validateJiraTime = value => /^(?:\d{1,2}d{1}(?:\s{1}|$))?(?:\d{1,2}h{1}(?:\s{1}|$))?(?:\d{1,2}m{1}(?:\s{1}|$))?(?:\d{1,2}s{1}(?:\s{1}|$))?$/.test(value);
 
@@ -208,7 +203,7 @@ class WorklogModal extends Component<Props, State> {
     this.setState({ errors });
 
     return valid;
-  }
+  };
 
   render() {
     const {
@@ -300,7 +295,7 @@ class WorklogModal extends Component<Props, State> {
         <ModalContentContainer style={{ minHeight: 360 }}>
 
           {/* TIME SPENT */}
-          <InputLabel style={{ marginTop: 0 }}>Time spent</InputLabel>
+          <S.InputLabel style={{ marginTop: 0 }}>Time spent</S.InputLabel>
           <Flex row alignCenter>
             <TextField
               value={timeSpent}
@@ -312,7 +307,7 @@ class WorklogModal extends Component<Props, State> {
                 this.timeInput = ref; // eslint-disable-line
               }}
             />
-            <InputExample>(eg. 1d 12h 30m)</InputExample>
+            <S.InputExample>(eg. 1d 12h 30m)</S.InputExample>
           </Flex>
 
           {/* DATE */}
@@ -332,7 +327,7 @@ class WorklogModal extends Component<Props, State> {
                 isLabelHidden
                 isReadOnly
               />
-              <CalendarIconContainer>
+              <S.CalendarIcon>
                 {calendarOpened
                   ? (
                     <EditorCloseIcon
@@ -349,20 +344,20 @@ class WorklogModal extends Component<Props, State> {
                     />
                   )
                 }
-              </CalendarIconContainer>
+              </S.CalendarIcon>
             </Flex>
           </Tooltip>
 
           {calendarOpened
             && (
-            <CalendarContainer
+            <S.Calendar
               onClickOutside={() => {
                 this.setState({
                   calendarOpened: false,
                 });
               }}
             >
-              <Calendar
+              <S.Calendar
                 onUpdate={(newDate) => {
                   this.setState({
                     date: newDate,
@@ -370,14 +365,14 @@ class WorklogModal extends Component<Props, State> {
                   });
                 }}
               />
-            </CalendarContainer>
+            </S.Calendar>
             )
           }
 
           {/* FROM */}
 
           <Flex column>
-            <InputLabel>Started</InputLabel>
+            <S.InputLabel>Started</S.InputLabel>
             <Flex alignCenter>
               <div style={{ width: 165 }}>
                 <TimePicker

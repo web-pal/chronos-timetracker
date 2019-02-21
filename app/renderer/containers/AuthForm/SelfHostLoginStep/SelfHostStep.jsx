@@ -21,18 +21,7 @@ import {
   lockBlue,
 } from 'utils/data/svg';
 
-import {
-  ContentInner,
-  ContentStep,
-  Form,
-  PrimaryButton,
-  Error,
-  Lock,
-  ContentIconContainer,
-  BackButtonContainer,
-  Title,
-  Subtitle,
-} from '../styled';
+import * as S from '../styled';
 
 
 type Props = {
@@ -41,7 +30,7 @@ type Props = {
   isActiveStep: boolean,
   onBack: () => void,
   authRequestInProcess: boolean,
-} & FormProps
+} & FormProps;
 
 
 class SelfHostLoginStep extends Component<Props> {
@@ -72,21 +61,21 @@ class SelfHostLoginStep extends Component<Props> {
       authRequestInProcess,
     } = this.props;
     return (
-      <ContentInner
+      <S.ContentInner
         isActiveStep={isActiveStep}
         step={2}
       >
-        <Form onSubmit={handleSubmit(onContinue)}>
-          <ContentIconContainer>
-            <Lock src={lockBlue} alt="" width="18" />
-          </ContentIconContainer>
-          <ContentStep>
-            <Title>
+        <S.Form onSubmit={handleSubmit(onContinue)}>
+          <S.ContentIcon>
+            <S.Lock src={lockBlue} alt="" width="18" />
+          </S.ContentIcon>
+          <S.ContentStep>
+            <S.Title>
             Enter your credentials
-            </Title>,
-            <Subtitle>
+            </S.Title>,
+            <S.Subtitle>
             Please fill in your JIRA account
-            </Subtitle>
+            </S.Subtitle>
             <Field
               name="username"
               type="text"
@@ -105,14 +94,14 @@ class SelfHostLoginStep extends Component<Props> {
               disabled={authRequestInProcess}
               component={ReduxFormComponents.Input}
             />
-            <Error>{authError}</Error>
-          </ContentStep>
-          <PrimaryButton type="submit">
+            <S.Error>{authError}</S.Error>
+          </S.ContentStep>
+          <S.PrimaryButton type="submit">
             {authRequestInProcess
               ? <Spinner invertColor /> : 'Continue'
             }
-          </PrimaryButton>
-        </Form>
+          </S.PrimaryButton>
+        </S.Form>
         <BackButtonContainer>
           <Button
             appearance="subtle"
@@ -121,7 +110,7 @@ class SelfHostLoginStep extends Component<Props> {
             Back
           </Button>
         </BackButtonContainer>
-      </ContentInner>
+      </S.ContentInner>
     );
   }
 }

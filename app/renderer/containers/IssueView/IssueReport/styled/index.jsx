@@ -4,7 +4,7 @@ import {
   atlassianLogoVertical,
 } from 'utils/data/svg';
 
-export const ReportTabContainer = styled.div`
+export const ReportTab = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;

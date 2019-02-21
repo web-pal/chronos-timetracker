@@ -3,7 +3,9 @@ import React from 'react';
 import {
   connect,
 } from 'react-redux';
-import { uiActions } from 'actions';
+import {
+  uiActions,
+} from 'actions';
 
 import type {
   Node,
@@ -28,7 +30,9 @@ import {
   ipcRenderer,
 } from 'electron';
 
-import { openURLInBrowser } from 'utils/external-open-util';
+import {
+  openURLInBrowser,
+} from 'utils/external-open-util';
 
 import Tooltip from '@atlaskit/tooltip';
 import CopyIcon from '@atlaskit/icon/glyph/copy';
@@ -37,32 +41,25 @@ import CrossIcon from '@atlaskit/icon/glyph/cross';
 import ShortcutIcon from '@atlaskit/icon/glyph/shortcut';
 import EditorRemoveIcon from '@atlaskit/icon/glyph/editor/remove';
 
-import {
-  AuthDebuggerContainer,
-  AuthDebuggerBody,
-  DebugHeaderTitle,
-  DebugActions,
-  DebugMessage,
-  DebugHeader,
-} from './styled';
+import * as S from './styled';
 
 type Props = {
   show: boolean,
   messages: Array<{ string?: string, json?: any }>,
   dispatch: Dispatch,
-}
+};
 
 const AuthDebugger: StatelessFunctionalComponent<Props> = ({
   show,
   messages,
   dispatch,
-}: Props): Node =>
-  <AuthDebuggerContainer show={show}>
-    <DebugHeader>
-      <DebugHeaderTitle>
+}: Props): Node => (
+  <S.AuthDebugger show={show}>
+    <S.DebugHeader>
+      <S.DebugHeaderTitle>
         Auth debug console 📺
-      </DebugHeaderTitle>
-      <DebugActions>
+      </S.DebugHeaderTitle>
+      <S.DebugActions>
         <Tooltip content="Clear cache">
           <EditorRemoveIcon
             onClick={() => {
@@ -90,23 +87,28 @@ const AuthDebugger: StatelessFunctionalComponent<Props> = ({
             }}
           />
         </Tooltip>
-      </DebugActions>
-    </DebugHeader>
-    <AuthDebuggerBody>
+      </S.DebugActions>
+    </S.DebugHeader>
+    <S.AuthDebuggerBody>
       {messages.map((message, key) => (
-        <DebugMessage key={key}>
-          {message.string ?
-            <div>
-              {message.string}
-            </div> :
-            <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '100%' }}>
-              {JSON.stringify(message.json, null, 2) }
-            </pre>
+        <S.DebugMessage key={key}>
+          {message.string
+            ? (
+              <div>
+                {message.string}
+              </div>
+            )
+            : (
+              <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '100%' }}>
+                {JSON.stringify(message.json, null, 2) }
+              </pre>
+            )
           }
-        </DebugMessage>
+        </S.DebugMessage>
       ))}
-    </AuthDebuggerBody>
-  </AuthDebuggerContainer>;
+    </S.AuthDebuggerBody>
+  </S.AuthDebugger>
+);
 
 function mapStateToProps(state) {
   return {

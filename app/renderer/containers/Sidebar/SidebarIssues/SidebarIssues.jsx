@@ -42,9 +42,7 @@ import {
   uiActions,
   resourcesActions,
 } from 'actions';
-import {
-  ListContainer,
-} from './styled';
+import * as S from './styled';
 
 import IssuesHeader from './IssuesHeader';
 import IssueItem from './IssueItem';
@@ -84,7 +82,7 @@ const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
   dispatch,
   baseUrl,
 }: Props): Node =>
-  <ListContainer>
+  <S.ListContainer>
     <IssuesHeader />
     {sidebarFiltersIsOpen &&
       <Filters />
@@ -157,7 +155,7 @@ const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
         );
       }}
     </InfiniteLoader>
-  </ListContainer>;
+  </S.ListContainer>;
 
 function mapStateToProps(state) {
   const projectsFetching = getResourceStatus(

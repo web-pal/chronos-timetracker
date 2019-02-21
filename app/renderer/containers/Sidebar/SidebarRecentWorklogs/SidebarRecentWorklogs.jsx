@@ -39,10 +39,7 @@ import WorklogItem from './WorklogItem';
 import NoWorklogs from './NoWorklogs';
 
 
-import {
-  ListContainer,
-  ItemContainer,
-} from './styled';
+import * as S from './styled';
 
 moment.locale('en', {
   calendar: {
@@ -61,7 +58,7 @@ type Props = {
   issuesFetching: boolean,
   projectsFetching: boolean,
   dispatch: Dispatch,
-}
+};
 
 const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
   recentIssues,
@@ -77,7 +74,7 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
   ) ? (
     <RecentItemsPlaceholder />
     ) : (
-      <ListContainer>
+      <S.List>
         {
           Object.keys(recentIssues).length === 0 && (
             <NoWorklogs />
@@ -86,7 +83,7 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
         {Object.keys(recentIssues).map((day) => {
           const worklogs = recentIssues[day];
           return (
-            <ItemContainer key={day}>
+            <S.Item key={day}>
               <TimestampItem
                 date={moment(day)}
                 worklogs={worklogs}
@@ -123,10 +120,10 @@ const SidebarRecentItems: StatelessFunctionalComponent<Props> = ({
                   />
                 ))}
               </Flex>
-            </ItemContainer>
+            </S.Item>
           );
         })}
-      </ListContainer>
+      </S.List>
     )
 );
 

@@ -10,16 +10,14 @@ import {
   Flex,
 } from 'components';
 
-import {
-  TabItem,
-} from './styled';
+import * as S from './styled';
 
 
 type Props = {
   tabs: Array<string>,
   currentTab: string,
   onTabClick: (tab: string) => void,
-}
+};
 
 const IssueViewTabs: StatelessFunctionalComponent<Props> = ({
   tabs,
@@ -30,7 +28,7 @@ const IssueViewTabs: StatelessFunctionalComponent<Props> = ({
     <Flex row spaceBetween style={{ minHeight: 32 }}>
       {tabs.map(
         tab => (
-          <TabItem
+          <S.TabItem
             key={tab}
             active={tab === currentTab}
             onClick={() => {
@@ -38,7 +36,7 @@ const IssueViewTabs: StatelessFunctionalComponent<Props> = ({
             }}
           >
             {tab}
-          </TabItem>
+          </S.TabItem>
         ),
       )}
     </Flex>

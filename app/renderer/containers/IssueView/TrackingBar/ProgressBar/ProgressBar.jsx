@@ -13,9 +13,7 @@ import {
   stj,
 } from 'utils/time-util';
 
-import {
-  ProgressBarContainer,
-} from './styled';
+import * as S from './styled';
 
 import CircularProgressBar from './CircularProgressBar';
 
@@ -47,13 +45,13 @@ const ProgressBar: StatelessFunctionalComponent<Props> = ({
     }
   }
   return (
-    <ProgressBarContainer>
+    <S.ProgressBar>
       <CircularProgressBar
         percentage={percentage || 0}
         content={content}
         onClick={onClick}
       />
-    </ProgressBarContainer>
+    </S.ProgressBar>
   );
 };
 

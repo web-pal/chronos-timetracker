@@ -46,10 +46,7 @@ import GeneralSettings from './General';
 import NotificationSettings from './Notifications';
 import UpdateSettings from './Update';
 
-import {
-  Separator,
-  SettingsSectionLabel,
-} from './styled';
+import * as S from './styled';
 
 
 type Props = {
@@ -98,14 +95,14 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
     <ModalContentContainer>
       <Flex row style={{ height: 324 }}>
         <Flex column style={{ width: 85 }}>
-          <SettingsSectionLabel
+          <S.SettingsSectionLabel
             active={tab === 'General'}
             onClick={() => {
               dispatch(settingsActions.setSettingsModalTab('General'));
             }}
           >
             General
-          </SettingsSectionLabel>
+          </S.SettingsSectionLabel>
           {/*
           <SettingsSectionLabel
             active={tab === 'Notifications'}
@@ -116,16 +113,16 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
             Notifications
           </SettingsSectionLabel>
           */}
-          <SettingsSectionLabel
+          <S.SettingsSectionLabel
             active={tab === 'Updates'}
             onClick={() => {
               dispatch(settingsActions.setSettingsModalTab('Updates'));
             }}
           >
             Updates
-          </SettingsSectionLabel>
+          </S.SettingsSectionLabel>
         </Flex>
-        <Separator />
+        <S.Separator />
         {tab === 'General' &&
           <GeneralSettings
             settings={settings}

@@ -4,7 +4,7 @@ import {
 } from 'components';
 
 
-export const NoIssuesContainer = styled(Flex).attrs({
+export const NoIssues = styled(Flex).attrs({
   column: true,
   justifyCenter: true,
   alignCenter: true,

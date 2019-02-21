@@ -6,7 +6,7 @@ export const DescriptionAttachmentTitle = styled.span`
   cursor: pointer;
 `;
 
-export const MainDescriptionAttachmentContainer = styled.div`
+export const MainDescriptionAttachment = styled.div`
   width: 100%;
   margin-top: 20px;
   padding-bottom: 90px;
@@ -34,7 +34,7 @@ export const DescriptionAttachmentItem = styled.li`
   height: 170px;
 `;
 
-export const ItemContainer = styled.div`
+export const Item = styled.div`
   display: flex;
   flex-direction: column;
   justify-content:space-around;
@@ -56,7 +56,7 @@ export const ItemImage = styled.img`
   object-fit: cover;
 `;
 
-export const InfoConatiner = styled.div`
+export const Info = styled.div`
   display:flex;
   width:90%;
 `;

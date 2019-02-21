@@ -1,6 +1,8 @@
 // @flow
 import React from 'react';
-import { InfiniteLoader } from 'react-virtualized';
+import {
+  InfiniteLoader,
+} from 'react-virtualized';
 
 import AutosizableList from './AutosizableList';
 
@@ -8,8 +10,8 @@ type Props = {
   listProps: any,
 };
 
-const InfiniteLoadingList = (props: Props) =>
-  <InfiniteLoader {...props} >
+const InfiniteLoadingList = (props: Props) => (
+  <InfiniteLoader {...props}>
     {({ onRowsRendered, registerChild }) => (
       <AutosizableList
         autoSized={props.listProps.autoSized}
@@ -20,6 +22,7 @@ const InfiniteLoadingList = (props: Props) =>
         }}
       />
     )}
-  </InfiniteLoader>;
+  </InfiniteLoader>
+);
 
 export default InfiniteLoadingList;

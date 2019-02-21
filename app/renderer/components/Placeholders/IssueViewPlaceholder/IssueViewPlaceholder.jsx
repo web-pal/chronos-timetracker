@@ -2,19 +2,14 @@
 import React from 'react';
 import { tasks } from 'utils/data/assets';
 
-import {
-  IssueViewPlaceholderContainer,
-  NoIssuesImage,
-  Title,
-  Subtitle,
-} from './styled';
+import * as S from './styled';
 
 const IssueViewPlaceholder = () => (
-  <IssueViewPlaceholderContainer>
-    <NoIssuesImage src={tasks} alt="Not found" />
-    <Title>Start your tracking experience!</Title>
-    <Subtitle>Select issue from the left in order to start tracking</Subtitle>
-  </IssueViewPlaceholderContainer>
+  <S.IssueViewPlaceholder>
+    <S.NoIssuesImage src={tasks} alt="Not found" />
+    <S.Title>Start your tracking experience!</S.Title>
+    <S.Subtitle>Select issue from the left in order to start tracking</S.Subtitle>
+  </S.IssueViewPlaceholder>
 );
 
 export default IssueViewPlaceholder;

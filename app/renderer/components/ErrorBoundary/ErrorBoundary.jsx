@@ -15,7 +15,7 @@ import {
 class ErrorBoundary extends React.Component<any, any> {
   state = {
     hasError: false,
-  }
+  };
 
   componentDidCatch(error: any, info: any) {
     console.error(error);

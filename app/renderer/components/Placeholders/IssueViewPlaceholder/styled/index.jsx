@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const IssueViewPlaceholderContainer = styled.div`
+export const IssueViewPlaceholder = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;

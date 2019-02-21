@@ -22,18 +22,7 @@ import {
 import {
   peopleBlue,
 } from 'utils/data/svg';
-import {
-  ContentInner,
-  PrimaryButton,
-  DefaultButton,
-  Lock,
-  ContentIconContainer,
-  Title,
-  Subtitle,
-  ContentStep,
-  Form,
-  Error,
-} from '../styled';
+import * as S from '../styled';
 
 
 type Props = {
@@ -42,7 +31,7 @@ type Props = {
   authError: string,
   dispatch: Function,
   onContinue: () => void,
-} & FormProps
+} & FormProps;
 
 class TeamStep extends Component<Props> {
   // Need it because of animation between steps
@@ -72,17 +61,17 @@ class TeamStep extends Component<Props> {
       handleSubmit,
     } = this.props;
     return (
-      <ContentInner
+      <S.ContentInner
         isActiveStep={isActiveStep}
         step={1}
       >
-        <Form onSubmit={handleSubmit(onContinue)}>
-          <ContentIconContainer>
-            <Lock src={peopleBlue} alt="" width="24" />
-          </ContentIconContainer>
-          <ContentStep>
-            <Title>Enter your team</Title>
-            <Subtitle>Please fill in your JIRA host</Subtitle>
+        <S.Form onSubmit={handleSubmit(onContinue)}>
+          <S.ContentIcon>
+            <S.Lock src={peopleBlue} alt="" width="24" />
+          </S.ContentIcon>
+          <S.ContentStep>
+            <S.Title>Enter your team</S.Title>
+            <S.Subtitle>Please fill in your JIRA host</S.Subtitle>
             <Field
               autoFocus
               name="team"
@@ -94,14 +83,14 @@ class TeamStep extends Component<Props> {
               }}
               component={ReduxFormComponents.UnderlineInput}
             />
-            <Error>{authError}</Error>
-          </ContentStep>
-          <PrimaryButton style={{ marginTop: 40, marginBottom: 10 }} type="submit">
+            <S.Error>{authError}</S.Error>
+          </S.ContentStep>
+          <S.PrimaryButton style={{ marginTop: 40, marginBottom: 10 }} type="submit">
             Continue
-          </PrimaryButton>
+          </S.PrimaryButton>
           {accounts.length > 0
           && (
-            <DefaultButton
+            <S.DefaultButton
               onClick={() => {
                 dispatch(uiActions.setUiState({
                   authFormStep: 0,
@@ -109,11 +98,11 @@ class TeamStep extends Component<Props> {
               }}
             >
               Login to existing account
-            </DefaultButton>
+            </S.DefaultButton>
           )
         }
-        </Form>
-      </ContentInner>
+        </S.Form>
+      </S.ContentInner>
     );
   }
 }

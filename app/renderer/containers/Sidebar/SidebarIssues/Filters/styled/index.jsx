@@ -4,7 +4,7 @@ import {
 } from 'styles/typography';
 
 
-export const FiltersContainer = styled.div`
+export const Filters = styled.div`
   position: absolute;
   background: white;
   z-index: 10;
@@ -66,7 +66,7 @@ export const OptionContainer = styled.label`
   display: inline-block;
 `;
 
-export const FilterActionsContainer = styled.div`
+export const FilterActions = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;

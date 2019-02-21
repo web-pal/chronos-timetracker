@@ -31,25 +31,7 @@ import ProgressBar from './MainColumn/ProgressBar/ProgressBar';
 import StatisticsRow from './MainColumn/StatisticsRow/StatisticsRow';
 import StatisticsColumn from './MetaColumn/StatisticsColumn/StatisticsColumn';
 
-import {
-  ReportTabContainer,
-  MainColumn,
-  MetaColumn,
-  CTAButton,
-  CTAArea,
-  Heading,
-  HelpText,
-  BorderLeft,
-  ChronosDescriptionMetaItem,
-  ChronosDescription,
-  ChronosTimesheetsScreenshot,
-  ClockMetaItem,
-  Clock,
-  AtlassianLogoMetaItem,
-  AtlassianLogo,
-  LearnMoreLink,
-  BackgroundShape,
-} from './styled';
+import * as S from './styled';
 
 
 type Props = {
@@ -63,14 +45,14 @@ const IssueReport: StatelessFunctionalComponent<Props> = ({
 }: Props): Node => (
   <Flex column style={{ flexGrow: 1 }}>
     <div>
-      <BackgroundShape number={1} color="#0962E8" opacity="1" />
-      <BackgroundShape number={2} color="#0962E8" opacity="0.5" />
-      <BackgroundShape number={3} color="#0962E8" opacity="0.25" />
-      <BackgroundShape number={4} color="#0962E8" opacity="0.15" />
+      <S.BackgroundShape number={1} color="#0962E8" opacity="1" />
+      <S.BackgroundShape number={2} color="#0962E8" opacity="0.5" />
+      <S.BackgroundShape number={3} color="#0962E8" opacity="0.25" />
+      <S.BackgroundShape number={4} color="#0962E8" opacity="0.15" />
     </div>
-    <ReportTabContainer>
+    <S.ReportTab>
 
-      <MainColumn>
+      <S.MainColumn>
         <Flex column style={{ width: '100%' }}>
           <StatisticsRow
             estimate={report.estimate}
@@ -82,26 +64,26 @@ const IssueReport: StatelessFunctionalComponent<Props> = ({
           />
         </Flex>
 
-        <CTAArea>
-          <Heading>
+        <S.CTAArea>
+          <S.Heading>
             View reports and calculate salaries in Chronos Timesheets
-          </Heading>
-          <CTAButton
+          </S.Heading>
+          <S.CTAButton
             onClick={openURLInBrowser(`http://${hostname}/plugins/servlet/ac/jira-chronos/api-page-jira`)}
           >
             Open plugin
-          </CTAButton>
-          <ChronosTimesheetsScreenshot />
-        </CTAArea>
+          </S.CTAButton>
+          <S.ChronosTimesheetsScreenshot />
+        </S.CTAArea>
 
-        <HelpText
+        <S.HelpText
           onClick={openURLInBrowser('https://marketplace.atlassian.com/plugins/jira-chronos/cloud/overview')}
         >
           View on Marketplace
-        </HelpText>
-      </MainColumn>
+        </S.HelpText>
+      </S.MainColumn>
 
-      <MetaColumn>
+      <S.MetaColumn>
         <StatisticsColumn
           youLoggedToday={report.youLoggedToday}
           youLoggedTotal={report.youLoggedTotal}
@@ -109,16 +91,16 @@ const IssueReport: StatelessFunctionalComponent<Props> = ({
         />
 
         {/* CLOCK */}
-        <ClockMetaItem>
-          <BorderLeft color="white" />
-          <Clock />
+        <S.ClockMetaItem>
+          <S.BorderLeft color="white" />
+          <S.Clock />
           <div />
-        </ClockMetaItem>
+        </S.ClockMetaItem>
 
         {/* NEWSPAPER DESCRIPTION */}
-        <ChronosDescriptionMetaItem>
-          <BorderLeft color="white" />
-          <ChronosDescription>
+        <S.ChronosDescriptionMetaItem>
+          <S.BorderLeft color="white" />
+          <S.ChronosDescription>
             <b>Chronos Timesheets</b> is our solution
             for viewing worklog report. Watch what
             your team is busy with, make printable
@@ -134,23 +116,23 @@ const IssueReport: StatelessFunctionalComponent<Props> = ({
 
             <br />
             <br />
-            <LearnMoreLink
+            <S.LearnMoreLink
               onClick={openURLInBrowser('https://marketplace.atlassian.com/plugins/jira-chronos/cloud/overview')}
             >Learn more →
-            </LearnMoreLink>
-          </ChronosDescription>
-        </ChronosDescriptionMetaItem>
+            </S.LearnMoreLink>
+          </S.ChronosDescription>
+        </S.ChronosDescriptionMetaItem>
 
         {/* ATLASSIAN LOGO */}
-        <AtlassianLogoMetaItem>
-          <BorderLeft color="#FFAB00" />
-          <AtlassianLogo />
+        <S.AtlassianLogoMetaItem>
+          <S.BorderLeft color="#FFAB00" />
+          <S.AtlassianLogo />
           <div />
-        </AtlassianLogoMetaItem>
+        </S.AtlassianLogoMetaItem>
 
-      </MetaColumn>
+      </S.MetaColumn>
 
-    </ReportTabContainer>
+    </S.ReportTab>
   </Flex>
 );
 

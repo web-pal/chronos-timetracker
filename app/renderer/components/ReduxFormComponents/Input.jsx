@@ -8,11 +8,7 @@ import type {
   FieldProps,
 } from 'redux-form';
 
-import {
-  FormGroup,
-  StyledInput,
-  Error,
-} from './styled';
+import * as S from './styled';
 
 type Props = {
   autoFocus: boolean,
@@ -32,8 +28,8 @@ class Input extends Component<Props> {
       placeholder,
     } = this.props;
     return (
-      <FormGroup>
-        <StyledInput
+      <S.FormGroup>
+        <S.StyledInput
           {...input}
           innerRef={(el) => {
             this.input = el;
@@ -42,8 +38,8 @@ class Input extends Component<Props> {
           autoFocus={autoFocus}
           placeholder={placeholder}
         />
-        {meta.touched && meta.error && <Error>{meta.error}</Error>}
-      </FormGroup>
+        {meta.touched && meta.error && <S.Error>{meta.error}</S.Error>}
+      </S.FormGroup>
     );
   }
 }

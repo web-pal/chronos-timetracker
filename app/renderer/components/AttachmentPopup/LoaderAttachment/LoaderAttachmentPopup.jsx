@@ -1,19 +1,15 @@
 import React from 'react';
 import spinner from 'images/spinner.svg';
-
-import {
-  SpinnerContainer,
-  Spinner,
-} from './styled';
+import * as S from './styled';
 
 
 const LoaderAttachmentPopup = () => (
-  <SpinnerContainer>
-    <Spinner
+  <S.Spinner>
+    <S.SpinnerDesc
       src={spinner}
       alt="Loading..."
     />
-  </SpinnerContainer>
+  </S.Spinner>
 );
 
 export default LoaderAttachmentPopup;

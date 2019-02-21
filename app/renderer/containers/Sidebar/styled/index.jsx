@@ -10,7 +10,7 @@ export const TabIcon = styled.img`
   margin-right: 5px;
 `;
 
-export const SidebarContainer = styled.div`
+export const Sidebar = styled.div`
   display: flex;
   flex-flow: column nowrap;
   overflow: hidden;
@@ -19,14 +19,14 @@ export const SidebarContainer = styled.div`
   background: #fff;
 `;
 
-export const TabContainer = styled.div`
+export const Tab = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   min-height: 51px;
 `;
 
-export const Tab = styled.div`
+export const TabDesc = styled.div`
   box-sizing: border-box;
   display: flex;
   flex-direction: row;
@@ -46,7 +46,7 @@ export const Tab = styled.div`
   }
 `;
 
-export const ListContainer = styled.div`
+export const List = styled.div`
   display: flex;
   transition: transform .25s ease-out;
   height: 100%;

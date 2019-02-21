@@ -98,7 +98,7 @@ export const IssueSummary = styled.span`
   display: block;
 `;
 
-export const IssueViewContainer = styled.div`
+export const IssueView = styled.div`
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -107,14 +107,14 @@ export const IssueViewContainer = styled.div`
   width: ~"calc(100% - 320px)";
 `;
 
-export const IssueContainer = styled.div`
+export const Issue = styled.div`
   display: flex;
   flex-direction: column;
   border-left: 1px solid rgba(0,0,0,0.18);
   flex-grow: 1;
 `;
 
-export const IssueViewTabContainer = styled.div`
+export const IssueViewTab = styled.div`
   display: flex;
   flex-direction: column;
   padding: 20px 20px 0px 20px;
