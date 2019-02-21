@@ -74,7 +74,7 @@ export const FilterActions = styled.div`
   border-top: 1px solid rgb(225, 228, 233);
 `;
 
-export const IssuesFoundContainer = styled.div`
+export const IssuesFound = styled.div`
   height: 23px;
   display: flex;
   align-items: center;
