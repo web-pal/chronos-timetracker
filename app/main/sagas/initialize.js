@@ -168,7 +168,8 @@ function* forkInitialRendererProcess() {
     yield fork(trayManager);
     const url = (
       process.env.NODE_ENV === 'development'
-        ? 'http://localhost:3000'
+        // ? 'http://localhost:3000'
+        ? 'http://localhost:3000/trelloIndex.html'
         : `file://${__dirname}/index.html`
     );
     const noFrameOptions = {};

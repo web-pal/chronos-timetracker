@@ -1,0 +1,1 @@
+export TestComponent from './TestComponent';

@@ -6,6 +6,9 @@ module.exports = env => ({
     app: [
       path.join(__dirname, 'app/renderer/index.jsx'),
     ],
+    trelloApp: [
+      path.join(__dirname, 'app/trello-renderer/index.jsx'),
+    ],
     screenPopup: [
       path.join(__dirname, 'app/renderer/screenPopup.jsx'),
     ],
@@ -36,6 +39,17 @@ module.exports = env => ({
       types: path.join(__dirname, 'app/renderer/types'),
       styles: path.join(__dirname, 'app/renderer/styles'),
       shared: path.resolve(__dirname, 'app/shared'),
+
+      'trello-containers': path.join(__dirname, 'app/trello-renderer/containers'),
+      'trello-components': path.join(__dirname, 'app/trello-renderer/components'),
+      'trello-styled': path.resolve(__dirname, 'app/trello-renderer/styled'),
+      'trello-actions': path.resolve(__dirname, 'app/trello-renderer/actions'),
+      'trello-selectors': path.resolve(__dirname, 'app/trello-renderer/selectors'),
+      'trello-assets': path.resolve(__dirname, 'app/trello-renderer/assets'),
+      'trello-utils': path.resolve(__dirname, 'app/trello-renderer/utils'),
+      'trello-api': path.resolve(__dirname, 'app/trello-renderer/api'),
+      'trello-sagas': path.resolve(__dirname, 'app/trello-renderer/sagas'),
+      'trello-types': path.resolve(__dirname, 'app/trello-renderer/types'),
     },
   },
   module: {

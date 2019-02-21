@@ -132,6 +132,7 @@
     "redux-resource": "3.0.5",
     "redux-resource-action-creators": "2.0.1",
     "redux-resource-plugins": "3.1.0",
+    "redux-react-hook": "3.0.2",
     "reselect": "4.0.0",
     "react-click-outside": "tj/react-click-outside",
     "react-markdown": "4.0.6",

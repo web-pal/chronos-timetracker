@@ -21,6 +21,12 @@ const plugins = [
     chunks: ['app'],
   }),
   new HtmlWebpackPlugin({
+    template: 'app/trello-renderer/index.tpl.html',
+    inject: 'body',
+    filename: 'trelloIndex.html',
+    chunks: ['trelloApp'],
+  }),
+  new HtmlWebpackPlugin({
     template: 'app/renderer/screenPopup.tpl.html',
     inject: 'body',
     filename: 'screenPopup.html',
