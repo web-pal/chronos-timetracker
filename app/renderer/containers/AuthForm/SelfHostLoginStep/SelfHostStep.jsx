@@ -102,14 +102,14 @@ class SelfHostLoginStep extends Component<Props> {
             }
           </S.PrimaryButton>
         </S.Form>
-        <BackButtonContainer>
+        <S.BackButton>
           <Button
             appearance="subtle"
             onClick={onBack}
           >
             Back
           </Button>
-        </BackButtonContainer>
+        </S.BackButton>
       </S.ContentInner>
     );
   }

@@ -64,7 +64,7 @@ const SidebarFilters: StatelessFunctionalComponent<Props> = ({
       <FullPageSpinner>
         <Spinner size="xlarge" />
       </FullPageSpinner> :
-      <FilterItems>
+      <S.FilterItems>
         {options.map(type =>
           <S.FilterItem key={type.key}>
             <S.FilterName>
@@ -98,10 +98,10 @@ const SidebarFilters: StatelessFunctionalComponent<Props> = ({
             </S.FilterOptions>
           </S.FilterItem>)
         }
-      </FilterItems>
+      </S.FilterItems>
     }
     <S.FilterActions>
-      <S.IssuesFoundContainer>
+      <S.IssuesFound>
         <S.IssuesFoundText>
           Issues found:
         </S.IssuesFoundText>
@@ -109,7 +109,7 @@ const SidebarFilters: StatelessFunctionalComponent<Props> = ({
           <Spinner size="small" /> :
           <span>{issuesCount}</span>
         }
-      </S.IssuesFoundContainer>
+      </S.IssuesFound>
       <ButtonGroup>
         <Button
           onClick={() => {

@@ -107,7 +107,7 @@ class WorklogModal extends Component<Props, State> {
       date: '',
       started: '',
     },
-  }
+  };
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.isOpen && !this.props.isOpen) {
@@ -311,7 +311,7 @@ class WorklogModal extends Component<Props, State> {
           </Flex>
 
           {/* DATE */}
-          <InputLabel>Date</InputLabel>
+          <S.InputLabel>Date</S.InputLabel>
           <Tooltip
             position="right"
             description={calendarOpened ? 'Close calendar' : 'Open calendar'}
@@ -337,7 +337,7 @@ class WorklogModal extends Component<Props, State> {
                     />
                   )
                   : (
-                    <CalendarIcon
+                    <S.CalendarIcon
                       label="Open Calendar"
                       size="medium"
                       primaryColor="#263958"
