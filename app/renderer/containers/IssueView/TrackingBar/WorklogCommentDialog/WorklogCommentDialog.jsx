@@ -144,13 +144,14 @@ class WorklogCommentDialog extends PureComponent<Props, State> {
           }}
           position="bottom left"
         >
-          <S.EditButton
-            size="medium"
-            primaryColor="white"
-            secondaryColor="#172B4D"
-            label="Toggle Tracking View"
-            onClick={this.toggleDialog}
-          />
+          <span onClick={this.toggleDialog}>
+            <S.EditButton
+              size="medium"
+              primaryColor="white"
+              secondaryColor="#172B4D"
+              label="Toggle Tracking View"
+            />
+          </span>
         </InlineDialog>
       </S.EditButtonContainer>
     );

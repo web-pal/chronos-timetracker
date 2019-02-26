@@ -54,6 +54,10 @@ function* trayManager() {
     {
       label: 'Start',
       click: () => {
+        BrowserWindow
+          .getAllWindows()
+          .filter(win => win.id === 1)
+          .forEach(win => win.show());
         store.dispatch(timerActions.startTimer());
       },
       enabled: false,
@@ -61,6 +65,10 @@ function* trayManager() {
     {
       label: 'Stop',
       click: () => {
+        BrowserWindow
+          .getAllWindows()
+          .filter(win => win.id === 1)
+          .forEach(win => win.show());
         store.dispatch(timerActions.stopTimerRequest());
       },
       enabled: false,
@@ -156,7 +164,10 @@ function* onClose({
   while (true) {
     const { data } = yield take(channel);
     const { willQuitApp } = yield select(state => state.windowsManager);
-    if (!willQuitApp && process.platform === 'darwin') {
+    if (
+      !willQuitApp
+      && process.platform === 'darwin'
+    ) {
       data.preventDefault();
       win.hide();
     }
