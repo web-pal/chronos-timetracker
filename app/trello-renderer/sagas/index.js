@@ -1,12 +1,16 @@
 import * as eff from 'redux-saga/effects';
 
 import {
-  initialize,
+  initializeApp,
+  takeInitialConfigureApp,
+  handleQuitRequest,
 } from './initialize';
 
 
 export default function* rootSaga() {
   yield eff.all([
-    eff.fork(initialize),
+    eff.fork(handleQuitRequest),
+    eff.fork(takeInitialConfigureApp),
+    eff.fork(initializeApp),
   ]);
 }

@@ -24,9 +24,17 @@ const mergeValues = (
   }), {})
 );
 
+export const persistInitialState = {
+};
+
 const initialState: UiState = {
   initializeInProcess: false,
+  readyToQuit: false,
   isAuthorized: false,
+  trelloApiToken: null,
+  trelloUserId: null,
+  accounts: [],
+  ...persistInitialState,
 };
 
 const ui = (

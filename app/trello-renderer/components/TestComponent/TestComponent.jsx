@@ -1,8 +1,13 @@
 // @flow
 import React from 'react';
+import {
+  useMappedState,
+} from 'redux-react-hook';
 import type {
   Node,
 } from 'react';
+
+import * as selectors from 'trello-selectors';
 
 export type TestComponentProps = {
   /** Set if the button is disabled. */
@@ -11,6 +16,10 @@ export type TestComponentProps = {
   isSelected: boolean,
 };
 
+const mapState: Props = state => ({
+  userId: selectors.getUiState('trelloUserId')(state),
+});
+
 const TestComponet = (
   props: TestComponentProps,
 ): Node => {
@@ -18,9 +27,13 @@ const TestComponet = (
     isDisabled,
     isSelected,
   } = props;
+  const {
+    userId,
+  } = useMappedState(mapState);
+
   return (
     <div>
-      Test component
+      User id: {userId}
     </div>
   );
 };

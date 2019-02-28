@@ -16,9 +16,19 @@ const rendererEnhancer = (store) => {
 
   ipcRenderer.on(channel, handler);
 
-  window.addEventListener('beforeunload', () => {
-    store.dispatch({ type: actionTypes.WINDOW_BEFORE_UNLOAD });
-    ipcRenderer.removeListener(channel, handler);
+  window.addEventListener('beforeunload', (ev) => {
+    const stopClose = (
+      store.getState()?.ui?.readyToQuit === false
+    );
+    if (stopClose) {
+      setTimeout(() => {
+        store.dispatch({ type: actionTypes.QUIT_REQUEST });
+      }, 100);
+      ev.returnValue = false;
+    } else {
+      store.dispatch({ type: actionTypes.WINDOW_BEFORE_UNLOAD });
+      ipcRenderer.removeListener(channel, handler);
+    }
   });
 
   return next => (action) => {

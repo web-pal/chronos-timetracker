@@ -21,6 +21,9 @@ module.exports = env => ({
     authPreload: [
       path.join(__dirname, 'app/renderer/authPreload.js'),
     ],
+    trelloAuthPreload: [
+      path.join(__dirname, 'app/trello-renderer/trelloAuthPreload.js'),
+    ],
     issueFormPreload: [
       path.join(__dirname, 'app/renderer/issueFormPreload.js'),
     ],

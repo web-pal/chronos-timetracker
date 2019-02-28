@@ -12,12 +12,13 @@ import type {
 import * as selectors from 'trello-selectors';
 import {
   TestComponent,
+  AuthForm,
 } from 'trello-components';
-
 
 type Props = {
   initializeInProcess: boolean,
   isAuthorized: boolean,
+  trelloApiKey: string,
 };
 
 const mapState: Props = state => ({
@@ -33,15 +34,25 @@ const AppContainer = () => {
     isAuthorized,
   } = useMappedState(mapState);
   const dispatch: Dispatch = useDispatch();
-  console.log('----');
-  console.log(initializeInProcess);
-  console.log(isAuthorized);
-  console.log('----');
 
   return (
     <div>
-      Trello app
-      <TestComponent />
+      {
+        initializeInProcess
+          ? (
+            <div>
+              Initialize...
+            </div>
+          )
+          : (
+            isAuthorized
+              ? (
+                <TestComponent />
+              ) : (
+                <AuthForm />
+              )
+          )
+      }
     </div>
   );
 };

@@ -18,3 +18,13 @@ export const setUiState = (
     maybeValues,
   },
 });
+
+
+export const initialConfigureApp = ({
+  key,
+  token,
+}) => ({
+  type: actionTypes.INITIAL_CONFIGURE_APP,
+  key,
+  token,
+});
