@@ -1,6 +1,3 @@
-import {
-  remote,
-} from 'electron';
 import React, {
   Component,
 } from 'react';
@@ -78,10 +75,11 @@ class CloudLoginStep extends Component<Props, {}> {
         if (config.loginWindowDevTools) {
           webview.openDevTools();
         }
-        /* Focus will not work on webview without this blur */
-        remote.getCurrentWindow().blur();
-        remote.getCurrentWindow().focus();
-        webview.focus();
+        webview.addEventListener('dom-ready', () => {
+          window.blur();
+          window.focus();
+          webview.focus();
+        });
 
         if (url.includes('login.jsp')) {
           this.props.onError('Team not found');
@@ -99,18 +97,25 @@ class CloudLoginStep extends Component<Props, {}> {
   }
 
   render() {
-    const { isComplete, isActiveStep, authRequestInProcess } = this.props;
-    const loading = isComplete || authRequestInProcess;
+    const {
+      isComplete,
+      isActiveStep,
+      authRequestInProcess,
+    } = this.props;
+    const loading = isComplete && !authRequestInProcess;
     return (
       <S.ContentInner
         isActiveStep={isActiveStep}
         step={2}
       >
         <S.ContentStep>
-          <Spinner size="xlarge" isCompleting={loading} />
+          <Spinner
+            size="xlarge"
+            isCompleting={loading}
+          />
           <S.WebView
             id="webviewContainer"
-            isComplete={isComplete}
+            isComplete={loading}
           />
         </S.ContentStep>
       </S.ContentInner>
