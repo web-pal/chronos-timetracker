@@ -13,19 +13,21 @@ import {
 
 import rendererEnhancer from './middleware';
 
-const rootReducer = combineReducers({
-  windowsManager,
-});
-
 const sagaMiddleware = createSagaMiddleware();
 const middleware = [
   rendererEnhancer,
   sagaMiddleware,
 ].filter(Boolean);
 
-export default function configureStore(initialState = {}) {
+export default function configureStore(
+  initialState = {},
+  reducers = {},
+) {
   const store = createStore(
-    rootReducer,
+    combineReducers({
+      windowsManager,
+      ...reducers,
+    }),
     initialState,
     compose(
       applyMiddleware(...middleware),
