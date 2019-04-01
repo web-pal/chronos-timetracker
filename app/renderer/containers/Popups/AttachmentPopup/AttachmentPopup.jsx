@@ -1,6 +1,4 @@
-import React, {
-  Component,
-} from 'react';
+import React from 'react';
 import {
   connect,
 } from 'react-redux';
@@ -20,7 +18,6 @@ const AttachmentPopup = (
   },
 ) => (
   <React.Fragment>
-    {console.log('test')}
     {
         attachments.length !== 0 ? (
           <AttachmentPopupComponent
@@ -45,7 +42,6 @@ function mapStateToProps(state) {
     activeIndex: state.attachmentReducer.activeIndex,
   };
 }
-
 
 const connector = connect(
   mapStateToProps,

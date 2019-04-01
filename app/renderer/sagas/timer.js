@@ -2,6 +2,7 @@
 import * as eff from 'redux-saga/effects';
 import {
   eventChannel,
+  buffers,
 } from 'redux-saga';
 import {
   remote,
@@ -49,7 +50,7 @@ function createTimerChannel() {
     return () => {
       ticker.clearInterval();
     };
-  });
+  }, buffers.expanding());
 }
 
 function* checkIdle() {
@@ -94,7 +95,7 @@ function* idleWindow() {
           webPreferences: {
             nodeIntegration: true,
             devTools: (
-              config.popupWindowDevTools
+              config.idleWindowDevTools
               || process.env.DEBUG_PROD === 'true'
             ),
           },
@@ -132,8 +133,11 @@ function* handleTick(timerChannel) {
   let idleWindowTask = null;
   while (true) {
     yield eff.take(timerChannel);
+    const bufferSeconds = yield eff.flush(timerChannel);
 
-    yield eff.put(timerActions.tick());
+    yield eff.put(timerActions.tick(
+      1 + bufferSeconds.length,
+    ));
     yield eff.call(setTimeToTray);
     const showIdleWindow = yield eff.call(checkIdle);
     if (

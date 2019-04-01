@@ -6,8 +6,10 @@ import type {
 import * as types from './actionTypes';
 
 
-export const tick = (): TimerAction => ({
+export const tick = (second = 1): TimerAction => ({
   type: types.TICK,
+  payload: second,
+  scope: 'allRenderer',
 });
 
 export const startTimer = (): TimerAction => ({
