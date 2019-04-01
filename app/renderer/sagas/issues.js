@@ -800,6 +800,7 @@ function* fetchUpdateIssue({ issueIdOrKey }): Generator<*, *, *> {
               ) : []
             ),
           ],
+          expand: ['renderedFields'],
         },
       },
     );
