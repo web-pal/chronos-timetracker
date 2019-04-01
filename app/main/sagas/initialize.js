@@ -206,7 +206,7 @@ function* forkInitialRendererProcess() {
           width: 1040,
           height: 800,
           minWidth: 1040,
-          minHeight: 800,
+          minHeight: 600,
           webPreferences: {
             devTools: (
               process.env.NODE_ENV === 'development'
