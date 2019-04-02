@@ -168,9 +168,9 @@ function buildJQLQuery({
     (filterId && `filter = ${filterId}`),
     (sprintId && `sprint = ${sprintId}`),
     (worklogAuthor && `worklogAuthor = ${worklogAuthor}`),
-    (type.length && `issueType in (${type.join(',')})`),
-    (status.length && `status in (${status.join(',')})`),
-    (assignee.length && mapAssignee(assignee[0])),
+    (type?.length && `issueType in (${type.join(',')})`),
+    (status?.length && `status in (${status.join(',')})`),
+    (assignee?.length && mapAssignee(assignee[0])),
     ((searchValue.length && projectKeys) && mapSearchValue(searchValue, projectKeys)),
     (additionalJQL && additionalJQL),
   ].filter(f => !!f).join(' AND ');
@@ -255,11 +255,23 @@ export function* fetchIssues({
     );
     yield eff.put(actions.pending());
 
-    const issuesSourceId: string | null = yield eff.select(getUiState('issuesSourceId'));
-    const issuesSourceType: string | null = yield eff.select(getUiState('issuesSourceType'));
-    const issuesSprintId: string | null = yield eff.select(getUiState('issuesSprintId'));
+    const {
+      issuesSourceType,
+      issuesSourceId,
+      issuesSprintId,
+    } = yield eff.select(getUiState([
+      'issuesSourceType',
+      'issuesSourceId',
+      'issuesSprintId',
+    ]));
+    const filterKey = `${issuesSourceType}_${issuesSourceId}_${issuesSprintId}`;
     const searchValue: string = yield eff.select(getUiState('issuesSearch'));
-    const issuesFilters = yield eff.select(getUiState('issuesFilters'));
+    const filters = yield eff.select(getUiState('issuesFilters'));
+    const issuesFilters = filters[filterKey] || ({
+      type: [],
+      status: [],
+      assignee: [],
+    });
     const projectId = yield eff.select(getCurrentProjectId);
 
     const projectsMap = yield eff.select(getResourceMap('projects'));
@@ -378,9 +390,15 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
     );
     yield eff.put(actions.pending());
 
-    const issuesSourceId: string | null = yield eff.select(getUiState('issuesSourceId'));
-    const issuesSourceType: string | null = yield eff.select(getUiState('issuesSourceType'));
-    const issuesSprintId: string | null = yield eff.select(getUiState('issuesSprintId'));
+    const {
+      issuesSourceType,
+      issuesSourceId,
+      issuesSprintId,
+    } = yield eff.select(getUiState([
+      'issuesSourceType',
+      'issuesSourceId',
+      'issuesSprintId',
+    ]));
 
     const epicLinkFieldId: string | null = yield eff.select(getFieldIdByName('Epic Link'));
 

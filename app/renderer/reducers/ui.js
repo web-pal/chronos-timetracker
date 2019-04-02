@@ -14,11 +14,7 @@ export const persistInitialState = {
   sidebarType: 'all',
   issueViewTab: 'Details',
   issuesSearch: '',
-  issuesFilters: {
-    type: [],
-    status: [],
-    assignee: [],
-  },
+  issuesFilters: {},
 
   postAlsoAsIssueComment: false,
   screenshotsAllowed: false,
@@ -156,14 +152,6 @@ export default function ui(
         modalState: {
           ...state.modalState,
           [action.payload.modalName]: action.payload.state,
-        },
-      };
-    case actionTypes.SET_ISSUES_FILTER:
-      return {
-        ...state,
-        issuesFilters: {
-          ...state.issuesFilters,
-          [action.filterType]: action.value,
         },
       };
     case actionTypes.ADD_AUTH_DEBUG_MESSAGE:

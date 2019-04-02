@@ -131,7 +131,7 @@ function* clearElectronCacheSaga(): Generator<*, *, *> {
     );
 
     const hostname = yield eff.select(
-      uiActions.getUiState2('hostname'),
+      uiActions.getUiState('hostname'),
     );
     yield eff.call(
       setElectronStorage,

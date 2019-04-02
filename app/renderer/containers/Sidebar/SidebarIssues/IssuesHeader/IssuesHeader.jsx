@@ -109,13 +109,27 @@ const IssuesHeader: StatelessFunctionalComponent<Props> = ({
 );
 
 function mapStateToProps(state) {
-  const filters = getUiState('issuesFilters')(state);
+  const {
+    issuesSourceType,
+    issuesSourceId,
+    issuesSprintId,
+  } = getUiState([
+    'issuesSourceType',
+    'issuesSourceId',
+    'issuesSprintId',
+  ])(state);
+  const filterKey = `${issuesSourceType}_${issuesSourceId}_${issuesSprintId}`;
+  const filters = getUiState('issuesFilters')(state)[filterKey] || ({
+    type: [],
+    status: [],
+    assignee: [],
+  });
   return {
     currentProjectId: getCurrentProjectId(state),
     searchValue: getUiState('issuesSearch')(state),
     sidebarFiltersIsOpen: getUiState('sidebarFiltersIsOpen')(state),
     filterStatusesIsFetched: getUiState('filterStatusesIsFetched')(state),
-    filtersApplied: filters.type.length || filters.status.length || filters.assignee.length,
+    filtersApplied: filters?.type?.length || filters?.status?.length || filters?.assignee?.length,
   };
 }
 

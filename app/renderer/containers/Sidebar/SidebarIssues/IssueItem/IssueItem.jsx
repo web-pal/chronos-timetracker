@@ -49,12 +49,13 @@ const IssueItem: StatelessFunctionalComponent<Props> = ({
         description="Open in browser"
         position="bottom"
       >
-        <ShortcutIcon
-          label="Open in browser"
-          size="small"
-          onClick={openURLInBrowser(`${baseUrl}/browse/${issue.key}`)}
-          primaryColor="#0052CC"
-        />
+        <span onClick={openURLInBrowser(`${baseUrl}/browse/${issue.key}`)}>
+          <ShortcutIcon
+            label="Open in browser"
+            size="small"
+            primaryColor="#0052CC"
+          />
+        </span>
       </Tooltip>
     </S.IssueName>
     <S.IssueDescription>

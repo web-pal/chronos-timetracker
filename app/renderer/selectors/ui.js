@@ -18,9 +18,7 @@ import {
 } from './profile';
 
 
-export const getUiState = (key: string) => ({ ui }: { ui: UiState }) => ui[key];
-
-export const getUiState2 = (keyOrKeys: string | Array<string>) => (
+export const getUiState = (keyOrKeys: string | Array<string>) => (
   ({ ui }: { ui: UiState }) => (
     Array.isArray(keyOrKeys)
       ? (
