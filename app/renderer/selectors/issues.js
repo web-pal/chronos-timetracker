@@ -45,12 +45,13 @@ export const getSidebarIssues = createSelector(
   (
     indexedIds: IndexedIds,
     map: IssuesResources,
-  ) =>
+  ) => (
     Object.keys(indexedIds).reduce((acc, index) => {
       const id = indexedIds[index].toString();
       acc[index] = id === 'pending' ? id : map[id];
       return acc;
-    }, {}),
+    }, {})
+  ),
 );
 
 const worklogSorter = (a, b) => {

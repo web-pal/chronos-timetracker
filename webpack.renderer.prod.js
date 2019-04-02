@@ -47,6 +47,7 @@ const plugins = [
     'process.env.DEBUG_PROD': JSON.stringify(process.env.DEBUG_PROD || 'false'),
     'process.env.SENTRY_DSN': JSON.stringify(process.env.SENTRY_DSN),
     'process.env.MIXPANEL_API_TOKEN': JSON.stringify(process.env.MIXPANEL_API_TOKEN),
+    'process.env.DISABLE_MIXPANEL': JSON.stringify(process.env.DISABLE_MIXPANEL),
   }),
   new SentryCliPlugin({
     include: '.',
