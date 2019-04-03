@@ -181,8 +181,7 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
                 >
                   {t.name}
                 </DropdownItem>
-              ))
-              }
+              ))}
             </DropdownItemGroup>
           </DropdownMenu>
         </div>

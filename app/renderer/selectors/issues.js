@@ -391,3 +391,32 @@ export const getIssuesSourceSelectedOption = createSelector(
     }
   },
 );
+
+
+export const getIssuesOrderableOptions = createSelector(
+  [
+    getResourceMappedList('issuesFields', 'allFields'),
+  ],
+  (
+    fields: Array<any>,
+  ) => (
+    [
+      {
+        name: 'Created',
+        id: 'created',
+      },
+      {
+        name: 'Updated',
+        id: 'updated',
+      },
+      ...fields.filter(
+        f => f.orderable,
+      ),
+    ].map(
+      field => ({
+        label: field.name,
+        value: field.id,
+      }),
+    )
+  ),
+);
