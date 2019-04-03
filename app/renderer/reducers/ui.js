@@ -6,9 +6,7 @@ import type {
   Action,
   UiState,
 } from 'types';
-import {
-  mapObjIndexed as mapObj,
-} from 'ramda';
+import * as R from 'ramda';
 
 export const persistInitialState = {
   sidebarType: 'all',
@@ -90,7 +88,7 @@ const mergeValues = (
     ...s,
     [v]: values[v]?._merge ? ({ /* eslint-disable-line */
       ...state[v],
-      ...values[v],
+      ...R.dissoc('_merge', values[v]),
     }) : (
       values[v]
     ),
@@ -145,7 +143,10 @@ export default function ui(
     }
     case actionTypes.RESET_UI_STATE:
       // $FlowFixMe
-      return mapObj((v, k) => (action.payload.keys.includes(k) ? initialState[k] : v), state);
+      return R.mapObjIndexed(
+        (v, k) => (action.payload.keys.includes(k) ? initialState[k] : v),
+        state,
+      );
     case actionTypes.SET_MODAL_STATE:
       return {
         ...state,

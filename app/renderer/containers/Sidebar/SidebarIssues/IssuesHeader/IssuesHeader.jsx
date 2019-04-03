@@ -101,7 +101,7 @@ const IssuesHeader: StatelessFunctionalComponent<Props> = ({
           )
         }
       </span>
-      {(filtersApplied !== 0)
+      {!!filtersApplied
         && <S.FiltersAppliedBadge />
       }
     </S.SearchOptions>

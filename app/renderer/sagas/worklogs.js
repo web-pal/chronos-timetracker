@@ -237,6 +237,7 @@ export function* saveWorklog({
       saveWorklogInProcess: false,
     }));
     yield eff.call(throwError, err);
+    return null;
   }
 }
 

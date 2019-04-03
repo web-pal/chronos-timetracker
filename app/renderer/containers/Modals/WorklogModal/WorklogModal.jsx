@@ -261,6 +261,7 @@ class WorklogModal extends Component<Props, State> {
                         timeSpent,
                         comment,
                         date,
+                        isAuto: false,
                       }));
                       this.setState({ comment: '', errors: { comment: '', timeSpent: '' } });
                     }

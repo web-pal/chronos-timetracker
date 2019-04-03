@@ -54,6 +54,8 @@ export function transformFilterValue(value: string): string {
 
 const ISSUE_FIELDS = [
   'issuetype',
+  'created',
+  'updated',
   'project',
   'labels',
   'priority',
@@ -162,6 +164,8 @@ function buildJQLQuery({
     type,
     status,
     assignee,
+    orderBy,
+    orderType,
   } = issuesFilters;
   const jql = [
     (projectId && `project = ${projectId}`),
@@ -174,7 +178,11 @@ function buildJQLQuery({
     ((searchValue.length && projectKeys) && mapSearchValue(searchValue, projectKeys)),
     (additionalJQL && additionalJQL),
   ].filter(f => !!f).join(' AND ');
-  return jql;
+  return [
+    jql,
+    `ORDER BY ${orderBy?.value || 'created'}`,
+    `${orderType || 'DESC'}`,
+  ].join(' ');
 }
 
 function* fetchAdditionalWorklogsForIssues(issues) {

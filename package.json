@@ -167,6 +167,7 @@
     "@atlaskit/lozenge": "7.0.1",
     "@atlaskit/modal-dialog": "8.0.4",
     "@atlaskit/single-select": "7.0.1",
+    "@atlaskit/select": "8.0.4",
     "@atlaskit/spinner": "10.0.3",
     "@atlaskit/tag": "7.0.1",
     "@atlaskit/tooltip": "13.0.2"

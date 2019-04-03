@@ -22,6 +22,12 @@ import type {
 import Button, {
   ButtonGroup,
 } from '@atlaskit/button';
+import {
+  PopupSelect,
+} from '@atlaskit/select';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import ArrowDownIcon from '@atlaskit/icon/glyph/arrow-down';
+import ArrowUpIcon from '@atlaskit/icon/glyph/arrow-up';
 import Spinner from '@atlaskit/spinner';
 
 import {
@@ -31,6 +37,7 @@ import {
 import {
   getResourceMeta,
   getFilterOptions,
+  getIssuesOrderableOptions,
   getUiState,
 } from 'selectors';
 import {
@@ -44,6 +51,7 @@ import FilterOption from './FilterOption';
 type Props = {
   filters: Filter,
   options: Array<any>,
+  orderableFields: Array<any>,
   issuesCount: number,
   issuesFetching: boolean,
   optionsFetching: boolean,
@@ -54,6 +62,7 @@ type Props = {
 const SidebarFilters: StatelessFunctionalComponent<Props> = ({
   filters,
   options,
+  orderableFields,
   issuesCount,
   issuesFetching,
   optionsFetching,
@@ -68,6 +77,57 @@ const SidebarFilters: StatelessFunctionalComponent<Props> = ({
         </FullPageSpinner>
       ) : (
         <S.FilterItems>
+          <S.FilterItem>
+            <S.FilterName>
+              Order by {filters?.orderBy?.label || 'Created'}
+              <span
+                style={{ cursor: 'pointer' }}
+                onClick={() => {
+                  dispatch(uiActions.setUiState('issuesFilters', {
+                    [filterKey]: {
+                      _merge: true,
+                      orderType: (
+                        filters?.orderType === 'DESC'
+                          ? 'ASC'
+                          : 'DESC'
+                      ),
+                    },
+                  }));
+                  dispatch(issuesActions.refetchIssuesRequest(true));
+                }}
+              >
+                {
+                  filters?.orderType === 'DESC'
+                    ? (
+                      <ArrowDownIcon label="DESC" />
+                    ) : (
+                      <ArrowUpIcon label="ASC" />
+                    )
+                }
+              </span>
+              <PopupSelect
+                onChange={(option) => {
+                  dispatch(uiActions.setUiState('issuesFilters', {
+                    [filterKey]: {
+                      _merge: true,
+                      orderBy: option,
+                    },
+                  }));
+                  dispatch(issuesActions.refetchIssuesRequest(true));
+                }}
+                target={({ ref }) => (
+                  <span
+                    ref={ref}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <ChevronDownIcon label="Order" />
+                  </span>
+                )}
+                options={orderableFields}
+                placeholder="Search"
+              />
+            </S.FilterName>
+          </S.FilterItem>
           {options.map(type => (
             <S.FilterItem key={type.key}>
               <S.FilterName>
@@ -93,8 +153,8 @@ const SidebarFilters: StatelessFunctionalComponent<Props> = ({
                             _merge: true,
                             [type.key]: (
                               !checked
-                                ? [...filters[type.key], value]
-                                : filters[type.key].filter(f => f !== value)
+                                ? [...filters[type.key] || [], value]
+                                : (filters[type.key] || []).filter(f => f !== value)
                             ),
                           },
                         }));
@@ -165,6 +225,7 @@ function mapStateToProps(state) {
   const filterKey = `${issuesSourceType}_${issuesSourceId}_${issuesSprintId}`;
   return {
     options: getFilterOptions(state),
+    orderableFields: getIssuesOrderableOptions(state),
     optionsFetching: getResourceStatus(
       state,
       'issuesTypes.requests.issuesTypes.status',
@@ -175,6 +236,8 @@ function mapStateToProps(state) {
         type: [],
         status: [],
         assignee: [],
+        orderBy: null,
+        orderType: 'DESC',
       })
     ),
     filterKey,
