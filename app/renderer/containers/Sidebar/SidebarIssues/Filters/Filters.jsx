@@ -25,7 +25,7 @@ import Button, {
 import {
   PopupSelect,
 } from '@atlaskit/select';
-import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import HipchatChevronDownIcon from '@atlaskit/icon/glyph/hipchat/chevron-down';
 import ArrowDownIcon from '@atlaskit/icon/glyph/arrow-down';
 import ArrowUpIcon from '@atlaskit/icon/glyph/arrow-up';
 import Spinner from '@atlaskit/spinner';
@@ -42,7 +42,11 @@ import {
 } from 'selectors';
 import {
   FullPageSpinner,
+  Flex,
 } from 'styles';
+import {
+  H200,
+} from 'styles/typography';
 
 import * as S from './styled';
 import FilterOption from './FilterOption';
@@ -78,10 +82,12 @@ const SidebarFilters: StatelessFunctionalComponent<Props> = ({
       ) : (
         <S.FilterItems>
           <S.FilterItem>
-            <S.FilterName>
-              Order by {filters?.orderBy?.label || 'Created'}
-              <span
-                style={{ cursor: 'pointer' }}
+            <Flex padding="10px 0 0 10px" align="center" width="100%" spacing={4}>
+              <H200>
+                Order by {filters?.orderBy?.label || 'Created'}
+              </H200>
+              <Flex
+                clickable
                 onClick={() => {
                   dispatch(uiActions.setUiState('issuesFilters', {
                     [filterKey]: {
@@ -99,12 +105,12 @@ const SidebarFilters: StatelessFunctionalComponent<Props> = ({
                 {
                   filters?.orderType === 'DESC'
                     ? (
-                      <ArrowDownIcon label="DESC" />
+                      <ArrowDownIcon size="small" label="DESC" primaryColor="#6B778C" />
                     ) : (
-                      <ArrowUpIcon label="ASC" />
+                      <ArrowUpIcon size="small" label="ASC" primaryColor="#6B778C" />
                     )
                 }
-              </span>
+              </Flex>
               <PopupSelect
                 onChange={(option) => {
                   dispatch(uiActions.setUiState('issuesFilters', {
@@ -116,17 +122,19 @@ const SidebarFilters: StatelessFunctionalComponent<Props> = ({
                   dispatch(issuesActions.refetchIssuesRequest(true));
                 }}
                 target={({ ref }) => (
-                  <span
-                    ref={ref}
-                    style={{ cursor: 'pointer' }}
+                  <Flex
+                    clickable
+                    background="#f6f6f6"
+                    borderRadius="3px"
+                    innerRef={ref}
                   >
-                    <ChevronDownIcon label="Order" />
-                  </span>
+                    <HipchatChevronDownIcon size="small" label="Order" primaryColor="#6B778C" />
+                  </Flex>
                 )}
                 options={orderableFields}
                 placeholder="Search"
               />
-            </S.FilterName>
+            </Flex>
           </S.FilterItem>
           {options.map(type => (
             <S.FilterItem key={type.key}>
