@@ -58,7 +58,6 @@ function* takeShowForm(): Generator<*, *, *> {
       .bind(
         'contentRefreshed',
         () => {
-          document.getElementsByClassName('jira-dialog')[0].style.display = 'none';
           try {
             setTimeout(() => {
               document.getElementsByClassName('jira-dialog')[0].style.display = 'none';
