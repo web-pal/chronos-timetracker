@@ -1,3 +1,31 @@
+<a name="3.1.0"></a>
+# [3.1.0](https://github.com/web-pal/chronos-timetracker/compare/v3.0.1...v3.1.0) (2019-04-04)
+
+
+### Bug Fixes
+
+* **Attachement Viever:** styles broken af ([8a325a6](https://github.com/web-pal/chronos-timetracker/commit/8a325a6))
+* **Authorization:** blank window and spinner ([458b373](https://github.com/web-pal/chronos-timetracker/commit/458b373))
+* **Authorization:** sSO auth ([53848e5](https://github.com/web-pal/chronos-timetracker/commit/53848e5))
+* **Browsing Issues:** epic link ([20ad823](https://github.com/web-pal/chronos-timetracker/commit/20ad823))
+* add new issue, change type ([777693b](https://github.com/web-pal/chronos-timetracker/commit/777693b))
+* **Browsing Issues:** linux issue add/edit window ([e164c39](https://github.com/web-pal/chronos-timetracker/commit/e164c39))
+* add new issue, change type ([ee57707](https://github.com/web-pal/chronos-timetracker/commit/ee57707))
+* add/edit worklog ([7c50a69](https://github.com/web-pal/chronos-timetracker/commit/7c50a69))
+* **Issue Detail View:** update issue description ([e17638a](https://github.com/web-pal/chronos-timetracker/commit/e17638a))
+* **Tracking:** set worklog button ([c1970dd](https://github.com/web-pal/chronos-timetracker/commit/c1970dd)), closes [#163](https://github.com/web-pal/chronos-timetracker/issues/163)
+* idle time popup ([0f22906](https://github.com/web-pal/chronos-timetracker/commit/0f22906)), closes [#166](https://github.com/web-pal/chronos-timetracker/issues/166)
+* initial accounts ([aa392bd](https://github.com/web-pal/chronos-timetracker/commit/aa392bd))
+* min height 600 for small screens ([6a5c31c](https://github.com/web-pal/chronos-timetracker/commit/6a5c31c)), closes [#168](https://github.com/web-pal/chronos-timetracker/issues/168)
+
+
+### Features
+
+* **Browsing Issues:** order issues ([e09f63c](https://github.com/web-pal/chronos-timetracker/commit/e09f63c)), closes [#106](https://github.com/web-pal/chronos-timetracker/issues/106) [#140](https://github.com/web-pal/chronos-timetracker/issues/140)
+* **Browsing Issues:** save filters ([4cdc5b4](https://github.com/web-pal/chronos-timetracker/commit/4cdc5b4)), closes [#142](https://github.com/web-pal/chronos-timetracker/issues/142)
+
+
+
 <a name="2.8.6"></a>
 ## [2.8.6](https://github.com/web-pal/chronos-timetracker/compare/v2.8.5...v2.8.6) (2018-11-06)
 
