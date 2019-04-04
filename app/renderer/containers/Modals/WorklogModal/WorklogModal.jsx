@@ -4,8 +4,8 @@ import React, {
 } from 'react';
 import moment from 'moment';
 import type Moment from 'moment';
-import CalendarIcon from '@atlaskit/icon/glyph/calendar';
 import EditorCloseIcon from '@atlaskit/icon/glyph/editor/close';
+import ClickOutside from 'react-click-outside';
 import Tooltip from '@atlaskit/tooltip';
 import Spinner from '@atlaskit/spinner';
 import {
@@ -351,14 +351,19 @@ class WorklogModal extends Component<Props, State> {
 
           {calendarOpened
             && (
-            <S.Calendar
+            <ClickOutside
+              style={{
+                marginTop: '5px',
+                position: 'absolute',
+                zIndex: 2,
+              }}
               onClickOutside={() => {
                 this.setState({
                   calendarOpened: false,
                 });
               }}
             >
-              <S.Calendar
+              <Calendar
                 onUpdate={(newDate) => {
                   this.setState({
                     date: newDate,
@@ -366,7 +371,7 @@ class WorklogModal extends Component<Props, State> {
                   });
                 }}
               />
-            </S.Calendar>
+            </ClickOutside>
             )
           }
 
