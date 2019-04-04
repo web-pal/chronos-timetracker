@@ -1,41 +1,30 @@
 import React from 'react';
 import DownloadAttachment from 'components/AttachmentPopup/DownloadAttachment';
-import {
-  DescriptionAttachmentItem,
-  DescriptionAttachmentsList,
-  MainDescriptionAttachmentContainer,
-  DescriptionAttachmentTitle,
-  ItemContainer,
-  ItemImage,
-  AttachmentDescription,
-  InfoConatiner,
-  DateAttachment,
-  SizeAttachment,
-} from './styled';
+import * as S from './styled';
 
 
 const DescriptionSectionAttachment = ({ attachment, showAttachmentWindow }) => (
-  <MainDescriptionAttachmentContainer>
-    <DescriptionAttachmentTitle>
+  <S.MainDescriptionAttachment>
+    <S.DescriptionAttachmentTitle>
       {
         attachment.length === 0
           ? 'No Attachment' : 'Attachment'
       }
-    </DescriptionAttachmentTitle>
+    </S.DescriptionAttachmentTitle>
     {
       attachment.length === 0 ? null : (
-        <DescriptionAttachmentsList>
+        <S.DescriptionAttachmentsList>
           {
             attachment.map((item, index) => (
-              <DescriptionAttachmentItem
+              <S.DescriptionAttachmentItem
                 onClick={() => showAttachmentWindow(index)}
                 key={item.id}
               >
-                <ItemContainer>
+                <S.Item>
                   {
                     item.mimeType.indexOf('application')
                       ? (
-                        <ItemImage
+                        <S.ItemImage
                           src={item.content}
                           alt="attachment"
                         />
@@ -47,25 +36,25 @@ const DescriptionSectionAttachment = ({ attachment, showAttachmentWindow }) => (
                       )
                   }
 
-                  <AttachmentDescription>
+                  <S.AttachmentDescription>
                     {item.filename}
-                  </AttachmentDescription>
-                  <InfoConatiner>
-                    <DateAttachment>
+                  </S.AttachmentDescription>
+                  <S.Info>
+                    <S.DateAttachment>
                       {item.created}
-                    </DateAttachment>
-                    <SizeAttachment>
+                    </S.DateAttachment>
+                    <S.SizeAttachment>
                       {item.size}
-                    </SizeAttachment>
-                  </InfoConatiner>
-                </ItemContainer>
-              </DescriptionAttachmentItem>
+                    </S.SizeAttachment>
+                  </S.Info>
+                </S.Item>
+              </S.DescriptionAttachmentItem>
             ))
           }
-        </DescriptionAttachmentsList>
+        </S.DescriptionAttachmentsList>
       )
     }
-  </MainDescriptionAttachmentContainer>
+  </S.MainDescriptionAttachment>
 );
 
 export default DescriptionSectionAttachment;

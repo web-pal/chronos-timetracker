@@ -2,7 +2,7 @@ import * as eff from 'redux-saga/effects';
 import storage from 'electron-json-storage';
 
 import {
-  getUiState2,
+  getUiState,
 } from 'selectors';
 import {
   persistInitialState as persistInitialUiState,
@@ -60,10 +60,10 @@ export const getElectronStorage = (key, defaultValue) => (
 
 export function* savePersistStorage() {
   const persistUiState = yield eff.select(
-    getUiState2(Object.keys(persistInitialUiState)),
+    getUiState(Object.keys(persistInitialUiState)),
   );
   const hostname = yield eff.select(
-    getUiState2('hostname'),
+    getUiState('hostname'),
   );
   yield eff.call(
     setElectronStorage,
@@ -72,7 +72,7 @@ export function* savePersistStorage() {
   );
 
   const accounts = yield eff.select(
-    getUiState2('accounts'),
+    getUiState('accounts'),
   );
   yield eff.call(
     setElectronStorage,

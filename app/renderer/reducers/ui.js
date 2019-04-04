@@ -6,19 +6,13 @@ import type {
   Action,
   UiState,
 } from 'types';
-import {
-  mapObjIndexed as mapObj,
-} from 'ramda';
+import * as R from 'ramda';
 
 export const persistInitialState = {
   sidebarType: 'all',
   issueViewTab: 'Details',
   issuesSearch: '',
-  issuesFilters: {
-    type: [],
-    status: [],
-    assignee: [],
-  },
+  issuesFilters: {},
 
   postAlsoAsIssueComment: false,
   screenshotsAllowed: false,
@@ -94,7 +88,7 @@ const mergeValues = (
     ...s,
     [v]: values[v]?._merge ? ({ /* eslint-disable-line */
       ...state[v],
-      ...values[v],
+      ...R.dissoc('_merge', values[v]),
     }) : (
       values[v]
     ),
@@ -149,21 +143,16 @@ export default function ui(
     }
     case actionTypes.RESET_UI_STATE:
       // $FlowFixMe
-      return mapObj((v, k) => (action.payload.keys.includes(k) ? initialState[k] : v), state);
+      return R.mapObjIndexed(
+        (v, k) => (action.payload.keys.includes(k) ? initialState[k] : v),
+        state,
+      );
     case actionTypes.SET_MODAL_STATE:
       return {
         ...state,
         modalState: {
           ...state.modalState,
           [action.payload.modalName]: action.payload.state,
-        },
-      };
-    case actionTypes.SET_ISSUES_FILTER:
-      return {
-        ...state,
-        issuesFilters: {
-          ...state.issuesFilters,
-          [action.filterType]: action.value,
         },
       };
     case actionTypes.ADD_AUTH_DEBUG_MESSAGE:

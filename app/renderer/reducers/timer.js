@@ -27,7 +27,7 @@ export default function timer(
     case actionTypes.TICK:
       return {
         ...state,
-        time: state.time + 1,
+        time: state.time + action.payload,
       };
     case actionTypes.START_TIMER:
       return {

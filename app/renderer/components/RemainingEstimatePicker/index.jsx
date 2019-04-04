@@ -22,9 +22,7 @@ import {
   TextField,
 } from 'components';
 
-import {
-  InputExample,
-} from './styled';
+import * as S from './styled';
 
 type Props = {
   issue: Issue,
@@ -72,7 +70,7 @@ const RemainingEstimatePicker = ({
             isLabelHidden
             isDisabled={value !== 'new'}
           />
-          <InputExample>(eg. 2h 10m)</InputExample>
+          <S.InputExample>(eg. 2h 10m)</S.InputExample>
         </Flex>
       ),
       isSelected: value === 'new',
@@ -89,7 +87,7 @@ const RemainingEstimatePicker = ({
             isLabelHidden
             isDisabled={value !== 'manual'}
           />
-          <InputExample>(eg. 40m)</InputExample>
+          <S.InputExample>(eg. 40m)</S.InputExample>
         </Flex>
       ),
       isSelected: value === 'manual',

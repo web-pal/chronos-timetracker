@@ -4,8 +4,8 @@ import React, {
 } from 'react';
 import moment from 'moment';
 import type Moment from 'moment';
-import CalendarIcon from '@atlaskit/icon/glyph/calendar';
 import EditorCloseIcon from '@atlaskit/icon/glyph/editor/close';
+import ClickOutside from 'react-click-outside';
 import Tooltip from '@atlaskit/tooltip';
 import Spinner from '@atlaskit/spinner';
 import {
@@ -64,12 +64,7 @@ import {
   jts,
 } from 'utils/time-util';
 
-import {
-  InputLabel,
-  CalendarContainer,
-  CalendarIconContainer,
-  InputExample,
-} from './styled';
+import * as S from './styled';
 
 type Props = {
   isOpen: boolean,
@@ -112,7 +107,7 @@ class WorklogModal extends Component<Props, State> {
       date: '',
       started: '',
     },
-  }
+  };
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.isOpen && !this.props.isOpen) {
@@ -150,7 +145,7 @@ class WorklogModal extends Component<Props, State> {
       startTime: now,
       date: now.format('MM/DD/YYYY'),
     });
-  }
+  };
 
   setError = (fieldName, error) => this.setState({
     errors: {
@@ -161,7 +156,7 @@ class WorklogModal extends Component<Props, State> {
 
   handleTimeChange = (label: 'startTime') => (value) => {
     this.setState({ [label]: value });
-  }
+  };
 
   timeInput: any;
 
@@ -181,7 +176,7 @@ class WorklogModal extends Component<Props, State> {
         timeSpent,
       };
     });
-  }
+  };
 
   validateJiraTime = value => /^(?:\d{1,2}d{1}(?:\s{1}|$))?(?:\d{1,2}h{1}(?:\s{1}|$))?(?:\d{1,2}m{1}(?:\s{1}|$))?(?:\d{1,2}s{1}(?:\s{1}|$))?$/.test(value);
 
@@ -208,7 +203,7 @@ class WorklogModal extends Component<Props, State> {
     this.setState({ errors });
 
     return valid;
-  }
+  };
 
   render() {
     const {
@@ -266,6 +261,7 @@ class WorklogModal extends Component<Props, State> {
                         timeSpent,
                         comment,
                         date,
+                        isAuto: false,
                       }));
                       this.setState({ comment: '', errors: { comment: '', timeSpent: '' } });
                     }
@@ -300,7 +296,7 @@ class WorklogModal extends Component<Props, State> {
         <ModalContentContainer style={{ minHeight: 360 }}>
 
           {/* TIME SPENT */}
-          <InputLabel style={{ marginTop: 0 }}>Time spent</InputLabel>
+          <S.InputLabel style={{ marginTop: 0 }}>Time spent</S.InputLabel>
           <Flex row alignCenter>
             <TextField
               value={timeSpent}
@@ -312,11 +308,11 @@ class WorklogModal extends Component<Props, State> {
                 this.timeInput = ref; // eslint-disable-line
               }}
             />
-            <InputExample>(eg. 1d 12h 30m)</InputExample>
+            <S.InputExample>(eg. 1d 12h 30m)</S.InputExample>
           </Flex>
 
           {/* DATE */}
-          <InputLabel>Date</InputLabel>
+          <S.InputLabel>Date</S.InputLabel>
           <Tooltip
             position="right"
             description={calendarOpened ? 'Close calendar' : 'Open calendar'}
@@ -332,7 +328,7 @@ class WorklogModal extends Component<Props, State> {
                 isLabelHidden
                 isReadOnly
               />
-              <CalendarIconContainer>
+              <S.CalendarIcon>
                 {calendarOpened
                   ? (
                     <EditorCloseIcon
@@ -342,20 +338,25 @@ class WorklogModal extends Component<Props, State> {
                     />
                   )
                   : (
-                    <CalendarIcon
+                    <S.CalendarIcon
                       label="Open Calendar"
                       size="medium"
                       primaryColor="#263958"
                     />
                   )
                 }
-              </CalendarIconContainer>
+              </S.CalendarIcon>
             </Flex>
           </Tooltip>
 
           {calendarOpened
             && (
-            <CalendarContainer
+            <ClickOutside
+              style={{
+                marginTop: '5px',
+                position: 'absolute',
+                zIndex: 2,
+              }}
               onClickOutside={() => {
                 this.setState({
                   calendarOpened: false,
@@ -370,14 +371,14 @@ class WorklogModal extends Component<Props, State> {
                   });
                 }}
               />
-            </CalendarContainer>
+            </ClickOutside>
             )
           }
 
           {/* FROM */}
 
           <Flex column>
-            <InputLabel>Started</InputLabel>
+            <S.InputLabel>Started</S.InputLabel>
             <Flex alignCenter>
               <div style={{ width: 165 }}>
                 <TimePicker

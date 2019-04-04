@@ -40,9 +40,7 @@ import {
 
 import JQLFilter from './JQLFilter';
 
-import {
-  IssuesSourceContainer,
-} from './styled';
+import * as S from './styled';
 
 type Props = {
   options: Array<any>,
@@ -65,7 +63,7 @@ const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
   selectedSourceType,
   dispatch,
 }: Props): Node => (
-  <IssuesSourceContainer>
+  <S.IssuesSource>
     <SingleSelect
       items={options}
       hasAutocomplete
@@ -77,17 +75,27 @@ const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
         if (item.meta.board) type = item.meta.board.type;
         if (item.meta.project) type = 'project';
         if (item.meta.filter) type = 'filter';
-
-        dispatch(uiActions.setUiState({
+        const sources = {
           issuesSprintId: null,
           issuesSourceId: item.value,
           issuesSourceType: type,
+        };
+        const filterKey = (
+          `${sources.issuesSourceType}_${sources.issuesSourceId}_${sources.issuesSprintId}`
+        );
+        dispatch(uiActions.setUiState({
+          ...sources,
           sidebarFiltersIsOpen: false,
         }));
 
-        dispatch(uiActions.setIssuesFilters('assignee', []));
-        dispatch(uiActions.setIssuesFilters('status', []));
-        dispatch(uiActions.setIssuesFilters('type', []));
+        dispatch(uiActions.setUiState({
+          [filterKey]: {
+            type: [],
+            status: [],
+            assignee: [],
+          },
+        }));
+
         if (type === 'scrum') {
           dispatch(resourcesActions.clearResourceList({
             resourceType: 'issues',
@@ -133,7 +141,7 @@ const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
       )
     }
     {selectedSourceType === 'filter' && <JQLFilter selectedFilter={selectedOption} />}
-  </IssuesSourceContainer>
+  </S.IssuesSource>
 );
 
 function mapStateToProps(state) {

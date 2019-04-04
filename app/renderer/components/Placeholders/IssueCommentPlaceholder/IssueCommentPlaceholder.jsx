@@ -3,20 +3,20 @@ import React from 'react';
 import type { StatelessFunctionalComponent, Node } from 'react';
 import Flex from '../../Flex/Flex';
 
-import { PlaceholderContainer, Placeholder } from './styled';
+import * as S from './styled';
 
 const IssueCommentPlaceholder: StatelessFunctionalComponent<{}> = (): Node => (
-  <PlaceholderContainer>
+  <S.MainPlaceholder>
     <Flex row>
-      <Placeholder type="avatar" />
-      <Placeholder type="title" />
+      <S.Placeholder type="avatar" />
+      <S.Placeholder type="title" />
     </Flex>
     <Flex column>
-      <Placeholder type="body" />
-      <Placeholder type="body2" />
-      <Placeholder type="body3" />
+      <S.Placeholder type="body" />
+      <S.Placeholder type="body2" />
+      <S.Placeholder type="body3" />
     </Flex>
-  </PlaceholderContainer>
+  </S.MainPlaceholder>
 );
 
 export default IssueCommentPlaceholder;

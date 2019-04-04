@@ -7,11 +7,7 @@ import type {
   Node,
 } from 'react';
 
-import {
-  CircleStop,
-  CircleProgress,
-  CircleBackground,
-} from './styled';
+import * as S from  './styled';
 
 type Props = {
   content?: Node,
@@ -49,13 +45,13 @@ const CircularProgressBar: StatelessFunctionalComponent<Props> = ({
         viewBox={viewBox}
         onClick={onClick}
       >
-        <CircleBackground
+        <S.CircleBackground
           cx={sqSize / 2}
           cy={sqSize / 2}
           r={radius}
           strokeWidth={`${strokeWidth}px`}
         />
-        <CircleProgress
+        <S.CircleProgress
           cx={sqSize / 2}
           cy={sqSize / 2}
           r={radius}
@@ -66,7 +62,7 @@ const CircularProgressBar: StatelessFunctionalComponent<Props> = ({
             strokeDashoffset: dashOffset,
           }}
         />
-        <CircleStop
+        <S.CircleStop
           x="20"
           y="20"
           rx="1"

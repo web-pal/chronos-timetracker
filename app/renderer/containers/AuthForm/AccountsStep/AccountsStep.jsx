@@ -10,12 +10,7 @@ import {
 import Button from '@atlaskit/button';
 import Tag from '@atlaskit/tag';
 
-import {
-  ContentInner,
-  BackButtonContainer,
-  Error,
-  AccountContainer,
-} from '../styled';
+import * as S from '../styled';
 
 
 type Props = {
@@ -24,7 +19,7 @@ type Props = {
   dispatch: Function,
   onBack: Function,
   accounts: Array<Account>,
-}
+};
 
 const AccountsStep = ({
   isActiveStep,
@@ -33,31 +28,31 @@ const AccountsStep = ({
   dispatch,
   accounts,
 }: Props) => (
-  <ContentInner
+  <S.ContentInner
     isActiveStep={isActiveStep}
     step={0}
   >
     <div>
       {accounts.map(ac => (
-        <AccountContainer
+        <S.Account
           onClick={() => dispatch(authActions.switchAccount(ac))}
           key={`${ac.name}:${ac.hostname}`}
         >
           <Tag text={ac.hostname} color="teal" />
           {ac.name}
-        </AccountContainer>
+        </S.Account>
       ))}
     </div>
-    <BackButtonContainer>
+    <S.BackButton>
       <Button
         appearance="subtle"
         onClick={onBack}
       >
         Back
       </Button>
-    </BackButtonContainer>
-    <Error>{authError}</Error>
-  </ContentInner>
+    </S.BackButton>
+    <S.Error>{authError}</S.Error>
+  </S.ContentInner>
 );
 
 export default AccountsStep;

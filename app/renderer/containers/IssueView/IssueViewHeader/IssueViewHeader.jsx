@@ -52,18 +52,7 @@ import type {
   IssueStatus,
   Dispatch,
 } from 'types';
-import {
-  ProjectAvatar,
-  ALink,
-  Breadcrumb,
-  UserAvatarContainer,
-  UserAvatar,
-  UserSampleAvatar,
-  StartButton,
-  StartButtonPlaceholder,
-  IssueSummary,
-  IssueViewHeaderContainer,
-} from './styled';
+import * as S from './styled';
 
 
 type Props = {
@@ -87,23 +76,23 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
   baseUrl,
   dispatch,
 }: Props):Node => (
-  <IssueViewHeaderContainer>
+  <S.IssueViewHeaderContainer>
     <Flex row alignCenter spaceBetween style={{ marginBottom: 15 }}>
       <Flex row alignCenter>
-        <ProjectAvatar
+        <S.ProjectAvatar
           src={selectedIssue.fields.project.avatarUrls['48x48']}
           alt=""
         />
-        <UserAvatarContainer>
+        <S.UserAvatarContainer>
           {selectedIssue.fields.assignee
             ? (
-              <UserAvatar
+              <S.UserAvatar
                 src={selectedIssue.fields.assignee.avatarUrls['48x48']}
                 alt="User Avatar"
               />
             )
             : (
-              <UserSampleAvatar
+              <S.UserSampleAvatar
                 size="medium"
                 label="User Avatar Placeholder"
                 primaryColor="#0052cc"
@@ -111,31 +100,31 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
               />
             )
           }
-        </UserAvatarContainer>
+        </S.UserAvatarContainer>
         <Flex column>
           <Flex row>
-            <ALink onClick={openURLInBrowser(`${baseUrl}/projects/${selectedIssue.fields.project.key}`)}>
+            <S.ALink onClick={openURLInBrowser(`${baseUrl}/projects/${selectedIssue.fields.project.key}`)}>
               {selectedIssue.fields.project.name}
-            </ALink>
-            <Breadcrumb>/</Breadcrumb>
-            <ALink onClick={openURLInBrowser(`${baseUrl}/browse/${selectedIssue.key}`)}>
+            </S.ALink>
+            <S.Breadcrumb>/</S.Breadcrumb>
+            <S.ALink onClick={openURLInBrowser(`${baseUrl}/browse/${selectedIssue.key}`)}>
               {selectedIssue.key}
-            </ALink>
+            </S.ALink>
           </Flex>
           <Tooltip
             description={selectedIssue.fields.summary}
             position="bottom"
           >
-            <IssueSummary>
+            <S.IssueSummary>
               {selectedIssue.fields.summary}
-            </IssueSummary>
+            </S.IssueSummary>
           </Tooltip>
         </Flex>
       </Flex>
       {timerRunning
-        ? <StartButtonPlaceholder />
+        ? <S.StartButtonPlaceholder />
         : (
-          <StartButton
+          <S.StartButton
             alt="Start Tracking"
             onClick={() => {
               dispatch(timerActions.startTimer());
@@ -192,8 +181,7 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
                 >
                   {t.name}
                 </DropdownItem>
-              ))
-              }
+              ))}
             </DropdownItemGroup>
           </DropdownMenu>
         </div>
@@ -233,7 +221,7 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
         </div>
       </ButtonGroup>
     </Flex>
-  </IssueViewHeaderContainer>
+  </S.IssueViewHeaderContainer>
 );
 
 function mapStateToProps(state) {

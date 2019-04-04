@@ -1,7 +1,7 @@
 /* eslint-disable no-confusing-arrow */
 import styled from 'styled-components';
 
-export const ProgressBarContainer = styled.div`
+export const ProgressBar = styled.div`
   width: 92%;
   position: relative;
 `;

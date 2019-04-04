@@ -28,10 +28,7 @@ import {
   openURLInBrowser,
 } from 'utils/external-open-util';
 
-import {
-  SettingsSectionContent,
-  ContentLabel,
-} from './styled';
+import * as S from './styled';
 
 import {
   version,
@@ -60,10 +57,10 @@ const UpdateSettings: StatelessFunctionalComponent<Props> = ({
   checkForUpdates,
   onUpdateClick,
 } : Props): Node => (
-  <SettingsSectionContent style={{ width: '100%' }}>
-    <ContentLabel>
+  <S.SettingsSectionContent style={{ width: '100%' }}>
+    <S.ContentLabel>
       Updates
-    </ContentLabel>
+    </S.ContentLabel>
     <Flex column style={{ marginLeft: 6 }}>
       <Flex column style={{ marginBottom: 10 }}>
         <H100 style={{ padding: '6px 0 10px 0' }}>
@@ -190,7 +187,7 @@ const UpdateSettings: StatelessFunctionalComponent<Props> = ({
         </H100>
       </Flex>
     </Flex>
-  </SettingsSectionContent>
+  </S.SettingsSectionContent>
 );
 
 export default UpdateSettings;

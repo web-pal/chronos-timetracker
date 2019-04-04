@@ -28,15 +28,7 @@ import {
   getUiState,
 } from 'selectors';
 
-import {
-  SearchBar,
-  SearchIcon,
-  SearchInput,
-  SearchOptions,
-  AddIcon,
-  FilterIcon,
-  FiltersAppliedBadge,
-} from './styled';
+import * as S from './styled';
 
 type Props = {
   searchValue: string,
@@ -45,7 +37,7 @@ type Props = {
   filtersApplied: boolean,
   currentProjectId: string,
   dispatch: Dispatch,
-}
+};
 
 const IssuesHeader: StatelessFunctionalComponent<Props> = ({
   searchValue,
@@ -55,12 +47,12 @@ const IssuesHeader: StatelessFunctionalComponent<Props> = ({
   currentProjectId,
   dispatch,
 }: Props): Node => (
-  <SearchBar>
-    <SearchIcon
+  <S.SearchBar>
+    <S.SearchIcon
       label="Search"
       size="medium"
     />
-    <SearchInput
+    <S.SearchInput
       placeholder="Search issue"
       type="text"
       value={searchValue}
@@ -71,7 +63,7 @@ const IssuesHeader: StatelessFunctionalComponent<Props> = ({
         dispatch(issuesActions.refetchIssuesRequest(true));
       }}
     />
-    <SearchOptions>
+    <S.SearchOptions>
       <span className="pointer">
         <span
           onClick={() => {
@@ -82,7 +74,7 @@ const IssuesHeader: StatelessFunctionalComponent<Props> = ({
             );
           }}
         >
-          <AddIcon
+          <S.AddIcon
             label="Add"
             size="medium"
           />
@@ -100,7 +92,7 @@ const IssuesHeader: StatelessFunctionalComponent<Props> = ({
                 }));
               }}
             >
-            <FilterIcon
+            <S.FilterIcon
               label="Filter"
               size="medium"
               primaryColor={sidebarFiltersIsOpen ? '#0052CC' : '#333333'}
@@ -109,21 +101,35 @@ const IssuesHeader: StatelessFunctionalComponent<Props> = ({
           )
         }
       </span>
-      {(filtersApplied !== 0)
-        && <FiltersAppliedBadge />
+      {!!filtersApplied
+        && <S.FiltersAppliedBadge />
       }
-    </SearchOptions>
-  </SearchBar>
+    </S.SearchOptions>
+  </S.SearchBar>
 );
 
 function mapStateToProps(state) {
-  const filters = getUiState('issuesFilters')(state);
+  const {
+    issuesSourceType,
+    issuesSourceId,
+    issuesSprintId,
+  } = getUiState([
+    'issuesSourceType',
+    'issuesSourceId',
+    'issuesSprintId',
+  ])(state);
+  const filterKey = `${issuesSourceType}_${issuesSourceId}_${issuesSprintId}`;
+  const filters = getUiState('issuesFilters')(state)[filterKey] || ({
+    type: [],
+    status: [],
+    assignee: [],
+  });
   return {
     currentProjectId: getCurrentProjectId(state),
     searchValue: getUiState('issuesSearch')(state),
     sidebarFiltersIsOpen: getUiState('sidebarFiltersIsOpen')(state),
     filterStatusesIsFetched: getUiState('filterStatusesIsFetched')(state),
-    filtersApplied: filters.type.length || filters.status.length || filters.assignee.length,
+    filtersApplied: filters?.type?.length || filters?.status?.length || filters?.assignee?.length,
   };
 }
 

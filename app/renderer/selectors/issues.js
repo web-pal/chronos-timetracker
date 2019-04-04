@@ -45,12 +45,13 @@ export const getSidebarIssues = createSelector(
   (
     indexedIds: IndexedIds,
     map: IssuesResources,
-  ) =>
+  ) => (
     Object.keys(indexedIds).reduce((acc, index) => {
       const id = indexedIds[index].toString();
       acc[index] = id === 'pending' ? id : map[id];
       return acc;
-    }, {}),
+    }, {})
+  ),
 );
 
 const worklogSorter = (a, b) => {
@@ -389,4 +390,33 @@ export const getIssuesSourceSelectedOption = createSelector(
         return null;
     }
   },
+);
+
+
+export const getIssuesOrderableOptions = createSelector(
+  [
+    getResourceMappedList('issuesFields', 'allFields'),
+  ],
+  (
+    fields: Array<any>,
+  ) => (
+    [
+      {
+        name: 'Created',
+        id: 'created',
+      },
+      {
+        name: 'Updated',
+        id: 'updated',
+      },
+      ...fields.filter(
+        f => f.orderable,
+      ),
+    ].map(
+      field => ({
+        label: field.name,
+        value: field.id,
+      }),
+    )
+  ),
 );

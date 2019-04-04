@@ -1,14 +1,14 @@
 import styled from 'styled-components';
 import ClickOutside from 'react-click-outside';
 
-export const CalendarContainer = styled(ClickOutside)`
+export const Calendar = styled(ClickOutside)`
   margin-top: 5px;
   position: absolute;
   z-index: 2; // bigger than rc-time-picker popup
 `;
 
 
-export const CalendarIconContainer = styled.div`
+export const CalendarIcon = styled.div`
   margin-left: -30px;
   margin-top: 2px;
   cursor: pointer;

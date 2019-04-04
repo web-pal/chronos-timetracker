@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const WorklogItemContainer = styled.div`
+export const WorklogItem = styled.div`
 
   display: flex;
   flex-direction: row;

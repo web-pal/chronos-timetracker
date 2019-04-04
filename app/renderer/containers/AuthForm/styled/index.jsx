@@ -157,7 +157,7 @@ export const Form = styled.form`
   width: 100%;
 `;
 
-export const ContentIconContainer = styled.div`
+export const ContentIcon = styled.div`
   background: hsla(216, 75%, 93%, 1);
   border-radius: 50%;
   box-shadow: 0 4px 8px 0 rgba(9,30,66,0.25);
@@ -184,7 +184,7 @@ export const Subtitle = styled.span`
   margin-bottom: 24px;
 `;
 
-export const BackButtonContainer = styled.div`
+export const BackButton = styled.div`
   position: absolute;
   bottom: 8px;
   button {
@@ -199,7 +199,7 @@ export const ContentStep = styled(Flex).attrs({
   width: 100%;
 `;
 
-export const AccountContainer = styled.div`
+export const Account = styled.div`
   display: flex;
   align-items: center;
   padding: 16px;
@@ -210,7 +210,7 @@ export const AccountContainer = styled.div`
   }
 `;
 
-export const WebViewContainer = styled.div`
+export const WebView = styled.div`
   & > webview {
     display: inline-flex;
     width: 380px;

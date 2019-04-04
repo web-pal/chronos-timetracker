@@ -18,10 +18,7 @@ import {
   RemainingEstimatePicker,
 } from 'components';
 
-import {
-  EditButton,
-  EditButtonContainer,
-} from './styled';
+import * as S from './styled';
 
 import WorklogCommentOptions from './WorklogCommentOptions';
 
@@ -68,7 +65,7 @@ class WorklogCommentDialog extends PureComponent<Props, State> {
       isEditing: newState,
     });
     this.props.setDialogState(newState);
-  }
+  };
 
   enterEditingMode = () => {
     this.setState({
@@ -123,11 +120,11 @@ class WorklogCommentDialog extends PureComponent<Props, State> {
         />
       </Flex>
     </div>
-  )
+  );
 
   render() {
     return (
-      <EditButtonContainer>
+      <S.EditButtonContainer>
         <InlineDialog
           content={this.renderDialog()}
           isOpen={this.props.dialogOpen}
@@ -147,15 +144,16 @@ class WorklogCommentDialog extends PureComponent<Props, State> {
           }}
           position="bottom left"
         >
-          <EditButton
-            size="medium"
-            primaryColor="white"
-            secondaryColor="#172B4D"
-            label="Toggle Tracking View"
-            onClick={this.toggleDialog}
-          />
+          <span onClick={this.toggleDialog}>
+            <S.EditButton
+              size="medium"
+              primaryColor="white"
+              secondaryColor="#172B4D"
+              label="Toggle Tracking View"
+            />
+          </span>
         </InlineDialog>
-      </EditButtonContainer>
+      </S.EditButtonContainer>
     );
   }
 }

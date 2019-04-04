@@ -43,7 +43,9 @@ export function getEpicColor(colorName: EpicColor): string {
       return '#644982';
     case 'ghx-label-9':
       return '#f15c75';
+    case 'ghx-label-13':
+      return '#57D9A3';
     default:
-      return '#fff';
+      return '#815b3a';
   }
 }

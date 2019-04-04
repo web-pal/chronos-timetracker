@@ -22,10 +22,7 @@ import {
   H100,
 } from 'styles/typography';
 
-import {
-  SettingsSectionContent,
-  ContentLabel,
-} from './styled';
+import * as S from './styled';
 
 
 type Props = {
@@ -74,10 +71,10 @@ const NotificationsSettings: StatelessFunctionalComponent<Props> = ({
   ];
 
   return (
-    <SettingsSectionContent>
-      <ContentLabel>
+    <S.SettingsSectionContent>
+      <S.ContentLabel>
         Notifications
-      </ContentLabel>
+      </S.ContentLabel>
       <Flex column>
         <H100 style={{ margin: '0 0 4px 6px' }}>
           Configure whether to show screenshot popup or not.
@@ -139,7 +136,7 @@ const NotificationsSettings: StatelessFunctionalComponent<Props> = ({
         }
 
       </Flex>
-    </SettingsSectionContent>
+    </S.SettingsSectionContent>
   );
 };
 

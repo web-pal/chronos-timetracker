@@ -54,6 +54,8 @@ export function transformFilterValue(value: string): string {
 
 const ISSUE_FIELDS = [
   'issuetype',
+  'created',
+  'updated',
   'project',
   'labels',
   'priority',
@@ -162,19 +164,25 @@ function buildJQLQuery({
     type,
     status,
     assignee,
+    orderBy,
+    orderType,
   } = issuesFilters;
   const jql = [
     (projectId && `project = ${projectId}`),
     (filterId && `filter = ${filterId}`),
     (sprintId && `sprint = ${sprintId}`),
     (worklogAuthor && `worklogAuthor = ${worklogAuthor}`),
-    (type.length && `issueType in (${type.join(',')})`),
-    (status.length && `status in (${status.join(',')})`),
-    (assignee.length && mapAssignee(assignee[0])),
+    (type?.length && `issueType in (${type.join(',')})`),
+    (status?.length && `status in (${status.join(',')})`),
+    (assignee?.length && mapAssignee(assignee[0])),
     ((searchValue.length && projectKeys) && mapSearchValue(searchValue, projectKeys)),
     (additionalJQL && additionalJQL),
   ].filter(f => !!f).join(' AND ');
-  return jql;
+  return [
+    jql,
+    `ORDER BY ${orderBy?.value || 'created'}`,
+    `${orderType || 'DESC'}`,
+  ].join(' ');
 }
 
 function* fetchAdditionalWorklogsForIssues(issues) {
@@ -255,11 +263,23 @@ export function* fetchIssues({
     );
     yield eff.put(actions.pending());
 
-    const issuesSourceId: string | null = yield eff.select(getUiState('issuesSourceId'));
-    const issuesSourceType: string | null = yield eff.select(getUiState('issuesSourceType'));
-    const issuesSprintId: string | null = yield eff.select(getUiState('issuesSprintId'));
+    const {
+      issuesSourceType,
+      issuesSourceId,
+      issuesSprintId,
+    } = yield eff.select(getUiState([
+      'issuesSourceType',
+      'issuesSourceId',
+      'issuesSprintId',
+    ]));
+    const filterKey = `${issuesSourceType}_${issuesSourceId}_${issuesSprintId}`;
     const searchValue: string = yield eff.select(getUiState('issuesSearch'));
-    const issuesFilters = yield eff.select(getUiState('issuesFilters'));
+    const filters = yield eff.select(getUiState('issuesFilters'));
+    const issuesFilters = filters[filterKey] || ({
+      type: [],
+      status: [],
+      assignee: [],
+    });
     const projectId = yield eff.select(getCurrentProjectId);
 
     const projectsMap = yield eff.select(getResourceMap('projects'));
@@ -378,9 +398,15 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
     );
     yield eff.put(actions.pending());
 
-    const issuesSourceId: string | null = yield eff.select(getUiState('issuesSourceId'));
-    const issuesSourceType: string | null = yield eff.select(getUiState('issuesSourceType'));
-    const issuesSprintId: string | null = yield eff.select(getUiState('issuesSprintId'));
+    const {
+      issuesSourceType,
+      issuesSourceId,
+      issuesSprintId,
+    } = yield eff.select(getUiState([
+      'issuesSourceType',
+      'issuesSourceId',
+      'issuesSprintId',
+    ]));
 
     const epicLinkFieldId: string | null = yield eff.select(getFieldIdByName('Epic Link'));
 
@@ -627,7 +653,14 @@ export function* assignIssueToUser({ issueId }: {
           issueIdOrKey: issue.key,
         },
         body: {
-          key: userData.key,
+          ...(
+            userData.accountId
+              ? ({
+                accountId: userData.accountId,
+              }) : ({
+                key: userData.key,
+              })
+          ),
         },
       },
     );
@@ -688,6 +721,10 @@ export function* fetchEpics(): Generator<*, void, *> {
   try {
     yield eff.put(actions.pending());
     yield eff.call(infoLog, 'fetching epics');
+    const issuesFields = yield eff.call(jiraApi.getAllIssueFields);
+    const epicNameField = issuesFields.find(f => f.name === 'Epic Name');
+    const epicColorField = issuesFields.find(f => f.name === 'Epic Color');
+    const epicLinkField = issuesFields.find(f => f.name === 'Epic Link');
     const response = yield eff.call(
       jiraApi.searchForIssues,
       {
@@ -695,7 +732,24 @@ export function* fetchEpics(): Generator<*, void, *> {
           startAt: 0,
           maxResults: 100,
           jql: "issuetype = 'Epic'",
-          fields: ISSUE_FIELDS,
+          fields: [
+            ISSUE_FIELDS,
+            ...(
+              epicNameField?.id
+                ? [epicNameField.id]
+                : []
+            ),
+            ...(
+              epicColorField?.id
+                ? [epicColorField.id]
+                : []
+            ),
+            ...(
+              epicLinkField?.id
+                ? [epicLinkField.id]
+                : []
+            ),
+          ],
         },
       },
     );
@@ -712,7 +766,24 @@ export function* fetchEpics(): Generator<*, void, *> {
                       startAt: (i + 1) * response.maxResults,
                       maxResults: response.maxResults,
                       jql: "issuetype = 'Epic'",
-                      fields: ISSUE_FIELDS,
+                      fields: [
+                        ISSUE_FIELDS,
+                        ...(
+                          epicNameField?.id
+                            ? [epicNameField.id]
+                            : []
+                        ),
+                        ...(
+                          epicColorField?.id
+                            ? [epicColorField.id]
+                            : []
+                        ),
+                        ...(
+                          epicLinkField?.id
+                            ? [epicLinkField.id]
+                            : []
+                        ),
+                      ],
                     },
                   },
                 )),
@@ -800,6 +871,7 @@ function* fetchUpdateIssue({ issueIdOrKey }): Generator<*, *, *> {
               ) : []
             ),
           ],
+          expand: ['renderedFields'],
         },
       },
     );

@@ -22,7 +22,7 @@ import {
 } from 'actions';
 import {
   getTimerState,
-  getUiState2,
+  getUiState,
 } from 'selectors';
 
 import {
@@ -221,7 +221,7 @@ export function* logoutFlow(): Generator<*, *, *> {
     const { forget } = yield eff.take(actionTypes.LOGOUT_REQUEST);
     try {
       const running = yield eff.select(getTimerState('running'));
-      const saveWorklogInProcess = yield eff.select(getUiState2('saveWorklogInProcess'));
+      const saveWorklogInProcess = yield eff.select(getUiState('saveWorklogInProcess'));
 
       if (running) {
         // eslint-disable-next-line no-alert
@@ -314,7 +314,7 @@ export function* switchAccountFlow(): Generator<*, *, *> {
       pathname,
     } = yield eff.take(actionTypes.SWITCH_ACCOUNT);
     try {
-      const saveWorklogInProcess = yield eff.select(getUiState2('saveWorklogInProcess'));
+      const saveWorklogInProcess = yield eff.select(getUiState('saveWorklogInProcess'));
       const running = yield eff.select(getTimerState('running'));
 
       if (running) {

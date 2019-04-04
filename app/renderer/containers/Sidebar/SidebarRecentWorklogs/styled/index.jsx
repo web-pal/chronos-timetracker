@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 
-export const ListContainer = styled.div`
+export const List = styled.div`
   height: 100%;
   flex: 1;
   z-index: 1;
@@ -9,7 +9,7 @@ export const ListContainer = styled.div`
   background: #F4F5F7;
 `;
 
-export const ItemContainer = styled.div`
+export const Item = styled.div`
   padding: 10px 0;
   display: flex;
   flex-flow: column nowrap;

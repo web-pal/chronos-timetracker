@@ -19,16 +19,7 @@ import {
   openURLInBrowser,
 } from 'utils/external-open-util';
 
-import {
-  IssueContainer,
-  IssueNameContainer,
-  IssueName,
-  IssueDescription,
-  IssueFieldsContainer,
-  IssueType,
-  IssuePriority,
-  IssueLabel,
-} from './styled';
+import * as S from './styled';
 
 
 type Props = {
@@ -36,7 +27,7 @@ type Props = {
   active: boolean,
   baseUrl: string,
   selectIssue: (issueId: Id) => void
-}
+};
 
 const IssueItem: StatelessFunctionalComponent<Props> = ({
   issue,
@@ -44,39 +35,40 @@ const IssueItem: StatelessFunctionalComponent<Props> = ({
   selectIssue,
   baseUrl,
 }: Props = {}): Node => (
-  <IssueContainer
+  <S.Issue
     active={active}
     onClick={() => {
       selectIssue(issue.id);
     }}
   >
-    <IssueNameContainer>
-      <IssueName>
+    <S.IssueName>
+      <S.IssueText>
         {issue.key}
-      </IssueName>
+      </S.IssueText>
       <Tooltip
         description="Open in browser"
         position="bottom"
       >
-        <ShortcutIcon
-          label="Open in browser"
-          size="small"
-          onClick={openURLInBrowser(`${baseUrl}/browse/${issue.key}`)}
-          primaryColor="#0052CC"
-        />
+        <span onClick={openURLInBrowser(`${baseUrl}/browse/${issue.key}`)}>
+          <ShortcutIcon
+            label="Open in browser"
+            size="small"
+            primaryColor="#0052CC"
+          />
+        </span>
       </Tooltip>
-    </IssueNameContainer>
-    <IssueDescription>
+    </S.IssueName>
+    <S.IssueDescription>
       {issue.fields.summary}
-    </IssueDescription>
-    <IssueFieldsContainer>
+    </S.IssueDescription>
+    <S.IssueFields>
       {issue.fields.issuetype
         && (
         <Tooltip
           description={issue.fields.issuetype.name}
           position="bottom"
         >
-          <IssueType
+          <S.IssueType
             type={issue.fields.issuetype.name}
             src={issue.fields.issuetype.iconUrl}
             alt="type"
@@ -90,7 +82,7 @@ const IssueItem: StatelessFunctionalComponent<Props> = ({
           description={issue.fields.priority.name}
           position="bottom"
         >
-          <IssuePriority
+          <S.IssuePriority
             priority={issue.fields.priority.name}
             src={issue.fields.priority.iconUrl}
             alt="priority"
@@ -100,15 +92,15 @@ const IssueItem: StatelessFunctionalComponent<Props> = ({
       }
       {issue.fields.status
         && (
-        <IssueLabel
+        <S.IssueLabel
           backgroundColor={getStatusColor(issue.fields.status.statusCategory.colorName)}
         >
           {issue.fields.status.name.toUpperCase()}
-        </IssueLabel>
+        </S.IssueLabel>
         )
       }
-    </IssueFieldsContainer>
-  </IssueContainer>
+    </S.IssueFields>
+  </S.Issue>
 );
 
 export default IssueItem;

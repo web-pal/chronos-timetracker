@@ -12,10 +12,7 @@ import {
 import {
   Button,
 } from 'styles/buttons';
-import {
-  PopupContainer,
-  PopupImage,
-} from './styled';
+import * as S from './styled';
 import '../../../assets/stylesheets/main.less';
 
 const {
@@ -27,7 +24,7 @@ type State = {
   maxTime: number,
   currentTime: number,
   lastScreenshotPath: string,
-}
+};
 
 export default class ScreenPopup extends Component<{}, State> {
   constructor(props: {}) {
@@ -60,7 +57,7 @@ export default class ScreenPopup extends Component<{}, State> {
       clearInterval(this.timer);
       this.acceptScreenshot();
     }
-  }
+  };
 
   acceptScreenshot = () => {
     if (!acceptLock) {
@@ -68,20 +65,20 @@ export default class ScreenPopup extends Component<{}, State> {
       ipcRenderer.send('screenshot-accept');
       remote.getCurrentWindow().destroy();
     }
-  }
+  };
 
   rejectScreenshot = () => {
     ipcRenderer.send('screenshot-reject');
     remote.getCurrentWindow().destroy();
-  }
+  };
 
   render() {
     const { lastScreenshotPath, currentTime, maxTime } = this.state;
 
     return (
-      <PopupContainer>
+      <S.Popup>
         <Flex column>
-          <PopupImage src={lastScreenshotPath} />
+          <S.PopupImage src={lastScreenshotPath} />
           <Flex row justifyCenter style={{ fontSize: '1.5em' }}>
             {maxTime - currentTime}
           </Flex>
@@ -107,7 +104,7 @@ export default class ScreenPopup extends Component<{}, State> {
             </Button>
           </Flex>
         </Flex>
-      </PopupContainer>
+      </S.Popup>
     );
   }
 }

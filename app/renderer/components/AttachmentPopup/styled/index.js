@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const MainAttachmentContainer = styled.div`
+export const MainAttachment = styled.div`
   position: absolute;
   width:100%;
   height: 100vh;
@@ -11,20 +11,20 @@ export const MainAttachmentContainer = styled.div`
   background: rgb(64,64,64);
 `;
 
-export const HeaderContainer = styled.div`
+export const Header = styled.div`
   width: 100%;
   height: 50px;
   background:black;
   display: flex;   
 `;
 
-export const TitleContainer = styled.div`
+export const Title = styled.div`
   display: flex;
   align-items: center;
   width: 50%;
 `;
 
-export const DownloadButtonContainer = styled.div`
+export const MainDownloadButton = styled.div`
   display:flex;
   justify-content:flex-end;
   align-items: center;
@@ -60,20 +60,20 @@ export const DownloadButtonIcon = styled.img`
   height: 16px;
 `;
 
-export const MainContentContainer = styled.div`
+export const MainContent = styled.div`
   width: 100%;
   height: 70%;
   display:flex;
 `;
 
-export const LeftButtonContainer = styled.div`
+export const LeftButton = styled.div`
   display:flex;
   align-items:center;
   width: 20%;
   height:100%;  
 `;
 
-export const RightButtonContainer = styled.div`
+export const RightButton = styled.div`
   display:flex;
   align-items:center;
   justify-content:flex-end;
@@ -81,7 +81,7 @@ export const RightButtonContainer = styled.div`
   height:100%;
 `;
 
-export const MainImageContainer = styled.div`
+export const MainImage = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -98,7 +98,7 @@ export const AttachmentImage = styled.img`
   cursor: ${props => (props.zoom < 4 ? 'zoom-in' : 'zoom-out')};
 `;
 
-export const LeftButton = styled.button`
+export const LeftButtonView = styled.button`
   width:60px;
   height:100px;
   outline:none;
@@ -113,7 +113,7 @@ export const LeftButton = styled.button`
   }
 `;
 
-export const RightButton = styled.button`
+export const RightButtonView = styled.button`
   width:60px;
   height:100px;
   outline:none;

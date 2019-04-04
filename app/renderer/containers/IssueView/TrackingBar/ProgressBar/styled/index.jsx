@@ -4,7 +4,7 @@ import {
   Flex,
 } from 'components';
 
-export const ProgressBarContainer = styled(Flex).attrs({
+export const ProgressBar = styled(Flex).attrs({
   alignCenter: true,
 })`
   position: absolute;

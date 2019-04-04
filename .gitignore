@@ -54,3 +54,4 @@ screenshots/*
 package-lock\.json
 
 sentry.properties
+prod-env.sh

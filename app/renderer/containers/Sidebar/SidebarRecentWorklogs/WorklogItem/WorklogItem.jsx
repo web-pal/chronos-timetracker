@@ -18,14 +18,7 @@ import Button from '@atlaskit/button';
 import {
   Flex,
 } from 'components';
-import {
-  WorklogItemContainer,
-  Summary,
-  IssueKey,
-  Time,
-  IssueMeta,
-  IssueType,
-} from './styled';
+import * as S from './styled';
 
 
 type Props = {
@@ -45,26 +38,26 @@ const WorklogItem: StatelessFunctionalComponent<Props> = ({
   showShowButton,
   onClickShow,
 }: Props): Node =>
-  <WorklogItemContainer
+  <S.WorklogItem
     isSelected={active}
     onClick={() => {
       selectIssue(issue.id);
     }}
   >
     <Flex column>
-      <Summary>{issue.fields.summary}</Summary>
-      <IssueMeta>
+      <S.Summary>{issue.fields.summary}</S.Summary>
+      <S.IssueMeta>
         <Tooltip
           description={issue.fields.issuetype.name}
           position="bottom"
         >
-          <IssueType
+          <S.IssueType
             type={issue.fields.issuetype.name}
             src={issue.fields.issuetype.iconUrl}
             alt="type"
           />
         </Tooltip>
-        <IssueKey>{issue.key}</IssueKey>
+        <S.IssueKey>{issue.key}</S.IssueKey>
         {(issue.comment && issue.comment !== '') &&
           <Tooltip
             description={issue.comment || 'No comment'}
@@ -77,14 +70,14 @@ const WorklogItem: StatelessFunctionalComponent<Props> = ({
             />
           </Tooltip>
         }
-      </IssueMeta>
+      </S.IssueMeta>
     </Flex>
     {showShowButton &&
       <Button onClick={() => onClickShow(issue.id)}>
         show
       </Button>
     }
-    <Time>{worklog.timeSpent}</Time>
-  </WorklogItemContainer>;
+    <S.Time>{worklog.timeSpent}</S.Time>
+  </S.WorklogItem>;
 
 export default WorklogItem;

@@ -10,10 +10,7 @@ import {
   stj,
 } from 'utils/time-util';
 
-import {
-  Percentage,
-  ProgressBarContainer,
-} from './styled';
+import * as S from './styled';
 
 import ProgressBarFill from './ProgressBarFill';
 
@@ -31,8 +28,9 @@ const ProgressBar: StatelessFunctionalComponent<Props> = ({
   const percentage = Math.round((loggedTotal / (loggedTotal + remaining)) * 100);
 
   return (
-    <ProgressBarContainer>
-      {remaining > 0 &&
+    <S.ProgressBar>
+      {remaining > 0
+        && (
         <ProgressBarFill
           name="remaining"
           label="Remaining"
@@ -41,6 +39,7 @@ const ProgressBar: StatelessFunctionalComponent<Props> = ({
           time={stj(remaining)}
           style={{ alignItems: 'flex-end' }}
         />
+        )
       }
       <ProgressBarFill
         name="logged-total"
@@ -50,10 +49,10 @@ const ProgressBar: StatelessFunctionalComponent<Props> = ({
         time={stj(loggedTotal)}
         style={(remaining === 0) ? { alignItems: 'flex-end' } : { alignItems: 'flex-start' }}
       />
-      {remaining > 0 &&
-        <Percentage>{percentage}%</Percentage>
+      {remaining > 0
+        && <S.Percentage>{percentage}%</S.Percentage>
       }
-    </ProgressBarContainer>
+    </S.ProgressBar>
   );
 };
 

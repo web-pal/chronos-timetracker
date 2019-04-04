@@ -52,15 +52,6 @@ export const setModalState = (
   },
 });
 
-export const setIssuesFilters = (
-  filterType: string,
-  value: Array<string | boolean>,
-): UiAction => ({
-  type: actionTypes.SET_ISSUES_FILTER,
-  filterType,
-  value,
-});
-
 export const addFlag = (
   payload: any,
 ): UiAction => ({

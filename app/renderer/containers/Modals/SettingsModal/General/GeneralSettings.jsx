@@ -28,10 +28,7 @@ import type {
   SettingsGeneral,
 } from 'types';
 
-import {
-  SettingsSectionContent,
-  ContentLabel,
-} from './styled';
+import * as S from './styled';
 
 
 type Props = {
@@ -54,10 +51,10 @@ const GeneralSettings: StatelessFunctionalComponent<Props> = ({
   const showLoggedOnStop = !!settings.showLoggedOnStop;
   // const isTimerHidden = false;
   return (
-    <SettingsSectionContent>
-      <ContentLabel>
+    <S.SettingsSectionContent>
+      <S.ContentLabel>
         General
-      </ContentLabel>
+      </S.ContentLabel>
       <Flex column>
         <H100 style={{ margin: '0 0 4px 6px' }}>
           Configure whether to show icon and timer in the menu bar when tracking
@@ -108,7 +105,7 @@ const GeneralSettings: StatelessFunctionalComponent<Props> = ({
         </H100>
         <br />
       </Flex>
-    </SettingsSectionContent>
+    </S.SettingsSectionContent>
   );
 };
 
