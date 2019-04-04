@@ -6,6 +6,7 @@ import {
 import {
   shell,
 } from 'electron';
+import moment from 'moment';
 
 import type {
   StatelessFunctionalComponent,
@@ -19,6 +20,7 @@ import type {
 } from 'types';
 
 import {
+  getBaseUrl,
   getSelectedIssue,
   getSelectedIssueEpic,
 } from 'selectors';
@@ -32,6 +34,9 @@ import {
   getStatusColor,
   getEpicColor,
 } from 'utils/jiraColors-util';
+import {
+  openURLInBrowser,
+} from 'utils/external-open-util';
 
 import DescriptionSectionAttachment from 'components/DescriptionSectionAttachment';
 import DataRenderer from '../DataRenderer';
@@ -41,6 +46,7 @@ import * as S from './styled';
 type Props = {
   issue: Issue,
   dispatch: any,
+  baseUrl: string,
   epic: Issue & {
     color: string,
     name: string,
@@ -50,6 +56,7 @@ type Props = {
 const IssueDetails: StatelessFunctionalComponent<Props> = ({
   issue,
   epic,
+  baseUrl,
   dispatch,
 }: Props): Node => {
   const {
@@ -61,8 +68,16 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
     status,
     labels,
     reporter,
+    assignee,
     resolution,
+    created,
+    updated,
   } = issue.fields;
+  console.log('-------');
+  console.log(epic);
+  console.log(epic?.name);
+  console.log(epic?.color);
+  console.log('-------');
   return (
     <S.IssueDetailsContainer>
       <Flex row spaceBetween>
@@ -155,11 +170,35 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
                   </S.DetailsValue>
                   )
                 }
-                  {labels.map(v => <Label key={v}>{v}</Label>)}
+                  {labels.map(v => <S.Label key={v}>{v}</S.Label>)}
                 </div>
               )
               : 'None'
             }
+          </Flex>
+
+          <Flex row spaceBetween>
+            <S.DetailsLabel>
+              Created:
+            </S.DetailsLabel>
+            <S.DetailsValue>
+              {created
+                ? moment(created).format('DD, MMMM YYYY')
+                : 'None'
+              }
+            </S.DetailsValue>
+          </Flex>
+
+          <Flex row spaceBetween>
+            <S.DetailsLabel>
+              Updated:
+            </S.DetailsLabel>
+            <S.DetailsValue>
+              {updated
+                ? moment(updated).format('DD, MMMM YYYY')
+                : 'None'
+              }
+            </S.DetailsValue>
           </Flex>
 
         </S.DetailsColumn>
@@ -228,6 +267,7 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
                 ? (
                   <S.IssueLabel
                     backgroundColor={getEpicColor(epic.color)}
+                    onClick={openURLInBrowser(`${baseUrl}/browse/${epic.key}`)}
                   >
                     {epic.name}
                   </S.IssueLabel>
@@ -244,6 +284,18 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
             <S.DetailsValue>
               {reporter
                 ? reporter.displayName
+                : 'None'
+              }
+            </S.DetailsValue>
+          </Flex>
+
+          <Flex row spaceBetween>
+            <S.DetailsLabel>
+              Assignee:
+            </S.DetailsLabel>
+            <S.DetailsValue>
+              {assignee
+                ? assignee?.displayName
                 : 'None'
               }
             </S.DetailsValue>
@@ -303,6 +355,7 @@ function mapStateToProps(state) {
   return {
     issue: getSelectedIssue(state),
     epic: getSelectedIssueEpic(state),
+    baseUrl: getBaseUrl(state),
   };
 }
 

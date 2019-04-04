@@ -40,6 +40,7 @@ export const IssueLabel = styled.span`
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+  cursor: pointer;
 `;
 
 export const IssueEpic = styled.span`
