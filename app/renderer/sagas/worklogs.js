@@ -37,6 +37,10 @@ import {
   scrollToIndexRequest,
 } from './ui';
 
+import {
+  version,
+} from '../../package.json';
+
 
 export function* getAdditionalWorklogsForIssues(
   incompleteIssues: Array<any>,
@@ -226,6 +230,7 @@ export function* saveWorklog({
       `Worklog uploaded (${isAuto ? 'Automatic' : 'Manual'})`,
       {
         timeSpentInSeconds,
+        version,
       },
     );
     yield eff.put(uiActions.setUiState({
