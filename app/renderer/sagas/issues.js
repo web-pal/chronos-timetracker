@@ -653,7 +653,14 @@ export function* assignIssueToUser({ issueId }: {
           issueIdOrKey: issue.key,
         },
         body: {
-          key: userData.key,
+          ...(
+            userData.accountId
+              ? ({
+                accountId: userData.accountId,
+              }) : ({
+                key: userData.key,
+              })
+          ),
         },
       },
     );
@@ -714,6 +721,10 @@ export function* fetchEpics(): Generator<*, void, *> {
   try {
     yield eff.put(actions.pending());
     yield eff.call(infoLog, 'fetching epics');
+    const issuesFields = yield eff.call(jiraApi.getAllIssueFields);
+    const epicNameField = issuesFields.find(f => f.name === 'Epic Name');
+    const epicColorField = issuesFields.find(f => f.name === 'Epic Color');
+    const epicLinkField = issuesFields.find(f => f.name === 'Epic Link');
     const response = yield eff.call(
       jiraApi.searchForIssues,
       {
@@ -721,7 +732,24 @@ export function* fetchEpics(): Generator<*, void, *> {
           startAt: 0,
           maxResults: 100,
           jql: "issuetype = 'Epic'",
-          fields: ISSUE_FIELDS,
+          fields: [
+            ISSUE_FIELDS,
+            ...(
+              epicNameField?.id
+                ? [epicNameField.id]
+                : []
+            ),
+            ...(
+              epicColorField?.id
+                ? [epicColorField.id]
+                : []
+            ),
+            ...(
+              epicLinkField?.id
+                ? [epicLinkField.id]
+                : []
+            ),
+          ],
         },
       },
     );
@@ -738,7 +766,24 @@ export function* fetchEpics(): Generator<*, void, *> {
                       startAt: (i + 1) * response.maxResults,
                       maxResults: response.maxResults,
                       jql: "issuetype = 'Epic'",
-                      fields: ISSUE_FIELDS,
+                      fields: [
+                        ISSUE_FIELDS,
+                        ...(
+                          epicNameField?.id
+                            ? [epicNameField.id]
+                            : []
+                        ),
+                        ...(
+                          epicColorField?.id
+                            ? [epicColorField.id]
+                            : []
+                        ),
+                        ...(
+                          epicLinkField?.id
+                            ? [epicLinkField.id]
+                            : []
+                        ),
+                      ],
                     },
                   },
                 )),
