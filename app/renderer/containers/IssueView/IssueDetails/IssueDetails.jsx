@@ -73,11 +73,6 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
     created,
     updated,
   } = issue.fields;
-  console.log('-------');
-  console.log(epic);
-  console.log(epic?.name);
-  console.log(epic?.color);
-  console.log('-------');
   return (
     <S.IssueDetailsContainer>
       <Flex row spaceBetween>
