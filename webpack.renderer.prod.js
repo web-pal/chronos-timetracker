@@ -56,7 +56,7 @@ const plugins = [
       'app/node_modules',
       '*.html',
     ],
-    dryRun: false,
+    dryRun: process.env.SENTRY_DRY_RUN === 'true',
     configFile: 'sentry.properties',
     urlPrefix: 'app:///dist',
     release: `${pjson.version}_${process.platform}`,
