@@ -1,6 +1,9 @@
 // @flow
 import React from 'react';
 import {
+  shell,
+} from 'electron';
+import {
   connect,
 } from 'react-redux';
 import {
@@ -159,9 +162,9 @@ const AuthForm: StatelessFunctionalComponent<Props> = ({
     </Flex>
     <S.Hint
       onClick={() => {
-        dispatch(uiActions.setUiState({
-          showAuthDebugConsole: true,
-        }));
+        shell.openExternal(
+          'https://github.com/web-pal/chronos-timetracker/issues',
+        );
       }}
     >
       Can not log in?
