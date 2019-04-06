@@ -86,8 +86,8 @@ function* idleWindow() {
         showOnReady: false,
         BrowserWindow: remote.BrowserWindow,
         options: {
-          width: 480,
-          height: 150,
+          width: 510,
+          height: 160,
           frame: false,
           resizable: false,
           alwaysOnTop: true,
