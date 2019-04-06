@@ -18,6 +18,7 @@ import App from './containers/App';
 import store from './store';
 
 import './assets/stylesheets/main.less';
+import pjson from '../package.json';
 
 require('smoothscroll-polyfill').polyfill();
 
@@ -28,6 +29,7 @@ setConfig({
 if (process.env.NODE_ENV === 'production') {
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
+    release: `${pjson.version}_${process.platform}`,
     enableNative: false,
   });
 }
