@@ -12,7 +12,7 @@ import {
 import * as S from './styled';
 
 
-const NoIssues: StatelessFunctionalComponent<*> = (): Node =>
+const NoIssues: StatelessFunctionalComponent<*> = (): Node => (
   <S.NoIssues>
     <S.NoIssuesImage
       src={noIssuesImage}
@@ -24,6 +24,7 @@ const NoIssues: StatelessFunctionalComponent<*> = (): Node =>
     <S.Subtitle>
       Try to change filters and try again
     </S.Subtitle>
-  </S.NoIssues>;
+  </S.NoIssues>
+);
 
 export default NoIssues;

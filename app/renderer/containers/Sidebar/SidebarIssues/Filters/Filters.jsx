@@ -82,7 +82,12 @@ const SidebarFilters: StatelessFunctionalComponent<Props> = ({
       ) : (
         <S.FilterItems>
           <S.FilterItem>
-            <Flex padding="10px 0 0 10px" align="center" width="100%" spacing={4}>
+            <Flex
+              padding="10px 0 0 10px"
+              align="center"
+              width="100%"
+              spacing={4}
+            >
               <H200>
                 Order by {filters?.orderBy?.label || 'Created'}
               </H200>
@@ -105,9 +110,17 @@ const SidebarFilters: StatelessFunctionalComponent<Props> = ({
                 {
                   filters?.orderType === 'DESC'
                     ? (
-                      <ArrowDownIcon size="small" label="DESC" primaryColor="#6B778C" />
+                      <ArrowDownIcon
+                        size="small"
+                        label="DESC"
+                        primaryColor="#6B778C"
+                      />
                     ) : (
-                      <ArrowUpIcon size="small" label="ASC" primaryColor="#6B778C" />
+                      <ArrowUpIcon
+                        size="small"
+                        label="ASC"
+                        primaryColor="#6B778C"
+                      />
                     )
                 }
               </Flex>
@@ -128,7 +141,11 @@ const SidebarFilters: StatelessFunctionalComponent<Props> = ({
                     borderRadius="3px"
                     innerRef={ref}
                   >
-                    <HipchatChevronDownIcon size="small" label="Order" primaryColor="#6B778C" />
+                    <HipchatChevronDownIcon
+                      size="small"
+                      label="Order"
+                      primaryColor="#6B778C"
+                    />
                   </Flex>
                 )}
                 options={orderableFields}

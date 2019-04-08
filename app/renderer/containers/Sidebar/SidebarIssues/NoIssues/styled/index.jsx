@@ -23,6 +23,7 @@ export const Title = styled.span`
   line-height: 24px;
   letter-spacing: -0.24px;
 `;
+
 export const Subtitle = styled.span`
   margin-bottom: 20px;
   margin: 6px;
@@ -32,7 +33,7 @@ export const Subtitle = styled.span`
   font-style: normal;
   line-height: 20px;
 `;
+
 export const NoIssuesImage = styled.img`
   width: 140px;
 `;
-

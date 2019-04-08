@@ -210,7 +210,7 @@ export function* saveWorklog({
           worklogs: [
             ...new Set([
               worklog.id,
-              ...issue.fields.worklogs,
+              ...(issue?.fields?.worklogs || []),
             ]),
           ],
         },

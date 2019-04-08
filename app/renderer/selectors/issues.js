@@ -134,9 +134,10 @@ export const getSelectedIssueWorklogs = createSelector(
     issue: Issue,
     worklogsMap: WorklogsResources,
   ) => (
-    issue ?
-      issue.fields.worklogs.map(id => worklogsMap[id]).sort(worklogSorter) :
-      []
+    issue?.fields?.worklogs
+      ? (
+        issue.fields.worklogs.map(id => worklogsMap[id]).sort(worklogSorter)
+      ) : []
   ),
 );
 

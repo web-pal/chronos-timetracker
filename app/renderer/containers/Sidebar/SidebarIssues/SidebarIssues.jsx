@@ -81,18 +81,18 @@ const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
   registerInfiniteNode,
   dispatch,
   baseUrl,
-}: Props): Node =>
+}: Props): Node => (
   <S.ListContainer>
     <IssuesHeader />
-    {sidebarFiltersIsOpen &&
+    {sidebarFiltersIsOpen && (
       <Filters />
-    }
+    )}
     <InfiniteLoader
       isRowLoaded={({ index }) => !!issues[index]}
       rowCount={totalCount}
       ref={registerInfiniteNode}
       minimumBatchSize={50}
-      loadMoreRows={({ startIndex, stopIndex }) =>
+      loadMoreRows={({ startIndex, stopIndex }) => (
         new Promise((resolve) => {
           dispatch(issuesActions.fetchIssuesRequest({
             startIndex,
@@ -100,7 +100,7 @@ const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
             resolve,
           }));
         })
-      }
+      )}
     >
       {({
         onRowsRendered,
@@ -129,19 +129,21 @@ const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
                   return (
                     <div style={style} key={key}>
                       <ErrorBoundary debugData={item}>
-                        {(item && item !== 'pending') ?
-                          <IssueItem
-                            issue={item}
-                            active={selectedIssueId === item.id}
-                            tracking={trackingIssueId === item.id}
-                            baseUrl={baseUrl}
-                            selectIssue={(issueId) => {
-                              dispatch(uiActions.setUiState({
-                                selectedIssueId: issueId,
-                                selectedWorklogId: null,
-                              }));
-                            }}
-                          /> : (
+                        {(item && item !== 'pending')
+                          ? (
+                            <IssueItem
+                              issue={item}
+                              active={selectedIssueId === item.id}
+                              tracking={trackingIssueId === item.id}
+                              baseUrl={baseUrl}
+                              selectIssue={(issueId) => {
+                                dispatch(uiActions.setUiState({
+                                  selectedIssueId: issueId,
+                                  selectedWorklogId: null,
+                                }));
+                              }}
+                            />
+                          ) : (
                             <IssueItemPlaceholder />
                           )
                         }
@@ -155,7 +157,8 @@ const SidebarAllItems: StatelessFunctionalComponent<Props> = ({
         );
       }}
     </InfiniteLoader>
-  </S.ListContainer>;
+  </S.ListContainer>
+);
 
 function mapStateToProps(state) {
   const projectsFetching = getResourceStatus(
@@ -208,10 +211,12 @@ export default compose(
       saveOnRowsRenderedFunction: () => (f) => {
         onRowsRendered = f;
       },
-      resetLoadMoreRowsCache: () => () =>
-        infiniteNode.resetLoadMoreRowsCache(),
-      tellInfiniteLoaderToLoadRows: () => () =>
-        onRowsRendered(lastRenderedRows),
+      resetLoadMoreRowsCache: () => () => (
+        infiniteNode.resetLoadMoreRowsCache()
+      ),
+      tellInfiniteLoaderToLoadRows: () => () => (
+        onRowsRendered(lastRenderedRows)
+      ),
     };
   }),
   lifecycle({

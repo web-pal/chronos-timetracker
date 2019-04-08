@@ -14,4 +14,3 @@ export function* getWorklogTypes() {
     console.log(err);
   }
 }
-
