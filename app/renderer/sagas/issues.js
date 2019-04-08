@@ -79,7 +79,7 @@ const ISSUE_FIELDS = [
 const normalizeIssues = issues => {
   try {
     return issues.reduce((acc, issue) => {
-      const worklogs = issue.fields.worklog ? issue.fields.worklog.worklogs : [];
+      const worklogs = issue?.fields?.worklog?.worklogs || [];
       acc.entities.worklogs =
         worklogs.reduce(
           (wacc, worklog) => {
@@ -793,11 +793,17 @@ export function* fetchEpics(): Generator<*, void, *> {
           []
         )
     );
-    const issues = [
+    const allIssues = [
       ...response.issues,
     ].concat(...additionalIssues.map(i => i.issues));
+    const issues = yield eff.call(
+      fetchAdditionalWorklogsForIssues,
+      allIssues,
+    );
+    const normalizedIssues = normalizeIssues(issues);
     yield eff.put(actions.succeeded({
-      resources: issues,
+      resources: normalizedIssues.result,
+      includedResources: normalizedIssues.entities,
     }));
     yield eff.call(infoLog, 'got epics', issues);
   } catch (err) {
