@@ -63,47 +63,26 @@ yarn
 ```
 Run dev process:
 ```
-yarn run dev
+yarn dev
 ```
 
 ## Packaging
-To package an app for production, please ensure that `MIXPANEL_API_TOKEN` and `SENTRY_API_KEY`
-env variables are set.
+To package an app for production, please ensure that env variables are set.
 
 ```
-  export MIXPANEL_API_TOKEN=<your_mixpanel_api_token>
+  export DEBUG_PROD=<true|false>
+  export DISABLE_MIXPANEL=<0|1>
+  export SENTRY_DRY_RUN=<true|false>
+  export GH_TOKEN=<github_token>
   export SENTRY_API_KEY=<your_sentry_api_key>
-```
-
-If you don't want to use sentry of mixpanel, you can toggle them with enc variables `DISABLE_MIXPANEL=1` or `DISABLE_SENTRY=1`
-
-```
-  export DISABLE_MIXPANEL=1
-  export DISABLE_SENTRY=1
+  export MIXPANEL_API_TOKEN=<your_mixpanel_api_token>
 ```
 
 Then you can package an app with:
 
 #### will include uploading sentry artifacts
 ```
-  yarn package
-```
-
-#### will **exclude* uploading sentry artifacts
-```
-  cross-env UPLOAD_SENTRY=0 yarn package
-```
-
-
-#### will include uploading release to a github
-```
-  yarn package-release
-```
-
-
-#### will include chrome development tools on production for debugging purposes
-```
-  yarn package-dev
+  yarn build && yarn release
 ```
 
 ## State architecture
