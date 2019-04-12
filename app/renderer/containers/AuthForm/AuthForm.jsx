@@ -41,8 +41,6 @@ import CloudLoginStep from './CloudLoginStep';
 import SelfHostLoginStep from './SelfHostLoginStep';
 import AccountsStep from './AccountsStep';
 
-import AuthDebugger from './AuthDebugger';
-
 import * as S from './styled';
 
 import {
@@ -50,7 +48,6 @@ import {
 } from './utils';
 
 type Props = {
-  showAuthDebugConsole: boolean,
   authRequestInProcess: boolean,
   authError: string,
   authFormIsComplete: boolean,
@@ -61,7 +58,6 @@ type Props = {
 };
 
 const AuthForm: StatelessFunctionalComponent<Props> = ({
-  showAuthDebugConsole,
   authRequestInProcess,
   authFormIsComplete,
   authError,
@@ -71,7 +67,6 @@ const AuthForm: StatelessFunctionalComponent<Props> = ({
   dispatch,
 }: Props): Node => (
   <S.Container>
-    <AuthDebugger show={showAuthDebugConsole} />
     <S.Logo
       src={logoShadowed}
       alt="Chronos"
@@ -182,7 +177,6 @@ const connector: Connector<{}, Props> = connect(
     authFormIsComplete: getUiState('authFormIsComplete')(state),
     authRequestInProcess: getUiState('authRequestInProcess')(state),
     accounts: getUiState('accounts')(state),
-    showAuthDebugConsole: getUiState('showAuthDebugConsole')(state),
   }),
   dispatch => ({ dispatch }),
 );

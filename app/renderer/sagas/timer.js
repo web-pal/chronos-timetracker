@@ -18,16 +18,19 @@ import {
   actionTypes,
   uiActions,
   timerActions,
+  screenshotsActions,
 } from 'actions';
 import {
   trayActions,
 } from 'shared/actions';
 import {
   getTimerState,
-  getSettingsState,
   getUiState,
   getTrackingIssue,
 } from 'selectors';
+import {
+  randomIntFromInterval,
+} from 'utils/random';
 
 import {
   notify,
@@ -83,9 +86,10 @@ function* idleWindow() {
             ? 'http://localhost:3000/idlePopup.html'
             : `file://${__dirname}/idlePopup.html`
         ),
-        showOnReady: false,
+        showOnReady: true,
         BrowserWindow: remote.BrowserWindow,
         options: {
+          show: false,
           width: 510,
           height: 160,
           frame: false,
@@ -121,15 +125,17 @@ function* idleWindow() {
 
 function* setTimeToTray() {
   const time = yield eff.select(getTimerState('time'));
-  const localDesktopSettings = yield eff.select(getSettingsState('localDesktopSettings'));
-  const { trayShowTimer } = localDesktopSettings;
+  const trayShowTimer = yield eff.select(getUiState('trayShowTimer'));
   if (trayShowTimer) {
     const humanFormat = new Date(time * 1000).toISOString().substr(11, 5);
     remote.getGlobal('tray').setTitle(humanFormat);
   }
 }
 
-function* handleTick(timerChannel) {
+function* handleTick({
+  timerChannel,
+  screenshotsEnabled,
+}) {
   let idleWindowTask = null;
   while (true) {
     yield eff.take(timerChannel);
@@ -149,6 +155,19 @@ function* handleTick(timerChannel) {
     ) {
       idleWindowTask = yield eff.fork(idleWindow);
     }
+    if (
+      screenshotsEnabled
+      && !showIdleWindow
+    ) {
+      const screenshotTime = yield eff.select(getUiState('screenshotTime'));
+      const time = yield eff.select(getTimerState('time'));
+      if (time === screenshotTime) {
+        yield eff.put(screenshotsActions.takeScreenshotRequest({
+          isTest: false,
+          time,
+        }));
+      }
+    }
   }
 }
 
@@ -158,8 +177,29 @@ function* timerFlow() {
     trackingIssueId: selectedIssueId,
   }));
   yield eff.put(trayActions.trayStartTimer());
+
+  const screenshotsEnabled = yield eff.select(getUiState('screenshotsEnabled'));
+  if (screenshotsEnabled) {
+    const screenshotsPeriod = (
+      config.screenshotsPeriod < 30
+        ? 30
+        : config.screenshotsPeriod
+    );
+    // 5 - screenshotsPeriod
+    const firstScreenshotTime = randomIntFromInterval(5, screenshotsPeriod);
+    yield eff.put(uiActions.setUiState({
+      screenshotTime: firstScreenshotTime,
+    }));
+  }
+
   const timerChannel = yield eff.call(createTimerChannel);
-  const tickTask = yield eff.fork(handleTick, timerChannel);
+  const tickTask = yield eff.fork(
+    handleTick,
+    {
+      timerChannel,
+      screenshotsEnabled,
+    },
+  );
 
   while (true) {
     const { closeRequest } = yield eff.take(actionTypes.STOP_TIMER_REQUEST);
@@ -192,7 +232,7 @@ function* timerFlow() {
           }
         }
       } else {
-        const { allowEmptyComment } = yield eff.select(getSettingsState('localDesktopSettings'));
+        const allowEmptyComment = yield eff.select(getUiState('allowEmptyComment'));
         const comment = yield eff.select(getUiState('worklogComment'));
         if (!allowEmptyComment && !comment) {
           yield eff.fork(notify, {

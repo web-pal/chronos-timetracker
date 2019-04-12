@@ -14,12 +14,21 @@ export const persistInitialState = {
   issuesSearch: '',
   issuesFilters: {},
 
+  trayShowTimer: true,
+  allowEmptyComment: true,
+  showLoggedOnStop: false,
+  updateChannel: 'stable',
+  updateAutomatically: false,
+
   postAlsoAsIssueComment: false,
-  screenshotsAllowed: false,
+  screenshotsEnabled: false,
+  screenshotDecisionTime: 5,
 
   issuesSourceType: null,
   issuesSourceId: null,
   issuesSprintId: null,
+
+  adjustStartTime: true,
 };
 
 
@@ -36,12 +45,13 @@ const initialState: UiState = {
   hostname: null,
   protocol: null,
 
-  showAuthDebugConsole: false,
-  authDebugMessages: [],
-
   confirmUnload: false,
   saveWorklogInProcess: false,
   saveFilterDialogOpen: false,
+
+  takeScreenshotLoading: false,
+  screenshotTime: null,
+  screenshots: [],
 
   updateAvailable: null,
   downloadedUpdate: false,
@@ -68,6 +78,8 @@ const initialState: UiState = {
   isCommentDialogOpen: false,
   filterStatusesIsFetched: false,
   commentAdding: false,
+
+  settingsTab: 'General',
 
   modalState: {
     alert: false,
@@ -155,12 +167,12 @@ export default function ui(
           [action.payload.modalName]: action.payload.state,
         },
       };
-    case actionTypes.ADD_AUTH_DEBUG_MESSAGE:
+    case actionTypes.ADD_SCREENSHOT:
       return {
         ...state,
-        authDebugMessages: [
-          ...state.authDebugMessages,
-          ...action.payload,
+        screenshots: [
+          ...state.screenshots,
+          action.payload,
         ],
       };
     case actionTypes.ADD_FLAG:

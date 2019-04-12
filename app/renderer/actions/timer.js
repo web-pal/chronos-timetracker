@@ -20,8 +20,9 @@ export const stopTimer = (): TimerAction => ({
   type: types.STOP_TIMER,
 });
 
-export const continueTimer = (): TimerAction => ({
-  type: types.CONTINUE_TIMER,
+export const setTime = (payload): TimerAction => ({
+  type: types.SET_TIME,
+  payload,
 });
 
 export const stopTimerRequest = (closeRequest = false): TimerAction => ({
@@ -36,31 +37,8 @@ export const setIdleState = (
   payload,
 });
 
-export const setLastScreenshotTime = (
-  payload: number,
-): TimerAction => ({
-  type: types.SET_LAST_SCREENSHOT_TIME,
-  payload,
-});
-
 export const resetTimer = (): TimerAction => ({
   type: types.RESET_TIMER,
-});
-
-export const addScreenshot = (
-  screenshot: any,
-  screenshotTime: number,
-): TimerAction => ({
-  type: types.ADD_SCREENSHOT,
-  screenshot,
-  screenshotTime,
-});
-
-export const setScreenshotPeriods = (
-  payload: Array<number>,
-): TimerAction => ({
-  type: types.SET_SCREENSHOT_PERIODS,
-  payload,
 });
 
 export const keepIdleTime = (

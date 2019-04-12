@@ -1,132 +1,427 @@
 import * as eff from 'redux-saga/effects';
-import path from 'path';
 import fs from 'fs';
-import {
-  timerActions,
-} from 'actions';
-import Raven from 'raven-js';
+import path from 'path';
 import {
   remote,
 } from 'electron';
+import mergeImages from 'merge-images';
+import screenshot from 'screenshot-desktop';
+
 import {
-  getUiState,
+  actionTypes,
+  screenshotsActions,
+  timerActions,
+  uiActions,
+} from 'actions';
+import {
   getUserData,
-  getTimerState,
-  getSettingsState,
+  getUiState,
 } from 'selectors';
+import {
+  actionTypes as sharedActionTypes,
+} from 'shared/actions';
+import {
+  windowsManagerSagas,
+} from 'shared/sagas';
+import {
+  chronosApi,
+} from 'api';
+import {
+  randomIntFromInterval,
+} from 'utils/random';
+import config from 'config';
 
 import {
   throwError,
 } from './ui';
 
-const Api = () => 'deprecated';
+const { app } = remote.require('electron');
 
-export function* uploadScreenshot({
-  screenshotTime,
-  timestamp,
-  lastScreenshotPath,
-  lastScreenshotThumbPath,
-}) {
+
+function* ensureDirectoryExistence(filePath) {
+  const dirname = path.dirname(filePath);
   try {
-    // yield put({ type: types.SET_SCREENSHOT_UPLOAD_STATE, payload: true });
-
-    const isOffline = lastScreenshotPath.includes('offline_screens');
-    const fileName = path.basename(lastScreenshotPath);
-    const thumbFilename = path.basename(lastScreenshotThumbPath);
-
-    if (!isOffline) {
-      yield eff.put(timerActions.setLastScreenshotTime(screenshotTime));
-    }
-
-    // upload screenshot
-    const image = yield eff.cps(fs.readFile, lastScreenshotPath);
-    const { url } = yield eff.call(Api.signUploadUrlForS3Bucket, fileName);
-    yield eff.call(Api.uploadScreenshotOnS3Bucket, { url, image });
-
-    // upload thumb
-    const thumbImage = yield eff.cps(fs.readFile, lastScreenshotThumbPath);
-    const thumbUrlData = yield eff.call(Api.signUploadUrlForS3Bucket, thumbFilename);
-    yield eff.call(Api.uploadScreenshotOnS3Bucket, { url: thumbUrlData.url, image: thumbImage });
-
-    const currentScreenshot = `${remote.getGlobal('appDir')}/current_screenshots/${fileName}`;
-
-    yield eff.call(fs.writeFileSync, currentScreenshot, image);
-
-    const screenshot = {
-      fileName,
-      screenshotTime,
-      thumbFilename,
-      timestamp,
-    };
-
-    yield eff.put(timerActions.addScreenshot(screenshot, screenshotTime));
-    yield eff.cps(fs.unlink, lastScreenshotPath);
-
-    if (lastScreenshotThumbPath.length) {
-      yield eff.cps(fs.unlink, lastScreenshotThumbPath);
-    }
-
-    // yield put({ type: types.SET_SCREENSHOT_UPLOAD_STATE, payload: false });
-  } catch (err) {
-    const fileName = path.basename(lastScreenshotPath);
-    const thumbFilename = path.basename(lastScreenshotThumbPath);
-    const isOffline = lastScreenshotPath.includes('offline_screens');
-    // TODO determine error
-    const mainScreenError = true;
-    const thumbScreenError = true;
-    //
-    if (!isOffline) {
-      if (mainScreenError) {
-        fs.rename(
-          lastScreenshotPath,
-          `${remote.getGlobal('appDir')}/offline_screens/${fileName}`,
-        );
-      }
-      if (thumbScreenError) {
-        fs.rename(
-          lastScreenshotPath,
-          `${remote.getGlobal('appDir')}/offline_screens/${thumbFilename}`,
-        );
-      }
-    }
-    yield eff.call(throwError, err);
-    Raven.captureException(err);
-  }
-}
-
-export function* rejectScreenshot(screenshotPath) {
-  const lastScreenshotTime = yield eff.select(getTimerState('lastScreenshotTime'));
-  const time = yield eff.select(getTimerState('time'));
-  const timeDiff = time - lastScreenshotTime;
-  yield eff.put(timerActions.dismissIdleTime(timeDiff));
-  yield eff.cps(fs.unlink, screenshotPath);
-}
-
-export function* takeScreenshot() {
-  try {
-    const screenshotTime = yield eff.select(getTimerState('time'));
-    const userData = yield eff.select(getUserData);
-    const host = yield eff.select(getUiState('host'));
-    const localDesktopSettings = yield eff.select(getSettingsState('localDesktopSettings'));
-    yield eff.call(
-      Api.makeScreenshot,
-      screenshotTime,
-      userData.key,
-      host.hostname,
-      localDesktopSettings.showScreenshotPreview,
-      localDesktopSettings.screenshotPreviewTime,
-      localDesktopSettings.nativeNotifications,
+    yield eff.cps(
+      fs.access,
+      dirname,
     );
   } catch (err) {
-    yield eff.call(throwError, err);
-    Raven.captureException(err);
+    yield eff.call(
+      ensureDirectoryExistence,
+      dirname,
+    );
+    yield eff.cps(
+      fs.mkdir,
+      dirname,
+    );
   }
 }
 
-export function* cleanExcessScreenshotPeriods() {
-  const currentTime = yield eff.select(getTimerState('time'));
-  const periods = yield eff.select(getSettingsState('screenshotsPeriod'));
-  const newPeriods = periods.filter(p => p > currentTime);
+function loadImageWithDimension(buf) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const src = `data:image/jpeg;base64,${buf.toString('base64')}`;
 
-  yield eff.put(timerActions.setScreenshotPeriods(newPeriods));
+    function fullFill() {
+      if (img.naturalWidth) {
+        const imageObj = {
+          src,
+          naturalWidth: img.naturalWidth,
+          naturalHeight: img.naturalHeight,
+        };
+        resolve(imageObj);
+      } else {
+        reject(new Error(`Failed to load image's URL: ${buf}`));
+      }
+      img.removeEventListener('error', fullFill);
+      img.removeEventListener('load', fullFill);
+    }
+
+    img.addEventListener(
+      'load',
+      fullFill,
+    );
+    img.addEventListener(
+      'error',
+      fullFill,
+    );
+    img.src = src;
+  });
+}
+
+function createImageThumb(src) {
+  return new Promise((resolve, reject) => {
+    const canvas = window.document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    const img = new Image();
+
+    function fullFill() {
+      if (img.naturalWidth) {
+        context.drawImage(img, 0, 0, 300, 150);
+        const thumb = canvas.toDataURL('image/jpeg').replace(/^data:image\/jpeg;base64,/, '');
+        resolve(thumb);
+      } else {
+        reject(new Error(`Failed to load image's URL: ${src}`));
+      }
+      img.removeEventListener('error', fullFill);
+      img.removeEventListener('load', fullFill);
+    }
+
+    img.addEventListener(
+      'load',
+      fullFill,
+    );
+    img.addEventListener(
+      'error',
+      fullFill,
+    );
+    img.src = `file://${src}`;
+  });
+}
+
+// TODO: handle offline
+function* handleScreenshot({
+  imagePath,
+  imageThumbPath,
+  filename,
+  filenameThumb,
+  keepScreenshot,
+  dismissOnlyScreenshot,
+  dismissTimeAndScreenshot,
+  time,
+  timestamp,
+}) {
+  const screenshotsPeriod = (
+    config.screenshotsPeriod < 30
+      ? 30
+      : config.screenshotsPeriod
+  );
+  const screenshotNumber = (Math.floor(time / screenshotsPeriod) + 1);
+  if (
+    keepScreenshot
+    || dismissOnlyScreenshot
+  ) {
+    const screenshotTime = randomIntFromInterval(
+      (screenshotNumber * screenshotsPeriod) + 5,
+      screenshotsPeriod * (screenshotNumber + 1),
+    );
+    yield eff.put(uiActions.setUiState({
+      screenshotTime,
+    }));
+  }
+  if (keepScreenshot) {
+    const thumb = yield eff.call(
+      createImageThumb,
+      imagePath,
+    );
+    yield eff.cps(
+      fs.writeFile,
+      imageThumbPath,
+      thumb,
+      'base64',
+    );
+    const { url: uploadFileUrl } = yield eff.call(
+      chronosApi.signBucketUrl,
+      {
+        body: {
+          filename,
+        },
+      },
+    );
+    const image = yield eff.cps(fs.readFile, imagePath);
+    yield eff.call(
+      chronosApi.uploadScreenshotOnS3Bucket,
+      {
+        url: uploadFileUrl,
+        image,
+      },
+    );
+
+    const { url: uploadThumbFileUrl } = yield eff.call(
+      chronosApi.signBucketUrl,
+      {
+        body: {
+          filename: filenameThumb,
+        },
+      },
+    );
+    const imageThumb = yield eff.cps(fs.readFile, imageThumbPath);
+    yield eff.call(
+      chronosApi.uploadScreenshotOnS3Bucket,
+      {
+        url: uploadThumbFileUrl,
+        image: imageThumb,
+      },
+    );
+    yield eff.put(screenshotsActions.addScreenshot({
+      filename,
+      filenameThumb,
+      time,
+      timestamp,
+      status: 'success',
+    }));
+    yield eff.cps(
+      fs.unlink,
+      imageThumbPath,
+    );
+  }
+  if (dismissOnlyScreenshot) {
+    yield eff.put(screenshotsActions.addScreenshot({
+      time,
+      timestamp,
+      status: 'dismissed',
+    }));
+  }
+  if (dismissTimeAndScreenshot) {
+    yield eff.put(timerActions.setTime(
+      (screenshotNumber - 1) * screenshotsPeriod,
+    ));
+    const screenshotTime = randomIntFromInterval(
+      ((screenshotNumber - 1) * screenshotsPeriod) + 5,
+      screenshotsPeriod * screenshotNumber,
+    );
+    yield eff.put(uiActions.setUiState({
+      screenshotTime,
+    }));
+  }
+  yield eff.cps(
+    fs.unlink,
+    imagePath,
+  );
+}
+
+export function* takeScreenshotRequest() {
+  while (true) {
+    const {
+      isTest,
+      time,
+    } = yield eff.take(actionTypes.TAKE_SCREENSHOT_REQUEST);
+    try {
+      yield eff.put(uiActions.setUiState({
+        takeScreenshotLoading: true,
+      }));
+      const displays = yield eff.call(screenshot.listDisplays);
+      const images = yield eff.all(
+        displays.map(
+          d => eff.call(
+            screenshot,
+            {
+              screen: d.id,
+            },
+          ),
+        ),
+      );
+      const dimensionImages = yield eff.all(images.map(
+        i => eff.call(
+          loadImageWithDimension,
+          i,
+        ),
+      ));
+      const {
+        width,
+        height,
+        imgs,
+      } = dimensionImages.reduce(
+        (acc, i) => ({
+          xPointer: acc.xPointer + i.naturalWidth,
+          width: acc.width + i.naturalWidth,
+          height: acc > i.naturalHeight ? acc : i.naturalHeight,
+          imgs: [
+            ...acc.imgs,
+            {
+              ...i,
+              x: acc.xPointer,
+              y: 0,
+            },
+          ],
+        }),
+        {
+          width: 0,
+          height: 0,
+          xPointer: 0,
+          imgs: [],
+        },
+      );
+      const mergedImages = yield eff.call(
+        mergeImages,
+        imgs,
+        {
+          width,
+          height,
+          format: 'image/jpeg',
+          quality: 0.9,
+        },
+      );
+      const validImage = mergedImages.replace(/^data:image\/jpeg;base64,/, '');
+      const timestamp = new Date().getTime();
+      const userData = yield eff.select(getUserData);
+      const filename = [
+        `${timestamp}`,
+        ...(
+          isTest
+            ? ([
+              '_test_screenshot.jpeg',
+            ]) : ([
+              `_${userData.key || userData.name}`,
+              `_${time}`,
+              '.jpeg',
+            ])
+        ),
+      ].join('');
+      const filenameThumb = [
+        `${timestamp}`,
+        ...(
+          isTest
+            ? ([
+              '_test_screenshot_thumb.jpeg',
+            ]) : ([
+              `_${userData.key || userData.name}`,
+              `_${time}`,
+              '_thumb.jpeg',
+            ])
+        ),
+      ].join('');
+      const imagePath = [
+        `${app.getPath('userData')}/screens/`,
+        filename,
+      ].join('');
+      const imageThumbPath = [
+        `${app.getPath('userData')}/screens/`,
+        filenameThumb,
+      ].join('');
+
+      yield eff.call(
+        ensureDirectoryExistence,
+        imagePath,
+      );
+      yield eff.cps(
+        fs.writeFile,
+        imagePath,
+        validImage,
+        'base64',
+      );
+
+      const win = yield eff.call(
+        windowsManagerSagas.forkNewWindow,
+        {
+          url: (
+            process.env.NODE_ENV === 'development'
+              ? 'http://localhost:3000/screenshotNotification.html'
+              : `file://${__dirname}/screenshotNotification.html`
+          ),
+          showOnReady: true,
+          BrowserWindow: remote.BrowserWindow,
+          options: {
+            show: false,
+            frame: false,
+            alwaysOnTop: process.env.NODE_ENV === 'production',
+            title: 'Screenshot notification popup',
+            webPreferences: {
+              devTools: (
+                config.screenshotNotificationWindowDevtools
+                || process.env.DEBUG_PROD === 'true'
+              ),
+              webSecurity: false,
+            },
+          },
+        },
+      );
+      const readyChannel = yield eff.call(
+        windowsManagerSagas.createWindowChannel,
+        {
+          win,
+          webContentsEvents: [
+            'dom-ready',
+          ],
+        },
+      );
+
+      yield eff.take(readyChannel);
+      yield eff.put(uiActions.setUiState({
+        takeScreenshotLoading: false,
+      }));
+      const decisionTime = (
+        config.screenshotsPeriod < 60
+          ? 5
+          : (
+            yield eff.select(getUiState('screenshotDecisionTime'))
+          )
+      );
+      yield eff.put(screenshotsActions.setNotificationScreenshot({
+        isTest,
+        screenshot: imagePath,
+        decisionTime,
+        scope: [win.id],
+      }));
+      const {
+        keepScreenshot,
+        dismissOnlyScreenshot,
+        dismissTimeAndScreenshot,
+      } = yield eff.race({
+        currentWindowClose: eff.take(sharedActionTypes.WINDOW_BEFORE_UNLOAD),
+        testScreenshotWindowClose: eff.take(actionTypes.TEST_SCREENSHOT_WINDOW_CLOSE),
+        keepScreenshot: eff.take(actionTypes.KEEP_SCREENSHOT),
+        dismissOnlyScreenshot: eff.take(actionTypes.DISMISS_ONLY_SCREENSHOT),
+        dismissTimeAndScreenshot: eff.take(actionTypes.DISMISS_TIME_AND_SCREENSHOT),
+      });
+      win.destroy();
+      yield eff.fork(
+        handleScreenshot,
+        {
+          imagePath,
+          imageThumbPath,
+          filename,
+          filenameThumb,
+          keepScreenshot,
+          dismissOnlyScreenshot,
+          dismissTimeAndScreenshot,
+          time,
+          timestamp,
+        },
+      );
+    } catch (err) {
+      console.log(err);
+      yield eff.call(throwError, err);
+    }
+  }
 }

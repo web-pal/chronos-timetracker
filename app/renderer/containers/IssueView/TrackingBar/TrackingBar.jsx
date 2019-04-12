@@ -21,7 +21,6 @@ import type {
 
 import {
   getUiState,
-  getSettingsState,
   getTrackingIssue,
   getTrackingIssueReport,
   getTimerState,
@@ -189,7 +188,7 @@ function mapStateToProps(state) {
     remainingEstimateNewValue: getUiState('remainingEstimateNewValue')(state),
     remainingEstimateReduceByValue: getUiState('remainingEstimateReduceByValue')(state),
     isCommentDialogOpen: getUiState('isCommentDialogOpen')(state),
-    showLoggedOnStop: getSettingsState('localDesktopSettings')(state).showLoggedOnStop,
+    showLoggedOnStop: getUiState('showLoggedOnStop')(state),
   };
 }
 

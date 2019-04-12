@@ -187,6 +187,8 @@ export function* authFlow(): Generator<*, *, *> {
             port,
             pathname,
             rootApiUrl,
+            name,
+            cookies,
           },
         ),
       );

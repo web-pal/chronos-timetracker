@@ -21,12 +21,6 @@ const plugins = [
     chunks: ['app'],
   }),
   new HtmlWebpackPlugin({
-    template: 'app/renderer/screenPopup.tpl.html',
-    inject: 'body',
-    filename: 'screenPopup.html',
-    chunks: ['screenPopup'],
-  }),
-  new HtmlWebpackPlugin({
     template: 'app/renderer/idlePopup.tpl.html',
     inject: 'body',
     filename: 'idlePopup.html',
@@ -37,6 +31,12 @@ const plugins = [
     inject: 'body',
     filename: 'attachmentWindow.html',
     chunks: ['attachmentWindow'],
+  }),
+  new HtmlWebpackPlugin({
+    template: 'app/renderer/screenshotNotification.tpl.html',
+    inject: 'body',
+    filename: 'screenshotNotification.html',
+    chunks: ['screenshotNotificationPopup'],
   }),
   new BundleAnalyzerPlugin({
     analyzerMode: 'static',

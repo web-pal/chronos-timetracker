@@ -8,6 +8,7 @@ import mixpanel from 'mixpanel-browser';
 
 import {
   jiraApi,
+  chronosApi,
 } from 'api';
 
 import {
@@ -17,13 +18,13 @@ import {
 import {
   getBaseUrl,
   getResourceItemById,
+  getUiState,
 } from 'selectors';
 
 import {
   actionTypes,
   uiActions,
   profileActions,
-  settingsActions,
   resourcesActions,
   issuesActions,
   updaterActions,
@@ -112,6 +113,73 @@ function* initializeMixpanel(): Generator<*, *, *> {
     );
     trackMixpanel('Application was initialized');
     incrementMixpanel('Initialize', 1);
+  }
+}
+
+/* It needs only for a screenshots functionality */
+export function* chronosApiAuth() {
+  try {
+    const screenshotsEnabled = yield eff.select(getUiState('screenshotsEnabled'));
+    const authCredentials = yield eff.call(
+      getElectronStorage,
+      'last_used_account',
+    );
+    const {
+      name,
+      hostname,
+      protocol,
+    } = authCredentials;
+    let jwt = yield eff.call(
+      keytar.getPassword,
+      'ChronosJWT',
+      `${name}_${hostname}`,
+    );
+    if (
+      screenshotsEnabled
+      && !jwt
+    ) {
+      const cookiesStr = yield eff.call(
+        keytar.getPassword,
+        'Chronos',
+        `${authCredentials.name}_${authCredentials.hostname}`,
+      );
+      const cookies = JSON.parse(cookiesStr);
+      const res = yield eff.call(
+        chronosApi.getJWT,
+        {
+          body: {
+            cookies,
+            name,
+            hostname,
+            protocol,
+          },
+        },
+      );
+      jwt = res.jwtToken;
+      yield eff.call(
+        keytar.setPassword,
+        'ChronosJWT',
+        `${name}_${hostname}`,
+        jwt,
+      );
+    }
+    yield eff.call(
+      chronosApi.setJWT,
+      jwt,
+    );
+  } catch (err) {
+    yield eff.fork(
+      notify,
+      {
+        icon: 'errorIcon',
+        autoDelete: true,
+        title: 'Enable screenshots error!',
+      },
+    );
+    yield eff.put(uiActions.setUiState({
+      screenshotsEnabled: false,
+    }));
+    yield eff.call(throwError, err);
   }
 }
 
@@ -234,18 +302,9 @@ export function* takeInitialConfigureApp() {
         accounts,
       }));
 
-      const persistSettings = yield eff.call(
-        getElectronStorage,
-        `localDesktopSettings_${hostname}`,
-        {},
-      );
-      yield eff.put(
-        settingsActions.fillLocalDesktopSettings(persistSettings),
-      );
-
       yield eff.put(updaterActions.setUpdateSettings({
-        autoDownload: persistSettings.updateAutomatically,
-        allowPrerelease: persistSettings.updateChannel !== 'stable',
+        autoDownload: persistUiState.updateAutomatically,
+        allowPrerelease: persistUiState.updateChannel !== 'stable',
       }));
       yield eff.put(updaterActions.checkUpdates());
       const boardsTask = yield eff.fork(fetchBoards);
@@ -392,13 +451,25 @@ export function* handleAttachmentWindow(): Generator<*, *, *> {
             show: true,
             title: 'Attachments',
             webPreferences: {
-              devTools: true,
+              devTools: (
+                config.attachmentsWindowDevtools
+                || process.env.DEBUG_PROD === 'true'
+              ),
             },
           },
         },
       );
-      yield eff.delay(500);
     }
+    const readyChannel = yield eff.call(
+      windowsManagerSagas.createWindowChannel,
+      {
+        win,
+        webContentsEvents: [
+          'dom-ready',
+        ],
+      },
+    );
+    yield eff.take(readyChannel);
     yield eff.put(issuesActions.setAttachments({
       attachments: issue?.fields?.attachment || [],
       activeIndex,

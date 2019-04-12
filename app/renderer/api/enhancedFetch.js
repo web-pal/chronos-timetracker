@@ -77,7 +77,10 @@ export default function enhancedFetch(
         }));
       }
       if (response.ok) {
-        throw new TypeError("Oops, we haven't got JSON!");
+        return ({
+          dataType: 'text',
+          response,
+        });
       }
       throw new Error(response.statusText || response.status);
     },

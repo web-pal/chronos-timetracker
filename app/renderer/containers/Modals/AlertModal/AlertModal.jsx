@@ -72,7 +72,6 @@ const AlertModal: StatelessFunctionalComponent<Props> = ({
             <Button
               appearance="default"
               onClick={() => {
-                dispatch(timerActions.continueTimer());
                 dispatch(uiActions.setModalState('alert', false));
               }}
             >

@@ -37,6 +37,8 @@ type Props = {
   clearChache: () => void,
   setAllowEmptyComment: () => void,
   setShowLoggedOnStop: () => void,
+  setEnableScreenshots: () => void,
+  takeTestScreenshot: () => void,
 }
 
 const GeneralSettings: StatelessFunctionalComponent<Props> = ({
@@ -45,9 +47,11 @@ const GeneralSettings: StatelessFunctionalComponent<Props> = ({
   clearChache,
   setAllowEmptyComment,
   setShowLoggedOnStop,
+  setEnableScreenshots,
+  takeTestScreenshot,
 }: Props): Node => {
   const isIconHidden = !!settings.trayShowTimer;
-  const allowEmptyComment = settings.allowEmptyComment;
+  const { allowEmptyComment } = settings;
   const showLoggedOnStop = !!settings.showLoggedOnStop;
   // const isTimerHidden = false;
   return (
@@ -92,6 +96,29 @@ const GeneralSettings: StatelessFunctionalComponent<Props> = ({
           />
         </CheckboxGroup>
         <br />
+        <CheckboxGroup>
+          <Checkbox
+            isChecked={settings.screenshotsEnabled}
+            value={settings.screenshotsEnabled}
+            name="enableScreenshots"
+            label="Enable screenshots"
+            onChange={() => setEnableScreenshots(!settings.screenshotsEnabled)}
+          />
+        </CheckboxGroup>
+        {settings.screenshotsEnabled
+           && (
+           <ButtonGroup>
+             <Button
+               isLoading={settings.takeScreenshotLoading}
+               appearance="warning"
+               onClick={takeTestScreenshot}
+             >
+               Take test screenshot
+             </Button>
+           </ButtonGroup>
+           )
+        }
+        <br />
         <ButtonGroup>
           <Button
             appearance="primary"
@@ -100,7 +127,13 @@ const GeneralSettings: StatelessFunctionalComponent<Props> = ({
             Clear cache
           </Button>
         </ButtonGroup>
-        <H100 style={{ margin: '4px 0 0 6px', color: '#FFAB00', fontWeight: 300 }}>
+        <H100
+          style={{
+            margin: '4px 0 0 6px',
+            color: '#FFAB00',
+            fontWeight: 300,
+          }}
+        >
           Clearing cache will cause logout!
         </H100>
         <br />

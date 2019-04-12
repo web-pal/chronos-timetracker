@@ -10,6 +10,7 @@ import * as sprintsSagas from './sprints';
 import * as timerSagas from './timer';
 import * as worklogsSagas from './worklogs';
 import * as uiSagas from './ui';
+import * as screenshotSagas from './screenshots';
 
 import {
   initializeApp,
@@ -57,7 +58,6 @@ export default function* rootSaga(): Generator<*, void, *> {
     eff.fork(timerSagas.takeStartTimer),
 
     // settings
-    eff.fork(settingsSagas.watchLocalDesktopSettingsChange),
     eff.fork(settingsSagas.watchClearElectronChanheRequest),
 
     // worklogs
@@ -70,5 +70,8 @@ export default function* rootSaga(): Generator<*, void, *> {
     // ui
     eff.fork(uiSagas.watchScrollToIndexRequest),
     eff.fork(uiSagas.takeUiStateChange),
+
+    // screenshots
+    eff.fork(screenshotSagas.takeScreenshotRequest),
   ]);
 }

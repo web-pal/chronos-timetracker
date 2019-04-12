@@ -79,13 +79,4 @@ export function* savePersistStorage() {
     'accounts',
     accounts,
   );
-
-  const persistSettings = yield eff.select(
-    s => s.settings.localDesktopSettings,
-  );
-  yield eff.call(
-    setElectronStorage,
-    `localDesktopSettings_${hostname}`,
-    persistSettings,
-  );
 }

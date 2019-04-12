@@ -19,7 +19,6 @@ import {
 
 import profile from './profile';
 import ui from './ui';
-import settings from './settings';
 import timer from './timer';
 
 import indexedListPlugin from './resourcesPlugins/indexedListPlugin';
@@ -31,7 +30,6 @@ import metaPlugin from './resourcesPlugins/metaPlugin';
 const rootReducer = combineReducers({
   profile,
   ui,
-  settings,
   timer,
   form: formReducer,
   windowsManager,
