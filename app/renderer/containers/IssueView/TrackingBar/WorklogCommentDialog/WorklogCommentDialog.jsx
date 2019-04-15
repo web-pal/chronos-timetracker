@@ -1,17 +1,17 @@
 // @flow
-import React, { PureComponent } from 'react';
+import React, {
+  PureComponent,
+} from 'react';
 
 import InlineDialog from '@atlaskit/inline-dialog';
-import SingleLineTextInput from '@atlaskit/input';
+import Textfield from '@atlaskit/textfield';
 
 import type {
   Issue,
   RemainingEstimate,
 } from 'types';
 
-import {
-  InlineEditStateless,
-} from '@atlaskit/inline-edit';
+import InlineEdit from '@atlaskit/inline-edit';
 
 import {
   Flex,
@@ -83,26 +83,21 @@ class WorklogCommentDialog extends PureComponent<Props, State> {
     <div className="worklog-edit-popup" style={{ width: 350 }}>
       <h5>Edit worklog</h5>
       <Flex column>
-        <InlineEditStateless
+        <InlineEdit
           label="Comment"
           isEditing={this.state.isEditing}
-          editView={
-            <SingleLineTextInput
+          editView={fieldProps => (
+            <Textfield
+              {...fieldProps}
               autoFocus
-              isEditing
-              isInitiallySelected
               value={this.state.comment}
               onChange={e => this.setState({ comment: e.target.value })}
             />
-          }
-          readView={(
-            <div id="inline-edit-value">
-              <SingleLineTextInput
-                autoFocus
-                isEditing={false}
-                value={this.props.comment || 'None'}
-              />
-            </div>
+          )}
+          readView={() => (
+            <S.ReadViewContainer>
+              {this.props.comment || 'Click to enter a comment'}
+            </S.ReadViewContainer>
           )}
           onEditRequested={this.enterEditingMode}
           onConfirm={this.onConfirm}

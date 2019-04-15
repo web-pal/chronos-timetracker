@@ -12,7 +12,7 @@ export * as resourcesActions from './resources';
 export * as filtersActions from './filters';
 export * as updaterActions from './updater';
 export * as attachmentsActions from './attachments';
-
+export * as screenshotsActions from './screenshots';
 
 export * as types from './actionTypes';
 export * as actionTypes from './actionTypes';

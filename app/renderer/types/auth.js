@@ -22,10 +22,6 @@ export type AuthAction =
       host: string,
       username: string,
     |}
-  |} |
-  {|
-    type: typeof actionTypes.ADD_AUTH_DEBUG_MESSAGE,
-    payload: Array<*>,
   |};
 
 export type Account = {

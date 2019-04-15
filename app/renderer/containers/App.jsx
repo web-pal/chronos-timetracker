@@ -1,6 +1,9 @@
 // @flow
 import React from 'react';
 import {
+  hot,
+} from 'react-hot-loader/root';
+import {
   connect,
 } from 'react-redux';
 
@@ -73,4 +76,4 @@ const connector: Connector<{}, Props> = connect(
   dispatch => ({ dispatch }),
 );
 
-export default connector(App);
+export default hot(connector(App));

@@ -2,6 +2,9 @@
 import * as eff from 'redux-saga/effects';
 import * as Sentry from '@sentry/electron';
 import moment from 'moment';
+import {
+  remote,
+} from 'electron';
 
 import config from 'config';
 
@@ -11,6 +14,7 @@ import type {
 
 import {
   uiActions,
+  updaterActions,
   actionTypes,
 } from 'actions';
 import {
@@ -20,6 +24,9 @@ import {
 import {
   issueSelectFlow,
 } from './issues';
+import {
+  chronosApiAuth,
+} from './initialize';
 
 
 const LOG_LEVELS = {
@@ -151,23 +158,53 @@ function* onUiChange({
   try {
     const [
       values,
-      key,
+      keys,
     ] = (
       maybeValues === undefined
         ? [
           keyOrRootValues,
-          null,
+          Object.keys(keyOrRootValues),
         ]
         : [
-          maybeValues,
-          keyOrRootValues,
+          {
+            [keyOrRootValues]: maybeValues,
+          },
+          [keyOrRootValues],
         ]
     );
-    if (key === 'selectedIssueId') {
-      yield eff.fork(issueSelectFlow, values);
+    if (
+      keys.includes('screenshotsEnabled')
+      && values.screenshotsEnabled === true
+    ) {
+      yield eff.fork(chronosApiAuth);
     }
-    if (values.selectedIssueId) {
-      yield eff.fork(issueSelectFlow, values.selectedIssueId);
+    if (keys.includes('selectedIssueId')) {
+      yield eff.fork(
+        issueSelectFlow,
+        values.selectedIssueId,
+      );
+    }
+    if (
+      keys.includes('trayShowTimer')
+      && values.trayShowTimer === false
+    ) {
+      remote.getGlobal('tray').setTitle('');
+    }
+    if (
+      keys.includes('updateAutomatically')
+      && values.updateAutomatically === true
+    ) {
+      yield eff.put(uiActions.setUiState({
+        updateAvailable: null,
+      }));
+      yield eff.put(updaterActions.checkUpdates());
+    }
+
+    if (keys.includes('updateChannel')) {
+      yield eff.put(uiActions.setUiState({
+        updateAvailable: null,
+      }));
+      yield eff.put(updaterActions.checkUpdates());
     }
   } catch (err) {
     yield eff.call(throwError, err);

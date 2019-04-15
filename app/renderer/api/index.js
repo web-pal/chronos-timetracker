@@ -5,10 +5,15 @@ import {
 import querystring from 'querystring';
 
 import apiFactory from './jiraApi';
+import chronosApiFactory from './chronosApi';
 import enhancedFetch from './enhancedFetch';
 
 
 export const jiraApi = apiFactory({
+  makeRequest: enhancedFetch,
+});
+
+export const chronosApi = chronosApiFactory({
   makeRequest: enhancedFetch,
 });
 

@@ -50,7 +50,6 @@ import {
   getModalState,
   getUiState,
   getEditWorklog,
-  getSettingsState,
 } from 'selectors';
 
 import {
@@ -164,7 +163,7 @@ class WorklogModal extends Component<Props, State> {
 
   handleTimeSpentChange = (e) => {
     const timeSpent = e.target.value || '';
-    this.setState(({ startTime }) => {
+    this.setState(() => {
       if (this.props.adjustStartTime) {
         const newStartTime = moment().subtract(jts(timeSpent), 's');
         return {
@@ -443,9 +442,8 @@ function mapStateToProps(state) {
       state,
       'worklogs.requests.saveWorklog.status',
     ).pending,
-    localDesktopSettings: getSettingsState('localDesktopSettings')(state),
-    allowEmptyComment: getSettingsState('localDesktopSettings')(state).allowEmptyComment,
-    adjustStartTime: !getSettingsState('localDesktopSettings')(state).notAdjustStartTime,
+    allowEmptyComment: getUiState('allowEmptyComment')(state),
+    adjustStartTime: getUiState('adjustStartTime')(state),
   };
 }
 

@@ -92,15 +92,15 @@ const NotificationsSettings: StatelessFunctionalComponent<Props> = ({
           }}
         />
 
-        {process.platform === 'darwin' &&
+        {process.platform === 'darwin' && (
           <Flex column>
-            {settings.showScreenshotPreview &&
+            {settings.showScreenshotPreview && (
               <H100 style={{ margin: '10px 0 0 6px' }}>
                 Configure whether to show native OSX notification or custom popup.
                 Native popups are visible in fullscreen apps.
               </H100>
-            }
-            {settings.showScreenshotPreview &&
+            )}
+            {settings.showScreenshotPreview && (
               <div style={{ marginLeft: -8 }}>
                 <RadioButtonGroup
                   items={notificationsTypes}
@@ -112,16 +112,16 @@ const NotificationsSettings: StatelessFunctionalComponent<Props> = ({
                   }}
                 />
               </div>
-            }
+            )}
           </Flex>
-        }
+        )}
 
-        {settings.showScreenshotPreview &&
+        {settings.showScreenshotPreview && (
           <H100 style={{ margin: '10px 0 0 6px' }}>
             Configure the time until screenshots accept automatically.
           </H100>
-        }
-        {settings.showScreenshotPreview &&
+        )}
+        {settings.showScreenshotPreview && (
           <div style={{ marginLeft: -8 }}>
             <RadioButtonGroup
               items={screenshotPreviewDuration}
@@ -133,7 +133,7 @@ const NotificationsSettings: StatelessFunctionalComponent<Props> = ({
               }}
             />
           </div>
-        }
+        )}
 
       </Flex>
     </S.SettingsSectionContent>

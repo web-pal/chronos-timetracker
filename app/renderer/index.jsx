@@ -5,10 +5,6 @@ import {
 import {
   Provider,
 } from 'react-redux';
-import {
-  hot,
-  setConfig,
-} from 'react-hot-loader';
 import * as Sentry from '@sentry/electron';
 import {
   ipcRenderer,
@@ -21,10 +17,6 @@ import './assets/stylesheets/main.less';
 import pjson from '../package.json';
 
 require('smoothscroll-polyfill').polyfill();
-
-setConfig({
-  pureSFC: true,
-});
 
 if (process.env.NODE_ENV === 'production') {
   Sentry.init({
@@ -47,4 +39,4 @@ const render = Component => (
   )
 );
 
-render(hot(module)(App));
+render(App);

@@ -16,18 +16,13 @@ import type {
   SettingsGeneral,
 } from 'types';
 
-import ModalDialog, {
-  ModalFooter,
-  ModalHeader,
-  ModalTitle,
+import Modal, {
+  ModalTransition,
 } from '@atlaskit/modal-dialog';
-import Button from '@atlaskit/button';
 
 import {
-  ModalContentContainer,
-} from 'styles/modals';
-import {
   uiActions,
+  screenshotsActions,
   settingsActions,
   updaterActions,
 } from 'actions';
@@ -37,13 +32,11 @@ import {
 } from 'components';
 import {
   getUiState,
-  getSettingsState,
   getModalState,
 } from 'selectors';
 
 
 import GeneralSettings from './General';
-import NotificationSettings from './Notifications';
 import UpdateSettings from './Update';
 
 import * as S from './styled';
@@ -67,38 +60,28 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
   downloadUpdateProgress,
   updateCheckRunning,
   dispatch,
-}: Props): Node => isOpen && (
-  <ModalDialog
-    header={() => (
-      <ModalHeader>
-        <ModalTitle>Settings</ModalTitle>
-      </ModalHeader>
-    )}
-    footer={() => (
-      <ModalFooter>
-        <Flex row style={{ justifyContent: 'flex-end', width: '100%' }}>
-          <Button
-            appearance="default"
-            onClick={() => {
-              dispatch(uiActions.setModalState('settings', false));
-            }}
-          >
-            Close
-          </Button>
-        </Flex>
-      </ModalFooter>
-    )}
-    onClose={() => {
-      dispatch(uiActions.setModalState('settings', false));
-    }}
-  >
-    <ModalContentContainer>
-      <Flex row style={{ height: 324 }}>
+}: Props): Node => (
+  <ModalTransition>
+    {isOpen && (
+    <Modal
+      heading="Settings"
+      actions={[
+        {
+          text: 'Close',
+          onClick: () => {
+            dispatch(uiActions.setModalState('settings', false));
+          },
+        },
+      ]}
+    >
+      <Flex row style={{ height: 340 }}>
         <Flex column style={{ width: 85 }}>
           <S.SettingsSectionLabel
             active={tab === 'General'}
             onClick={() => {
-              dispatch(settingsActions.setSettingsModalTab('General'));
+              dispatch(uiActions.setUiState({
+                settingsTab: 'General',
+              }));
             }}
           >
             General
@@ -116,42 +99,50 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
           <S.SettingsSectionLabel
             active={tab === 'Updates'}
             onClick={() => {
-              dispatch(settingsActions.setSettingsModalTab('Updates'));
+              dispatch(uiActions.setUiState({
+                settingsTab: 'Updates',
+              }));
             }}
           >
             Updates
           </S.SettingsSectionLabel>
         </Flex>
         <S.Separator />
-        {tab === 'General' &&
+        {tab === 'General' && (
           <GeneralSettings
             settings={settings}
+            takeTestScreenshot={() => {
+              dispatch(screenshotsActions.takeScreenshotRequest({
+                isTest: true,
+              }));
+            }}
+            setEnableScreenshots={(value) => {
+              dispatch(uiActions.setUiState({
+                screenshotsEnabled: value,
+              }));
+            }}
             setTraySettings={(value) => {
-              dispatch(settingsActions.setLocalDesktopSetting(
-                value,
-                'trayShowTimer',
-              ));
+              dispatch(uiActions.setUiState({
+                trayShowTimer: value,
+              }));
             }}
             clearChache={() => dispatch(
               settingsActions.clearElectronCache(),
             )}
             setAllowEmptyComment={(value) => {
-              dispatch(settingsActions.setLocalDesktopSetting(
-                value,
-                'allowEmptyComment',
-              ));
-              }
-            }
+              dispatch(uiActions.setUiState({
+                allowEmptyComment: value,
+              }));
+            }}
             setShowLoggedOnStop={(value) => {
-              dispatch(settingsActions.setLocalDesktopSetting(
-                value,
-                'showLoggedOnStop',
-              ));
-              }
-            }
+              dispatch(uiActions.setUiState({
+                showLoggedOnStop: value,
+              }));
+            }}
           />
-        }
-        {tab === 'Notifications' &&
+        )}
+        {/*
+        {tab === 'Notifications' && (
           <NotificationSettings
             settings={settings}
             onChangeSetting={(value, settingName) => {
@@ -161,8 +152,9 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
               ));
             }}
           />
-        }
-        {tab === 'Updates' &&
+        )}
+        */}
+        {tab === 'Updates' && (
           <UpdateSettings
             channel={settings.updateChannel}
             updateCheckRunning={updateCheckRunning}
@@ -177,10 +169,9 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
                 autoDownload: settings.updateAutomatically,
                 allowPrerelease: value !== 'stable',
               }));
-              dispatch(settingsActions.setLocalDesktopSetting(
-                value,
-                'updateChannel',
-              ));
+              dispatch(uiActions.setUiState({
+                updateChannel: value,
+              }));
             }}
             automaticUpdate={settings.updateAutomatically}
             setAutomaticUpdate={(value) => {
@@ -188,10 +179,9 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
                 autoDownload: value,
                 allowPrerelease: settings.updateChannel !== 'stable',
               }));
-              dispatch(settingsActions.setLocalDesktopSetting(
-                value,
-                'updateAutomatically',
-              ));
+              dispatch(uiActions.setUiState({
+                updateAutomatically: value,
+              }));
             }}
             updateAvailable={updateAvailable}
             downloadUpdateProgress={downloadUpdateProgress}
@@ -199,18 +189,27 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
               dispatch(updaterActions.downloadUpdate());
             }}
           />
-        }
+        )}
       </Flex>
-    </ModalContentContainer>
-  </ModalDialog>
+    </Modal>
+    )}
+  </ModalTransition>
 );
 
 function mapStateToProps(state) {
   const updateAvailable = getUiState('updateAvailable')(state);
   return {
     isOpen: getModalState('settings')(state),
-    settings: getSettingsState('localDesktopSettings')(state),
-    tab: getSettingsState('modalTab')(state),
+    settings: getUiState([
+      'trayShowTimer',
+      'allowEmptyComment',
+      'showLoggedOnStop',
+      'updateChannel',
+      'updateAutomatically',
+      'screenshotsEnabled',
+      'takeScreenshotLoading',
+    ])(state),
+    tab: getUiState('settingsTab')(state),
     updateAvailable,
     updateCheckRunning: updateAvailable === null,
     downloadUpdateProgress: getUiState('downloadUpdateProgress')(state),
