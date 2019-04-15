@@ -1,6 +1,7 @@
 import React, {
   Component,
 } from 'react';
+import PropTypes from 'prop-types';
 import {
   hot,
 } from 'react-hot-loader/root';
@@ -28,16 +29,20 @@ class ScreenshotPopup extends Component {
   constructor(props) {
     super(props);
     remote.getCurrentWindow().flashFrame(true);
+    const win = remote.getCurrentWindow();
     const { decisionTime } = this.props;
     this.state = {
       decisionTime,
+      allowToResize: win.getSize()[0] === 360,
       currentTime: 0,
       isDismissed: false,
     };
   }
 
   componentDidMount() {
-    this.timer = setInterval(() => this.tick(), 1000);
+    if (!this.props.isTest) {
+      this.timer = setInterval(() => this.tick(), 1000);
+    }
   }
 
   tick = () => {
@@ -66,6 +71,7 @@ class ScreenshotPopup extends Component {
       currentTime,
       decisionTime,
       isDismissed,
+      allowToResize,
     } = this.state;
     const {
       screenshot,
@@ -76,7 +82,21 @@ class ScreenshotPopup extends Component {
     return (
       <S.Popup>
         <Flex column>
-          <S.PopupImage src={`file://${screenshot}`} />
+          <S.PopupImage
+            allowToResize={allowToResize}
+            src={`file://${screenshot}`}
+            onClick={() => {
+              if (allowToResize) {
+                const win = remote.getCurrentWindow();
+                win.setBounds({
+                  x: window.innerWidth,
+                  y: 0,
+                  width: 640,
+                  height: 540,
+                });
+              }
+            }}
+          />
           <Flex row justifyCenter style={{ fontSize: '1.5em' }}>
             {isTest
               ? (
@@ -114,7 +134,7 @@ class ScreenshotPopup extends Component {
                           dispatch(screenshotsActions.dismissOnlyScreenshot());
                         }}
                       >
-                        Dismiss only screenshot
+                        Only screenshot
                       </Button>
                       <Button
                         appearance="warning"
@@ -122,7 +142,7 @@ class ScreenshotPopup extends Component {
                           dispatch(screenshotsActions.dismissTimeAndScreenshot());
                         }}
                       >
-                        Dismiss screenshot with time
+                        Screenshot with time
                       </Button>
                     </ButtonGroup>
                   ) : (
@@ -156,6 +176,13 @@ class ScreenshotPopup extends Component {
     );
   }
 }
+
+ScreenshotPopup.propTypes = {
+  screenshot: PropTypes.string.isRequired,
+  isTest: PropTypes.bool.isRequired,
+  decisionTime: PropTypes.number.isRequired,
+  dispatch: PropTypes.func.isRequired,
+};
 
 function mapStateToProps(state) {
   return {

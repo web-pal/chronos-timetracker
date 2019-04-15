@@ -15,6 +15,7 @@ const config = {
   loginWindowDevTools: false,
   attachmentsWindowDevtools: false,
   screenshotNotificationWindowDevtools: false,
+  screenshotsViewerWindowDevtools: false,
 };
 
 export default config;

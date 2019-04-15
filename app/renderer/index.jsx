@@ -35,7 +35,7 @@ const render = Component => (
     <Provider store={store}>
       <Component />
     </Provider>,
-    document.getElementById('root') || document.createElement('div'),
+    document.getElementById('root'),
   )
 );
 

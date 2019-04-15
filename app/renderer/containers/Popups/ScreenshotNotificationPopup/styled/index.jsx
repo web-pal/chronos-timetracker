@@ -10,5 +10,5 @@ export const Popup = styled.div`
 
 export const PopupImage = styled.img`
   height: 70%;
-  margin-left: 50px;
+  cursor: ${props => (props.allowToResize ? 'pointer' : 'default')};
 `;

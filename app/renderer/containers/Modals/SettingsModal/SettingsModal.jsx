@@ -22,7 +22,6 @@ import Modal, {
 
 import {
   uiActions,
-  screenshotsActions,
   settingsActions,
   updaterActions,
 } from 'actions';
@@ -37,6 +36,7 @@ import {
 
 
 import GeneralSettings from './General';
+import ScreenshotsSettings from './ScreenshotsSettings';
 import UpdateSettings from './Update';
 
 import * as S from './styled';
@@ -74,7 +74,7 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
         },
       ]}
     >
-      <Flex row style={{ height: 340 }}>
+      <Flex row style={{ height: 400 }}>
         <Flex column style={{ width: 85 }}>
           <S.SettingsSectionLabel
             active={tab === 'General'}
@@ -86,16 +86,16 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
           >
             General
           </S.SettingsSectionLabel>
-          {/*
-          <SettingsSectionLabel
-            active={tab === 'Notifications'}
+          <S.SettingsSectionLabel
+            active={tab === 'Screenshots'}
             onClick={() => {
-              dispatch(settingsActions.setSettingsModalTab('Notifications'));
+              dispatch(uiActions.setUiState({
+                settingsTab: 'Screenshots',
+              }));
             }}
           >
-            Notifications
-          </SettingsSectionLabel>
-          */}
+            Screenshots
+          </S.SettingsSectionLabel>
           <S.SettingsSectionLabel
             active={tab === 'Updates'}
             onClick={() => {
@@ -111,16 +111,6 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
         {tab === 'General' && (
           <GeneralSettings
             settings={settings}
-            takeTestScreenshot={() => {
-              dispatch(screenshotsActions.takeScreenshotRequest({
-                isTest: true,
-              }));
-            }}
-            setEnableScreenshots={(value) => {
-              dispatch(uiActions.setUiState({
-                screenshotsEnabled: value,
-              }));
-            }}
             setTraySettings={(value) => {
               dispatch(uiActions.setUiState({
                 trayShowTimer: value,
@@ -141,19 +131,9 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
             }}
           />
         )}
-        {/*
-        {tab === 'Notifications' && (
-          <NotificationSettings
-            settings={settings}
-            onChangeSetting={(value, settingName) => {
-              dispatch(settingsActions.setLocalDesktopSetting(
-                value,
-                settingName,
-              ));
-            }}
-          />
+        {tab === 'Screenshots' && (
+          <ScreenshotsSettings />
         )}
-        */}
         {tab === 'Updates' && (
           <UpdateSettings
             channel={settings.updateChannel}
@@ -206,8 +186,6 @@ function mapStateToProps(state) {
       'showLoggedOnStop',
       'updateChannel',
       'updateAutomatically',
-      'screenshotsEnabled',
-      'takeScreenshotLoading',
     ])(state),
     tab: getUiState('settingsTab')(state),
     updateAvailable,

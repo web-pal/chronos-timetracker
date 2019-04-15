@@ -14,16 +14,7 @@ import type {
   Id,
 } from 'types';
 
-import {
-  getFieldIdByName,
-  getUserData,
-  getUiState,
-  getCurrentProjectId,
-  getAllProjectsKeys,
-  getResourceMap,
-  getResourceItemById,
-  getResourceMeta,
-} from 'selectors';
+import * as selectors from 'selectors';
 import {
   uiActions,
   resourcesActions,
@@ -267,32 +258,38 @@ export function* fetchIssues({
       issuesSourceType,
       issuesSourceId,
       issuesSprintId,
-    } = yield eff.select(getUiState([
+    } = yield eff.select(selectors.getUiState([
       'issuesSourceType',
       'issuesSourceId',
       'issuesSprintId',
     ]));
     const filterKey = `${issuesSourceType}_${issuesSourceId}_${issuesSprintId}`;
-    const searchValue: string = yield eff.select(getUiState('issuesSearch'));
-    const filters = yield eff.select(getUiState('issuesFilters'));
+    const searchValue: string = yield eff.select(selectors.getUiState('issuesSearch'));
+    const filters = yield eff.select(selectors.getUiState('issuesFilters'));
     const issuesFilters = filters[filterKey] || ({
       type: [],
       status: [],
       assignee: [],
     });
-    const projectId = yield eff.select(getCurrentProjectId);
+    const projectId = yield eff.select(selectors.getCurrentProjectId);
 
-    const projectsMap = yield eff.select(getResourceMap('projects'));
+    const projectsMap = yield eff.select(selectors.getResourceMap('projects'));
     const project = projectsMap[projectId];
     const projectKey = project ? project.key : null;
 
-    const epicLinkFieldId: string | null = yield eff.select(getFieldIdByName('Epic Link'));
+    const epicLinkFieldId: string | null = yield eff.select(
+      selectors.getFieldIdByName('Epic Link'),
+    );
     const jql: string = buildJQLQuery({
       issuesFilters,
       searchValue,
       projectId: issuesSourceType === 'project' ? issuesSourceId : null,
       filterId: issuesSourceType === 'filter' ? issuesSourceId : null,
-      projectKeys: issuesSourceType === 'filter' ? yield eff.select(getAllProjectsKeys) : [projectKey],
+      projectKeys: (
+        issuesSourceType === 'filter'
+          ? yield eff.select(selectors.getAllProjectsKeys)
+          : [projectKey]
+      ),
       sprintId: issuesSourceType === 'scrum' ? issuesSprintId : null,
     });
 
@@ -402,13 +399,15 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
       issuesSourceType,
       issuesSourceId,
       issuesSprintId,
-    } = yield eff.select(getUiState([
+    } = yield eff.select(selectors.getUiState([
       'issuesSourceType',
       'issuesSourceId',
       'issuesSprintId',
     ]));
 
-    const epicLinkFieldId: string | null = yield eff.select(getFieldIdByName('Epic Link'));
+    const epicLinkFieldId: string | null = (
+      yield eff.select(selectors.getFieldIdByName('Epic Link'))
+    );
 
     const jql: string = buildJQLQuery({
       projectId: issuesSourceType === 'project' ? issuesSourceId : null,
@@ -478,7 +477,7 @@ export function* refetchIssues(debouncing: boolean): Generator<*, void, *> {
       resourceType: 'issues',
       list: 'filterIssues',
     }));
-    const currentTotalCount = yield eff.select(getResourceMeta(
+    const currentTotalCount = yield eff.select(selectors.getResourceMeta(
       'issues',
       'filterIssuesTotalCount',
     ));
@@ -497,7 +496,7 @@ export function* refetchIssues(debouncing: boolean): Generator<*, void, *> {
       },
     }));
 
-    const sidebarType = yield eff.select(getUiState('sidebarType'));
+    const sidebarType = yield eff.select(selectors.getUiState('sidebarType'));
     if (sidebarType === 'recent') {
       yield eff.put(resourcesActions.clearResourceList({
         resourceType: 'issues',
@@ -556,8 +555,10 @@ export function* transitionIssue({
     request: 'updateIssue',
   });
   try {
-    const issue = yield eff.select(getResourceItemById('issues', issueId));
-    const transition = yield eff.select(getResourceItemById('issuesStatuses', transitionId));
+    const issue = yield eff.select(selectors.getResourceItemById('issues', issueId));
+    const transition = yield eff.select(
+      selectors.getResourceItemById('issuesStatuses', transitionId),
+    );
 
     yield eff.put(issuesA.pending());
     yield eff.fork(notify, {
@@ -622,7 +623,7 @@ export function* getIssuePermissions(issueId: string | number): Generator<*, voi
 }
 
 export function* issueSelectFlow(issueId: string | number): Generator<*, *, *> {
-  const issue = yield eff.select(getResourceItemById('issues', issueId));
+  const issue = yield eff.select(selectors.getResourceItemById('issues', issueId));
   yield eff.put(trayActions.traySelectIssue(issue.key));
   yield eff.fork(getIssueTransitions, issueId);
   yield eff.fork(getIssueComments, issueId);
@@ -639,8 +640,8 @@ export function* assignIssueToUser({ issueId }: {
   try {
     yield eff.put(issuesA.pending());
 
-    const issue = yield eff.select(getResourceItemById('issues', issueId));
-    const userData = yield eff.select(getUserData);
+    const issue = yield eff.select(selectors.getResourceItemById('issues', issueId));
+    const userData = yield eff.select(selectors.getUserData);
 
     yield eff.call(
       infoLog,
@@ -820,7 +821,9 @@ function* fetchNewIssue({ issueIdOrKey }): Generator<*, *, *> {
     request: 'createIssue',
   });
   try {
-    const epicLinkFieldId: string | null = yield eff.select(getFieldIdByName('Epic Link'));
+    const epicLinkFieldId: string | null = (
+      yield eff.select(selectors.getFieldIdByName('Epic Link'))
+    );
     const issue = yield eff.call(
       jiraApi.getIssueByIdOrKey,
       {
@@ -862,8 +865,12 @@ function* fetchUpdateIssue({ issueIdOrKey }): Generator<*, *, *> {
   });
   try {
     yield eff.put(actions.pending());
-    const prevIssue = yield eff.select(getResourceItemById('issues', issueIdOrKey));
-    const epicLinkFieldId: string | null = yield eff.select(getFieldIdByName('Epic Link'));
+    const prevIssue = yield eff.select(
+      selectors.getResourceItemById('issues', issueIdOrKey),
+    );
+    const epicLinkFieldId: string | null = (
+      yield eff.select(selectors.getFieldIdByName('Epic Link'))
+    );
     const issue = yield eff.call(
       jiraApi.getIssueByIdOrKey,
       {

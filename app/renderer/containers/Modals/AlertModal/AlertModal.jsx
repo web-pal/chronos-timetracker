@@ -54,6 +54,8 @@ const AlertModal: StatelessFunctionalComponent<Props> = ({
     onClose={() => {
       dispatch(uiActions.setModalState('alert', false));
     }}
+    shouldCloseOnOverlayClick={false}
+    shouldCloseOnEscapePress={false}
     footer={() => (
       <ModalFooter>
         <Flex row style={{ justifyContent: 'flex-end', width: '100%' }}>
@@ -61,8 +63,6 @@ const AlertModal: StatelessFunctionalComponent<Props> = ({
             <Button
               appearance="warning"
               onClick={() => {
-                // !! important to call stopTimer before setAlertModalOpen because of saga logic
-                // see sagas/timer:144-149
                 dispatch(timerActions.stopTimer());
                 dispatch(uiActions.setModalState('alert', false));
               }}
@@ -72,6 +72,7 @@ const AlertModal: StatelessFunctionalComponent<Props> = ({
             <Button
               appearance="default"
               onClick={() => {
+                dispatch(timerActions.continueTimer());
                 dispatch(uiActions.setModalState('alert', false));
               }}
             >

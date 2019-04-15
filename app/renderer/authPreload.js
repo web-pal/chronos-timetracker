@@ -27,7 +27,7 @@ function setRendererUiState(
       keyOrRootValues,
       maybeValues,
     },
-    scope: 'allRenderer',
+    scope: 1,
   };
 }
 

@@ -38,6 +38,12 @@ const plugins = [
     filename: 'screenshotNotification.html',
     chunks: ['screenshotNotificationPopup'],
   }),
+  new HtmlWebpackPlugin({
+    template: 'app/renderer/screenshotsViewer.tpl.html',
+    inject: 'body',
+    filename: 'screenshotsViewer.html',
+    chunks: ['screenshotsViewerPopup'],
+  }),
   new BundleAnalyzerPlugin({
     analyzerMode: 'static',
   }),

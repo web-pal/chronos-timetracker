@@ -9,7 +9,6 @@ import type {
 import {
   Checkbox,
 } from '@atlaskit/checkbox';
-
 import Button, {
   ButtonGroup,
 } from '@atlaskit/button';
@@ -37,8 +36,6 @@ type Props = {
   clearChache: () => void,
   setAllowEmptyComment: () => void,
   setShowLoggedOnStop: () => void,
-  setEnableScreenshots: () => void,
-  takeTestScreenshot: () => void,
 }
 
 const GeneralSettings: StatelessFunctionalComponent<Props> = ({
@@ -47,13 +44,10 @@ const GeneralSettings: StatelessFunctionalComponent<Props> = ({
   clearChache,
   setAllowEmptyComment,
   setShowLoggedOnStop,
-  setEnableScreenshots,
-  takeTestScreenshot,
 }: Props): Node => {
   const isIconHidden = !!settings.trayShowTimer;
   const { allowEmptyComment } = settings;
   const showLoggedOnStop = !!settings.showLoggedOnStop;
-  // const isTimerHidden = false;
   return (
     <S.SettingsSectionContent>
       <S.ContentLabel>
@@ -95,29 +89,6 @@ const GeneralSettings: StatelessFunctionalComponent<Props> = ({
             onChange={() => setShowLoggedOnStop(!showLoggedOnStop)}
           />
         </CheckboxGroup>
-        <br />
-        <CheckboxGroup>
-          <Checkbox
-            isChecked={settings.screenshotsEnabled}
-            value={settings.screenshotsEnabled}
-            name="enableScreenshots"
-            label="Enable screenshots"
-            onChange={() => setEnableScreenshots(!settings.screenshotsEnabled)}
-          />
-        </CheckboxGroup>
-        {settings.screenshotsEnabled
-           && (
-           <ButtonGroup>
-             <Button
-               isLoading={settings.takeScreenshotLoading}
-               appearance="warning"
-               onClick={takeTestScreenshot}
-             >
-               Take test screenshot
-             </Button>
-           </ButtonGroup>
-           )
-        }
         <br />
         <ButtonGroup>
           <Button

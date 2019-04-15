@@ -21,6 +21,7 @@ import Tooltip from '@atlaskit/tooltip';
 import EditFilledIcon from '@atlaskit/icon/glyph/edit-filled';
 import LinkIcon from '@atlaskit/icon/glyph/link';
 import TrashIcon from '@atlaskit/icon/glyph/trash';
+import CameraIcon from '@atlaskit/icon/glyph/camera';
 
 import * as S from './styled';
 
@@ -38,6 +39,7 @@ type Props = {
   baseUrl: string,
   onEditWorklog: () => void,
   onDeleteWorklog: () => void,
+  showScreenshotsViewer: () => void,
 };
 
 const WorklogItem: StatelessFunctionalComponent<Props> = ({
@@ -47,6 +49,7 @@ const WorklogItem: StatelessFunctionalComponent<Props> = ({
   issueKey,
   onEditWorklog,
   onDeleteWorklog,
+  showScreenshotsViewer,
   baseUrl,
 }: Props): Node => (
   <S.Worklog selected={selected} id={`worklog-${worklog.id}`} style={style}>
@@ -58,6 +61,19 @@ const WorklogItem: StatelessFunctionalComponent<Props> = ({
         <S.Edited>- <span>edited</span></S.Edited>
       )}
       <S.WorklogActions>
+        <Tooltip description="Open screenshots report" position="left">
+          <span
+            onClick={() => {
+              showScreenshotsViewer();
+            }}
+          >
+            <CameraIcon
+              label="Open screenshots report"
+              size="small"
+              primaryColor="#707070"
+            />
+          </span>
+        </Tooltip>
         <Tooltip description="Open worklog in JIRA" position="left">
           <span
             onClick={openWorklogInBrowser(worklog.id, issueKey, baseUrl)}

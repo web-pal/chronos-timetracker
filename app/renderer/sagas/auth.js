@@ -315,6 +315,9 @@ export function* switchAccountFlow(): Generator<*, *, *> {
       port,
       pathname,
     } = yield eff.take(actionTypes.SWITCH_ACCOUNT);
+    yield eff.put(uiActions.setUiState({
+      initializeInProcess: true,
+    }));
     try {
       const saveWorklogInProcess = yield eff.select(getUiState('saveWorklogInProcess'));
       const running = yield eff.select(getTimerState('running'));
@@ -375,6 +378,9 @@ export function* switchAccountFlow(): Generator<*, *, *> {
         incrementMixpanel('SwitchAccounts', 1);
       }
     } catch (err) {
+      yield eff.put(uiActions.setUiState({
+        initializeInProcess: false,
+      }));
       yield eff.call(throwError, err);
     }
   }

@@ -4,6 +4,10 @@ function apiFactory({ makeRequest }) {
   const apiCommonMethods = [
     ['getJWT', '/getJWT', 'POST'],
     ['signBucketUrl', '/signBucketUrl', 'POST'],
+    ['saveScreenshots', '/saveScreenshots', 'POST'],
+    ['getScreenshots', '/getScreenshots', 'POST'],
+    ['deleteScreenshot', '/deleteScreenshot', 'POST'],
+    ['signScreenshots', '/signScreenshots', 'POST'],
   ];
 
   const headers = {
