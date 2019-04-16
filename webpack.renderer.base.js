@@ -18,6 +18,9 @@ module.exports = env => ({
     attachmentWindow: [
       path.join(__dirname, 'app/renderer/attachmentWindow.jsx'),
     ],
+    teamStatusList: [
+      path.join(__dirname, 'app/renderer/teamStatusList.jsx'),
+    ],
     authPreload: [
       path.join(__dirname, 'app/renderer/authPreload.js'),
     ],

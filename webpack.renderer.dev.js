@@ -67,6 +67,12 @@ module.exports = env => merge(config(env), {
       filename: 'screenshotsViewer.html',
       chunks: ['screenshotsViewerPopup'],
     }),
+    new HtmlWebpackPlugin({
+      template: 'app/renderer/teamStatusList.tpl.html',
+      inject: 'body',
+      filename: 'teamStatusList.html',
+      chunks: ['teamStatusList'],
+    }),
     new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new WriteFilePlugin(),

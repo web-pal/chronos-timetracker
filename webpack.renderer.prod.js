@@ -44,6 +44,12 @@ const plugins = [
     filename: 'screenshotsViewer.html',
     chunks: ['screenshotsViewerPopup'],
   }),
+  new HtmlWebpackPlugin({
+    template: 'app/renderer/teamStatusList.tpl.html',
+    inject: 'body',
+    filename: 'teamStatusList.html',
+    chunks: ['teamStatusList'],
+  }),
   new BundleAnalyzerPlugin({
     analyzerMode: 'static',
   }),
