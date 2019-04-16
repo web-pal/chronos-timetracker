@@ -157,6 +157,19 @@ function* trayManager() {
   }
 }
 
+function* teamStatusListTrayManager() {
+  function getIconByName(name) {
+    if (process.env.NODE_ENV === 'development') {
+      return path.join(__dirname, `../../renderer/assets/images/${name}.png`);
+    }
+    return path.join(__dirname, `./app/renderer/assets/images/${name}.png`);
+  }
+
+  const tray = new Tray(getIconByName('icon'));
+  tray.setToolTip('Chronos Team Status');
+  global.teamStatusListTray = tray;
+}
+
 function* onClose({
   win,
   channel,
@@ -174,13 +187,64 @@ function* onClose({
   }
 }
 
+const getWindowPosition = (window) => {
+  const windowBounds = window.getBounds();
+  const trayBounds = global.teamStatusListTray.getBounds();
+
+  const x = Math.round(trayBounds.x + (trayBounds.width / 2) - (windowBounds.width / 2));
+
+  const y = Math.round(trayBounds.y + trayBounds.height + 4);
+
+  return { x, y };
+};
+
+const showWindow = (window) => {
+  const position = getWindowPosition(window);
+  window.setPosition(position.x, position.y, false);
+  window.show();
+  window.focus();
+};
+
+function* onToggleClick({
+  win,
+  channel,
+}) {
+  while (true) {
+    yield take(channel);
+    if (win.isVisible()) {
+      global.teamStatusListTray.setHighlightMode('never');
+      win.hide();
+    } else {
+      global.teamStatusListTray.setHighlightMode('always');
+      yield call(showWindow, win);
+    }
+  }
+}
+
+function* onBlur({
+  win,
+  channel,
+}) {
+  while (true) {
+    yield take(channel);
+    global.teamStatusListTray.setHighlightMode('never');
+    win.hide();
+  }
+}
+
 function* forkInitialRendererProcess() {
   try {
     yield fork(trayManager);
+    yield fork(teamStatusListTrayManager);
     const url = (
       process.env.NODE_ENV === 'development'
         ? 'http://localhost:3000'
         : `file://${__dirname}/index.html`
+    );
+    const teamStatusListUrl = (
+      process.env.NODE_ENV === 'development'
+        ? 'http://localhost:3000/teamStatusList.html'
+        : `file://${__dirname}../teamStatusList.html`
     );
     const noFrameOptions = {};
     switch (process.platform) {
@@ -218,6 +282,49 @@ function* forkInitialRendererProcess() {
         },
       },
     );
+    const teamStatusListNoFrameOptions = {};
+    switch (process.platform) {
+      case 'darwin':
+        teamStatusListNoFrameOptions.frame = false;
+        break;
+      case 'linux':
+      case 'windows':
+        teamStatusListNoFrameOptions.frame = true;
+        break;
+      default:
+        break;
+    }
+    const teamStatusListWindow = yield call(
+      windowsManagerSagas.forkNewWindow,
+      {
+        url: teamStatusListUrl,
+        showOnReady: true,
+        scopes: ['mainRenderer'],
+        BrowserWindow,
+        options: {
+          show: false,
+          width: 320,
+          height: 350,
+          minWidth: 320,
+          minHeight: 350,
+          fullscreenable: false,
+          resizable: false,
+          transparent: true,
+          webPreferences: {
+            devTools: (
+              process.env.NODE_ENV === 'development'
+              || process.env.DEBUG_PROD === 'true'
+            ),
+            webSecurity: false,
+            backgroundThrottling: false,
+          },
+          ...teamStatusListNoFrameOptions,
+        },
+      },
+    );
+
+    const position = getWindowPosition(teamStatusListWindow);
+    teamStatusListWindow.setPosition(position.x, position.y, false);
 
     const menuBuilder = new MenuBuilder(win);
     menuBuilder.buildMenu();
@@ -229,9 +336,45 @@ function* forkInitialRendererProcess() {
       ],
     });
 
+    const teamStatusListCloseChannel = windowsManagerSagas.createWindowChannel({
+      win: teamStatusListWindow,
+      events: [
+        'close',
+      ],
+    });
+
+    const teamStatusListToggleChannel = windowsManagerSagas.createWindowChannel({
+      win: global.teamStatusListTray,
+      events: [
+        'click',
+      ],
+    });
+
+    const blurChannel = windowsManagerSagas.createWindowChannel({
+      win: teamStatusListWindow,
+      events: [
+        'blur',
+      ],
+    });
+
+    yield fork(onToggleClick, {
+      win: teamStatusListWindow,
+      channel: teamStatusListToggleChannel,
+    });
+
+    yield fork(onBlur, {
+      win: teamStatusListWindow,
+      channel: blurChannel,
+    });
+
     yield fork(onClose, {
       win,
       channel: closeChannel,
+    });
+
+    yield fork(onClose, {
+      win: teamStatusListWindow,
+      channel: teamStatusListCloseChannel,
     });
 
     const eventsChannel = windowsManagerSagas.createWindowChannel({
@@ -239,9 +382,22 @@ function* forkInitialRendererProcess() {
       events: browserWindowInstanceEvents,
       webContentsEvents: webContentsInstanceEvents,
     });
+
+    const teamStatusListEventsChannel = windowsManagerSagas.createWindowChannel({
+      win: teamStatusListWindow,
+      events: browserWindowInstanceEvents,
+      webContentsEvents: webContentsInstanceEvents,
+    });
+
     yield fork(windowsManagerSagas.onEventLogger, {
       windowId: win.id,
       channel: eventsChannel,
+      scope: 'all',
+    });
+
+    yield fork(windowsManagerSagas.onEventLogger, {
+      windowId: teamStatusListWindow.id,
+      channel: teamStatusListEventsChannel,
       scope: 'all',
     });
   } catch (err) {
