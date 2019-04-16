@@ -1,0 +1,102 @@
+/* open-sans-regular - greek-ext_cyrillic-ext_latin_vietnamese_greek_cyrillic_latin-ext */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/OpenSans-Light.ttf');
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 700;
+  src: url('../fonts/OpenSans-Bold.ttf');
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 600;
+  src: url('../fonts/OpenSans-Bold.ttf');
+}
+
+@font-face {
+  font-family: 'Circular Book';
+  font-style: normal;
+  font-weight: normal;
+  src: url('../fonts/lineto-circular-book-c.woff');
+}
+
+@font-face {
+  font-family: 'Circular Bold';
+  font-style: normal;
+  font-weight: normal;
+  src: url('../fonts/lineto-circular-bold-c.woff');
+}
+
+@import "~font-awesome/css/font-awesome.css";
+@import "~rc-time-picker/assets/index.css";
+
+body {
+  font-family: Open Sans;
+  margin: 0px;
+  padding: 0px;
+  background-color: white;
+}
+
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+}
+
+
+::-webkit-scrollbar {
+  width: 2px;
+  height: 2px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-track-piece {
+  background: transparent url('../images/transparent.png') repeat-y !important;
+}
+
+::-webkit-scrollbar-track-piece:start {
+  background: transparent url('../images/transparent.png') repeat-y !important;
+}
+
+::-webkit-scrollbar-track-piece:end {
+  background: transparent url('../images/transparent.png') repeat-y !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #6386e2;
+  border: 3px solid transparent;
+  border-radius: 9px;
+}
+
+::-webkit-scrollbar-thumb:vertical {
+  height: 81px;
+}
+
+* {
+  outline: none !important;
+  font-family: system-ui !important;
+}
+
+a {
+  color: #0052cc;
+  text-decoration: none;
+&:hover {
+  color: #0065ff;
+  text-decoration: underline;
+}
+// :active {
+//   color: #3b73af;
+// }
+}
+
+@import './aui/aui.css';
