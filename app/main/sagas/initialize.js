@@ -159,7 +159,7 @@ function* trayManager() {
   }
 }
 
-function* teamStatusListTrayManager() {
+function teamStatusListTrayManager() {
   function getIconByName(name) {
     if (process.env.NODE_ENV === 'development') {
       return path.join(__dirname, `../../renderer/assets/images/${name}.png`);
@@ -189,7 +189,7 @@ function* onClose({
   }
 }
 
-const getWindowPosition = (window) => {
+function getWindowPosition(window) {
   const windowPositioner = new Positioner(window);
   const screenSize = screen.getPrimaryDisplay().workAreaSize;
   const windowSize = window.getBounds();
@@ -198,64 +198,63 @@ const getWindowPosition = (window) => {
   const windowLength = (trayBounds.x + (trayBounds.width / 2)) + windowSize.width;
   const windowOutOfBounds = (windowLength > screenSize.width);
 
-  let trayPosition = null;
-  let windowPosition = null;
-  let positionToSet = null;
-
   const halfScreenWidth = screenSize.width / 2;
   const halfScreenHeight = screenSize.height / 2;
 
+  const calculateWindowPosition = trayPosition => (offset) => {
+    const { x, y } = windowPositioner.calculate(trayPosition, trayBounds);
+    return { x: x + offset.x, y: y + offset.y };
+  };
+
+  const calculateOffsetCenter = calculateWindowPosition('trayCenter');
+  const calculateOffsetBottomLeft = calculateWindowPosition('trayBottomLeft');
+  const calculateOffsetBottomCenter = calculateWindowPosition('trayBottomCenter');
+  const calculateOffsetTopRight = calculateWindowPosition('topRight');
+
   if (process.platform === 'win32') {
     // Vertical or Horizontal Taskbar
-
     if ((trayBounds.x + trayBounds.width) <= halfScreenWidth) {
       // left
-      trayPosition = 'trayBottomLeft';
-      windowPosition = windowPositioner.calculate(trayPosition, trayBounds);
-      positionToSet = { x: windowPosition.x + 78, y: windowPosition.y - 10 };
-    } else if ((trayBounds.x + trayBounds.width) >= halfScreenWidth) {
+      if (windowOutOfBounds) {
+        return calculateOffsetBottomLeft({ x: -7, y: 0 });
+      }
+      return calculateOffsetBottomLeft({ x: 78, y: -10 });
+    }
+
+    if ((trayBounds.x + trayBounds.width) >= halfScreenWidth) {
       if ((trayBounds.y + trayBounds.height) <= halfScreenHeight) {
         // top
-        trayPosition = 'trayCenter';
-        windowPosition = windowPositioner.calculate(trayPosition, trayBounds);
-        positionToSet = { x: windowPosition.x, y: windowPosition.y + 8 };
-      } else if ((trayBounds.y + trayBounds.height) >= halfScreenHeight) {
-        // bottom or right
-        trayPosition = 'trayBottomCenter';
-        windowPosition = windowPositioner.calculate(trayPosition, trayBounds);
-        positionToSet = { x: windowPosition.x, y: windowPosition.y - 6 };
+        if (windowOutOfBounds) {
+          return calculateOffsetCenter({ x: -7, y: 0 });
+        }
+        return calculateOffsetCenter({ x: 0, y: 8 });
       }
+      // bottom or right
+      if (windowOutOfBounds) {
+        return calculateOffsetBottomCenter({ x: -7, y: 0 });
+      }
+      return calculateOffsetBottomCenter({ x: 0, y: -6 });
     }
-
-    // Account for the window potentially getting clipped if it's too far right
+  }
+  if (process.platform === 'darwin') {
     if (windowOutOfBounds) {
-      positionToSet = { x: positionToSet.x - 7, y: positionToSet.y };
+      return calculateOffsetCenter({ x: -20, y: 0 });
     }
-  } else if (process.platform === 'darwin') {
-    // top
-    trayPosition = 'trayCenter';
-    windowPosition = windowPositioner.calculate(trayPosition, trayBounds);
-    positionToSet = { x: windowPosition.x, y: windowPosition.y + 3 };
-
-    // Account for the window potentially getting clipped if it's too far right
-    if (windowOutOfBounds) {
-      positionToSet = { x: positionToSet.x - 20, y: positionToSet.y };
-    }
-  } else {
-    trayPosition = 'topRight';
-    windowPosition = windowPositioner.calculate(trayPosition, trayBounds);
-    positionToSet = { x: windowPosition.x - 10, y: windowPosition.y + 5 };
+    return calculateOffsetCenter({ x: 0, y: 3 });
   }
 
-  return positionToSet;
-};
+  if (windowOutOfBounds) {
+    return calculateOffsetTopRight({ x: -20, y: 0 });
+  }
+  return calculateOffsetTopRight({ x: -10, y: 5 });
+}
 
-const showWindow = (window) => {
+function showWindow(window) {
   const position = getWindowPosition(window);
   window.setPosition(position.x, position.y, !!process.platform === 'darwin');
   window.show();
   window.focus();
-};
+}
 
 function* onToggleClick({
   win,
@@ -287,7 +286,7 @@ function* onBlur({
 function* forkInitialRendererProcess() {
   try {
     yield fork(trayManager);
-    yield fork(teamStatusListTrayManager);
+    yield call(teamStatusListTrayManager);
     const url = (
       process.env.NODE_ENV === 'development'
         ? 'http://localhost:3000'
@@ -338,7 +337,6 @@ function* forkInitialRendererProcess() {
       windowsManagerSagas.forkNewWindow,
       {
         url: teamStatusListUrl,
-        showOnReady: true,
         scopes: ['mainRenderer'],
         BrowserWindow,
         options: {
@@ -364,9 +362,6 @@ function* forkInitialRendererProcess() {
         },
       },
     );
-
-    const position = getWindowPosition(teamStatusListWindow);
-    teamStatusListWindow.setPosition(position.x, position.y, false);
 
     const menuBuilder = new MenuBuilder(win);
     menuBuilder.buildMenu();
