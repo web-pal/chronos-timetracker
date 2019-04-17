@@ -147,6 +147,7 @@
     "@sentry/electron": "0.17.1",
     "cross-env": "5.2.0",
     "electron-json-storage": "4.1.6",
+    "electron-positioner": "^4.1.0",
     "font-awesome": "4.7.0",
     "luxon": "1.12.1",
     "merge-images": "1.1.0",
