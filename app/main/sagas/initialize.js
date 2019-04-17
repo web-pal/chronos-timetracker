@@ -4,8 +4,10 @@ import {
   Tray,
   Menu,
   MenuItem,
+  screen,
 } from 'electron';
 import path from 'path';
+import Positioner from 'electron-positioner';
 
 import {
   take,
@@ -188,19 +190,69 @@ function* onClose({
 }
 
 const getWindowPosition = (window) => {
-  const windowBounds = window.getBounds();
+  const windowPositioner = new Positioner(window);
+  const screenSize = screen.getPrimaryDisplay().workAreaSize;
+  const windowSize = window.getBounds();
   const trayBounds = global.teamStatusListTray.getBounds();
 
-  const x = Math.round(trayBounds.x + (trayBounds.width / 2) - (windowBounds.width / 2));
+  const windowLength = (trayBounds.x + (trayBounds.width / 2)) + windowSize.width;
+  const windowOutOfBounds = (windowLength > screenSize.width);
 
-  const y = Math.round(trayBounds.y + trayBounds.height + 4);
+  let trayPosition = null;
+  let windowPosition = null;
+  let positionToSet = null;
 
-  return { x, y };
+  const halfScreenWidth = screenSize.width / 2;
+  const halfScreenHeight = screenSize.height / 2;
+
+  if (process.platform === 'win32') {
+    // Vertical or Horizontal Taskbar
+
+    if ((trayBounds.x + trayBounds.width) <= halfScreenWidth) {
+      // left
+      trayPosition = 'trayBottomLeft';
+      windowPosition = windowPositioner.calculate(trayPosition, trayBounds);
+      positionToSet = { x: windowPosition.x + 78, y: windowPosition.y - 10 };
+    } else if ((trayBounds.x + trayBounds.width) >= halfScreenWidth) {
+      if ((trayBounds.y + trayBounds.height) <= halfScreenHeight) {
+        // top
+        trayPosition = 'trayCenter';
+        windowPosition = windowPositioner.calculate(trayPosition, trayBounds);
+        positionToSet = { x: windowPosition.x, y: windowPosition.y + 8 };
+      } else if ((trayBounds.y + trayBounds.height) >= halfScreenHeight) {
+        // bottom or right
+        trayPosition = 'trayBottomCenter';
+        windowPosition = windowPositioner.calculate(trayPosition, trayBounds);
+        positionToSet = { x: windowPosition.x, y: windowPosition.y - 6 };
+      }
+    }
+
+    // Account for the window potentially getting clipped if it's too far right
+    if (windowOutOfBounds) {
+      positionToSet = { x: positionToSet.x - 7, y: positionToSet.y };
+    }
+  } else if (process.platform === 'darwin') {
+    // top
+    trayPosition = 'trayCenter';
+    windowPosition = windowPositioner.calculate(trayPosition, trayBounds);
+    positionToSet = { x: windowPosition.x, y: windowPosition.y + 3 };
+
+    // Account for the window potentially getting clipped if it's too far right
+    if (windowOutOfBounds) {
+      positionToSet = { x: positionToSet.x - 20, y: positionToSet.y };
+    }
+  } else {
+    trayPosition = 'topRight';
+    windowPosition = windowPositioner.calculate(trayPosition, trayBounds);
+    positionToSet = { x: windowPosition.x - 10, y: windowPosition.y + 5 };
+  }
+
+  return positionToSet;
 };
 
 const showWindow = (window) => {
   const position = getWindowPosition(window);
-  window.setPosition(position.x, position.y, false);
+  window.setPosition(position.x, position.y, !!process.platform === 'darwin');
   window.show();
   window.focus();
 };
@@ -282,18 +334,6 @@ function* forkInitialRendererProcess() {
         },
       },
     );
-    const teamStatusListNoFrameOptions = {};
-    switch (process.platform) {
-      case 'darwin':
-        teamStatusListNoFrameOptions.frame = false;
-        break;
-      case 'linux':
-      case 'windows':
-        teamStatusListNoFrameOptions.frame = true;
-        break;
-      default:
-        break;
-    }
     const teamStatusListWindow = yield call(
       windowsManagerSagas.forkNewWindow,
       {
@@ -310,6 +350,9 @@ function* forkInitialRendererProcess() {
           fullscreenable: false,
           resizable: false,
           transparent: true,
+          skipTaskbar: true,
+          alwaysOnTop: true,
+          frame: false,
           webPreferences: {
             devTools: (
               process.env.NODE_ENV === 'development'
@@ -318,7 +361,6 @@ function* forkInitialRendererProcess() {
             webSecurity: false,
             backgroundThrottling: false,
           },
-          ...teamStatusListNoFrameOptions,
         },
       },
     );
