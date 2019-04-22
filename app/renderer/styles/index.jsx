@@ -39,6 +39,19 @@ export const Flex = styled.div`
   pointer-events: ${props => props.pointerEvents || 'auto'};
   color: ${props => props.color || 'black'};
   cursor: ${props => props.cursor || 'normal'};
+  ${props => props.absolute && 'position: absolute'};
+  ${props => props.top
+    && `top: ${props.top}`
+  };
+  ${props => props.right
+    && `right: ${props.right}`
+  };
+  ${props => props.bottom
+    && `bottom: ${props.bottom}`
+  };
+  ${props => props.left
+    && `left: ${props.left}`
+  };
   ${props => props.fillSpace && `
     height: 100%;
     width: 100%;

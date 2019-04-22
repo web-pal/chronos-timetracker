@@ -9,6 +9,9 @@ module.exports = env => ({
     screenshotNotificationPopup: [
       path.join(__dirname, 'app/renderer/screenshotNotification.jsx'),
     ],
+    screenshotsViewerPopup: [
+      path.join(__dirname, 'app/renderer/screenshotsViewer.jsx'),
+    ],
     idleTimePopup: [
       path.join(__dirname, 'app/renderer/idlePopup.jsx'),
     ],

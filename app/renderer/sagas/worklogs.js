@@ -1,7 +1,11 @@
 // @flow
 import * as eff from 'redux-saga/effects';
 import moment from 'moment';
+import rimraf from 'rimraf';
 import createActionCreators from 'redux-resource-action-creators';
+import {
+  remote,
+} from 'electron';
 
 import {
   trackMixpanel,
@@ -19,7 +23,9 @@ import {
 import {
   types,
   uiActions,
+  screenshotsActions,
   issuesActions,
+  actionTypes,
 } from 'actions';
 import {
   getResourceIds,
@@ -28,7 +34,9 @@ import {
 } from 'selectors';
 import {
   jiraApi,
+  chronosApi,
 } from 'api';
+import config from 'config';
 
 import {
   throwError,
@@ -36,11 +44,15 @@ import {
   infoLog,
   scrollToIndexRequest,
 } from './ui';
+import {
+  uploadScreenshots,
+} from './screenshots';
 
 import {
   version,
 } from '../../package.json';
 
+const { app } = remote.require('electron');
 
 export function* getAdditionalWorklogsForIssues(
   incompleteIssues: Array<any>,
@@ -140,12 +152,14 @@ export function* saveWorklog({
       'worklog',
       false,
     ));
-    yield eff.fork(notify, {
-      resourceType: 'worklogs',
-      request: 'saveWorklog',
-      spinnerTitle: worklogId ? 'Edit worklog' : 'Add worklog',
-      title: worklogId ? 'Successfully edited worklog' : 'Successfully added worklog',
-    });
+    if (!isAuto) {
+      yield eff.fork(notify, {
+        resourceType: 'worklogs',
+        request: 'saveWorklog',
+        spinnerTitle: worklogId ? 'Edit worklog' : 'Add worklog',
+        title: worklogId ? 'Successfully edited worklog' : 'Successfully added worklog',
+      });
+    }
     const started = moment(startTime).utc().format().replace('Z', '.000+0000');
     const timeSpentSeconds = timeSpentInSeconds || jts(timeSpent);
     if (timeSpentSeconds < 60) {
@@ -188,6 +202,88 @@ export function* saveWorklog({
         },
       },
     );
+    if (isAuto) {
+      let screenshots = yield eff.select(getUiState('screenshots'));
+      yield eff.all(
+        screenshots
+          .filter(s => s.status === 'offline')
+          .map(s => (
+            eff.call(
+              uploadScreenshots,
+              {
+                filenameImage: s.filename,
+                filenameThumb: s.filenameThumb,
+                imagePath: s.imagePath,
+                imageThumbPath: s.imageThumbPath,
+              },
+            )
+          )),
+      );
+      screenshots = (
+        screenshots
+          .map(
+            ({
+              imagePath,
+              imageThumbPath,
+              status,
+              ...rest
+            }) => ({
+              ...rest,
+              status: (
+                status === 'offline'
+                  ? 'success'
+                  : status
+              ),
+            }),
+          )
+      );
+      const activity = yield eff.select(getUiState('activity'));
+      const screenshotsWithActivity = (
+        screenshots.map(
+          ({
+            imgUrl,
+            thumbUrl,
+            ...s
+          }, index) => ({
+            ...s,
+            activity: (
+              activity[index] || 0
+            ),
+            activityPercentage: (
+              (activity[index] || 0)
+                ? (
+                  100 - ((
+                    (activity[index] || 0)
+                    / (
+                      (screenshots.length - 1) === index
+                        ? (
+                          timeSpentSeconds - (config.screenshotsPeriod * index)
+                        )
+                        : config.screenshotsPeriod
+                    )
+                  ) * 100)
+                )
+                : 100
+            ),
+          }),
+        )
+      );
+      yield eff.call(
+        chronosApi.saveScreenshots,
+        {
+          body: {
+            worklogId: worklog.id,
+            issueId,
+            screenshots: screenshotsWithActivity,
+            screenshotsPeriod: config.screenshotsPeriod,
+          },
+        },
+      );
+      yield eff.cps(
+        rimraf,
+        `${app.getPath('userData')}/screens/`,
+      );
+    }
     yield eff.put(worklogsActions.succeeded({
       resources: [worklog],
     }));
@@ -221,6 +317,24 @@ export function* saveWorklog({
       issueViewTab: 'Worklogs',
       selectedWorklogId: worklog.id,
     }));
+    const screenshotViewerWindowId = yield eff.select(
+      getUiState('screenshotViewerWindowId'),
+    );
+    if (
+      isAuto
+      && screenshotViewerWindowId
+    ) {
+      const win = remote.BrowserWindow.fromId(screenshotViewerWindowId);
+      if (
+        win
+        && !win.isDestroyed()
+      ) {
+        yield eff.put(screenshotsActions.showScreenshotsViewerWindow({
+          issueId,
+          worklogId: worklog.id,
+        }));
+      }
+    }
     yield eff.fork(scrollToIndexRequest, {
       issueId,
       worklogId: worklog.id,
@@ -236,11 +350,50 @@ export function* saveWorklog({
     yield eff.put(uiActions.setUiState({
       saveWorklogInProcess: false,
     }));
+    const quit = yield eff.select(getUiState('quitAfterSaveWorklog'));
+    if (quit) {
+      if (process.env.NODE_ENV === 'development') {
+        window.location.reload();
+      } else {
+        app.quit();
+      }
+    }
     return worklog;
   } catch (err) {
     yield eff.put(uiActions.setUiState({
       saveWorklogInProcess: false,
     }));
+    if (err.isInternetConnectionIssue) {
+      yield eff.put(uiActions.setModalState('worklogInetIssue', true));
+      const { tryAgain } = yield eff.race({
+        tryAgain: eff.take(actionTypes.TRY_SAVE_WORKLOG_AGAIN_REQUEST),
+        skip: eff.take(actionTypes.STOP_TRY_SAVE_WORKLOG_REQUEST),
+      });
+      if (tryAgain) {
+        return yield eff.call(
+          saveWorklog,
+          {
+            payload: {
+              issueId,
+              worklogId,
+              comment,
+              startTime,
+              adjustEstimate,
+              newEstimate,
+              reduceBy,
+              timeSpent,
+              timeSpentInSeconds,
+              isAuto,
+            },
+          },
+        );
+      }
+      yield eff.cps(
+        rimraf,
+        `${app.getPath('userData')}/screens/`,
+      );
+      return null;
+    }
     yield eff.call(throwError, err);
     return null;
   }
@@ -253,6 +406,33 @@ export function* uploadWorklog(options: any): Generator<*, *, *> {
       'started uploading worklog with options:',
       options,
     );
+    yield eff.put(uiActions.setUiState({
+      saveWorklogInProcess: true,
+    }));
+    yield eff.fork(notify, {
+      resourceType: 'worklogs',
+      request: 'saveWorklog',
+      spinnerTitle: 'Add worklog',
+      title: 'Successfully added worklog',
+    });
+    const {
+      takeScreenshotLoading,
+      uploadScreenshotLoading,
+    } = yield eff.select(getUiState([
+      'takeScreenshotLoading',
+      'uploadScreenshotLoading',
+    ]));
+    if (
+      takeScreenshotLoading
+      || uploadScreenshotLoading
+    ) {
+      console.log('Wait when upload screenshots will be finished');
+      yield eff.race([
+        eff.take(actionTypes.TAKE_SCREENSHOT_FINISHED),
+        eff.take(actionTypes.UPLOAD_SCREENSHOT_FINISHED),
+      ]);
+    }
+    /* If screenshot uploading or making - wait */
     const { timeSpentInSeconds } = options;
     const startTime = moment()
       .subtract({ seconds: timeSpentInSeconds })
@@ -297,6 +477,9 @@ export function* uploadWorklog(options: any): Generator<*, *, *> {
     yield eff.fork(notify, {
       title: 'Failed to upload worklog',
     });
+    yield eff.put(uiActions.setUiState({
+      saveWorklogInProcess: false,
+    }));
     yield eff.call(throwError, err);
   }
 }

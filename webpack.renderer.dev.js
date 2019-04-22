@@ -61,6 +61,12 @@ module.exports = env => merge(config(env), {
       filename: 'screenshotNotification.html',
       chunks: ['screenshotNotificationPopup'],
     }),
+    new HtmlWebpackPlugin({
+      template: 'app/renderer/screenshotsViewer.tpl.html',
+      inject: 'body',
+      filename: 'screenshotsViewer.html',
+      chunks: ['screenshotsViewerPopup'],
+    }),
     new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new WriteFilePlugin(),

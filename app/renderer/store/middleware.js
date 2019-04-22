@@ -8,6 +8,7 @@ import {
 } from 'shared/actions';
 import {
   timerActions,
+  uiActions,
 } from 'actions';
 
 const isNumber = n => typeof n === 'number';
@@ -21,8 +22,8 @@ const rendererEnhancer = (store) => {
 
   window.addEventListener('beforeunload', (ev) => {
     const stopClose = (
-      store.getState().timer !== undefined
-      && !store.getState()?.ui?.readyToQuit
+      sourceId === 1
+      && !store.getState().ui.readyToQuit
     ) || (
       window.CHRONOS_ISSUE_WINDOW
     );
@@ -37,6 +38,9 @@ const rendererEnhancer = (store) => {
       if (store.getState()?.ui?.saveWorklogInProcess) {
         continueclose = false;
         setTimeout(() => {
+          store.dispatch(uiActions.setUiState({
+            quitAfterSaveWorklog: true,
+          }));
           window.alert('Currently app in process of saving worklog, wait few seconds please');
         }, 100);
       }
@@ -56,7 +60,7 @@ const rendererEnhancer = (store) => {
           console.log(err);
         }
       }
-      ev.returnValue = false;
+      ev.returnValue = false; // eslint-disable-line
     } else {
       store.dispatch({ type: actionTypes.WINDOW_BEFORE_UNLOAD });
       ipcRenderer.removeListener(channel, handler);
@@ -128,6 +132,8 @@ const rendererEnhancer = (store) => {
             (
               scopes.some(s => toAllRenderer.includes(s))
               || targetWinIds.includes(win.id)
+            ) && (
+              !win.isDestroyed()
             )
           ),
         )

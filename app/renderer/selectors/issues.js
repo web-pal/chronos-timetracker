@@ -74,29 +74,33 @@ export const getRecentIssues = createSelector(
     self: any,
   ) => {
     const selfKey = self ? self.key : '';
-    const worklogsIds =
+    const worklogsIds = (
       issues
         .reduce(
           (worklogs, issue) => worklogs.concat(
             issue.fields.worklogs,
           ),
           [],
-        );
+        )
+    );
     const worklogs = worklogsIds.map(id => ({
       ...worklogsMap[id],
       issue: issuesMap[worklogsMap[id].issueId],
     }));
-    const recentWorklogsFiltered =
+    const recentWorklogsFiltered = (
       worklogs.filter(
-        w =>
-          moment(w.started).isSameOrAfter(moment().subtract(4, 'weeks')) &&
-          R.path(['author', 'key'], w) === selfKey
-      ).sort(worklogSorter);
-    const grouped =
+        w => (
+          moment(w.started).isSameOrAfter(moment().subtract(4, 'weeks'))
+          && R.path(['author', 'key'], w) === selfKey
+        ),
+      ).sort(worklogSorter)
+    );
+    const grouped = (
       R.groupBy(
         value => moment(value.started).startOf('day').format(),
         recentWorklogsFiltered,
-      );
+      )
+    );
     return grouped;
   },
 );
@@ -176,12 +180,11 @@ export const getTrackingIssueWorklogs = createSelector(
     issue: Issue,
     worklogsMap: WorklogsResources,
   ) => (
-    issue ?
-      issue.fields.worklogs.map(id => worklogsMap[id]).sort(worklogSorter) :
-      []
+    issue
+      ? issue.fields.worklogs.map(id => worklogsMap[id]).sort(worklogSorter)
+      : []
   ),
 );
-
 
 export const getFieldIdByName =
   (fieldName: string) =>

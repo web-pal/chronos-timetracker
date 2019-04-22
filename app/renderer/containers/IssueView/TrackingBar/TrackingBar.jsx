@@ -27,6 +27,7 @@ import {
 } from 'selectors';
 import {
   timerActions,
+  screenshotsActions,
   uiActions,
 } from 'actions';
 import {
@@ -46,8 +47,7 @@ import * as S from './styled';
 type Props = {
   time: number,
   report: IssuesReports,
-  screenshotUploading: boolean,
-  screenshotsAllowed: boolean,
+  screenshotsEnabled: boolean,
   trackingIssue: Issue,
   worklogComment: string,
   remainingEstimateValue: RemainingEstimate,
@@ -73,8 +73,7 @@ function getTimeString(time: number): string {
 const TrackingBar: StatelessFunctionalComponent<Props> = ({
   time,
   report,
-  screenshotUploading,
-  screenshotsAllowed,
+  screenshotsEnabled,
   trackingIssue,
   worklogComment,
   remainingEstimateValue,
@@ -125,20 +124,28 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
             }));
           }}
         />
-        {screenshotsAllowed &&
-          <div style={{ marginLeft: 10 }}>
+        {screenshotsEnabled && (
+          <div
+            style={{
+              marginLeft: 10,
+              cursor: 'pointer',
+            }}
+            onClick={() => {
+              dispatch(screenshotsActions.showScreenshotsViewerWindow());
+            }}
+          >
             <Tooltip
-              description="Screenshots are enabled"
+              content="Screenshots are enabled, click to see details"
               position="bottom"
             >
               <CameraIcon
                 size="large"
                 primaryColor="white"
-                label="Screenshots on"
+                label="Screenshots enabled"
               />
             </Tooltip>
           </div>
-        }
+        )}
       </Flex>
       <Flex row alignCenter>
         <S.IssueName
@@ -161,14 +168,7 @@ const TrackingBar: StatelessFunctionalComponent<Props> = ({
           report={report}
           showLoggedOnStop={showLoggedOnStop}
           onClick={() => {
-            if (screenshotUploading) {
-              // eslint-disable-next-line no-alert
-              window.alert(
-                'Currently app in process of uploading screenshot, wait few seconds please',
-              );
-            } else {
-              dispatch(timerActions.stopTimerRequest());
-            }
+            dispatch(timerActions.stopTimerRequest());
           }}
         />
       </div>
@@ -180,8 +180,7 @@ function mapStateToProps(state) {
   return {
     time: getTimerState('time')(state),
     report: getTrackingIssueReport(state),
-    screenshotUploading: false,
-    screenshotsAllowed: false,
+    screenshotsEnabled: getUiState('screenshotsEnabled')(state),
     trackingIssue: getTrackingIssue(state),
     worklogComment: getUiState('worklogComment')(state),
     remainingEstimateValue: getUiState('remainingEstimateValue')(state),

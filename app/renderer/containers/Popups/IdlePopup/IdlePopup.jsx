@@ -38,13 +38,17 @@ const IdlePopup = ({
           {
             content: 'Keep',
             onClick: () => {
-              dispatch(timerActions.keepIdleTime(time));
+              dispatch(timerActions.keepIdleTime(
+                parseInt(time, 10),
+              ));
             },
           },
           {
             content: 'Dissmiss',
             onClick: () => {
-              dispatch(timerActions.dismissIdleTime(time));
+              dispatch(timerActions.dismissIdleTime(
+                parseInt(time, 10),
+              ));
             },
           },
         ]}

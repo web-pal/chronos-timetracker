@@ -73,5 +73,7 @@ export default function* rootSaga(): Generator<*, void, *> {
 
     // screenshots
     eff.fork(screenshotSagas.takeScreenshotRequest),
+    eff.fork(screenshotSagas.takeDeleteScreenshotRequest),
+    eff.fork(screenshotSagas.handleScreenshotsViewerWindow),
   ]);
 }

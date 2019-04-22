@@ -86,6 +86,7 @@ export default function enhancedFetch(
     },
     // A network error or another reason why the HTTP request couldn't be fulfilled
     (err) => {
+      err.isInternetConnectionIssue = true; // eslint-disable-line
       throw err;
     },
   )

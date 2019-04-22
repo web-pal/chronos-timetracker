@@ -1,5 +1,6 @@
 // @flow
 import * as eff from 'redux-saga/effects';
+import * as Sentry from '@sentry/electron';
 import {
   eventChannel,
   buffers,
@@ -7,9 +8,8 @@ import {
 import {
   remote,
 } from 'electron';
+import rimraf from 'rimraf';
 import NanoTimer from 'nanotimer';
-
-import config from 'config';
 
 import {
   windowsManagerSagas,
@@ -22,16 +22,21 @@ import {
 } from 'actions';
 import {
   trayActions,
+  actionTypes as sharedActionTypes,
 } from 'shared/actions';
 import {
   getTimerState,
   getUiState,
   getTrackingIssue,
 } from 'selectors';
+import config from 'config';
 import {
   randomIntFromInterval,
 } from 'utils/random';
 
+import {
+  calculateInactivityPeriod,
+} from './helpers';
 import {
   notify,
 } from './ui';
@@ -41,6 +46,7 @@ import {
 
 
 const system = remote.require('desktop-idle');
+const { app } = remote.require('electron');
 
 function createTimerChannel() {
   const ticker = new NanoTimer();
@@ -70,12 +76,209 @@ function* checkIdle() {
     && idleTime >= config.idleTimeThreshold
   ) {
     yield eff.put(timerActions.setIdleState(true));
-    return true;
+    return [true, idleTime];
   }
-  return false;
+  return [false, idleTime];
 }
 
-function* idleWindow() {
+function* setScreenshotTimeForCurrentPeriod({
+  time,
+  timestamp,
+  screenshots,
+}) {
+  const screenshotsPeriodInSeconds = (
+    config.screenshotsPeriod < 30
+      ? 30
+      : config.screenshotsPeriod
+  );
+  const currentPeriodNumber = Math.floor(time / screenshotsPeriodInSeconds);
+  const currentPeriodScreenshotExist = (
+    screenshots.find(
+      s => (
+        s.time >= currentPeriodNumber * screenshotsPeriodInSeconds
+      ),
+    )
+  );
+  if (!currentPeriodScreenshotExist) {
+    const screenshotTime = yield eff.select(getUiState('screenshotTime'));
+    // Screenshot time already expired
+    if (screenshotTime < time) {
+      // Next period less then 5 seconds, do the screenshot now!
+      if ((time - screenshotTime) < 5) {
+        // Mark screenshot as idle if the time less then 2 seconds
+        if ((time - screenshotTime) < 2) {
+          const screenshotViewerWindowId = yield eff.select(getUiState('screenshotViewerWindowId'));
+          yield eff.put(screenshotsActions.addScreenshot({
+            time,
+            timestamp,
+            status: 'idle',
+          }, screenshotViewerWindowId));
+          yield eff.put(uiActions.setUiState({
+            screenshotTime: (
+              randomIntFromInterval(
+                (currentPeriodNumber * screenshotsPeriodInSeconds) + 5,
+                ((currentPeriodNumber + 1) * screenshotsPeriodInSeconds) - 2,
+              )
+            ),
+            screenshotTimeId: new Date().getTime(),
+          }));
+        } else {
+          yield eff.put(screenshotsActions.takeScreenshotRequest({
+            isTest: false,
+            time,
+            timestamp,
+          }));
+        }
+      } else {
+        yield eff.put(uiActions.setUiState({
+          screenshotTime: (
+            randomIntFromInterval(
+              time,
+              (currentPeriodNumber + 1) * screenshotsPeriodInSeconds,
+            )
+          ),
+          screenshotTimeId: new Date().getTime(),
+        }));
+      }
+    }
+  }
+}
+
+function* handleIdleScreenshots({
+  dismiss,
+  keep,
+  time,
+  timestamp,
+}) {
+  const {
+    takeScreenshotLoading,
+    uploadScreenshotLoading,
+  } = yield eff.select(getUiState([
+    'takeScreenshotLoading',
+    'uploadScreenshotLoading',
+  ]));
+  if (
+    takeScreenshotLoading
+    || uploadScreenshotLoading
+  ) {
+    yield eff.race([
+      eff.take(actionTypes.TAKE_SCREENSHOT_FINISHED),
+      eff.take(actionTypes.UPLOAD_SCREENSHOT_FINISHED),
+    ]);
+  }
+  const screenshots = yield eff.select(getUiState('screenshots'));
+
+  if (dismiss) {
+    /* Remove screenshots which for some reason lands on idle time(it should never happen) */
+    /* this operation just in case */
+    const screenshotViewerWindowId = yield eff.select(getUiState('screenshotViewerWindowId'));
+    yield eff.put(screenshotsActions.setScreenshots(
+      screenshots.filter(
+        s => (
+          s.time < time
+        ),
+      ),
+      screenshotViewerWindowId,
+    ));
+    yield eff.call(
+      setScreenshotTimeForCurrentPeriod,
+      {
+        time,
+        timestamp,
+        screenshots,
+      },
+    );
+    const {
+      fullyExpiredPeriods,
+      startPeriodNumber,
+      screenshotsPeriodInSeconds,
+    } = calculateInactivityPeriod({
+      idleTimeInSceonds: dismiss.payload,
+      time: time + dismiss.payload,
+    });
+    const currentPeriodNumber = Math.floor(time / screenshotsPeriodInSeconds);
+    const lastPeriodNumber = Math.floor((time + dismiss.payload) / screenshotsPeriodInSeconds);
+    const activity = yield eff.select(getUiState('activity'));
+    const expiredActivity = Array.from(Array(fullyExpiredPeriods).keys()).reduce(
+      (acc, periodNumber) => ({
+        ...acc,
+        [periodNumber + startPeriodNumber]: 0,
+      }),
+      {
+        [currentPeriodNumber]: (
+          activity[currentPeriodNumber]
+          - (((currentPeriodNumber + 1) * screenshotsPeriodInSeconds) - time)
+        ),
+        [lastPeriodNumber]: 0,
+      },
+    );
+    yield eff.put(uiActions.setUiState('activity', expiredActivity));
+  }
+
+  if (keep) {
+    const {
+      fullyExpiredPeriods,
+      startPeriodInSeconds,
+      screenshotsPeriodInSeconds,
+    } = calculateInactivityPeriod({
+      idleTimeInSceonds: keep.payload,
+      time,
+    });
+    const screenshotTime = yield eff.select(getUiState('screenshotTime'));
+    const firstIdlePeriodScreenshotExist = (
+      screenshots.find(
+        s => (
+          s.time === screenshotTime
+        ),
+      )
+    );
+    const screenshotViewerWindowId = yield eff.select(getUiState('screenshotViewerWindowId'));
+    if (
+      time > screenshotTime
+      && !firstIdlePeriodScreenshotExist
+    ) {
+      yield eff.put(screenshotsActions.setScreenshots(
+        [
+          ...screenshots,
+          {
+            time: screenshotTime,
+            timestamp: timestamp - ((time - screenshotTime) * 1000),
+            status: 'idle',
+          },
+        ],
+        screenshotViewerWindowId,
+      ));
+    }
+    const expiredScreenshots = Array.from(Array(fullyExpiredPeriods).keys()).map(
+      (periodNumber) => {
+        const t = (startPeriodInSeconds + ((periodNumber + 1) * screenshotsPeriodInSeconds)) - 2;
+        return ({
+          time: t,
+          timestamp: timestamp - ((time - t) * 1000),
+          status: 'idle',
+        });
+      },
+    );
+    yield eff.put(screenshotsActions.setScreenshots(
+      [
+        ...screenshots,
+        ...expiredScreenshots,
+      ],
+      screenshotViewerWindowId,
+    ));
+
+    yield eff.call(
+      setScreenshotTimeForCurrentPeriod,
+      {
+        time,
+        timestamp,
+        screenshots,
+      },
+    );
+  }
+}
+
+function* idleWindow(screenshotsEnabled) {
   let win = null;
   try {
     win = yield eff.call(
@@ -107,10 +310,27 @@ function* idleWindow() {
       },
     );
     while (true) {
-      yield eff.race({
+      const {
+        keep,
+        dismiss,
+      } = yield eff.race({
         keep: eff.take(actionTypes.KEEP_IDLE_TIME),
         dismiss: eff.take(actionTypes.DISMISS_IDLE_TIME),
+        currentWindowClose: eff.take(sharedActionTypes.WINDOW_BEFORE_UNLOAD),
       });
+      if (screenshotsEnabled) {
+        const time = yield eff.select(getTimerState('time'));
+        const timestamp = new Date().getTime();
+        yield eff.spawn(
+          handleIdleScreenshots,
+          {
+            dismiss,
+            keep,
+            time,
+            timestamp,
+          },
+        );
+      }
       yield eff.cancel();
     }
   } finally {
@@ -137,6 +357,7 @@ function* handleTick({
   screenshotsEnabled,
 }) {
   let idleWindowTask = null;
+  let prevScreenshotId = null;
   while (true) {
     yield eff.take(timerChannel);
     const bufferSeconds = yield eff.flush(timerChannel);
@@ -144,8 +365,38 @@ function* handleTick({
     yield eff.put(timerActions.tick(
       1 + bufferSeconds.length,
     ));
+    const time = yield eff.select(getTimerState('time'));
+
+    if (bufferSeconds.length) {
+      console.log('!!!!!!!!!!!!!!!!!');
+      Sentry.captureMessage(`bufferSeconds is ${bufferSeconds.length}`);
+    }
     yield eff.call(setTimeToTray);
-    const showIdleWindow = yield eff.call(checkIdle);
+    const [
+      showIdleWindow,
+      idleTime,
+    ] = yield eff.call(checkIdle);
+    if (
+      screenshotsEnabled
+      && (
+        idleTime > 1
+        || (
+          idleWindowTask
+          && !idleWindowTask?.isCancelled()
+        )
+      )
+    ) {
+      const screenshotsPeriodInSeconds = (
+        config.screenshotsPeriod < 30
+          ? 30
+          : config.screenshotsPeriod
+      );
+      const currentPeriodNumber = Math.floor(time / screenshotsPeriodInSeconds);
+      const activity = yield eff.select(getUiState('activity'));
+      yield eff.put(uiActions.setUiState('activity', {
+        [currentPeriodNumber]: (activity[currentPeriodNumber] || 0) + 1,
+      }));
+    }
     if (
       showIdleWindow
       && (
@@ -153,19 +404,37 @@ function* handleTick({
         || idleWindowTask.isCancelled()
       )
     ) {
-      idleWindowTask = yield eff.fork(idleWindow);
+      idleWindowTask = yield eff.fork(
+        idleWindow,
+        screenshotsEnabled,
+      );
     }
     if (
       screenshotsEnabled
-      && !showIdleWindow
+      && (
+        !idleWindowTask
+        || idleWindowTask.isCancelled()
+      )
     ) {
       const screenshotTime = yield eff.select(getUiState('screenshotTime'));
-      const time = yield eff.select(getTimerState('time'));
-      if (time === screenshotTime) {
-        yield eff.put(screenshotsActions.takeScreenshotRequest({
-          isTest: false,
-          time,
-        }));
+      const screenshotTimeId = yield eff.select(getUiState('screenshotTimeId'));
+      /* In casee of render freeze, if it will happen often, shift it to the main process */
+      if (time >= screenshotTime) {
+        if (prevScreenshotId !== screenshotTimeId) {
+          prevScreenshotId = screenshotTimeId;
+          yield eff.put(screenshotsActions.takeScreenshotRequest({
+            isTest: false,
+            time,
+            timestamp: new Date().getTime(),
+          }));
+          if (time !== screenshotTime) {
+            console.log('TIME !== SCREENSHOTTIME');
+            console.log(`time: ${time}, screenshotTime: ${screenshotTime}`);
+            Sentry.captureMessage(
+              `time !== screenshotTime, time: ${time}, screenshotTime: ${screenshotTime}`,
+            );
+          }
+        }
       }
     }
   }
@@ -185,10 +454,11 @@ function* timerFlow() {
         ? 30
         : config.screenshotsPeriod
     );
-    // 5 - screenshotsPeriod
-    const firstScreenshotTime = randomIntFromInterval(5, screenshotsPeriod);
+    // 5 - screenshotsPeriod - 2
+    const firstScreenshotTime = randomIntFromInterval(5, screenshotsPeriod - 2);
     yield eff.put(uiActions.setUiState({
       screenshotTime: firstScreenshotTime,
+      screenshotTimeId: new Date().getTime(),
     }));
   }
 
@@ -221,6 +491,43 @@ function* timerFlow() {
           yield eff.put(timerActions.resetTimer());
           yield eff.put(trayActions.trayStopTimer());
         }
+        const {
+          takeScreenshotLoading,
+          uploadScreenshotLoading,
+        } = yield eff.select(getUiState([
+          'takeScreenshotLoading',
+          'uploadScreenshotLoading',
+        ]));
+        if (
+          takeScreenshotLoading
+          || uploadScreenshotLoading
+        ) {
+          yield eff.race([
+            eff.take(actionTypes.TAKE_SCREENSHOT_FINISHED),
+            eff.take(actionTypes.UPLOAD_SCREENSHOT_FINISHED),
+          ]);
+        }
+        yield eff.put(uiActions.setUiState({
+          screenshots: [],
+          activity: {},
+        }));
+        const screenshotViewerWindowId = yield eff.select(
+          getUiState('screenshotViewerWindowId'),
+        );
+        const screenshotsWin = (
+          screenshotViewerWindowId
+          && remote.BrowserWindow.fromId(screenshotViewerWindowId)
+        );
+        if (
+          screenshotsWin
+          && !screenshotsWin.isDestroyed()
+        ) {
+          screenshotsWin.destroy();
+        }
+        yield eff.cps(
+          rimraf,
+          `${app.getPath('userData')}/screens/`,
+        );
         if (
           closeRequest
           && continueStop
@@ -228,13 +535,16 @@ function* timerFlow() {
           if (process.env.NODE_ENV === 'development') {
             window.location.reload();
           } else {
-            remote.app.quit();
+            app.quit();
           }
         }
       } else {
         const allowEmptyComment = yield eff.select(getUiState('allowEmptyComment'));
         const comment = yield eff.select(getUiState('worklogComment'));
-        if (!allowEmptyComment && !comment) {
+        if (
+          !allowEmptyComment
+          && !comment
+        ) {
           yield eff.fork(notify, {
             title: 'Please set comment for worklog',
           });
@@ -254,6 +564,10 @@ function* timerFlow() {
               timeSpentInSeconds,
             },
           );
+          yield eff.put(uiActions.setUiState({
+            screenshots: [],
+            activity: {},
+          }));
           yield eff.put(trayActions.trayStopTimer());
           if (
             closeRequest

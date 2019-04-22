@@ -22,7 +22,9 @@ export const persistInitialState = {
 
   postAlsoAsIssueComment: false,
   screenshotsEnabled: false,
-  screenshotDecisionTime: 5,
+  showScreenshotPreview: true,
+  useNativeNotifications: false,
+  screenshotDecisionTime: 15,
 
   issuesSourceType: null,
   issuesSourceId: null,
@@ -50,8 +52,12 @@ const initialState: UiState = {
   saveFilterDialogOpen: false,
 
   takeScreenshotLoading: false,
+  uploadScreenshotLoading: false,
   screenshotTime: null,
+  screenshotTimeId: null,
+  screenshotViewerWindowId: null,
   screenshots: [],
+  activity: {},
 
   updateAvailable: null,
   downloadedUpdate: false,
@@ -83,12 +89,14 @@ const initialState: UiState = {
 
   modalState: {
     alert: false,
+    worklogInetIssue: false,
     confirmDeleteWorklog: false,
     settings: false,
     worklog: false,
     accounts: false,
   },
   flags: [],
+  quitAfterSaveWorklog: false,
   ...persistInitialState,
 };
 
@@ -174,6 +182,11 @@ export default function ui(
           ...state.screenshots,
           action.payload,
         ],
+      };
+    case actionTypes.SET_SCREENSHOTS:
+      return {
+        ...state,
+        screenshots: action.payload,
       };
     case actionTypes.ADD_FLAG:
       return {

@@ -20,6 +20,10 @@ export const stopTimer = (): TimerAction => ({
   type: types.STOP_TIMER,
 });
 
+export const continueTimer = (): TimerAction => ({
+  type: types.CONTINUE_TIMER,
+});
+
 export const setTime = (payload): TimerAction => ({
   type: types.SET_TIME,
   payload,

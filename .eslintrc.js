@@ -26,6 +26,7 @@ module.exports = {
   rules: {
     'import/no-extraneous-dependencies': 'off',
     'import/prefer-default-export': 'off',
+    'react/forbid-prop-types': 'off',
     'react/destructuring-assignment': 'off',
     'react/jsx-one-expression-per-line': 'off',
     'jsx-a11y/no-static-element-interactions': 'off',

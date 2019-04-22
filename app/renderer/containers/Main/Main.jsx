@@ -11,6 +11,7 @@ import type {
 
 import {
   AlertModal,
+  SaveWorklogInetIssueModal,
   SettingsModal,
   WorklogModal,
   ConfirmDeleteWorklogModal,
@@ -37,6 +38,7 @@ const Main: StatelessFunctionalComponent<Props> = (): Node => (
       <IssueView />
 
       <AlertModal />
+      <SaveWorklogInetIssueModal />
       <SettingsModal />
       <WorklogModal />
       <ConfirmDeleteWorklogModal />

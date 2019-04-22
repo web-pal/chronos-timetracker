@@ -117,7 +117,7 @@ function* initializeMixpanel(): Generator<*, *, *> {
 }
 
 /* It needs only for a screenshots functionality */
-export function* chronosApiAuth() {
+export function* chronosApiAuth(ignoreCheckEnabled = false) {
   try {
     const screenshotsEnabled = yield eff.select(getUiState('screenshotsEnabled'));
     const authCredentials = yield eff.call(
@@ -135,8 +135,8 @@ export function* chronosApiAuth() {
       `${name}_${hostname}`,
     );
     if (
-      screenshotsEnabled
-      && !jwt
+      ignoreCheckEnabled
+     || screenshotsEnabled
     ) {
       const cookiesStr = yield eff.call(
         keytar.getPassword,
@@ -201,6 +201,7 @@ function* issueWindow(url) {
           center: true,
           title: 'Issue window',
           webPreferences: {
+            webSecurity: false,
             nodeIntegration: false,
             preload: getPreload('issueFormPreload'),
             devTools: (
@@ -214,12 +215,12 @@ function* issueWindow(url) {
     while (true) {
       const {
         showForm,
-        currentWindowClose,
         hideWin,
+        currentWindowClose,
       } = yield eff.race({
         showForm: eff.take(actionTypes.SHOW_ISSUE_FORM_WINDOW),
-        currentWindowClose: eff.take(sharedActionTypes.WINDOW_BEFORE_UNLOAD),
         hideWin: eff.take(actionTypes.CLOSE_ISSUE_FORM_WINDOW),
+        currentWindowClose: eff.take(sharedActionTypes.WINDOW_BEFORE_UNLOAD),
       });
       if (showForm) {
         win.show();
@@ -316,6 +317,10 @@ export function* takeInitialConfigureApp() {
       yield eff.join(boardsTask);
       yield eff.fork(fetchSprints);
 
+      yield eff.fork(
+        chronosApiAuth,
+        true,
+      );
       yield eff.put(uiActions.setUiState({
         authorized: true,
         authRequestInProcess: false,
@@ -431,51 +436,71 @@ export function* initializeApp(): Generator<*, *, *> {
 export function* handleAttachmentWindow(): Generator<*, *, *> {
   let win = null;
   while (true) {
-    const { issueId, activeIndex } = yield eff.take(actionTypes.SHOW_ATTACHMENT_WINDOW);
-    const issue = yield eff.select(getResourceItemById('issues', issueId));
+    const {
+      currentWindowClose,
+      showWindow,
+    } = yield eff.race({
+      currentWindowClose: eff.take(sharedActionTypes.WINDOW_BEFORE_UNLOAD),
+      showWindow: eff.take(actionTypes.SHOW_ATTACHMENT_WINDOW),
+    });
     if (
-      !win
-      || win.isDestroyed()
+      currentWindowClose
+      && win
+      && !win.isDestroyed()
     ) {
-      win = yield eff.call(
-        windowsManagerSagas.forkNewWindow,
-        {
-          url: (
-            process.env.NODE_ENV === 'development'
-              ? 'http://localhost:3000/attachmentWindow.html'
-              : `file://${__dirname}/attachmentWindow.html`
-          ),
-          showOnReady: true,
-          BrowserWindow: remote.BrowserWindow,
-          options: {
-            show: true,
-            title: 'Attachments',
-            webPreferences: {
-              devTools: (
-                config.attachmentsWindowDevtools
-                || process.env.DEBUG_PROD === 'true'
-              ),
+      win.destroy();
+    }
+    if (showWindow) {
+      const {
+        issueId,
+        activeIndex,
+      } = showWindow;
+      const issue = yield eff.select(getResourceItemById('issues', issueId));
+      if (
+        !win
+        || win.isDestroyed()
+      ) {
+        win = yield eff.call(
+          windowsManagerSagas.forkNewWindow,
+          {
+            url: (
+              process.env.NODE_ENV === 'development'
+                ? 'http://localhost:3000/attachmentWindow.html'
+                : `file://${__dirname}/attachmentWindow.html`
+            ),
+            showOnReady: true,
+            BrowserWindow: remote.BrowserWindow,
+            options: {
+              show: true,
+              title: 'Attachments',
+              webPreferences: {
+                webSecurity: false,
+                devTools: (
+                  config.attachmentsWindowDevtools
+                  || process.env.DEBUG_PROD === 'true'
+                ),
+              },
             },
           },
-        },
-      );
+        );
+        const readyChannel = yield eff.call(
+          windowsManagerSagas.createWindowChannel,
+          {
+            win,
+            webContentsEvents: [
+              'dom-ready',
+            ],
+          },
+        );
+        yield eff.take(readyChannel);
+      }
+      yield eff.put(issuesActions.setAttachments({
+        attachments: issue?.fields?.attachment || [],
+        activeIndex,
+        scope: [win.id],
+      }));
+      win.focus();
     }
-    const readyChannel = yield eff.call(
-      windowsManagerSagas.createWindowChannel,
-      {
-        win,
-        webContentsEvents: [
-          'dom-ready',
-        ],
-      },
-    );
-    yield eff.take(readyChannel);
-    yield eff.put(issuesActions.setAttachments({
-      attachments: issue?.fields?.attachment || [],
-      activeIndex,
-      scope: [win.id],
-    }));
-    win.focus();
   }
 }
 

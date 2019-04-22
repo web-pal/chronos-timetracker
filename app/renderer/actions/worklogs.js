@@ -20,3 +20,11 @@ export const deleteWorklogRequest = (
   type: actionTypes.DELETE_WORKLOG_REQUEST,
   worklogId,
 });
+
+export const trySaveWorklogAgainRequest = (): WorklogsAction => ({
+  type: actionTypes.TRY_SAVE_WORKLOG_AGAIN_REQUEST,
+});
+
+export const stopTrySaveWorklogRequest = (): WorklogsAction => ({
+  type: actionTypes.STOP_TRY_SAVE_WORKLOG_REQUEST,
+});

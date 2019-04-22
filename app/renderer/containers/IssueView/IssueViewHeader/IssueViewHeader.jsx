@@ -32,6 +32,7 @@ import Button, {
   ButtonGroup,
 } from '@atlaskit/button';
 import Spinner from '@atlaskit/spinner';
+import CameraIcon from '@atlaskit/icon/glyph/camera';
 import {
   getBaseUrl,
   getTimerState,
@@ -44,6 +45,7 @@ import {
 import {
   timerActions,
   uiActions,
+  screenshotsActions,
   issuesActions,
 } from 'actions';
 
@@ -218,6 +220,28 @@ const IssueViewHeader: StatelessFunctionalComponent<Props> = ({
           >
             Edit
           </Button>
+        </div>
+        <div
+          style={{
+            marginLeft: 10,
+            cursor: 'pointer',
+          }}
+          onClick={() => {
+            dispatch(screenshotsActions.showScreenshotsViewerWindow({
+              issueId: selectedIssue.id,
+            }));
+          }}
+        >
+          <Tooltip
+            content="Open screenshots report"
+            position="bottom"
+          >
+            <CameraIcon
+              size="large"
+              primaryColor="#707070"
+              label="Open screenshots report"
+            />
+          </Tooltip>
         </div>
       </ButtonGroup>
     </Flex>
