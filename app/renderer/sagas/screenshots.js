@@ -87,7 +87,12 @@ if (
           appPath.split('node_modules')[0],
           'node_modules/screenshot-desktop/lib/win32',
         )
-      ) : '123'
+      ) : (
+        path.join(
+          appPath.split('app.asar')[0],
+          'screenshot-desktop/',
+        )
+      )
   );
 
 
