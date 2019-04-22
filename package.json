@@ -32,6 +32,8 @@
     "productName": "Chronos",
     "copyright": "Copyright © 2017 Webpal",
     "compression": "normal",
+    "asarUnpack": ["node_modules/screenshot-desktop"],
+    "afterPack": "./afterPack.js",
     "files": [
       "dist/",
       "!**/*.map",

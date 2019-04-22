@@ -39,6 +39,108 @@ import store from '../store';
 
 const { app } = remote.require('electron');
 
+function unlinkP(p) {
+  return new Promise((resolve, reject) => {
+    fs.unlink(p, (err) => {
+      if (err) {
+        return reject(err);
+      }
+      return resolve();
+    });
+  });
+}
+
+function readFileP(p) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(p, (err, img) => {
+      if (err) {
+        return reject(err);
+      }
+      return resolve(img);
+    });
+  });
+}
+
+function readAndUnlinkP(p) {
+  return new Promise((resolve, reject) => {
+    readFileP(p)
+      .then((img) => {
+        unlinkP(p)
+          .then(() => resolve(img))
+          .catch(reject);
+      })
+      .catch(reject);
+  });
+}
+
+if (
+  process.platform === 'windows'
+  || process.platform === 'win32'
+) {
+  const exec = require('child_process').exec; // eslint-disable-line
+  const temp = require('temp'); // eslint-disable-line
+  const appPath = app.getAppPath();
+  const libPath = (
+    process.env.NODE_ENV === 'development'
+      ? (
+        path.join(
+          appPath.split('node_modules')[0],
+          'node_modules/screenshot-desktop/lib/win32',
+        )
+      ) : '123'
+  );
+
+
+  screenshot.windowsSnapshot = function windowsSnapshot(options = {}) {
+    return new Promise((resolve, reject) => {
+      const displayName = options.screen;
+      const format = options.format || 'jpg';
+      const tmpPath = temp.path({
+        suffix: `.${format}`,
+      });
+      const imgPath = path.resolve(options.filename || tmpPath);
+
+      const displayChoice = displayName ? ` /d "${displayName}"` : '';
+
+      exec(
+        `"${path.join(libPath, 'screenCapture_1.3.2.bat')}" "${imgPath}" ${displayChoice}`,
+        {
+          cwd: libPath,
+        },
+        (err) => {
+          if (err) {
+            reject(err);
+          } else {
+            if (options.filename) { // eslint-disable-line
+              resolve(imgPath);
+            } else {
+              readAndUnlinkP(tmpPath)
+                .then(resolve)
+                .catch(reject);
+            }
+          }
+        },
+      );
+    });
+  };
+
+  screenshot.listDisplays = function listDisplays() {
+    return new Promise((resolve, reject) => {
+      exec(
+        `"${path.join(libPath, 'screenCapture_1.3.2.bat')}" /list`,
+        {
+          cwd: libPath,
+        },
+        (err, stdout) => {
+          if (err) {
+            return reject(err);
+          }
+          return resolve(screenshot.parseDisplaysOutput(stdout));
+        },
+      );
+    });
+  };
+}
 
 function* ensureDirectoryExistence(filePath) {
   const dirname = path.dirname(filePath);
@@ -361,16 +463,18 @@ export function* takeScreenshotRequest() {
         takeScreenshotLoading: true,
       }));
       const displays = yield eff.call(screenshot.listDisplays);
+      console.log(displays);
       const images = yield eff.all(
         displays.map(
           d => eff.call(
-            screenshot,
+            screenshot.windowsSnapshot,
             {
               screen: d.id,
             },
           ),
         ),
       );
+      console.log(images);
       const dimensionImages = yield eff.all(images.map(
         i => eff.call(
           loadImageWithDimension,
@@ -516,7 +620,7 @@ export function* takeScreenshotRequest() {
               isTest || !isSmall
                 ? {}
                 : {
-                  x: dispayWidth,
+                  x: dispayWidth - 360,
                   y: 0,
                 }
             ),
