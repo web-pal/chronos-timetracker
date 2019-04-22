@@ -1,3 +1,20 @@
+<a name="3.2.0"></a>
+# [3.2.0](https://github.com/web-pal/chronos-timetracker/compare/v3.1.0...v3.2.0) (2019-04-22)
+
+
+### Bug Fixes
+
+* idle popup scroll bars ([00af468](https://github.com/web-pal/chronos-timetracker/commit/00af468))
+* sentry integration ([6f198e2](https://github.com/web-pal/chronos-timetracker/commit/6f198e2))
+
+
+### Features
+
+* Screenshots viewer popup ([c167083](https://github.com/web-pal/chronos-timetracker/commit/c167083))
+* user mention api request ([2cb1952](https://github.com/web-pal/chronos-timetracker/commit/2cb1952))
+
+
+
 <a name="3.1.0"></a>
 # [3.1.0](https://github.com/web-pal/chronos-timetracker/compare/v3.0.1...v3.1.0) (2019-04-04)
 
