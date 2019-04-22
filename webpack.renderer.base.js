@@ -6,8 +6,11 @@ module.exports = env => ({
     app: [
       path.join(__dirname, 'app/renderer/index.jsx'),
     ],
-    screenPopup: [
-      path.join(__dirname, 'app/renderer/screenPopup.jsx'),
+    screenshotNotificationPopup: [
+      path.join(__dirname, 'app/renderer/screenshotNotification.jsx'),
+    ],
+    screenshotsViewerPopup: [
+      path.join(__dirname, 'app/renderer/screenshotsViewer.jsx'),
     ],
     idleTimePopup: [
       path.join(__dirname, 'app/renderer/idlePopup.jsx'),
@@ -25,6 +28,7 @@ module.exports = env => ({
   resolve: {
     extensions: ['.js', '.jsx', '.mjs', '.wasm', '.json'],
     alias: {
+      'react-dom': '@hot-loader/react-dom',
       actions: path.join(__dirname, 'app/renderer/actions'),
       api: path.join(__dirname, 'app/renderer/api'),
       components: path.join(__dirname, 'app/renderer/components'),
@@ -53,7 +57,7 @@ module.exports = env => ({
                 '@babel/preset-env',
                 {
                   targets: {
-                    electron: '3.0.2',
+                    electron: '4.1.4',
                   },
                   modules: false,
                   useBuiltIns: 'entry',

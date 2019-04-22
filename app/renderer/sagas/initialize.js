@@ -8,6 +8,7 @@ import mixpanel from 'mixpanel-browser';
 
 import {
   jiraApi,
+  chronosApi,
 } from 'api';
 
 import {
@@ -17,13 +18,13 @@ import {
 import {
   getBaseUrl,
   getResourceItemById,
+  getUiState,
 } from 'selectors';
 
 import {
   actionTypes,
   uiActions,
   profileActions,
-  settingsActions,
   resourcesActions,
   issuesActions,
   updaterActions,
@@ -115,6 +116,73 @@ function* initializeMixpanel(): Generator<*, *, *> {
   }
 }
 
+/* It needs only for a screenshots functionality */
+export function* chronosApiAuth(ignoreCheckEnabled = false) {
+  try {
+    const screenshotsEnabled = yield eff.select(getUiState('screenshotsEnabled'));
+    const authCredentials = yield eff.call(
+      getElectronStorage,
+      'last_used_account',
+    );
+    const {
+      name,
+      hostname,
+      protocol,
+    } = authCredentials;
+    let jwt = yield eff.call(
+      keytar.getPassword,
+      'ChronosJWT',
+      `${name}_${hostname}`,
+    );
+    if (
+      ignoreCheckEnabled
+     || screenshotsEnabled
+    ) {
+      const cookiesStr = yield eff.call(
+        keytar.getPassword,
+        'Chronos',
+        `${authCredentials.name}_${authCredentials.hostname}`,
+      );
+      const cookies = JSON.parse(cookiesStr);
+      const res = yield eff.call(
+        chronosApi.getJWT,
+        {
+          body: {
+            cookies,
+            name,
+            hostname,
+            protocol,
+          },
+        },
+      );
+      jwt = res.jwtToken;
+      yield eff.call(
+        keytar.setPassword,
+        'ChronosJWT',
+        `${name}_${hostname}`,
+        jwt,
+      );
+    }
+    yield eff.call(
+      chronosApi.setJWT,
+      jwt,
+    );
+  } catch (err) {
+    yield eff.fork(
+      notify,
+      {
+        icon: 'errorIcon',
+        autoDelete: true,
+        title: 'Enable screenshots error!',
+      },
+    );
+    yield eff.put(uiActions.setUiState({
+      screenshotsEnabled: false,
+    }));
+    yield eff.call(throwError, err);
+  }
+}
+
 function* issueWindow(url) {
   let win = null;
   try {
@@ -133,6 +201,7 @@ function* issueWindow(url) {
           center: true,
           title: 'Issue window',
           webPreferences: {
+            webSecurity: false,
             nodeIntegration: false,
             preload: getPreload('issueFormPreload'),
             devTools: (
@@ -146,12 +215,12 @@ function* issueWindow(url) {
     while (true) {
       const {
         showForm,
-        currentWindowClose,
         hideWin,
+        currentWindowClose,
       } = yield eff.race({
         showForm: eff.take(actionTypes.SHOW_ISSUE_FORM_WINDOW),
-        currentWindowClose: eff.take(sharedActionTypes.WINDOW_BEFORE_UNLOAD),
         hideWin: eff.take(actionTypes.CLOSE_ISSUE_FORM_WINDOW),
+        currentWindowClose: eff.take(sharedActionTypes.WINDOW_BEFORE_UNLOAD),
       });
       if (showForm) {
         win.show();
@@ -234,18 +303,9 @@ export function* takeInitialConfigureApp() {
         accounts,
       }));
 
-      const persistSettings = yield eff.call(
-        getElectronStorage,
-        `localDesktopSettings_${hostname}`,
-        {},
-      );
-      yield eff.put(
-        settingsActions.fillLocalDesktopSettings(persistSettings),
-      );
-
       yield eff.put(updaterActions.setUpdateSettings({
-        autoDownload: persistSettings.updateAutomatically,
-        allowPrerelease: persistSettings.updateChannel !== 'stable',
+        autoDownload: persistUiState.updateAutomatically,
+        allowPrerelease: persistUiState.updateChannel !== 'stable',
       }));
       yield eff.put(updaterActions.checkUpdates());
       const boardsTask = yield eff.fork(fetchBoards);
@@ -257,6 +317,10 @@ export function* takeInitialConfigureApp() {
       yield eff.join(boardsTask);
       yield eff.fork(fetchSprints);
 
+      yield eff.fork(
+        chronosApiAuth,
+        true,
+      );
       yield eff.put(uiActions.setUiState({
         authorized: true,
         authRequestInProcess: false,
@@ -372,39 +436,71 @@ export function* initializeApp(): Generator<*, *, *> {
 export function* handleAttachmentWindow(): Generator<*, *, *> {
   let win = null;
   while (true) {
-    const { issueId, activeIndex } = yield eff.take(actionTypes.SHOW_ATTACHMENT_WINDOW);
-    const issue = yield eff.select(getResourceItemById('issues', issueId));
+    const {
+      currentWindowClose,
+      showWindow,
+    } = yield eff.race({
+      currentWindowClose: eff.take(sharedActionTypes.WINDOW_BEFORE_UNLOAD),
+      showWindow: eff.take(actionTypes.SHOW_ATTACHMENT_WINDOW),
+    });
     if (
-      !win
-      || win.isDestroyed()
+      currentWindowClose
+      && win
+      && !win.isDestroyed()
     ) {
-      win = yield eff.call(
-        windowsManagerSagas.forkNewWindow,
-        {
-          url: (
-            process.env.NODE_ENV === 'development'
-              ? 'http://localhost:3000/attachmentWindow.html'
-              : `file://${__dirname}/attachmentWindow.html`
-          ),
-          showOnReady: true,
-          BrowserWindow: remote.BrowserWindow,
-          options: {
-            show: true,
-            title: 'Attachments',
-            webPreferences: {
-              devTools: true,
+      win.destroy();
+    }
+    if (showWindow) {
+      const {
+        issueId,
+        activeIndex,
+      } = showWindow;
+      const issue = yield eff.select(getResourceItemById('issues', issueId));
+      if (
+        !win
+        || win.isDestroyed()
+      ) {
+        win = yield eff.call(
+          windowsManagerSagas.forkNewWindow,
+          {
+            url: (
+              process.env.NODE_ENV === 'development'
+                ? 'http://localhost:3000/attachmentWindow.html'
+                : `file://${__dirname}/attachmentWindow.html`
+            ),
+            showOnReady: true,
+            BrowserWindow: remote.BrowserWindow,
+            options: {
+              show: true,
+              title: 'Attachments',
+              webPreferences: {
+                webSecurity: false,
+                devTools: (
+                  config.attachmentsWindowDevtools
+                  || process.env.DEBUG_PROD === 'true'
+                ),
+              },
             },
           },
-        },
-      );
-      yield eff.delay(500);
+        );
+        const readyChannel = yield eff.call(
+          windowsManagerSagas.createWindowChannel,
+          {
+            win,
+            webContentsEvents: [
+              'dom-ready',
+            ],
+          },
+        );
+        yield eff.take(readyChannel);
+      }
+      yield eff.put(issuesActions.setAttachments({
+        attachments: issue?.fields?.attachment || [],
+        activeIndex,
+        scope: [win.id],
+      }));
+      win.focus();
     }
-    yield eff.put(issuesActions.setAttachments({
-      attachments: issue?.fields?.attachment || [],
-      activeIndex,
-      scope: [win.id],
-    }));
-    win.focus();
   }
 }
 

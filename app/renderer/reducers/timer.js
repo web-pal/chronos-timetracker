@@ -34,6 +34,11 @@ export default function timer(
         ...state,
         running: true,
       };
+    case actionTypes.SET_TIME:
+      return {
+        ...state,
+        time: action.payload,
+      };
     case actionTypes.SET_IDLE_STATE:
       return {
         ...state,

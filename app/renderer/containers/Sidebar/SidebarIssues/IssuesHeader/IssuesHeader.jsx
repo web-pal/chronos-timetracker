@@ -3,9 +3,6 @@ import React from 'react';
 import {
   connect,
 } from 'react-redux';
-import {
-  ipcRenderer,
-} from 'electron';
 
 import type {
   StatelessFunctionalComponent,
@@ -92,12 +89,12 @@ const IssuesHeader: StatelessFunctionalComponent<Props> = ({
                 }));
               }}
             >
-            <S.FilterIcon
-              label="Filter"
-              size="medium"
-              primaryColor={sidebarFiltersIsOpen ? '#0052CC' : '#333333'}
-            />
-          </span>
+              <S.FilterIcon
+                label="Filter"
+                size="medium"
+                primaryColor={sidebarFiltersIsOpen ? '#0052CC' : '#333333'}
+              />
+            </span>
           )
         }
       </span>

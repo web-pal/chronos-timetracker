@@ -1,6 +1,7 @@
 import * as eff from 'redux-saga/effects';
 import storage from 'electron-json-storage';
 
+import config from 'config';
 import {
   getUiState,
 } from 'selectors';
@@ -58,6 +59,34 @@ export const getElectronStorage = (key, defaultValue) => (
   })
 );
 
+export function calculateInactivityPeriod({
+  idleTimeInSceonds,
+  time,
+}) {
+  const screenshotsPeriodInSeconds = (
+    config.screenshotsPeriod < 30
+      ? 30
+      : config.screenshotsPeriod
+  );
+
+  const startIdlePeriodNumber = (
+    Math.ceil((time - idleTimeInSceonds) / screenshotsPeriodInSeconds)
+  );
+  const startPeriodInSeconds = startIdlePeriodNumber * screenshotsPeriodInSeconds;
+  const startPeriodNumber = Math.floor(startPeriodInSeconds / screenshotsPeriodInSeconds);
+  const fullyExpiredPeriods = (
+    Math.floor((time - startPeriodInSeconds) / screenshotsPeriodInSeconds)
+  );
+
+  return {
+    screenshotsPeriodInSeconds,
+    startIdlePeriodNumber,
+    startPeriodInSeconds,
+    startPeriodNumber,
+    fullyExpiredPeriods,
+  };
+}
+
 export function* savePersistStorage() {
   const persistUiState = yield eff.select(
     getUiState(Object.keys(persistInitialUiState)),
@@ -78,14 +107,5 @@ export function* savePersistStorage() {
     setElectronStorage,
     'accounts',
     accounts,
-  );
-
-  const persistSettings = yield eff.select(
-    s => s.settings.localDesktopSettings,
-  );
-  yield eff.call(
-    setElectronStorage,
-    `localDesktopSettings_${hostname}`,
-    persistSettings,
   );
 }

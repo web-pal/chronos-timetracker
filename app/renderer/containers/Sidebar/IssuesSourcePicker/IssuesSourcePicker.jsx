@@ -140,7 +140,11 @@ const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
       />
       )
     }
-    {selectedSourceType === 'filter' && <JQLFilter selectedFilter={selectedOption} />}
+    {
+      selectedSourceType === 'filter' && (
+        <JQLFilter selectedFilter={selectedOption} />
+      )
+    }
   </S.IssuesSource>
 );
 

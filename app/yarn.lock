@@ -2,28 +2,6 @@
 # yarn lockfile v1
 
 
-"@shiftkey/prebuild-install@5.2.4":
-  version "5.2.4"
-  resolved "https://registry.yarnpkg.com/@shiftkey/prebuild-install/-/prebuild-install-5.2.4.tgz#5197ecda934e8b38e0f1609165413ffc2f722d98"
-  integrity sha512-42L/pSGD/+diCg8SwhZaXjDlkAWV10u42UozyG7rqDdyPW7HDp2/j/RYRZ3x0sXFf7hAUtLYvI9HdACWdjyfVw==
-  dependencies:
-    detect-libc "^1.0.3"
-    expand-template "^2.0.3"
-    github-from-package "0.0.0"
-    minimist "^1.2.0"
-    mkdirp "^0.5.1"
-    napi-build-utils "^1.0.1"
-    node-abi "^2.2.0"
-    noop-logger "^0.1.1"
-    npmlog "^4.0.1"
-    os-homedir "^1.0.1"
-    pump "^2.0.1"
-    rc "^1.2.7"
-    simple-get "^2.7.0"
-    tar-fs "^1.13.0"
-    tunnel-agent "^0.6.0"
-    which-pm-runs "^1.0.0"
-
 ansi-regex@^2.0.0:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/ansi-regex/-/ansi-regex-2.1.1.tgz#c3b33ab5ee360d86e0e628f0468ae7ef27d654df"
@@ -188,13 +166,13 @@ isarray@~1.0.0:
   resolved "https://registry.yarnpkg.com/isarray/-/isarray-1.0.0.tgz#bb935d48582cba168c06834957a54a3e07124f11"
   integrity sha1-u5NdSFgsuhaMBoNJV6VKPgcSTxE=
 
-keytar@4.4.0:
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/keytar/-/keytar-4.4.0.tgz#5fa6627863dcc5b249b2266d6d6a2c62150006ca"
-  integrity sha512-IX6rvzrXVCWwQDGxf0FmF1IYDU2UuKsTPl1rhMCvoFfvkpRyKQYHYNqmKISwTseh/JVk4VPRlLsP4L3J25odBg==
+keytar@4.4.1:
+  version "4.4.1"
+  resolved "https://registry.yarnpkg.com/keytar/-/keytar-4.4.1.tgz#156af8a9b016bf118ee9948b02418c81d760a5ba"
+  integrity sha512-6xEe7ybXSR5EZC+z0GI2yqLYZjV1tyPQY2xSZ8rGsBxrrLEh8VR/Lfqv59uGX+I+W+OZxH0jCXN1dU1++ify4g==
   dependencies:
-    "@shiftkey/prebuild-install" "5.2.4"
     nan "2.12.1"
+    prebuild-install "5.2.4"
 
 mimic-response@^1.0.0:
   version "1.0.1"
@@ -228,7 +206,7 @@ napi-build-utils@^1.0.1:
   resolved "https://registry.yarnpkg.com/napi-build-utils/-/napi-build-utils-1.0.1.tgz#1381a0f92c39d66bf19852e7873432fc2123e508"
   integrity sha512-boQj1WFgQH3v4clhu3mTNfP+vOBxorDlE8EKiMjUlLG3C4qAESnn9AxIOkFgTR2c9LtzNjPrjS60cT27ZKBhaA==
 
-node-abi@^2.2.0:
+node-abi@^2.7.0:
   version "2.7.1"
   resolved "https://registry.yarnpkg.com/node-abi/-/node-abi-2.7.1.tgz#a8997ae91176a5fbaa455b194976e32683cda643"
   integrity sha512-OV8Bq1OrPh6z+Y4dqwo05HqrRL9YNF7QVMRfq1/pguwKLG+q9UB/Lk0x5qXjO23JjJg+/jqCHSTaG1P3tfKfuw==
@@ -271,6 +249,28 @@ os-homedir@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/os-homedir/-/os-homedir-1.0.2.tgz#ffbc4988336e0e833de0c168c7ef152121aa7fb3"
   integrity sha1-/7xJiDNuDoM94MFox+8VISGqf7M=
+
+prebuild-install@5.2.4:
+  version "5.2.4"
+  resolved "https://registry.yarnpkg.com/prebuild-install/-/prebuild-install-5.2.4.tgz#8cc41a217ef778a31d3a876fe6668d05406db750"
+  integrity sha512-CG3JnpTZXdmr92GW4zbcba4jkDha6uHraJ7hW4Fn8j0mExxwOKK20hqho8ZuBDCKYCHYIkFM1P2jhtG+KpP4fg==
+  dependencies:
+    detect-libc "^1.0.3"
+    expand-template "^2.0.3"
+    github-from-package "0.0.0"
+    minimist "^1.2.0"
+    mkdirp "^0.5.1"
+    napi-build-utils "^1.0.1"
+    node-abi "^2.7.0"
+    noop-logger "^0.1.1"
+    npmlog "^4.0.1"
+    os-homedir "^1.0.1"
+    pump "^2.0.1"
+    rc "^1.2.7"
+    simple-get "^2.7.0"
+    tar-fs "^1.13.0"
+    tunnel-agent "^0.6.0"
+    which-pm-runs "^1.0.0"
 
 process-nextick-args@~2.0.0:
   version "2.0.0"

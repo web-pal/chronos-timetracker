@@ -12,7 +12,7 @@ import {
 import * as S from './styled';
 
 
-const NoWorklogs: StatelessFunctionalComponent<*> = (): Node =>
+const NoWorklogs: StatelessFunctionalComponent<*> = (): Node => (
   <S.NoWorklogs>
     <S.NoIssuesImage src={noIssuesImage} alt="Not found" />
     <S.Title>
@@ -21,6 +21,7 @@ const NoWorklogs: StatelessFunctionalComponent<*> = (): Node =>
     <S.Subtitle>
       Track any issue to see it in {'"Recent"'} tab
     </S.Subtitle>
-  </S.NoWorklogs>;
+  </S.NoWorklogs>
+);
 
 export default NoWorklogs;

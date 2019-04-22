@@ -9,7 +9,6 @@ import type {
 import {
   Checkbox,
 } from '@atlaskit/checkbox';
-
 import Button, {
   ButtonGroup,
 } from '@atlaskit/button';
@@ -47,9 +46,8 @@ const GeneralSettings: StatelessFunctionalComponent<Props> = ({
   setShowLoggedOnStop,
 }: Props): Node => {
   const isIconHidden = !!settings.trayShowTimer;
-  const allowEmptyComment = settings.allowEmptyComment;
+  const { allowEmptyComment } = settings;
   const showLoggedOnStop = !!settings.showLoggedOnStop;
-  // const isTimerHidden = false;
   return (
     <S.SettingsSectionContent>
       <S.ContentLabel>
@@ -100,7 +98,13 @@ const GeneralSettings: StatelessFunctionalComponent<Props> = ({
             Clear cache
           </Button>
         </ButtonGroup>
-        <H100 style={{ margin: '4px 0 0 6px', color: '#FFAB00', fontWeight: 300 }}>
+        <H100
+          style={{
+            margin: '4px 0 0 6px',
+            color: '#FFAB00',
+            fontWeight: 300,
+          }}
+        >
           Clearing cache will cause logout!
         </H100>
         <br />

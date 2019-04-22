@@ -24,6 +24,7 @@ import {
 } from 'components';
 import {
   uiActions,
+  screenshotsActions,
 } from 'actions';
 import {
   noIssuesImage,
@@ -86,6 +87,12 @@ const IssueWorklogs: StatelessFunctionalComponent<Props> = ({
                 selected={selectedWorklogId === worklog.id}
                 issueKey={issue.key}
                 baseUrl={baseUrl}
+                showScreenshotsViewer={() => {
+                  dispatch(screenshotsActions.showScreenshotsViewerWindow({
+                    issueId: issue.id,
+                    worklogId: worklog.id,
+                  }));
+                }}
                 onEditWorklog={() => {
                   dispatch(uiActions.setUiState({
                     editWorklogId: worklog.id,

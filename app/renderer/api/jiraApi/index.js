@@ -8,6 +8,7 @@ function apiFactory({ makeRequest }) {
     ['getFilterById', '/filter/{filterId}'],
     ['createFilter', '/filter', 'POST'],
     ['updateFilter', '/filter/{filterId}', 'PUT'],
+    ['searchForMentionUsers', '/user/mention/search', 'GET', '/rest/internal/2'],
     ['searchForUsers', '/groupuserpicker'],
     ['searchForIssues', '/search'],
     ['getIssueByIdOrKey', '/issue/{issueIdOrKey}'],

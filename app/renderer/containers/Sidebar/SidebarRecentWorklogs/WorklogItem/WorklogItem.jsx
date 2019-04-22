@@ -37,7 +37,7 @@ const WorklogItem: StatelessFunctionalComponent<Props> = ({
   selectIssue,
   showShowButton,
   onClickShow,
-}: Props): Node =>
+}: Props): Node => (
   <S.WorklogItem
     isSelected={active}
     onClick={() => {
@@ -58,7 +58,7 @@ const WorklogItem: StatelessFunctionalComponent<Props> = ({
           />
         </Tooltip>
         <S.IssueKey>{issue.key}</S.IssueKey>
-        {(issue.comment && issue.comment !== '') &&
+        {(issue.comment && issue.comment !== '') && (
           <Tooltip
             description={issue.comment || 'No comment'}
             position="bottom"
@@ -69,15 +69,16 @@ const WorklogItem: StatelessFunctionalComponent<Props> = ({
               primaryColor={(issue.comment && issue.comment !== '') ? '#0052CC' : '#7A869A'}
             />
           </Tooltip>
-        }
+        )}
       </S.IssueMeta>
     </Flex>
-    {showShowButton &&
+    {showShowButton && (
       <Button onClick={() => onClickShow(issue.id)}>
         show
       </Button>
-    }
+    )}
     <S.Time>{worklog.timeSpent}</S.Time>
-  </S.WorklogItem>;
+  </S.WorklogItem>
+);
 
 export default WorklogItem;

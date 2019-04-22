@@ -21,8 +21,10 @@ import {
 import {
   actionTypes,
 } from 'shared/actions';
+import pjson from '../../package.json';
 
 autoUpdater.autoDownload = false;
+autoUpdater.currentVersion = pjson.version;
 
 if (process.env.NODE_ENV === 'development') {
   autoUpdater.updateConfigPath = path.join(process.cwd(), 'dev-app-update.yml');

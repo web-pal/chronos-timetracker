@@ -12,60 +12,9 @@ import {
 } from 'actions';
 
 import {
-  infoLog,
-  throwError,
-} from './ui';
-import {
   setElectronStorage,
 } from './helpers';
 
-
-export function* onChangeLocalDesktopSettings({
-  settingName,
-  value,
-}: {
-  settingName: string,
-  value: any,
-}): Generator<*, *, *> {
-  try {
-    yield eff.call(
-      infoLog,
-      'set local desktop setting request',
-      {
-        value,
-        settingName,
-      },
-    );
-    if (settingName === 'trayShowTimer' && !value) {
-      remote.getGlobal('tray').setTitle('');
-    }
-
-    if (settingName === 'updateAutomatically') {
-      yield eff.call(
-        infoLog,
-        `switched updateAutomatically to ${value}`,
-      );
-
-      if (value) {
-        yield eff.put(uiActions.checkForUpdatesRequest());
-      }
-    }
-
-    if (settingName === 'updateChannel') {
-      yield eff.call(
-        infoLog,
-        `switched updateChannel to ${value}, checking for updates...`,
-      );
-      yield eff.put(uiActions.checkForUpdatesRequest());
-    }
-  } catch (err) {
-    yield eff.call(throwError, err);
-  }
-}
-
-export function* watchLocalDesktopSettingsChange(): Generator<*, *, *> {
-  yield eff.takeEvery(actionTypes.SET_LOCAL_DESKTOP_SETTING, onChangeLocalDesktopSettings);
-}
 
 function* removeAllIn(dir, pathName) {
   const p = path.join(dir, pathName);

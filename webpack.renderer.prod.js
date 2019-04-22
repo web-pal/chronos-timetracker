@@ -21,12 +21,6 @@ const plugins = [
     chunks: ['app'],
   }),
   new HtmlWebpackPlugin({
-    template: 'app/renderer/screenPopup.tpl.html',
-    inject: 'body',
-    filename: 'screenPopup.html',
-    chunks: ['screenPopup'],
-  }),
-  new HtmlWebpackPlugin({
     template: 'app/renderer/idlePopup.tpl.html',
     inject: 'body',
     filename: 'idlePopup.html',
@@ -37,6 +31,18 @@ const plugins = [
     inject: 'body',
     filename: 'attachmentWindow.html',
     chunks: ['attachmentWindow'],
+  }),
+  new HtmlWebpackPlugin({
+    template: 'app/renderer/screenshotNotification.tpl.html',
+    inject: 'body',
+    filename: 'screenshotNotification.html',
+    chunks: ['screenshotNotificationPopup'],
+  }),
+  new HtmlWebpackPlugin({
+    template: 'app/renderer/screenshotsViewer.tpl.html',
+    inject: 'body',
+    filename: 'screenshotsViewer.html',
+    chunks: ['screenshotsViewerPopup'],
   }),
   new BundleAnalyzerPlugin({
     analyzerMode: 'static',
@@ -50,22 +56,15 @@ const plugins = [
     'process.env.DISABLE_MIXPANEL': JSON.stringify(process.env.DISABLE_MIXPANEL),
   }),
   new SentryCliPlugin({
-    include: '.',
+    include: 'app/dist',
     ignore: [
       'node_modules',
       'app/node_modules',
-      'app/dist',
-      'scripts',
-      'release',
-      '.eslintrc.js',
-      '.cz-config.js',
-      'flow-typed',
-      'src/config',
-      '*.test.js',
-      'webpack.*',
+      '*.html',
     ],
-    dryRun: false,
+    dryRun: process.env.SENTRY_DRY_RUN === 'true',
     configFile: 'sentry.properties',
+    urlPrefix: 'app:///dist',
     release: `${pjson.version}_${process.platform}`,
   }),
 ];

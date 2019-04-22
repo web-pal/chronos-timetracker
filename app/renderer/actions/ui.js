@@ -12,6 +12,8 @@ export const initialConfigureApp = ({
   port,
   pathname,
   rootApiUrl,
+  cookies,
+  name,
 }) => ({
   type: actionTypes.INITIAL_CONFIGURE_APP,
   protocol,
@@ -19,6 +21,8 @@ export const initialConfigureApp = ({
   port,
   pathname,
   rootApiUrl,
+  cookies,
+  name,
 });
 
 export const setUiState = (
@@ -64,10 +68,6 @@ export const deleteFlag = (
 ): UiAction => ({
   type: actionTypes.DELETE_FLAG,
   id,
-});
-
-export const checkForUpdatesRequest = (): UiAction => ({
-  type: actionTypes.CHECK_FOR_UPDATES_REQUEST,
 });
 
 export const installUpdateRequest = (): UiAction => ({

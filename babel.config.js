@@ -7,7 +7,7 @@ module.exports = (api) => {
         '@babel/preset-env',
         {
           targets: {
-            electron: '3.0.2',
+            electron: '4.1.4',
           },
           modules: 'commonjs',
           useBuiltIns: 'usage',

@@ -60,7 +60,7 @@ export const store = configureStore(
 
 render(
   <Provider store={store}>
-    <IdlePopup />,
+    <IdlePopup />
   </Provider>,
   document.getElementById('root'),
 );

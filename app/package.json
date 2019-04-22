@@ -1,6 +1,6 @@
 {
   "name": "Chronos",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "Native app for time-tracking fully integrated with JIRA",
   "main": "./dist/main.prod.js",
   "author": {
@@ -14,6 +14,6 @@
   },
   "dependencies": {
     "desktop-idle": "1.1.2",
-    "keytar": "4.4.0"
+    "keytar": "4.4.1"
   }
 }
