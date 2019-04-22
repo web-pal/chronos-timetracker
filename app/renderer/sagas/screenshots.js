@@ -463,18 +463,18 @@ export function* takeScreenshotRequest() {
         takeScreenshotLoading: true,
       }));
       const displays = yield eff.call(screenshot.listDisplays);
-      console.log(displays);
       const images = yield eff.all(
         displays.map(
           d => eff.call(
-            screenshot.windowsSnapshot,
+            process.platform === 'win32'
+              ? screenshot.windowsSnapshot
+              : screenshot,
             {
               screen: d.id,
             },
           ),
         ),
       );
-      console.log(images);
       const dimensionImages = yield eff.all(images.map(
         i => eff.call(
           loadImageWithDimension,
