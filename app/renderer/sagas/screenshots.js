@@ -25,6 +25,9 @@ import {
   chronosApi,
 } from 'api';
 import {
+  trackMixpanel,
+} from 'utils/stat';
+import {
   randomIntFromInterval,
 } from 'utils/random';
 import config from 'config';
@@ -467,6 +470,7 @@ export function* takeScreenshotRequest() {
       yield eff.put(uiActions.setUiState({
         takeScreenshotLoading: true,
       }));
+      trackMixpanel('Take screenshot request');
       const displays = yield eff.call(screenshot.listDisplays);
       const images = yield eff.all(
         displays.map(
@@ -899,6 +903,7 @@ export function* handleScreenshotsViewerWindow(): Generator<*, *, *> {
       win.destroy();
     }
     if (showWindow) {
+      trackMixpanel('Show screenshot viewer');
       if (
         !win
         || win.isDestroyed()

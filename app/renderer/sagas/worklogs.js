@@ -48,9 +48,6 @@ import {
   uploadScreenshots,
 } from './screenshots';
 
-import {
-  version,
-} from '../../package.json';
 
 const { app } = remote.require('electron');
 
@@ -344,7 +341,6 @@ export function* saveWorklog({
       `Worklog uploaded (${isAuto ? 'Automatic' : 'Manual'})`,
       {
         timeSpentInSeconds,
-        version,
       },
     );
     yield eff.put(uiActions.setUiState({
