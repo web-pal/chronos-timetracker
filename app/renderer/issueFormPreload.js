@@ -21,7 +21,10 @@ window.CHRONOS_ISSUE_WINDOW = true;
 const store = configureStore();
 
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('page').style.display = 'none';
+  const page = document.getElementById('page');
+  if (page) {
+    page.style.display = 'none';
+  }
 });
 
 function* takeShowForm(): Generator<*, *, *> {

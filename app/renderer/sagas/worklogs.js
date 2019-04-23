@@ -117,6 +117,7 @@ export function* saveWorklog({
 }: {
   payload: any,
 }): Generator<*, *, *> {
+  console.log('call saga saveWorklog');
   yield eff.put(uiActions.setUiState({
     saveWorklogInProcess: true,
   }));
@@ -149,13 +150,30 @@ export function* saveWorklog({
       'worklog',
       false,
     ));
-    if (!isAuto) {
-      yield eff.fork(notify, {
-        resourceType: 'worklogs',
-        request: 'saveWorklog',
-        spinnerTitle: worklogId ? 'Edit worklog' : 'Add worklog',
-        title: worklogId ? 'Successfully edited worklog' : 'Successfully added worklog',
-      });
+    yield eff.fork(notify, {
+      resourceType: 'worklogs',
+      request: 'saveWorklog',
+      spinnerTitle: worklogId ? 'Edit worklog' : 'Add worklog',
+      title: worklogId ? 'Successfully edited worklog' : 'Successfully added worklog',
+    });
+    if (isAuto) {
+      const {
+        takeScreenshotLoading,
+        uploadScreenshotLoading,
+      } = yield eff.select(getUiState([
+        'takeScreenshotLoading',
+        'uploadScreenshotLoading',
+      ]));
+      if (
+        takeScreenshotLoading
+        || uploadScreenshotLoading
+      ) {
+        console.log('Wait when upload screenshots will be finished');
+        yield eff.race([
+          eff.take(actionTypes.TAKE_SCREENSHOT_FINISHED),
+          eff.take(actionTypes.UPLOAD_SCREENSHOT_FINISHED),
+        ]);
+      }
     }
     const started = moment(startTime).utc().format().replace('Z', '.000+0000');
     const timeSpentSeconds = timeSpentInSeconds || jts(timeSpent);
@@ -170,6 +188,7 @@ export function* saveWorklog({
       yield eff.cancel();
     }
 
+    console.log('call api saveWorklog');
     const worklog = yield eff.call(
       worklogId
         ? jiraApi.updateIssueWorklog
@@ -405,30 +424,6 @@ export function* uploadWorklog(options: any): Generator<*, *, *> {
     yield eff.put(uiActions.setUiState({
       saveWorklogInProcess: true,
     }));
-    yield eff.fork(notify, {
-      resourceType: 'worklogs',
-      request: 'saveWorklog',
-      spinnerTitle: 'Add worklog',
-      title: 'Successfully added worklog',
-    });
-    const {
-      takeScreenshotLoading,
-      uploadScreenshotLoading,
-    } = yield eff.select(getUiState([
-      'takeScreenshotLoading',
-      'uploadScreenshotLoading',
-    ]));
-    if (
-      takeScreenshotLoading
-      || uploadScreenshotLoading
-    ) {
-      console.log('Wait when upload screenshots will be finished');
-      yield eff.race([
-        eff.take(actionTypes.TAKE_SCREENSHOT_FINISHED),
-        eff.take(actionTypes.UPLOAD_SCREENSHOT_FINISHED),
-      ]);
-    }
-    /* If screenshot uploading or making - wait */
     const { timeSpentInSeconds } = options;
     const startTime = moment()
       .subtract({ seconds: timeSpentInSeconds })

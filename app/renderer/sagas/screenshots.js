@@ -41,6 +41,8 @@ import {
 import store from '../store';
 
 const { app } = remote.require('electron');
+const exec = require('child_process').exec; // eslint-disable-line
+const temp = require('temp');
 
 function unlinkP(p) {
   return new Promise((resolve, reject) => {
@@ -76,12 +78,76 @@ function readAndUnlinkP(p) {
   });
 }
 
+
+if (process.platform === 'darwin') {
+  screenshot.darwinSnapshot = function darwinSnapshot(options = {}) {
+    return new Promise((resolve, reject) => {
+      const displayId = options.screen || 0;
+      if (!Number.isInteger(displayId) || displayId < 0) {
+        reject(new Error(`Invalid choice of displayId: ${displayId}`));
+      } else {
+        const format = options.format || 'jpg';
+        let filename;
+        let suffix;
+        if (options.filename) {
+          const ix = options.filename.lastIndexOf('.');
+          suffix = ix >= 0 ? options.filename.slice(ix) : `.${format}`;
+          filename = '"' + options.filename.replace(/"/g, '\\"') + '"' // eslint-disable-line
+        } else {
+          suffix = `.${format}`;
+        }
+
+        const tmpPaths = Array(displayId + 1)
+          .fill(null)
+          .map(() => temp.path({ suffix }));
+
+        let pathsToDelete = [];
+        if (options.filename) {
+          tmpPaths[displayId] = filename;
+        }
+        pathsToDelete = tmpPaths.slice(displayId);
+
+        const performCapture = (skipDisplay = false) => {
+          exec(
+            skipDisplay
+              ? (
+                `screencapture -x -t ${format} ${tmpPaths.slice(displayId).join(' ')}`
+              ) : (
+                `screencapture -D ${(displayId + 1)} -x -t ${format} ${tmpPaths.slice(displayId).join(' ')}`
+              ),
+            (err) => {
+              if (err) {
+                if (err.message.includes('illegal option -- D')) {
+                  performCapture(true);
+                } else {
+                  reject(err);
+                }
+              } else if (options.filename) {
+                resolve(path.resolve(options.filename));
+              } else {
+                fs.readFile(tmpPaths[displayId], (error, img) => {
+                  if (error) {
+                    reject(error);
+                  } else {
+                    Promise.all(pathsToDelete.map(unlinkP))
+                      .then(() => resolve(img))
+                      .catch(e => reject(e));
+                  }
+                });
+              }
+            },
+          );
+        };
+        performCapture();
+      }
+    });
+  };
+}
+
 if (
   process.platform === 'windows'
   || process.platform === 'win32'
 ) {
-  const exec = require('child_process').exec; // eslint-disable-line
-  const temp = require('temp'); // eslint-disable-line
   const appPath = app.getAppPath();
   const libPath = (
     process.env.NODE_ENV === 'development'
@@ -472,12 +538,21 @@ export function* takeScreenshotRequest() {
       }));
       trackMixpanel('Take screenshot request');
       const displays = yield eff.call(screenshot.listDisplays);
+      const snapshotFunc = () => {
+        switch (process.platform) {
+          case 'darwin':
+            return screenshot.darwinSnapshot;
+          case 'win32':
+          case 'windows':
+            return screenshot.windowsSnapshot;
+          default:
+            return screenshot;
+        }
+      };
       const images = yield eff.all(
         displays.map(
           d => eff.call(
-            process.platform === 'win32'
-              ? screenshot.windowsSnapshot
-              : screenshot,
+            snapshotFunc(),
             {
               screen: d.id,
             },
