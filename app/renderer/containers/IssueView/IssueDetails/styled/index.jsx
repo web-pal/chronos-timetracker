@@ -55,16 +55,43 @@ export const IssueEpic = styled.span`
   align-items: center;
 `;
 
-export const Label = styled.span`
+export const LabelsWrapper = styled.div`
+  overflow: auto;
+  display: flex;
+  flex-wrap: nowrap;
+  max-width: 150px;
+`;
+
+export const Label = styled.div`
   background: #f5f5f5;
   border: 1px solid #ccc;
   border-radius: 3.01px;
   padding: 1px 5px;
   height: 14px;
+  max-width: 95px;
   display: flex;
-  justify-content: center;
   align-items: center;
   color: #3b73af;
+  margin: 0 2px;
+
+  &:first-child {
+    margin-left: 0;
+  }
+
+  &:last-child {
+    margin-right: 0;
+  }
+
+  &:hover {
+    max-width: none;
+  }
+`;
+
+export const LabelText = styled.span`
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  min-width: 0;
 `;
 
 // Attachments

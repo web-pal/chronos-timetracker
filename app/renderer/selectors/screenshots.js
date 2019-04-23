@@ -65,13 +65,17 @@ export const getActivityForScreenshotsViewer = createSelector(
                         ? DateTime.local()
                         : DateTime.fromMillis(lastScreenshot.timestamp)
                     );
-                    const hoursElapsed = Math.ceil(worklogCompletedAt.diff(worklogStartedAt).as('hours'));
+                    const hoursElapsed = (
+                      w.screenshots.length === 1
+                        ? 1
+                        : Math.ceil(worklogCompletedAt.diff(worklogStartedAt).as('hours'))
+                    );
                     const screenshotsPerHour = Math.ceil(3600 / w.screenshotsPeriod);
                     const sections = R.map(
                       s => ({
                         id: s,
                         sectionScreenshots: R.slice(
-                          s * w.screenshotsPerHour,
+                          s * screenshotsPerHour,
                           ((s + 1) * screenshotsPerHour) + 1,
                           w.screenshots,
                         ),

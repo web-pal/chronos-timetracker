@@ -127,6 +127,8 @@ export function* chronosApiAuth(ignoreCheckEnabled = false) {
     const {
       name,
       hostname,
+      pathname,
+      port,
       protocol,
     } = authCredentials;
     let jwt = yield eff.call(
@@ -151,6 +153,7 @@ export function* chronosApiAuth(ignoreCheckEnabled = false) {
             cookies,
             name,
             hostname,
+            baseUrl: `${protocol}://${hostname}${port}${pathname.replace(/\/$/, '')}`,
             protocol,
           },
         },

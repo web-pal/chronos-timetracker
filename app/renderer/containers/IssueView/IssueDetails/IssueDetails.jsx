@@ -157,7 +157,7 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
             </S.DetailsLabel>
             {labels
               ? (
-                <div>
+                <S.LabelsWrapper>
                   {labels.length === 0
                   && (
                   <S.DetailsValue>
@@ -165,8 +165,14 @@ const IssueDetails: StatelessFunctionalComponent<Props> = ({
                   </S.DetailsValue>
                   )
                 }
-                  {labels.map(v => <S.Label key={v}>{v}</S.Label>)}
-                </div>
+                  {labels.map(v => (
+                    <S.Label
+                      key={v}
+                    >
+                      <S.LabelText>{v}</S.LabelText>
+                    </S.Label>
+                  ))}
+                </S.LabelsWrapper>
               )
               : 'None'
             }
