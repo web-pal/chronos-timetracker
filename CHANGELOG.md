@@ -1,3 +1,15 @@
+<a name="3.2.1"></a>
+## [3.2.1](https://github.com/web-pal/chronos-timetracker/compare/v3.2.0...v3.2.1) (2019-04-23)
+
+
+### Bug Fixes
+
+* display one screenshot ([12868e3](https://github.com/web-pal/chronos-timetracker/commit/12868e3))
+* fix issue label overflow ([01e04a7](https://github.com/web-pal/chronos-timetracker/commit/01e04a7))
+* macos old version screenshots capture ([d20efd4](https://github.com/web-pal/chronos-timetracker/commit/d20efd4))
+
+
+
 <a name="3.2.0"></a>
 # [3.2.0](https://github.com/web-pal/chronos-timetracker/compare/v3.1.0...v3.2.0) (2019-04-22)
 
