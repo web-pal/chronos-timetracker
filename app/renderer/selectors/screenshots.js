@@ -75,7 +75,7 @@ export const getActivityForScreenshotsViewer = createSelector(
                       s => ({
                         id: s,
                         sectionScreenshots: R.slice(
-                          s * w.screenshotsPerHour,
+                          s * screenshotsPerHour,
                           ((s + 1) * screenshotsPerHour) + 1,
                           w.screenshots,
                         ),
