@@ -31,6 +31,7 @@ export const persistInitialState = {
   issuesSprintId: null,
 
   adjustStartTime: true,
+  usersInTeamStatusWindow: [],
 };
 
 

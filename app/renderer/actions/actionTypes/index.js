@@ -13,6 +13,7 @@ export * from './timer';
 export * from './worklogs';
 export * from './attachments';
 export * from './screenshots';
+export * from './users';
 
 export const INITIAL_CONFIGURE_APP = 'INITIAL_CONFIGURE_APP';
 export const __CLEAR_ALL_REDUCERS__ = '__CLEAR_ALL_REDUCERS__';

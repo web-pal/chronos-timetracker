@@ -11,6 +11,7 @@ import * as timerSagas from './timer';
 import * as worklogsSagas from './worklogs';
 import * as uiSagas from './ui';
 import * as screenshotSagas from './screenshots';
+import * as usersSagas from './users';
 
 import {
   initializeApp,
@@ -59,6 +60,9 @@ export default function* rootSaga(): Generator<*, void, *> {
 
     // settings
     eff.fork(settingsSagas.watchClearElectronChanheRequest),
+
+    // users
+    eff.fork(usersSagas.watchFetchUsers),
 
     // worklogs
     eff.fork(worklogsSagas.watchSaveWorklogRequest),

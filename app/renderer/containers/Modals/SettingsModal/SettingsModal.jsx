@@ -24,6 +24,7 @@ import {
   uiActions,
   settingsActions,
   updaterActions,
+  usersActions,
 } from 'actions';
 
 import {
@@ -37,6 +38,7 @@ import {
 
 import GeneralSettings from './General';
 import ScreenshotsSettings from './ScreenshotsSettings';
+import TeamStatusSettings from './TeamStatus';
 import UpdateSettings from './Update';
 
 import * as S from './styled';
@@ -49,6 +51,7 @@ type Props = {
   updateCheckRunning: boolean,
   updateAvailable: string,
   downloadUpdateProgress: any,
+  isUsersFetching: boolean,
   dispatch: Dispatch,
 }
 
@@ -59,6 +62,7 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
   updateAvailable,
   downloadUpdateProgress,
   updateCheckRunning,
+  isUsersFetching,
   dispatch,
 }: Props): Node => (
   <ModalTransition>
@@ -97,6 +101,16 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
             Screenshots
           </S.SettingsSectionLabel>
           <S.SettingsSectionLabel
+            active={tab === 'Team'}
+            onClick={() => {
+              dispatch(uiActions.setUiState({
+                settingsTab: 'Team',
+              }));
+            }}
+          >
+            Team
+          </S.SettingsSectionLabel>
+          <S.SettingsSectionLabel
             active={tab === 'Updates'}
             onClick={() => {
               dispatch(uiActions.setUiState({
@@ -133,6 +147,12 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
         )}
         {tab === 'Screenshots' && (
           <ScreenshotsSettings />
+        )}
+        {tab === 'Team' && (
+          <TeamStatusSettings
+            isUsersFetching={isUsersFetching}
+            saveUsers={userIds => dispatch(usersActions.fetchUsersRequest({ userIds }))}
+          />
         )}
         {tab === 'Updates' && (
           <UpdateSettings
@@ -188,6 +208,7 @@ function mapStateToProps(state) {
       'updateAutomatically',
     ])(state),
     tab: getUiState('settingsTab')(state),
+    isUsersFetching: getUiState('isUsersFetching')(state),
     updateAvailable,
     updateCheckRunning: updateAvailable === null,
     downloadUpdateProgress: getUiState('downloadUpdateProgress')(state),
