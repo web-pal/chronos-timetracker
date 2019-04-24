@@ -62,11 +62,12 @@ export const getElectronStorage = (key, defaultValue) => (
 export function calculateInactivityPeriod({
   idleTimeInSceonds,
   time,
+  screenshotsPeriod,
 }) {
   const screenshotsPeriodInSeconds = (
-    config.screenshotsPeriod < 30
+    screenshotsPeriod < 30
       ? 30
-      : config.screenshotsPeriod
+      : screenshotsPeriod
   );
 
   const startIdlePeriodNumber = (

@@ -6,18 +6,19 @@ import {
   DateTime,
 } from 'luxon';
 
-import config from 'config';
 
 export const getActivityForScreenshotsViewer = createSelector(
   [
     s => s.screenshotsViewerReducer.currentIssue,
     s => s.screenshotsViewerReducer.currentScreenshots,
     s => s.screenshotsViewerReducer.issuesWithScreenshotsActivity,
+    s => s.screenshotsViewerReducer.screenshotsPeriod,
   ],
   (
     currentIssue,
     currentScreenshots,
     issuesWithScreenshotsActivity,
+    screenshotsPeriod,
   ) => {
     let activity = [];
     if (currentIssue) {
@@ -27,7 +28,7 @@ export const getActivityForScreenshotsViewer = createSelector(
         worklogs: [{
           id: 0,
           isUnfinished: true,
-          screenshotsPeriod: config.screenshotsPeriod,
+          screenshotsPeriod,
           screenshots: currentScreenshots,
         }],
       }];

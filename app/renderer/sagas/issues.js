@@ -468,6 +468,70 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
   }
 }
 
+export function* getIssueTransitions(issueId: string | number): Generator<*, void, *> {
+  const actions = createActionCreators('read', {
+    resourceType: 'issuesStatuses',
+    request: 'issueTransitions',
+    list: 'issueTransitions',
+    mergeListIds: false,
+  });
+  try {
+    yield eff.put(actions.pending());
+    yield eff.call(
+      infoLog,
+      `getting available issue transitions for ${issueId}`,
+    );
+    const { transitions } = yield eff.call(
+      jiraApi.getIssueTransitions,
+      {
+        params: {
+          issueIdOrKey: issueId,
+        },
+      },
+    );
+    yield eff.put(actions.succeeded({
+      resources: transitions,
+    }));
+    yield eff.call(
+      infoLog,
+      `got issue ${issueId} available transitions`,
+      transitions,
+    );
+  } catch (err) {
+    yield eff.call(throwError, err);
+  }
+}
+
+export function* getIssuePermissions(issueId: string | number): Generator<*, void, *> {
+  try {
+    const { permissions } = yield eff.call(
+      jiraApi.getMyPermissions,
+      {
+        params: {
+          issueId,
+        },
+      },
+    );
+    yield eff.put(resourcesActions.setResourceMeta({
+      resourceType: 'issues',
+      resources: [issueId],
+      meta: {
+        permissions,
+      },
+    }));
+  } catch (err) {
+    yield eff.call(throwError, err);
+  }
+}
+
+export function* issueSelectFlow(issueId: string | number): Generator<*, *, *> {
+  const issue = yield eff.select(selectors.getResourceItemById('issues', issueId));
+  yield eff.put(trayActions.traySelectIssue(issue.key));
+  yield eff.fork(getIssueTransitions, issueId);
+  yield eff.fork(getIssueComments, issueId);
+  yield eff.fork(getIssuePermissions, issueId);
+}
+
 export function* refetchIssues(debouncing: boolean): Generator<*, void, *> {
   try {
     if (debouncing) {
@@ -504,40 +568,13 @@ export function* refetchIssues(debouncing: boolean): Generator<*, void, *> {
       }));
       yield eff.call(fetchRecentIssues);
     }
-  } catch (err) {
-    yield eff.call(throwError, err);
-  }
-}
-
-export function* getIssueTransitions(issueId: string | number): Generator<*, void, *> {
-  const actions = createActionCreators('read', {
-    resourceType: 'issuesStatuses',
-    request: 'issueTransitions',
-    list: 'issueTransitions',
-    mergeListIds: false,
-  });
-  try {
-    yield eff.put(actions.pending());
-    yield eff.call(
-      infoLog,
-      `getting available issue transitions for ${issueId}`,
-    );
-    const { transitions } = yield eff.call(
-      jiraApi.getIssueTransitions,
-      {
-        params: {
-          issueIdOrKey: issueId,
-        },
-      },
-    );
-    yield eff.put(actions.succeeded({
-      resources: transitions,
-    }));
-    yield eff.call(
-      infoLog,
-      `got issue ${issueId} available transitions`,
-      transitions,
-    );
+    const selectedIssueId = yield eff.select(selectors.getUiState('selectedIssueId'));
+    if (selectedIssueId) {
+      yield eff.fork(
+        issueSelectFlow,
+        selectedIssueId,
+      );
+    }
   } catch (err) {
     yield eff.call(throwError, err);
   }
@@ -600,35 +637,6 @@ export function* transitionIssue({
   }
 }
 
-export function* getIssuePermissions(issueId: string | number): Generator<*, void, *> {
-  try {
-    const { permissions } = yield eff.call(
-      jiraApi.getMyPermissions,
-      {
-        params: {
-          issueId,
-        },
-      },
-    );
-    yield eff.put(resourcesActions.setResourceMeta({
-      resourceType: 'issues',
-      resources: [issueId],
-      meta: {
-        permissions,
-      },
-    }));
-  } catch (err) {
-    yield eff.call(throwError, err);
-  }
-}
-
-export function* issueSelectFlow(issueId: string | number): Generator<*, *, *> {
-  const issue = yield eff.select(selectors.getResourceItemById('issues', issueId));
-  yield eff.put(trayActions.traySelectIssue(issue.key));
-  yield eff.fork(getIssueTransitions, issueId);
-  yield eff.fork(getIssueComments, issueId);
-  yield eff.fork(getIssuePermissions, issueId);
-}
 
 export function* assignIssueToUser({ issueId }: {
   issueId: Id,

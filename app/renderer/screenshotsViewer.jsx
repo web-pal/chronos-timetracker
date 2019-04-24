@@ -37,6 +37,7 @@ if (process.env.NODE_ENV === 'production') {
 
 const initialState = {
   isLoading: true,
+  screenshotsPeriod: 600,
   issuesWithScreenshotsActivity: [],
   currentIssue: null,
   currentScreenshots: [],

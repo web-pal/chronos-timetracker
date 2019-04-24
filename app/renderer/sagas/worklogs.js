@@ -141,6 +141,7 @@ export function* saveWorklog({
     'update',
     issuesActionsConfig,
   );
+  const screenshotsPeriod = yield eff.select(getUiState('screenshotsPeriod'));
   try {
     yield eff.put(worklogsActions.pending());
     if (!worklogId) {
@@ -273,9 +274,9 @@ export function* saveWorklog({
                     / (
                       (screenshots.length - 1) === index
                         ? (
-                          timeSpentSeconds - (config.screenshotsPeriod * index)
+                          timeSpentSeconds - (screenshotsPeriod * index)
                         )
-                        : config.screenshotsPeriod
+                        : screenshotsPeriod
                     )
                   ) * 100)
                 )
@@ -292,7 +293,7 @@ export function* saveWorklog({
               worklogId: worklog.id,
               issueId,
               screenshots: screenshotsWithActivity,
-              screenshotsPeriod: config.screenshotsPeriod,
+              screenshotsPeriod,
             },
           },
         );

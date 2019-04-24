@@ -367,10 +367,11 @@ function* handleScreenshot({
   }));
   let isOffline = false;
   try {
+    const screenshotsPeriod = yield eff.select(selectors.getUiState('screenshotsPeriod'));
     const screenshotsPeriodInSeconds = (
-      config.screenshotsPeriod < 30
+      screenshotsPeriod < 30
         ? 30
-        : config.screenshotsPeriod
+        : screenshotsPeriod
     );
     const nextPeriodNumber = (Math.floor(time / screenshotsPeriodInSeconds) + 1);
     if (
@@ -480,6 +481,7 @@ function* handleScreenshot({
         fullyExpiredPeriods,
         startPeriodNumber,
       } = calculateInactivityPeriod({
+        screenshotsPeriod,
         idleTimeInSceonds: time - newTime,
         time: newTime,
       });
@@ -747,8 +749,9 @@ export function* takeScreenshotRequest() {
           );
 
           yield eff.take(readyChannel);
+          const screenshotsPeriod = yield eff.select(selectors.getUiState('screenshotsPeriod'));
           const decisionTime = (
-            config.screenshotsPeriod < 60
+            screenshotsPeriod < 60
               ? 5
               : (
                 yield eff.select(selectors.getUiState('screenshotDecisionTime'))
@@ -851,6 +854,7 @@ function* handleScreenshotsViewerWindowReady({
     }
     isFirst = false;
 
+    const screenshotsPeriod = yield eff.select(selectors.getUiState('screenshotsPeriod'));
     const issue = (
       issueId
         ? (
@@ -862,6 +866,7 @@ function* handleScreenshotsViewerWindowReady({
     if (issueId) {
       yield eff.put(screenshotsActions.setScreenshotsViewerState({
         isLoading: true,
+        screenshotsPeriod,
       }, win.id));
       try {
         let worklogs = [];
@@ -882,7 +887,7 @@ function* handleScreenshotsViewerWindowReady({
             screenshotsPeriod: (
               worklogsServer.length
                 ? worklogsServer[0].screenshotsPeriod
-                : config.screenshotsPeriod
+                : screenshotsPeriod
             ),
             screenshots: (
               worklogsServer.length
@@ -917,7 +922,7 @@ function* handleScreenshotsViewerWindowReady({
                 screenshotsPeriod: (
                   screenshotsWorklogMap[w.id]?.length
                     ? screenshotsWorklogMap[w.id].screenshotsPeriod
-                    : config.screenshotsPeriod
+                    : screenshotsPeriod
                 ),
                 screenshots: (
                   screenshotsWorklogMap[w.id]?.screenshots
@@ -936,12 +941,14 @@ function* handleScreenshotsViewerWindowReady({
           currentIssue: null,
           currentScreenshots: [],
           isLoading: false,
+          screenshotsPeriod,
           issuesWithScreenshotsActivity,
         }, win.id));
       } catch (err) {
         console.log(err);
         yield eff.put(screenshotsActions.setScreenshotsViewerState({
           isLoading: false,
+          screenshotsPeriod,
         }, win.id));
       }
     } else {
@@ -951,6 +958,7 @@ function* handleScreenshotsViewerWindowReady({
         currentScreenshots: screenshots,
         issuesWithScreenshotsActivity: [],
         isLoading: false,
+        screenshotsPeriod,
       }, win.id));
     }
 
