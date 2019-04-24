@@ -1,3 +1,21 @@
+<a name="3.2.2"></a>
+## [3.2.2](https://github.com/web-pal/chronos-timetracker/compare/v3.2.1...v3.2.2) (2019-04-24)
+
+
+### Bug Fixes
+
+* **Updating:** replace setSettingsModalTab action ([cb13a22](https://github.com/web-pal/chronos-timetracker/commit/cb13a22))
+* adjust start time ([b39f579](https://github.com/web-pal/chronos-timetracker/commit/b39f579))
+* do not send empty screenshots ([8b37e0f](https://github.com/web-pal/chronos-timetracker/commit/8b37e0f))
+* getBaseUrl in case of null pathname ([5788faa](https://github.com/web-pal/chronos-timetracker/commit/5788faa))
+
+
+### Features
+
+* ability to choose screenshots period ([ce0c9be](https://github.com/web-pal/chronos-timetracker/commit/ce0c9be))
+
+
+
 <a name="3.2.1"></a>
 ## [3.2.1](https://github.com/web-pal/chronos-timetracker/compare/v3.2.0...v3.2.1) (2019-04-23)
 

@@ -6,7 +6,6 @@ const config = {
   supportLink: 'https://web-pal.atlassian.net/servicedesk/customer/portal/2',
   githubLink: 'https://github.com/web-pal/chronos-timetracker',
 
-  screenshotsPeriod: 30,
   idleTimeThreshold: 300, // seconds of inactivity considering user is idle
   checkUpdates: false,
   infoLog: false,

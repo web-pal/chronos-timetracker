@@ -25,6 +25,7 @@ export const persistInitialState = {
   showScreenshotPreview: true,
   useNativeNotifications: false,
   screenshotDecisionTime: 15,
+  screenshotsPeriod: 600,
 
   issuesSourceType: null,
   issuesSourceId: null,

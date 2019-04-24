@@ -86,10 +86,11 @@ function* setScreenshotTimeForCurrentPeriod({
   timestamp,
   screenshots,
 }) {
+  const screenshotsPeriod = yield eff.select(getUiState('screenshotsPeriod'));
   const screenshotsPeriodInSeconds = (
-    config.screenshotsPeriod < 30
+    screenshotsPeriod < 30
       ? 30
-      : config.screenshotsPeriod
+      : screenshotsPeriod
   );
   const currentPeriodNumber = Math.floor(time / screenshotsPeriodInSeconds);
   const currentPeriodScreenshotExist = (
@@ -167,6 +168,7 @@ function* handleIdleScreenshots({
     ]);
   }
   const screenshots = yield eff.select(getUiState('screenshots'));
+  const screenshotsPeriod = yield eff.select(getUiState('screenshotsPeriod'));
 
   if (dismiss) {
     /* Remove screenshots which for some reason lands on idle time(it should never happen) */
@@ -193,6 +195,7 @@ function* handleIdleScreenshots({
       startPeriodNumber,
       screenshotsPeriodInSeconds,
     } = calculateInactivityPeriod({
+      screenshotsPeriod,
       idleTimeInSceonds: dismiss.payload,
       time: time + dismiss.payload,
     });
@@ -222,6 +225,7 @@ function* handleIdleScreenshots({
       screenshotsPeriodInSeconds,
     } = calculateInactivityPeriod({
       idleTimeInSceonds: keep.payload,
+      screenshotsPeriod,
       time,
     });
     const screenshotTime = yield eff.select(getUiState('screenshotTime'));
@@ -358,6 +362,7 @@ function* handleTick({
 }) {
   let idleWindowTask = null;
   let prevScreenshotId = null;
+  const screenshotsPeriod = yield eff.select(getUiState('screenshotsPeriod'));
   while (true) {
     yield eff.take(timerChannel);
     const bufferSeconds = yield eff.flush(timerChannel);
@@ -387,9 +392,9 @@ function* handleTick({
       )
     ) {
       const screenshotsPeriodInSeconds = (
-        config.screenshotsPeriod < 30
+        screenshotsPeriod < 30
           ? 30
-          : config.screenshotsPeriod
+          : screenshotsPeriod
       );
       const currentPeriodNumber = Math.floor(time / screenshotsPeriodInSeconds);
       const activity = yield eff.select(getUiState('activity'));
@@ -448,12 +453,8 @@ function* timerFlow() {
   yield eff.put(trayActions.trayStartTimer());
 
   const screenshotsEnabled = yield eff.select(getUiState('screenshotsEnabled'));
+  const screenshotsPeriod = yield eff.select(getUiState('screenshotsPeriod'));
   if (screenshotsEnabled) {
-    const screenshotsPeriod = (
-      config.screenshotsPeriod < 30
-        ? 30
-        : config.screenshotsPeriod
-    );
     // 5 - screenshotsPeriod - 2
     const firstScreenshotTime = randomIntFromInterval(5, screenshotsPeriod - 2);
     yield eff.put(uiActions.setUiState({

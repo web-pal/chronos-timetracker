@@ -33,7 +33,6 @@ import DropdownMenu, {
 import {
   authActions,
   uiActions,
-  settingsActions,
   issuesActions,
 } from 'actions';
 import {
@@ -166,7 +165,9 @@ const Header: StatelessFunctionalComponent<Props> = ({
               key="update"
               onClick={() => {
                 dispatch(uiActions.setModalState('settings', true));
-                dispatch(settingsActions.setSettingsModalTab('Updates'));
+                dispatch(uiActions.setUiState({
+                  settingsTab: 'Updates',
+                }));
               }}
             >
               {updateAvailable} is out! Update now.

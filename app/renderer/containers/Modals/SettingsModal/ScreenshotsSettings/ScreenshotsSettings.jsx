@@ -32,6 +32,7 @@ import Button, {
 import {
   AkFieldRadioGroup as RadioButtonGroup,
 } from '@atlaskit/field-radio-group';
+import TextField from '@atlaskit/field-text';
 
 import {
   Flex,
@@ -49,6 +50,7 @@ type Props = {
   takeScreenshotLoading: boolean,
   useNativeNotifications: boolean,
   screenshotDecisionTime: number,
+  screenshotsPeriod: number,
   dispatch: Dispatch,
 }
 
@@ -58,6 +60,7 @@ const ScreenshotsSettings: StatelessFunctionalComponent<Props> = ({
   takeScreenshotLoading,
   useNativeNotifications,
   screenshotDecisionTime,
+  screenshotsPeriod,
   dispatch,
 }: Props): Node => {
   const notificationsTypes = [
@@ -94,6 +97,7 @@ const ScreenshotsSettings: StatelessFunctionalComponent<Props> = ({
       isSelected: screenshotDecisionTime === 15,
     },
   ];
+  const screenshotsPeriodInMinutes = screenshotsPeriod / 60;
 
   return (
     <S.SettingsSectionContent>
@@ -102,7 +106,8 @@ const ScreenshotsSettings: StatelessFunctionalComponent<Props> = ({
       </S.ContentLabel>
       <Flex column>
         <H100 style={{ margin: '0 0 4px 6px' }}>
-          One screenshot will be taken every 10 minutes during tracking time
+          One screenshot will be taken every {screenshotsPeriodInMinutes}
+          minutes during tracking time
         </H100>
         <Checkbox
           name="enableScreenshots"
@@ -118,8 +123,27 @@ const ScreenshotsSettings: StatelessFunctionalComponent<Props> = ({
         {screenshotsEnabled
            && (
              <Flex column>
-               <br />
                <Flex column>
+                 <TextField
+                   label="Screenshots period in minutes(one screenshot during the period)"
+                   type="Number"
+                   max={10}
+                   min={1}
+                   value={screenshotsPeriodInMinutes}
+                   onChange={(ev) => {
+                     let value = parseInt(ev.target.value, 10);
+                     if (value < 1) {
+                       value = 1;
+                     }
+                     if (value > 10) {
+                       value = 10;
+                     }
+                     dispatch(uiActions.setUiState({
+                       screenshotsPeriod: value * 60,
+                     }));
+                   }}
+                 />
+                 <br />
                  <H100 style={{ margin: '0 0 4px 6px' }}>
                    Configure whether to show screenshot popup or not.
                  </H100>
@@ -182,6 +206,7 @@ const ScreenshotsSettings: StatelessFunctionalComponent<Props> = ({
 function mapStateToProps(state) {
   return {
     screenshotsEnabled: getUiState('screenshotsEnabled')(state),
+    screenshotsPeriod: getUiState('screenshotsPeriod')(state),
     useNativeNotifications: getUiState('useNativeNotifications')(state),
     showScreenshotPreview: getUiState('showScreenshotPreview')(state),
     takeScreenshotLoading: getUiState('takeScreenshotLoading')(state),
