@@ -87,6 +87,6 @@ export const getBaseUrl = createSelector(
     pathname: string,
   ) => {
     const p = port ? `:${port}` : '';
-    return `${protocol}://${hostname}${p}${pathname.replace(/\/$/, '')}`;
+    return `${protocol}://${hostname}${p}${(pathname || '').replace(/\/$/, '')}`;
   },
 );
