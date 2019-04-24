@@ -284,17 +284,19 @@ export function* saveWorklog({
           }),
         )
       );
-      yield eff.call(
-        chronosApi.saveScreenshots,
-        {
-          body: {
-            worklogId: worklog.id,
-            issueId,
-            screenshots: screenshotsWithActivity,
-            screenshotsPeriod: config.screenshotsPeriod,
+      if (screenshotsWithActivity.length) {
+        yield eff.call(
+          chronosApi.saveScreenshots,
+          {
+            body: {
+              worklogId: worklog.id,
+              issueId,
+              screenshots: screenshotsWithActivity,
+              screenshotsPeriod: config.screenshotsPeriod,
+            },
           },
-        },
-      );
+        );
+      }
       yield eff.cps(
         rimraf,
         `${app.getPath('userData')}/screens/`,
