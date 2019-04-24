@@ -9,7 +9,7 @@ function apiFactory({ makeRequest }) {
     ['createFilter', '/filter', 'POST'],
     ['updateFilter', '/filter/{filterId}', 'PUT'],
     ['searchForMentionUsers', '/user/mention/search', 'GET', '/rest/internal/2'],
-    ['searchForUsers', '/groupuserpicker'],
+    ['searchForUsers', '/user/picker'],
     ['searchForIssues', '/search'],
     ['getIssueByIdOrKey', '/issue/{issueIdOrKey}'],
     ['getIssueWorklogs', '/issue/{issueIdOrKey}/worklog'],

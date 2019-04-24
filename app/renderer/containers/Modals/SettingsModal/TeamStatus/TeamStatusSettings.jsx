@@ -2,6 +2,9 @@
 import React, {
   useState,
 } from 'react';
+import {
+  IntlProvider,
+} from 'react-intl';
 
 import type {
   StatelessFunctionalComponent,
@@ -12,16 +15,8 @@ import {
   jiraApi,
 } from 'api';
 
-import {
-  Checkbox,
-} from '@atlaskit/checkbox';
-
+import UserPicker from '@atlaskit/user-picker';
 import Spinner from '@atlaskit/spinner';
-
-import {
-  components,
-} from '@atlaskit/select';
-
 import Button, {
   ButtonGroup,
 } from '@atlaskit/button';
@@ -29,9 +24,6 @@ import Button, {
 import {
   H100,
 } from 'styles/typography';
-import {
-  CheckboxGroup,
-} from 'styles';
 import {
   Flex,
 } from 'components';
@@ -43,31 +35,6 @@ type Props = {
   saveUsers: (value: any) => void,
   isUsersFetching: boolean,
 }
-
-const Option = ({
-  innerRef,
-  value,
-  isSelected,
-  label,
-  ...props
-}) => (
-  <components.Option
-    value={value}
-    isSelected={isSelected}
-    {...props}
-  >
-    <CheckboxGroup>
-      <Checkbox
-        key={value}
-        isChecked={isSelected}
-        value={isSelected}
-        name={label}
-        label={label}
-        onChange={() => null}
-      />
-    </CheckboxGroup>
-  </components.Option>
-);
 
 const TeamStatusSettings: StatelessFunctionalComponent<Props> = ({
   isUsersFetching,
@@ -83,32 +50,35 @@ const TeamStatusSettings: StatelessFunctionalComponent<Props> = ({
         <H100 style={{ margin: '0 0 4px 6px' }}>
           Configure users to show in tray widget
         </H100>
-        <S.UsersSelect
-          closeMenuOnSelect={false}
-          defaultOptions
-          isMulti
-          components={{ Option }}
-          onChange={(data) => {
-            setUsersIds(data.map(({ value }) => value));
-          }}
-          cacheOptions
-          loadOptions={inputValue => jiraApi.searchForUsers({
-            params: {
-              query: '%',
-              maxResults: 100,
-            },
-          }).then(({ users: { users } }) => users
-            .filter(({ displayName }) => displayName
-              .toLowerCase()
-              .includes(inputValue.toLowerCase()))
-            .map(({
-              displayName,
-              accountId,
-            }) => ({
-              label: displayName,
-              value: accountId,
-            })))}
-        />
+        <IntlProvider locale="en">
+          <UserPicker
+            fieldId="userPicker"
+            isMulti
+            onChange={(data) => {
+              setUsersIds(data.map(({ id }) => id));
+            }}
+            placeholder="Type name to search"
+            loadOptions={
+              inputValue => (
+                jiraApi.searchForUsers({
+                  params: {
+                    query: inputValue,
+                    excludeConnectUsers: true,
+                    showAvatar: true,
+                    maxResults: 100,
+                  },
+                })
+                  .then(({ users }) => (
+                    users.map(user => ({
+                      id: user.accountId,
+                      name: user.displayName,
+                      type: 'user',
+                      avatarUrl: user.avatarUrl,
+                    }))))
+              )
+            }
+          />
+        </IntlProvider>
         <br />
         <ButtonGroup>
           <Button
