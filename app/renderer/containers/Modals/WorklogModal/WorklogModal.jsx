@@ -44,7 +44,6 @@ import {
 import {
   uiActions,
   worklogsActions,
-  settingsActions,
 } from 'actions';
 import {
   getModalState,
@@ -395,10 +394,9 @@ class WorklogModal extends Component<Props, State> {
                 isChecked={adjustStartTime}
                 label="Adjust start time according to time spend"
                 onChange={() => {
-                  dispatch(settingsActions.setLocalDesktopSetting(
-                    adjustStartTime,
-                    'notAdjustStartTime',
-                  ));
+                  dispatch(uiActions.setUiState({
+                    adjustStartTime: !adjustStartTime,
+                  }));
                 }}
               />
             </Flex>
