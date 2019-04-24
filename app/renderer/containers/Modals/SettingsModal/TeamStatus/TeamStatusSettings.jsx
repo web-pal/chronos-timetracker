@@ -84,15 +84,10 @@ const TeamStatusSettings: StatelessFunctionalComponent<Props> = ({
           Configure users to show in tray widget
         </H100>
         <S.UsersSelect
-          // closeOnSelect={false}
           closeMenuOnSelect={false}
-          // onSelectResetsInput={false}
-          // hideSelectedOptions={false}
-          // blurInputOnSelect={false}
           defaultOptions
           isMulti
           components={{ Option }}
-          // backspaceRemovesValue={false}
           onChange={(data) => {
             setUsersIds(data.map(({ value }) => value));
           }}
