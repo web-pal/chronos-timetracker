@@ -1,10 +1,15 @@
 // @flow
 import * as eff from 'redux-saga/effects';
+
 import {
   remote,
+  screen,
 } from 'electron';
 import * as Sentry from '@sentry/electron';
 import mixpanel from 'mixpanel-browser';
+
+import Positioner from 'electron-positioner';
+import path from 'path';
 
 import {
   jiraApi,
@@ -28,6 +33,7 @@ import {
   resourcesActions,
   issuesActions,
   updaterActions,
+  usersActions,
 } from 'actions';
 import config from 'config';
 import {
@@ -71,6 +77,27 @@ import {
 } from '../../package.json';
 
 const keytar = remote.require('keytar');
+
+function teamStatusListTrayManager() {
+  const { app } = remote;
+  const appPath = app.getAppPath();
+  function getIconByName(name) {
+    if (process.env.NODE_ENV === 'development') {
+      return path.join(
+        appPath.split('node_modules')[0],
+        `./app/renderer/assets/images/${name}.png`,
+      );
+    }
+    return path.join(
+      appPath.split('node_modules')[0],
+      `./app/dist/app/renderer/assets/images/${name}.png`,
+    );
+  }
+  const { Tray } = remote;
+  const tray = new Tray(getIconByName('peopleGroup'));
+  tray.setToolTip('Chronos Team Status');
+  global.teamStatusListTray = tray;
+}
 
 function identifyInSentryAndMixpanel(host: string, userData: any): void {
   if (process.env.DISABLE_MIXPANEL !== '1') {
@@ -332,6 +359,9 @@ export function* takeInitialConfigureApp() {
         },
       }));
 
+      yield eff.call(teamStatusListTrayManager);
+      yield eff.put(usersActions.showTeamStatusWindow());
+
       yield eff.put(uiActions.setUiState({
         initializeInProcess: false,
       }));
@@ -498,6 +528,234 @@ export function* handleAttachmentWindow(): Generator<*, *, *> {
         attachments: issue?.fields?.attachment || [],
         activeIndex,
         scope: [win.id],
+      }));
+      win.focus();
+    }
+  }
+}
+
+function* onClose({
+  win,
+  channel,
+}) {
+  while (true) {
+    const { data } = yield eff.take(channel);
+    const { willQuitApp } = yield eff.select(state => state.windowsManager);
+    if (
+      !willQuitApp
+      && process.platform === 'darwin'
+    ) {
+      data.preventDefault();
+      win.hide();
+    }
+  }
+}
+
+function getWindowPosition(window) {
+  const windowPositioner = new Positioner(window);
+  const screenSize = screen.getPrimaryDisplay().workAreaSize;
+  const windowSize = window.getBounds();
+  const trayBounds = global.teamStatusListTray.getBounds();
+
+  const windowLength = (trayBounds.x + (trayBounds.width / 2)) + windowSize.width;
+  const windowOutOfBounds = (windowLength > screenSize.width);
+
+  const halfScreenWidth = screenSize.width / 2;
+  const halfScreenHeight = screenSize.height / 2;
+
+  const calculateWindowPosition = trayPosition => (offset) => {
+    const { x, y } = windowPositioner.calculate(trayPosition, trayBounds);
+    return { x: x + offset.x, y: y + offset.y };
+  };
+
+  const calculateOffsetCenter = calculateWindowPosition('trayCenter');
+  const calculateOffsetBottomLeft = calculateWindowPosition('trayBottomLeft');
+  const calculateOffsetBottomCenter = calculateWindowPosition('trayBottomCenter');
+  const calculateOffsetTopRight = calculateWindowPosition('topRight');
+
+  if (process.platform === 'win32') {
+    // Vertical or Horizontal Taskbar
+    if ((trayBounds.x + trayBounds.width) <= halfScreenWidth) {
+      // left
+      if (windowOutOfBounds) {
+        return calculateOffsetBottomLeft({ x: -7, y: 0 });
+      }
+      return calculateOffsetBottomLeft({ x: 78, y: -10 });
+    }
+
+    if ((trayBounds.x + trayBounds.width) >= halfScreenWidth) {
+      if ((trayBounds.y + trayBounds.height) <= halfScreenHeight) {
+        // top
+        if (windowOutOfBounds) {
+          return calculateOffsetCenter({ x: -7, y: 0 });
+        }
+        return calculateOffsetCenter({ x: 0, y: 8 });
+      }
+      // bottom or right
+      if (windowOutOfBounds) {
+        return calculateOffsetBottomCenter({ x: -7, y: 0 });
+      }
+      return calculateOffsetBottomCenter({ x: 0, y: -6 });
+    }
+  }
+  if (process.platform === 'darwin') {
+    if (windowOutOfBounds) {
+      return calculateOffsetCenter({ x: -20, y: 0 });
+    }
+    return calculateOffsetCenter({ x: 0, y: 3 });
+  }
+
+  if (windowOutOfBounds) {
+    return calculateOffsetTopRight({ x: -20, y: 0 });
+  }
+  return calculateOffsetTopRight({ x: -10, y: 5 });
+}
+
+function displayWindow(window) {
+  const position = getWindowPosition(window);
+  window.setPosition(position.x, position.y, !!process.platform === 'darwin');
+  window.show();
+  window.focus();
+}
+
+function* onToggleClick({
+  win,
+  channel,
+}) {
+  while (true) {
+    yield eff.take(channel);
+    if (win.isVisible()) {
+      global.teamStatusListTray.setHighlightMode('never');
+      win.hide();
+    } else {
+      global.teamStatusListTray.setHighlightMode('always');
+      yield eff.call(displayWindow, win);
+    }
+  }
+}
+
+function* onBlur({
+  win,
+  channel,
+}) {
+  while (true) {
+    yield eff.take(channel);
+    global.teamStatusListTray.setHighlightMode('never');
+    win.hide();
+  }
+}
+
+
+export function* handleTeamStatusWindow(): Generator<*, *, *> {
+  let win = null;
+  while (true) {
+    const {
+      currentWindowClose,
+      showWindow,
+    } = yield eff.race({
+      currentWindowClose: eff.take(sharedActionTypes.WINDOW_BEFORE_UNLOAD),
+      showWindow: eff.take(actionTypes.SHOW_TEAM_STATUS_WINDOW),
+    });
+    console.log('currentWindowClose', currentWindowClose);
+    if (
+      currentWindowClose
+      && win
+      && !win.isDestroyed()
+    ) {
+      win.destroy();
+    }
+    if (showWindow) {
+      const users = yield eff.select(getUiState('usersInTeamStatusWindow'));
+      if (
+        !win
+        || win.isDestroyed()
+      ) {
+        win = yield eff.call(
+          windowsManagerSagas.forkNewWindow,
+          {
+            url: (
+              process.env.NODE_ENV === 'development'
+                ? 'http://localhost:3000/teamStatusList.html'
+                : `file://${__dirname}/teamStatusList.html`
+            ),
+            BrowserWindow: remote.BrowserWindow,
+            options: {
+              show: false,
+              width: 330,
+              height: 340,
+              minWidth: 330,
+              minHeight: 340,
+              fullscreenable: false,
+              resizable: false,
+              transparent: true,
+              skipTaskbar: true,
+              alwaysOnTop: true,
+              frame: false,
+              webPreferences: {
+                webSecurity: false,
+                devTools: (
+                  process.env.NODE_ENV === 'development'
+                  || process.env.DEBUG_PROD === 'true'
+                ),
+              },
+            },
+          },
+        );
+        const readyChannel = yield eff.call(
+          windowsManagerSagas.createWindowChannel,
+          {
+            win,
+            webContentsEvents: [
+              'dom-ready',
+            ],
+          },
+        );
+
+        const closeChannel = windowsManagerSagas.createWindowChannel({
+          win,
+          events: [
+            'close',
+          ],
+        });
+
+        const toggleChannel = windowsManagerSagas.createWindowChannel({
+          win: global.teamStatusListTray,
+          events: [
+            'click',
+          ],
+        });
+
+        const blurChannel = windowsManagerSagas.createWindowChannel({
+          win,
+          events: [
+            'blur',
+          ],
+        });
+        yield eff.take(readyChannel);
+
+        yield eff.fork(onClose, {
+          win,
+          channel: closeChannel,
+        });
+
+        yield eff.fork(onToggleClick, {
+          win,
+          channel: toggleChannel,
+        });
+
+        yield eff.fork(onBlur, {
+          win,
+          channel: blurChannel,
+        });
+      }
+
+      yield eff.put(uiActions.setUiState({
+        teamStatusWindowId: win.id,
+      }));
+
+      yield eff.put(usersActions.setTeamStatusUsers({
+        teamStatusUsers: users,
+        scope: win.id,
       }));
       win.focus();
     }
