@@ -66,12 +66,14 @@ function* takeShowForm(): Generator<*, *, *> {
               document.getElementsByClassName('jira-dialog')[0].style.display = 'none';
               const formBody = issueForm.$form.children()[0];
               const jiraDialog = issueForm.$popup[0];
-              formBody.style.maxHeight = (
-                `${(parseInt(formBody.style.maxHeight.replace('px', ''), 10) + 120).toString()}px`
-              );
-              jiraDialog.style.marginTop = (
-                `${(parseInt(jiraDialog.style.marginTop.replace('px', ''), 10) - 65).toString()}px`
-              );
+              if (formBody) {
+                formBody.style.maxHeight = (
+                  `${(parseInt(formBody.style.maxHeight.replace('px', ''), 10) + 120).toString()}px`
+                );
+                jiraDialog.style.marginTop = (
+                  `${(parseInt(jiraDialog.style.marginTop.replace('px', ''), 10) - 65).toString()}px`
+                );
+              }
               issueForm.$popupHeading[0].lastElementChild.style.display = 'none';
             }, 0);
             setTimeout(() => {
