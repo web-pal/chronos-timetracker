@@ -656,7 +656,6 @@ export function* handleTeamStatusWindow(): Generator<*, *, *> {
       currentWindowClose: eff.take(sharedActionTypes.WINDOW_BEFORE_UNLOAD),
       showWindow: eff.take(actionTypes.SHOW_TEAM_STATUS_WINDOW),
     });
-    console.log('currentWindowClose', currentWindowClose);
     if (
       currentWindowClose
       && win
@@ -682,9 +681,9 @@ export function* handleTeamStatusWindow(): Generator<*, *, *> {
             options: {
               show: false,
               width: 330,
-              height: 340,
+              height: 335,
               minWidth: 330,
-              minHeight: 340,
+              minHeight: 335,
               fullscreenable: false,
               resizable: false,
               transparent: true,
