@@ -534,23 +534,6 @@ export function* handleAttachmentWindow(): Generator<*, *, *> {
   }
 }
 
-function* onClose({
-  win,
-  channel,
-}) {
-  while (true) {
-    const { data } = yield eff.take(channel);
-    const { willQuitApp } = yield eff.select(state => state.windowsManager);
-    if (
-      !willQuitApp
-      && process.platform === 'darwin'
-    ) {
-      data.preventDefault();
-      win.hide();
-    }
-  }
-}
-
 function getWindowPosition(window) {
   const windowPositioner = new Positioner(window);
   const screenSize = screen.getPrimaryDisplay().workAreaSize;
@@ -663,6 +646,13 @@ export function* handleTeamStatusWindow(): Generator<*, *, *> {
     ) {
       win.destroy();
     }
+    if (
+      currentWindowClose
+      && global.teamStatusListTray
+      && !global.teamStatusListTray.isDestroyed()
+    ) {
+      global.teamStatusListTray.destroy();
+    }
     if (showWindow) {
       const users = yield eff.select(getUiState('usersInTeamStatusWindow'));
       if (
@@ -710,13 +700,6 @@ export function* handleTeamStatusWindow(): Generator<*, *, *> {
           },
         );
 
-        const closeChannel = windowsManagerSagas.createWindowChannel({
-          win,
-          events: [
-            'close',
-          ],
-        });
-
         const toggleChannel = windowsManagerSagas.createWindowChannel({
           win: global.teamStatusListTray,
           events: [
@@ -731,11 +714,6 @@ export function* handleTeamStatusWindow(): Generator<*, *, *> {
           ],
         });
         yield eff.take(readyChannel);
-
-        yield eff.fork(onClose, {
-          win,
-          channel: closeChannel,
-        });
 
         yield eff.fork(onToggleClick, {
           win,
