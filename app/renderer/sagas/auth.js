@@ -69,7 +69,9 @@ export function* authSelfHostedFlow(): Generator<*, *, *> {
       }));
     } catch (err) {
       if (err && err.message) {
-        yield eff.put(uiActions.setUiState('authError', err.message));
+        yield eff.put(uiActions.setUiState({
+          authError: err.message,
+        }));
       } else {
         yield eff.put(uiActions.setUiState(
           'authError',
@@ -77,7 +79,9 @@ export function* authSelfHostedFlow(): Generator<*, *, *> {
         ));
       }
       yield eff.call(throwError, err);
-      yield eff.put(uiActions.setUiState('authRequestInProcess', false));
+      yield eff.put(uiActions.setUiState({
+        authRequestInProcess: false,
+      }));
     }
   }
 }
