@@ -44,6 +44,7 @@ const TeamMemberItem = ({
           target={({ ref }) => (
             <span
               ref={ref}
+              style={{ cursor: 'pointer' }}
             >
               <S.EditIcon
                 size="small"
