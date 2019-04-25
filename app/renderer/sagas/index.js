@@ -18,6 +18,7 @@ import {
   takeInitialConfigureApp,
   createDispatchActionListener,
   handleAttachmentWindow,
+  handleTeamStatusWindow,
   handleQuitRequest,
 } from './initialize';
 
@@ -29,6 +30,7 @@ export default function* rootSaga(): Generator<*, void, *> {
     eff.fork(takeInitialConfigureApp),
     eff.fork(initializeApp),
     eff.fork(handleAttachmentWindow),
+    eff.fork(handleTeamStatusWindow),
     eff.fork(createDispatchActionListener),
 
     // auth
@@ -63,6 +65,7 @@ export default function* rootSaga(): Generator<*, void, *> {
 
     // users
     eff.fork(usersSagas.watchFetchUsers),
+    eff.fork(usersSagas.watchUpdateUserTimezone),
 
     // worklogs
     eff.fork(worklogsSagas.watchSaveWorklogRequest),

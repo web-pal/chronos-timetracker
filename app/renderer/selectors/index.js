@@ -7,6 +7,7 @@ export * from './sprints';
 export * from './issues';
 export * from './timer';
 export * from './screenshots';
+export * from './users';
 
 export {
   getStatus as getResourceStatus,

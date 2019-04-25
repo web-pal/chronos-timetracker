@@ -1,27 +1,31 @@
 // @flow
 import React from 'react';
+
 import * as S from './styled';
 
 type Props = {
   name: string,
   timeZone: string,
-  status: string,
   lastDate: Date,
-  emoji: string,
   avatarUrls: {
     '16x16': string,
     '32x32': string,
     '48x48': string,
   },
+  timezonesOptions: Array<{
+    label: string,
+    value: string,
+  }>,
+  updateTimezone: () => void,
 };
 
 const TeamMemberItem = ({
   name,
   timeZone,
-  status,
   lastDate,
-  emoji,
   avatarUrls,
+  timezonesOptions,
+  updateTimezone,
 }: Props) => (
   <S.TeamMemberItemWrapper>
     <S.UserAvatar
@@ -30,8 +34,26 @@ const TeamMemberItem = ({
     />
     <S.UserInfoWrapper>
       <S.UserName>{name}</S.UserName>
-      <S.UserLocation>{timeZone}</S.UserLocation>
-      <S.Status>{`${emoji} ${status}`}</S.Status>
+      <S.UserTimezoneWrapper>
+        <S.UserTimezone>{timeZone}</S.UserTimezone>
+        <S.TimezonePicker
+          fieldId="timezonePicker"
+          options={timezonesOptions}
+          placeholder="Choose a timezone"
+          onChange={updateTimezone}
+          target={({ ref }) => (
+            <span
+              ref={ref}
+            >
+              <S.EditIcon
+                size="small"
+              />
+            </span>
+          )}
+          popperProps={{ placement: 'bottom', positionFixed: true }}
+          searchThreshold={10}
+        />
+      </S.UserTimezoneWrapper>
     </S.UserInfoWrapper>
     <S.LastDate>{lastDate}</S.LastDate>
   </S.TeamMemberItemWrapper>

@@ -1,6 +1,9 @@
 import styled from 'styled-components';
-import SettingsIconAK from '@atlaskit/icon/glyph/settings';
 import EditIconAK from '@atlaskit/icon/glyph/edit';
+
+import {
+  PopupSelect,
+} from '@atlaskit/select';
 
 export const TeamStatusListWrapper = styled.div`
   width: 100%;
@@ -13,7 +16,7 @@ export const TeamStatusListWrapper = styled.div`
 `;
 
 export const TeamMembersWrapper = styled.div`
-  height: 285px;
+  height: 335px;
   overflow-y: auto;
 `;
 
@@ -40,6 +43,10 @@ export const TeamMemberItemWrapper = styled.div`
   }
 `;
 
+export const UserAvatarWrapper = styled.div`
+  flex: 0 0 10%;
+`;
+
 export const UserAvatar = styled.img`
   height: 48px;
   width: 48px;
@@ -48,6 +55,8 @@ export const UserAvatar = styled.img`
   transition: all .1s ease-in;
   user-select: none;
   :hover {
+    height: 48px;
+    width: 48px;
     box-shadow:0 1px 4px rgba(0, 0, 0, 0.4), 0 0 40px rgba(0, 0, 0, 0.1) inset;
     border-radius: 50%;
   }
@@ -66,40 +75,33 @@ export const UserName = styled.span`
   overflow: hidden;
   white-space: nowrap;
   max-width: 160px;
-
-  &:hover {
-    white-space: initial;
-  }
 `;
 
-export const UserLocation = styled.span`
+export const TimezonePicker = styled(PopupSelect)``;
+
+
+export const UserTimezoneWrapper = styled.div`
+  display: flex;
+  align-items: center;
   font-size: 12px;
   color: #8993A4;
 `;
 
-export const Status = styled.span``;
+export const UserTimezone = styled.div`
+  min-width: 0;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 140px;
+`;
 
-export const LastDate = styled.span`
+export const LastDate = styled.div`
+  display: flex;
+  justify-content: flex-end;
   flex: 0 0 29%;
 `;
 
-export const FooterToolbar = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 5px 5px;
-`;
-
 export const EditIcon = styled(EditIconAK)`
-  width: 20px;
-  height: 20px;
-`;
-
-export const TeamName = styled.span`
-  font-weight: bold;
-`;
-
-export const SettingsIcon = styled(SettingsIconAK)`
-  width: 20px;
-  height: 20px;
+  height: 18px;
+  cursor: pointer !important;
 `;

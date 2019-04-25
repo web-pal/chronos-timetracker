@@ -1,8 +1,14 @@
-import React from 'react';
-import moment from 'moment';
+import React, {
+  useState,
+  useEffect,
+} from 'react';
 import {
   hot,
 } from 'react-hot-loader/root';
+
+import {
+  DateTime,
+} from 'luxon';
 
 import {
   connect,
@@ -10,17 +16,21 @@ import {
 
 import type {
   Connector,
+  Dispatch,
 } from 'react-redux';
 
 import {
-  getUiState,
+  getTeamStatusUsers,
+  getAllTimezonesOptions,
 } from 'selectors';
+
+import {
+  usersActions,
+} from 'actions';
 
 import TeamMemberItem from './TeamMemberItem';
 
 import * as S from './styled';
-
-const mockTeamName = 'Web-Pal';
 
 type Props = {
   users: {
@@ -33,45 +43,63 @@ type Props = {
       '48x48': string,
     }
   },
+  dispatch: Dispatch,
+  timezonesOptions: Array<{
+    label: string,
+    value: string,
+  }>
 };
 
-const TeamStatusList = ({ users }:Props) => (
-  <S.TeamStatusListWrapper>
-    <S.TeamMembersWrapper>
-      {users && users.length > 0 ? users.map(({
-        accountId,
-        displayName,
-        timeZone,
-        avatarUrls,
-      }) => (
-        <TeamMemberItem
-          key={accountId}
-          name={displayName}
-          timeZone={timeZone}
-          status="Working"
-          lastDate={moment().format('ddd LT')}
-          emoji="💼"
-          avatarUrls={avatarUrls}
-        />
-      )) : (
-        <S.NoTeamSelectedText>
-          Please select your team in chronos settings
-        </S.NoTeamSelectedText>
-      )}
-    </S.TeamMembersWrapper>
-    <S.FooterToolbar>
-      <S.EditIcon />
-      <S.TeamName>
-        {`💼 ${mockTeamName}`}
-      </S.TeamName>
-      <S.SettingsIcon />
-    </S.FooterToolbar>
-  </S.TeamStatusListWrapper>
-);
+const TeamStatusList = ({
+  users,
+  timezonesOptions,
+  dispatch,
+}:Props) => {
+  const [lastDate, setLastDate] = useState(DateTime.local());
+  useEffect(() => {
+    const timerId = setInterval(() => {
+      setLastDate(prevDate => prevDate.plus({ seconds: 1 }));
+    }, 1000);
+
+    return () => {
+      clearInterval(timerId);
+    };
+  }, [lastDate]);
+  return (
+    <S.TeamStatusListWrapper>
+      <S.TeamMembersWrapper>
+        {users && users.length > 0 ? users.map(({
+          accountId,
+          displayName,
+          timeZone,
+          avatarUrls,
+        }) => (
+          <TeamMemberItem
+            key={accountId}
+            name={displayName}
+            timeZone={timeZone}
+            lastDate={lastDate.setZone(timeZone).toFormat('ccc t')}
+            avatarUrls={avatarUrls}
+            timezonesOptions={timezonesOptions}
+            updateTimezone={({ value }) => dispatch(usersActions.updateUserTimezone({
+              userId: accountId,
+              timezone: value,
+            }))}
+          />
+        )) : (
+          <S.NoTeamSelectedText>
+            Please select your team in chronos settings
+          </S.NoTeamSelectedText>
+        )}
+      </S.TeamMembersWrapper>
+    </S.TeamStatusListWrapper>
+  );
+};
 
 function mapStateToProps(state) {
   return {
-    users: getUiState('usersInTeamStatusWindow')(state),
+    users: getTeamStatusUsers(state),
+    timezonesOptions: getAllTimezonesOptions(state),
   };
 }
 

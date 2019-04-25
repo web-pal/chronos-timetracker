@@ -8,11 +8,34 @@ import {
 import {
   actionTypes,
   uiActions,
+  usersActions,
 } from 'actions';
+
+import {
+  getUiState,
+} from 'selectors';
 
 import {
   throwError,
 } from './ui';
+
+export function* updateUsers({ newUsers }): Generator<*, *, *> {
+  try {
+    const currentTeamStatusWindowId = yield eff.select(getUiState('teamStatusWindowId'));
+
+    yield eff.put(uiActions.setUiState({
+      usersInTeamStatusWindow: newUsers,
+    }));
+
+    yield eff.put(usersActions.setTeamStatusUsers({
+      teamStatusUsers: newUsers,
+      scope: currentTeamStatusWindowId,
+    }));
+  } catch (err) {
+    yield eff.call(throwError, err);
+  }
+}
+
 
 export function* fetchUsers({ payload: { userIds } }): Generator<*, *, *> {
   yield eff.put(uiActions.setUiState({ isUsersFetching: true }));
@@ -30,18 +53,36 @@ export function* fetchUsers({ payload: { userIds } }): Generator<*, *, *> {
       timeZone,
     }) => ({ avatarUrls, accountId, displayName, timeZone }));
 
-    yield eff.put({
-      type: actionTypes.SET_UI_STATE,
-      payload: {
-        keyOrRootValues: { usersInTeamStatusWindow: filteredUsers },
-      },
-      scope: 'allRenderer',
-    });
+    yield eff.call(updateUsers, { newUsers: filteredUsers });
   } catch (err) {
     yield eff.call(throwError, err);
   } finally {
     yield eff.put(uiActions.setUiState({ isUsersFetching: false }));
   }
+}
+
+export function* updateUserTimezone({ payload: { userId, timezone } }): Generator<*, *, *> {
+  try {
+    const users = yield eff.select(getUiState('usersInTeamStatusWindow'));
+    const newUsers = users.map((user) => {
+      if (user.accountId === userId) {
+        const { timeZone, ...rest} = user;
+        return { 
+          timeZone: timezone,
+          ...rest,
+        }
+      }
+      return user;
+    });
+
+    yield eff.call(updateUsers, { newUsers });
+  } catch (err) {
+    yield eff.call(throwError, err);
+  }
+}
+
+export function* watchUpdateUserTimezone(): Generator<*, *, *> {
+  yield eff.takeEvery(actionTypes.UPDATE_USER_TIMEZONE_REQUEST, updateUserTimezone);
 }
 
 export function* watchFetchUsers(): Generator<*, *, *> {
