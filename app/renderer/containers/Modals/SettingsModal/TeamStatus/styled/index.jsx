@@ -1,10 +1,9 @@
 /* eslint-disable no-confusing-arrow */
 import styled from 'styled-components';
 
-import {
-  AsyncSelect,
-} from '@atlaskit/select';
+import UserPicker from '@atlaskit/user-picker';
 
+import Button from '@atlaskit/button';
 
 export const SettingsSectionContent = styled.div`
   margin-bottom: 30px;
@@ -17,7 +16,9 @@ export const ContentLabel = styled.span`
   color: black;
 `;
 
-export const UsersSelect = styled(AsyncSelect)`
-  width: 300px;
-  margin-left: 6px;
+export const UsersPicker = styled(UserPicker)``;
+
+export const SaveButton = styled(Button)`
+  display: flex;
+  justify-content: center;
 `;

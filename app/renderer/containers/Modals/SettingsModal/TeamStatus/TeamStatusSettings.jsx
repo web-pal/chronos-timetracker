@@ -15,9 +15,8 @@ import {
   jiraApi,
 } from 'api';
 
-import UserPicker from '@atlaskit/user-picker';
 import Spinner from '@atlaskit/spinner';
-import Button, {
+import {
   ButtonGroup,
 } from '@atlaskit/button';
 
@@ -46,12 +45,17 @@ const TeamStatusSettings: StatelessFunctionalComponent<Props> = ({
       <S.ContentLabel>
         Team Status
       </S.ContentLabel>
-      <Flex column>
-        <H100 style={{ margin: '0 0 4px 6px' }}>
+      <Flex
+        style={{
+          marginLeft: '6px',
+        }}
+        column
+      >
+        <H100 style={{ margin: '0 0 4px 0' }}>
           Configure users to show in tray widget
         </H100>
         <IntlProvider locale="en">
-          <UserPicker
+          <S.UsersPicker
             fieldId="userPicker"
             isMulti
             onChange={(data) => {
@@ -81,10 +85,7 @@ const TeamStatusSettings: StatelessFunctionalComponent<Props> = ({
         </IntlProvider>
         <br />
         <ButtonGroup>
-          <Button
-            style={{
-              marginLeft: '6px',
-            }}
+          <S.SaveButton
             appearance="primary"
             iconAfter={(
               <Spinner
@@ -95,7 +96,7 @@ const TeamStatusSettings: StatelessFunctionalComponent<Props> = ({
             onClick={() => saveUsers(usersIds)}
           >
             Save
-          </Button>
+          </S.SaveButton>
         </ButtonGroup>
         <br />
       </Flex>
