@@ -359,8 +359,10 @@ export function* takeInitialConfigureApp() {
         },
       }));
 
-      yield eff.call(teamStatusListTrayManager);
-      yield eff.put(usersActions.showTeamStatusWindow());
+      const teamStatusEnabled = yield eff.select(getUiState('teamStatusEnabled'));
+      if (teamStatusEnabled) {
+        yield eff.put(usersActions.showTeamStatusWindow());
+      }
 
       yield eff.put(uiActions.setUiState({
         initializeInProcess: false,
@@ -635,29 +637,32 @@ export function* handleTeamStatusWindow(): Generator<*, *, *> {
     const {
       currentWindowClose,
       showWindow,
+      hideWindow,
     } = yield eff.race({
       currentWindowClose: eff.take(sharedActionTypes.WINDOW_BEFORE_UNLOAD),
       showWindow: eff.take(actionTypes.SHOW_TEAM_STATUS_WINDOW),
+      hideWindow: eff.take(actionTypes.HIDE_TEAM_STATUS_WINDOW),
     });
     if (
-      currentWindowClose
+      (currentWindowClose || hideWindow)
       && win
       && !win.isDestroyed()
     ) {
       win.destroy();
+      win = null;
     }
     if (
-      currentWindowClose
+      (currentWindowClose || hideWindow)
       && global.teamStatusListTray
       && !global.teamStatusListTray.isDestroyed()
     ) {
       global.teamStatusListTray.destroy();
     }
     if (showWindow) {
+      yield eff.call(teamStatusListTrayManager);
       const users = yield eff.select(getUiState('usersInTeamStatusWindow'));
       if (
         !win
-        || win.isDestroyed()
       ) {
         win = yield eff.call(
           windowsManagerSagas.forkNewWindow,

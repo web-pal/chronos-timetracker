@@ -22,6 +22,7 @@ export const persistInitialState = {
 
   postAlsoAsIssueComment: false,
   screenshotsEnabled: false,
+  teamStatusEnabled: false,
   showScreenshotPreview: true,
   useNativeNotifications: false,
   screenshotDecisionTime: 15,

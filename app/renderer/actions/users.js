@@ -9,6 +9,9 @@ export const showTeamStatusWindow = (): UsersAction => ({
   type: actionTypes.SHOW_TEAM_STATUS_WINDOW,
 });
 
+export const hideTeamStatusWindow = (): UsersAction => ({
+  type: actionTypes.HIDE_TEAM_STATUS_WINDOW,
+});
 
 export const fetchUsersRequest = ({ userIds }): UsersAction => ({
   type: actionTypes.FETCH_USERS_REQUEST,

@@ -14,6 +14,7 @@ import type {
 
 import {
   uiActions,
+  usersActions,
   updaterActions,
   actionTypes,
 } from 'actions';
@@ -177,6 +178,18 @@ function* onUiChange({
       && values.screenshotsEnabled === true
     ) {
       yield eff.fork(chronosApiAuth);
+    }
+    if (
+      keys.includes('teamStatusEnabled')
+      && values.teamStatusEnabled === true
+    ) {
+      yield eff.put(usersActions.showTeamStatusWindow());
+    }
+    if (
+      keys.includes('teamStatusEnabled')
+      && values.teamStatusEnabled === false
+    ) {
+      yield eff.put(usersActions.hideTeamStatusWindow());
     }
     if (keys.includes('selectedIssueId')) {
       yield eff.fork(
