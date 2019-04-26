@@ -40,6 +40,7 @@ import * as S from './styled';
 type Props = {
   isUsersFetching: boolean,
   teamStatusEnabled: boolean,
+  teamStatusWindowLoading: boolean,
   toggleTeamStatus: (value: boolean) => void,
   saveUsers: (value: any) => void,
 }
@@ -47,6 +48,7 @@ type Props = {
 const TeamStatusSettings: StatelessFunctionalComponent<Props> = ({
   isUsersFetching,
   teamStatusEnabled,
+  teamStatusWindowLoading,
   toggleTeamStatus,
   saveUsers,
 }: Props): Node => {
@@ -66,6 +68,7 @@ const TeamStatusSettings: StatelessFunctionalComponent<Props> = ({
           }}
         >
           <Checkbox
+            isDisabled={teamStatusWindowLoading}
             name="enableTeamStatus"
             id="enableTeamStatus"
             isChecked={teamStatusEnabled}
@@ -77,7 +80,7 @@ const TeamStatusSettings: StatelessFunctionalComponent<Props> = ({
           <Flex
             column
             style={{
-              marginLeft: '6px',
+              margin: '0 0 4px 6px',
             }}
           >
             <IntlProvider locale="en">

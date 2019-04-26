@@ -51,7 +51,8 @@ type Props = {
   updateCheckRunning: boolean,
   updateAvailable: string,
   downloadUpdateProgress: any,
-  teamStatusEnabled: Boolean,
+  teamStatusEnabled: boolean,
+  teamStatusWindowLoading: boolean,
   isUsersFetching: boolean,
   dispatch: Dispatch,
 }
@@ -64,6 +65,7 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
   downloadUpdateProgress,
   updateCheckRunning,
   teamStatusEnabled,
+  teamStatusWindowLoading,
   isUsersFetching,
   dispatch,
 }: Props): Node => (
@@ -153,6 +155,7 @@ const SettingsModal: StatelessFunctionalComponent<Props> = ({
         {tab === 'Team' && (
           <TeamStatusSettings
             teamStatusEnabled={teamStatusEnabled}
+            teamStatusWindowLoading={teamStatusWindowLoading}
             toggleTeamStatus={() => {
               dispatch(uiActions.setUiState({
                 teamStatusEnabled: !teamStatusEnabled,
@@ -222,6 +225,7 @@ function mapStateToProps(state) {
     tab: getUiState('settingsTab')(state),
     isUsersFetching: getUiState('isUsersFetching')(state),
     teamStatusEnabled: getUiState('teamStatusEnabled')(state),
+    teamStatusWindowLoading: getUiState('teamStatusWindowLoading')(state),
     updateAvailable,
     updateCheckRunning: updateAvailable === null,
     downloadUpdateProgress: getUiState('downloadUpdateProgress')(state),

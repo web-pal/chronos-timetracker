@@ -66,6 +66,7 @@ const initialState: UiState = {
   downloadUpdateProgress: null,
 
   teamStatusWindowId: null,
+  teamStatusWindowLoading: false,
 
   issueViewWorklogsScrollToIndex: 0,
   selectedIssueId: null,
