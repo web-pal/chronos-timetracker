@@ -12,13 +12,13 @@ import * as worklogsSagas from './worklogs';
 import * as uiSagas from './ui';
 import * as screenshotSagas from './screenshots';
 import * as usersSagas from './users';
+import * as teamStatusSagas from './teamStatus';
 
 import {
   initializeApp,
   takeInitialConfigureApp,
   createDispatchActionListener,
   handleAttachmentWindow,
-  handleTeamStatusWindow,
   handleQuitRequest,
 } from './initialize';
 
@@ -30,7 +30,6 @@ export default function* rootSaga(): Generator<*, void, *> {
     eff.fork(takeInitialConfigureApp),
     eff.fork(initializeApp),
     eff.fork(handleAttachmentWindow),
-    eff.fork(handleTeamStatusWindow),
     eff.fork(createDispatchActionListener),
 
     // auth
@@ -62,6 +61,9 @@ export default function* rootSaga(): Generator<*, void, *> {
 
     // settings
     eff.fork(settingsSagas.watchClearElectronChanheRequest),
+
+    // teamStatus
+    eff.fork(teamStatusSagas.handleTeamStatusWindow),
 
     // users
     eff.fork(usersSagas.watchFetchUsers),
