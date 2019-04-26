@@ -85,7 +85,13 @@ export const UserTimezoneWrapper = styled.div`
   align-items: center;
   font-size: 12px;
   color: #8993A4;
+
+  &:hover > span {
+    display: inline-block !important;
+  }
 `;
+
+export const EditIcon = styled(EditIconAK)``;
 
 export const UserTimezone = styled.div`
   min-width: 0;
@@ -99,9 +105,4 @@ export const LastDate = styled.div`
   display: flex;
   justify-content: flex-end;
   flex: 0 0 29%;
-`;
-
-export const EditIcon = styled(EditIconAK)`
-  height: 18px;
-  cursor: pointer !important;
 `;

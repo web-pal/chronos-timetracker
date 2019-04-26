@@ -64,7 +64,7 @@ const TeamStatusList = ({
     return () => {
       clearInterval(timerId);
     };
-  }, [lastDate]);
+  }, []);
   return (
     <S.TeamStatusListWrapper>
       <S.TeamMembersWrapper>

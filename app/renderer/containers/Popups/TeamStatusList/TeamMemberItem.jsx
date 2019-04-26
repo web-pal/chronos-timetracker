@@ -43,8 +43,12 @@ const TeamMemberItem = ({
           onChange={updateTimezone}
           target={({ ref }) => (
             <span
+              style={{
+                display: 'none',
+                height: '17px',
+                cursor: 'pointer',
+              }}
               ref={ref}
-              style={{ cursor: 'pointer' }}
             >
               <S.EditIcon
                 size="small"
