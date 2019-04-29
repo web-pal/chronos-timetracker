@@ -36,7 +36,6 @@ import {
   jiraApi,
   chronosApi,
 } from 'api';
-import config from 'config';
 
 import {
   throwError,

@@ -14,6 +14,6 @@
   },
   "dependencies": {
     "desktop-idle": "1.1.2",
-    "keytar": "4.4.1"
+    "keytar": "4.6.0"
   }
 }

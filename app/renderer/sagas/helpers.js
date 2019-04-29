@@ -1,7 +1,6 @@
 import * as eff from 'redux-saga/effects';
 import storage from 'electron-json-storage';
 
-import config from 'config';
 import {
   getUiState,
 } from 'selectors';
@@ -29,6 +28,17 @@ export const removeElectronStorage = key => (
     storage.remove(key, (err) => {
       if (err) {
         reject(new Error(`Error removing from storage: ${err}`));
+      }
+      resolve();
+    });
+  })
+);
+
+export const clearElectronStorage = () => (
+  new Promise((resolve, reject) => {
+    storage.clear((err) => {
+      if (err) {
+        reject(new Error('Error clear storage'));
       }
       resolve();
     });
