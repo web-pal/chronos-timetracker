@@ -131,45 +131,48 @@ export function* chronosApiAuth(ignoreCheckEnabled = false) {
       port,
       protocol,
     } = authCredentials;
-    let jwt = yield eff.call(
-      keytar.getPassword,
-      'ChronosJWT',
-      `${name}_${hostname}`,
-    );
-    if (
-      ignoreCheckEnabled
-     || screenshotsEnabled
-    ) {
-      const cookiesStr = yield eff.call(
+    const isCloud = hostname.endsWith('.atlassian.net');
+    if (isCloud) {
+      let jwt = yield eff.call(
         keytar.getPassword,
-        'Chronos',
-        `${authCredentials.name}_${authCredentials.hostname}`,
-      );
-      const cookies = JSON.parse(cookiesStr);
-      const res = yield eff.call(
-        chronosApi.getJWT,
-        {
-          body: {
-            cookies,
-            name,
-            hostname,
-            baseUrl: `${protocol}://${hostname}${port}${pathname.replace(/\/$/, '')}`,
-            protocol,
-          },
-        },
-      );
-      jwt = res.jwtToken;
-      yield eff.call(
-        keytar.setPassword,
         'ChronosJWT',
         `${name}_${hostname}`,
+      );
+      if (
+        ignoreCheckEnabled
+       || screenshotsEnabled
+      ) {
+        const cookiesStr = yield eff.call(
+          keytar.getPassword,
+          'Chronos',
+          `${authCredentials.name}_${authCredentials.hostname}`,
+        );
+        const cookies = JSON.parse(cookiesStr);
+        const res = yield eff.call(
+          chronosApi.getJWT,
+          {
+            body: {
+              cookies,
+              name,
+              hostname,
+              baseUrl: `${protocol}://${hostname}${port}${pathname.replace(/\/$/, '')}`,
+              protocol,
+            },
+          },
+        );
+        jwt = res.jwtToken;
+        yield eff.call(
+          keytar.setPassword,
+          'ChronosJWT',
+          `${name}_${hostname}`,
+          jwt,
+        );
+      }
+      yield eff.call(
+        chronosApi.setJWT,
         jwt,
       );
     }
-    yield eff.call(
-      chronosApi.setJWT,
-      jwt,
-    );
   } catch (err) {
     yield eff.fork(
       notify,

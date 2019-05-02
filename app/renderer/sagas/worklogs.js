@@ -219,6 +219,8 @@ export function* saveWorklog({
       },
     );
     if (isAuto) {
+      const hostname = yield eff.select(getUiState('hostname'));
+      const isCloud = hostname.endsWith('.atlassian.net');
       let screenshots = yield eff.select(getUiState('screenshots'));
       yield eff.all(
         screenshots
@@ -227,6 +229,7 @@ export function* saveWorklog({
             eff.call(
               uploadScreenshots,
               {
+                isCloud,
                 filenameImage: s.filename,
                 filenameThumb: s.filenameThumb,
                 imagePath: s.imagePath,
@@ -286,7 +289,9 @@ export function* saveWorklog({
       );
       if (screenshotsWithActivity.length) {
         yield eff.call(
-          chronosApi.saveScreenshots,
+          isCloud
+            ? chronosApi.saveScreenshots
+            : jiraApi.saveWorklogActivity,
           {
             body: {
               worklogId: worklog.id,
