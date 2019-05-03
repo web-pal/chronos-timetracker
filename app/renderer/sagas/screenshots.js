@@ -558,12 +558,11 @@ function* handleScreenshot({
     }));
     yield eff.put(screenshotsActions.uploadScreenshotFinished());
   } catch (err) {
-    console.log(err);
+    throwError(err);
     yield eff.put(uiActions.setUiState({
       uploadScreenshotLoading: false,
     }));
     yield eff.put(screenshotsActions.uploadScreenshotFinished());
-    yield eff.call(throwError, err);
   }
 }
 
@@ -866,13 +865,11 @@ export function* takeScreenshotRequest() {
       }));
       yield eff.put(screenshotsActions.takeScreenshotFinished());
     } catch (err) {
-      // TODO: what to do in that case?
-      console.log(err);
+      throwError(err);
       yield eff.put(uiActions.setUiState({
         takeScreenshotLoading: false,
       }));
       yield eff.put(screenshotsActions.takeScreenshotFinished());
-      yield eff.call(throwError, err);
     }
   }
 }

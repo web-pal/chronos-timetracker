@@ -218,7 +218,7 @@ function* fetchAdditionalWorklogsForIssues(issues) {
         issues,
       },
     });
-    yield eff.call(throwError, err);
+    throwError(err);
     return issues;
   }
 }
@@ -377,7 +377,7 @@ export function* fetchIssues({
       yield eff.put(actions.succeeded({
         resources: [],
       }));
-      yield eff.call(throwError, err);
+      throwError(err);
     }
   }
 }
@@ -464,7 +464,7 @@ export function* fetchRecentIssues(): Generator<*, *, *> {
     yield eff.put(actions.succeeded({
       resources: [],
     }));
-    yield eff.call(throwError, err);
+    throwError(err);
   }
 }
 
@@ -498,7 +498,7 @@ export function* getIssueTransitions(issueId: string | number): Generator<*, voi
       transitions,
     );
   } catch (err) {
-    yield eff.call(throwError, err);
+    throwError(err);
   }
 }
 
@@ -520,7 +520,7 @@ export function* getIssuePermissions(issueId: string | number): Generator<*, voi
       },
     }));
   } catch (err) {
-    yield eff.call(throwError, err);
+    throwError(err);
   }
 }
 
@@ -576,7 +576,7 @@ export function* refetchIssues(debouncing: boolean): Generator<*, void, *> {
       );
     }
   } catch (err) {
-    yield eff.call(throwError, err);
+    throwError(err);
   }
 }
 
@@ -633,7 +633,7 @@ export function* transitionIssue({
     yield eff.put(issuesA.succeeded({
       resources: [],
     }));
-    yield eff.call(throwError, err);
+    throwError(err);
   }
 }
 
@@ -696,7 +696,7 @@ export function* assignIssueToUser({ issueId }: {
     yield eff.fork(notify, {
       title: 'Cannot assign issue. Probably no permission',
     });
-    yield eff.call(throwError, err);
+    throwError(err);
   }
 }
 
@@ -716,7 +716,7 @@ export function* fetchIssueFields(): Generator<*, void, *> {
     }));
     yield eff.call(infoLog, 'got issue fields', issuesFields);
   } catch (err) {
-    yield eff.call(throwError, err);
+    throwError(err);
   }
 }
 
@@ -819,7 +819,7 @@ export function* fetchEpics(): Generator<*, void, *> {
     yield eff.put(actions.succeeded({
       resources: [],
     }));
-    yield eff.call(throwError, err);
+    throwError(err);
   }
 }
 
@@ -862,7 +862,7 @@ function* fetchNewIssue({ issueIdOrKey }): Generator<*, *, *> {
     yield eff.fork(refetchIssues, false);
     trackMixpanel('New issue was created');
   } catch (err) {
-    yield eff.call(throwError, err);
+    throwError(err);
   }
 }
 
@@ -907,7 +907,7 @@ function* fetchUpdateIssue({ issueIdOrKey }): Generator<*, *, *> {
       selectedIssueId: issue.id,
     }));
   } catch (err) {
-    yield eff.call(throwError, err);
+    throwError(err);
   }
 }
 

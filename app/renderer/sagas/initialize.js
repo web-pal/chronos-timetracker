@@ -98,10 +98,10 @@ function identifyInSentryAndMixpanel(host: string, userData: any): void {
 
 function* initializeMixpanel(): Generator<*, *, *> {
   if (process.env.DISABLE_MIXPANEL === '1') {
-    yield eff.call(infoLog, 'mixpanel disabled with ENV var');
+    throwError(new Error('mixpanel disabled with ENV var'));
   }
   if (!process.env.MIXPANEL_API_TOKEN) {
-    yield eff.call(throwError, 'MIXPANEL_API_TOKEN not set!');
+    throwError(new Error('MIXPANEL_API_TOKEN not set!'));
   }
   if (
     process.env.DISABLE_MIXPANEL !== '1'
@@ -185,7 +185,7 @@ export function* chronosApiAuth(ignoreCheckEnabled = false) {
     yield eff.put(uiActions.setUiState({
       screenshotsEnabled: false,
     }));
-    yield eff.call(throwError, err);
+    throwError(err);
   }
 }
 
@@ -342,7 +342,7 @@ export function* takeInitialConfigureApp() {
         initializeInProcess: false,
       }));
     } catch (err) {
-      yield eff.call(throwError, err);
+      throwError(err);
       yield eff.put(uiActions.setUiState({
         authorized: false,
         initializeInProcess: false,
@@ -390,10 +390,7 @@ export function* initializeApp(): Generator<*, *, *> {
             error,
           },
         });
-        yield eff.call(
-          throwError,
-          error,
-        );
+        throwError(error);
         if (process.platform === 'linux') {
           yield eff.fork(
             notify,
@@ -431,7 +428,7 @@ export function* initializeApp(): Generator<*, *, *> {
       }));
     }
   } catch (err) {
-    yield eff.call(throwError, err);
+    throwError(err);
     yield eff.put(uiActions.setUiState({
       authorized: false,
       initializeInProcess: false,

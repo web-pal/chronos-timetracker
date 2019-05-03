@@ -78,7 +78,7 @@ export function* authSelfHostedFlow(): Generator<*, *, *> {
           'Can not authenticate user. Please try again',
         ));
       }
-      yield eff.call(throwError, err);
+      throwError(err);
       yield eff.put(uiActions.setUiState({
         authRequestInProcess: false,
       }));
@@ -200,14 +200,7 @@ export function* authFlow(): Generator<*, *, *> {
       trackMixpanel('Jira login');
       incrementMixpanel('Jira login', 1);
     } catch (err) {
-      if (err.debug) {
-        console.log(err.debug);
-        yield eff.put(authActions.addAuthDebugMessage([
-          {
-            json: err.debug,
-          },
-        ]));
-      }
+      throwError(err);
       yield eff.put(uiActions.setUiState({
         authRequestInProcess: false,
         authFormStep: 1,
@@ -216,7 +209,6 @@ export function* authFlow(): Generator<*, *, *> {
         authorized: false,
         authError: 'Can not authenticate user. Please try again',
       }));
-      yield eff.call(throwError, err.result ? err.result : err);
     }
   }
 }
@@ -305,7 +297,7 @@ export function* logoutFlow(): Generator<*, *, *> {
       trackMixpanel('Logout');
       incrementMixpanel('Logout', 1);
     } catch (err) {
-      yield eff.call(throwError, err);
+      throwError(err);
     }
   }
 }
@@ -385,7 +377,7 @@ export function* switchAccountFlow(): Generator<*, *, *> {
       yield eff.put(uiActions.setUiState({
         initializeInProcess: false,
       }));
-      yield eff.call(throwError, err);
+      throwError(err);
     }
   }
 }

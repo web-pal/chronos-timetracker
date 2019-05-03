@@ -95,7 +95,7 @@ export function* getAdditionalWorklogsForIssues(
     });
     return issues;
   } catch (err) {
-    yield eff.call(throwError, err);
+    throwError(err);
     return incompleteIssues;
   }
 }
@@ -416,7 +416,7 @@ export function* saveWorklog({
       );
       return null;
     }
-    yield eff.call(throwError, err);
+    throwError(err);
     return null;
   }
 }
@@ -478,7 +478,7 @@ export function* uploadWorklog(options: any): Generator<*, *, *> {
     yield eff.put(uiActions.setUiState({
       saveWorklogInProcess: false,
     }));
-    yield eff.call(throwError, err);
+    throwError(err);
   }
 }
 
@@ -532,10 +532,10 @@ export function* deleteWorklog({ worklogId }: {
       resources: [worklog.id],
     }));
   } catch (err) {
+    throwError(err);
     yield eff.fork(notify, {
       title: 'Failed to delete worklog',
     });
-    yield eff.call(throwError, err);
   }
 }
 

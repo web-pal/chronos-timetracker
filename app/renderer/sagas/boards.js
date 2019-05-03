@@ -195,8 +195,8 @@ export function* fetchBoards(): Generator<*, void, *> {
       ),
     }));
   } catch (err) {
-    yield eff.call(throwError, err);
-    if (err.response.statusCode === 403) {
+    throwError(err);
+    if (err?.response?.statusCode === 403) {
       const helpUrl = (
         'https://web-pal.atlassian.net/wiki/spaces/CHRONOS/pages/173899778/Problem+with+loading+boards'
       );
