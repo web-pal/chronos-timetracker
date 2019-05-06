@@ -23,6 +23,25 @@ if (process.env.NODE_ENV === 'production') {
     dsn: process.env.SENTRY_DSN,
     release: `${pjson.version}_${process.platform}`,
     enableNative: false,
+    beforeSend(event, hint) {
+      if (
+        event.message.startsWith('Non-Error exception captured')
+        && hint.originalException.error
+        && hint.originalException.extra
+      ) {
+        Sentry.withScope((scope) => {
+          scope.setExtra('nonErrorException', true);
+          Sentry.captureException(
+            hint.originalException.error,
+            {
+              extra: hint.originalException.extra,
+            },
+          );
+        });
+        return null;
+      }
+      return event;
+    },
   });
 }
 

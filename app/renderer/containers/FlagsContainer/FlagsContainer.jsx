@@ -104,6 +104,10 @@ const FlagsContainer: StatelessFunctionalComponent<Props> = ({
                       ? <SpinnerContainer spinnerTitle={flag.spinnerTitle} />
                       : flag.title
                   }
+                  isDismissAllowed
+                  onDismissed={() => {
+                    dispatch(uiActions.deleteFlag(flag.id));
+                  }}
                   actions={flag.actions}
                   appearance={flag.appearance}
                   description={flag.description}

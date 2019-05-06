@@ -13,12 +13,19 @@ function EnhancedFetchError({
   response,
 }) {
   if (Error.captureStackTrace) {
+    Error.call(this);
     Error.captureStackTrace(this, this.constructor);
   } else {
     this.stack = (new Error()).stack || '';
   }
+  this.name = this.constructor.name;
   this.json = json;
   this.response = response;
+  this.extra = {
+    json,
+    response,
+  };
+  this.error = new Error('Custom fetch error');
 }
 
 

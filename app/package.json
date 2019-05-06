@@ -1,19 +1,19 @@
 {
   "name": "Chronos",
-  "version": "3.2.2",
+  "version": "3.2.3",
   "description": "Native app for time-tracking fully integrated with JIRA",
   "main": "./dist/main.prod.js",
   "author": {
     "name": "Webpal",
     "url": "https://github.com/web-pal"
   },
-  "license": "CCL",
+  "license": "ISC",
   "repository": {
     "type": "git",
     "url": "https://github.com/web-pal/chronos-timetracker.git"
   },
   "dependencies": {
     "desktop-idle": "1.1.2",
-    "keytar": "4.4.1"
+    "keytar": "4.6.0"
   }
 }

@@ -54,12 +54,11 @@ export function* fetchSprints(): Generator<*, *, *> {
         resources: [],
       }));
     }
-
   } catch (err) {
     yield eff.put(actions.succeeded({
       resources: [],
     }));
-    yield eff.call(throwError, err);
+    throwError(err);
   }
 }
 

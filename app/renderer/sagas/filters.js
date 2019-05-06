@@ -34,10 +34,10 @@ export function* fetchFilters(): Generator<*, *, *> {
       resources: filters,
     }));
   } catch (err) {
+    throwError(err);
     yield err.fork(notify, {
       title: 'Failed to load filters, check your permissions',
     });
-    yield eff.call(throwError, err);
   }
 }
 
@@ -109,6 +109,7 @@ export function* saveFilter({
     }));
     yield eff.put(issuesActions.refetchIssuesRequest());
   } catch (err) {
+    throwError(err);
     yield eff.put(actions.failed());
     const errObj = JSON.parse(err);
     if (errObj.body.errorMessages.length > 0) {
@@ -125,7 +126,6 @@ export function* saveFilter({
         description: R.values(errObj.body.errors).join('\n'),
       });
     }
-    yield eff.call(throwError, err);
   }
 }
 

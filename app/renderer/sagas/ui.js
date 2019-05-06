@@ -61,11 +61,12 @@ export function* infoLog(...argw: any): Generator<*, void, *> {
   }
 }
 
-export function* throwError(err: any): Generator<*, void, *> {
-  yield eff.call(console.error, err);
-  Sentry.captureException(err);
+export function throwError(err) {
+  console.error(err);
+  if (process.env.NODE_ENV === 'production') {
+    Sentry.captureException(err);
+  }
 }
-
 
 /* eslint-disable */
 function uuidv4() {
@@ -138,7 +139,7 @@ export function* scrollToIndexRequest({
       ),
     }));
   } catch (err) {
-    yield eff.call(throwError, err);
+    throwError(err);
   }
 }
 
@@ -207,7 +208,7 @@ function* onUiChange({
       yield eff.put(updaterActions.checkUpdates());
     }
   } catch (err) {
-    yield eff.call(throwError, err);
+    throwError(err);
   }
 }
 

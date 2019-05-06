@@ -39,6 +39,9 @@ function apiFactory({ makeRequest }) {
     ['getBoardProjects', '/board/{boardId}/project', 'GET', '/rest/agile/1.0'],
     ['getBoardSprints', '/board/{boardId}/sprint', 'GET', '/rest/agile/1.0'],
     ['getSprintById', '/sprint/{sprintId}', 'GET', '/rest/agile/1.0'],
+    ['saveWorklogActivity', '/worklogActivity', 'POST', '/plugins/servlet/chronos'],
+    ['getWorklogActivity', '/worklogActivity', 'GET', '/plugins/servlet/chronos'],
+    ['deleteScreenshot', '/deleteScreenshot', 'POST', '/plugins/servlet/chronos'],
   ];
 
   let headers = {
@@ -145,6 +148,24 @@ function apiFactory({ makeRequest }) {
     clearMockMethods() {
       mockMethods = {};
       return mockMethods;
+    },
+
+    uploadScreenshotOnSelfServer({
+      image,
+      filename,
+    }) {
+      const formData = new FormData();
+      formData.append(
+        'file',
+        new File([image], filename),
+      );
+      return makeRequest(
+        `${rootApiUrl}/plugins/servlet/chronos/screenshots`,
+        {
+          method: 'POST',
+          body: formData,
+        },
+      );
     },
 
     ...(

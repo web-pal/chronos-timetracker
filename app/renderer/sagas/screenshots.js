@@ -23,6 +23,7 @@ import {
 } from 'shared/sagas';
 import {
   chronosApi,
+  jiraApi,
 } from 'api';
 import {
   trackMixpanel,
@@ -37,6 +38,7 @@ import {
 } from './helpers';
 import {
   throwError,
+  notify,
 } from './ui';
 import store from '../store';
 
@@ -298,33 +300,12 @@ function createImageThumb(src) {
 }
 
 export function* uploadScreenshots({
+  isCloud,
   filenameImage,
   filenameThumb,
   imagePath,
   imageThumbPath,
 }) {
-  const {
-    signImageRes,
-    signThumbRes,
-  } = yield eff.all({
-    signImageRes: eff.call(
-      chronosApi.signBucketUrl,
-      {
-        body: {
-          filename: filenameImage,
-        },
-      },
-    ),
-    signThumbRes: eff.call(
-      chronosApi.signBucketUrl,
-      {
-        body: {
-          filename: filenameThumb,
-        },
-      },
-    ),
-  });
-
   const {
     image,
     imageThumb,
@@ -332,23 +313,63 @@ export function* uploadScreenshots({
     image: eff.cps(fs.readFile, imagePath),
     imageThumb: eff.cps(fs.readFile, imageThumbPath),
   });
+  if (isCloud) {
+    const {
+      signImageRes,
+      signThumbRes,
+    } = yield eff.all({
+      signImageRes: eff.call(
+        chronosApi.signBucketUrl,
+        {
+          body: {
+            filename: filenameImage,
+          },
+        },
+      ),
+      signThumbRes: eff.call(
+        chronosApi.signBucketUrl,
+        {
+          body: {
+            filename: filenameThumb,
+          },
+        },
+      ),
+    });
 
-  yield eff.all([
-    eff.call(
-      chronosApi.uploadScreenshotOnS3Bucket,
-      {
-        url: signImageRes.url,
-        image,
-      },
-    ),
-    eff.call(
-      chronosApi.uploadScreenshotOnS3Bucket,
-      {
-        url: signThumbRes.url,
-        image: imageThumb,
-      },
-    ),
-  ]);
+    yield eff.all([
+      eff.call(
+        chronosApi.uploadScreenshotOnS3Bucket,
+        {
+          url: signImageRes.url,
+          image,
+        },
+      ),
+      eff.call(
+        chronosApi.uploadScreenshotOnS3Bucket,
+        {
+          url: signThumbRes.url,
+          image: imageThumb,
+        },
+      ),
+    ]);
+  } else {
+    yield eff.all([
+      eff.call(
+        jiraApi.uploadScreenshotOnSelfServer,
+        {
+          image,
+          filename: filenameImage,
+        },
+      ),
+      eff.call(
+        jiraApi.uploadScreenshotOnSelfServer,
+        {
+          image: imageThumb,
+          filename: filenameThumb,
+        },
+      ),
+    ]);
+  }
 }
 
 function* handleScreenshot({
@@ -399,26 +420,46 @@ function* handleScreenshot({
         thumb,
         'base64',
       );
+      const {
+        protocol,
+        hostname,
+        port,
+        pathname,
+      } = yield eff.select(selectors.getUiState(['protocol', 'hostname', 'port', 'pathname']));
+      const p = port ? `:${port}` : '';
+      const rootApiUrl = `${protocol}://${hostname}${p}${pathname.replace(/\/$/, '')}`;
+      const isCloud = hostname.endsWith('.atlassian.net');
       try {
         yield eff.call(
           uploadScreenshots,
           {
+            isCloud,
             filenameImage: filename,
             filenameThumb,
             imagePath,
             imageThumbPath,
           },
         );
-        signedScreenshotUrls = yield eff.call(
-          chronosApi.signScreenshots,
-          {
-            body: {
-              screenshots: [
-                filename,
-                filenameThumb,
+        signedScreenshotUrls = (
+          isCloud
+            ? (
+              yield eff.call(
+                chronosApi.signScreenshots,
+                {
+                  body: {
+                    screenshots: [
+                      filename,
+                      filenameThumb,
+                    ],
+                  },
+                },
+              )
+            ) : ({
+              urls: [
+                { url: `${rootApiUrl}/plugins/servlet/chronos/screenshots/${filename}` },
+                { url: `${rootApiUrl}/plugins/servlet/chronos/screenshots/${filenameThumb}` },
               ],
-            },
-          },
+            })
         );
       } catch (err) {
         if (err.isInternetConnectionIssue) {
@@ -518,12 +559,23 @@ function* handleScreenshot({
     }));
     yield eff.put(screenshotsActions.uploadScreenshotFinished());
   } catch (err) {
-    console.log(err);
     yield eff.put(uiActions.setUiState({
       uploadScreenshotLoading: false,
     }));
     yield eff.put(screenshotsActions.uploadScreenshotFinished());
-    yield eff.call(throwError, err);
+    if (err?.response?.status === 404) {
+      yield eff.fork(
+        notify,
+        {
+          icon: 'errorIcon',
+          autoDelete: false,
+          title: 'Install chronos plugin to use screenshots!',
+        },
+      );
+      yield eff.put(uiActions.setUiState({
+        screenshotsEnabled: false,
+      }));
+    }
   }
 }
 
@@ -826,13 +878,11 @@ export function* takeScreenshotRequest() {
       }));
       yield eff.put(screenshotsActions.takeScreenshotFinished());
     } catch (err) {
-      // TODO: what to do in that case?
-      console.log(err);
+      throwError(err);
       yield eff.put(uiActions.setUiState({
         takeScreenshotLoading: false,
       }));
       yield eff.put(screenshotsActions.takeScreenshotFinished());
-      yield eff.call(throwError, err);
     }
   }
 }
@@ -863,6 +913,15 @@ function* handleScreenshotsViewerWindowReady({
           yield eff.select(selectors.getTrackingIssue)
         )
     );
+    const {
+      protocol,
+      hostname,
+      port,
+      pathname,
+    } = yield eff.select(selectors.getUiState(['protocol', 'hostname', 'port', 'pathname']));
+    const p = port ? `:${port}` : '';
+    const rootApiUrl = `${protocol}://${hostname}${p}${pathname.replace(/\/$/, '')}`;
+    const isCloud = hostname.endsWith('.atlassian.net');
     if (issueId) {
       yield eff.put(screenshotsActions.setScreenshotsViewerState({
         isLoading: true,
@@ -873,12 +932,24 @@ function* handleScreenshotsViewerWindowReady({
         if (worklogId) {
           const worklog = yield eff.select(selectors.getResourceItemById('worklogs', worklogId));
           const { worklogs: worklogsServer } = yield eff.call(
-            chronosApi.getScreenshots,
+            isCloud
+              ? chronosApi.getScreenshots
+              : jiraApi.getWorklogActivity,
             {
-              body: {
-                issueId,
-                worklogId,
-              },
+              ...(
+                isCloud
+                  ? {
+                    body: {
+                      issueId,
+                      worklogId,
+                    },
+                  } : {
+                    params: {
+                      issueId,
+                      worklogIds: [worklogId],
+                    },
+                  }
+              ),
             },
           );
           worklogs = [{
@@ -893,16 +964,36 @@ function* handleScreenshotsViewerWindowReady({
               worklogsServer.length
                 ? worklogsServer[0].screenshots
                 : []
+            ).map(
+              s => (
+                isCloud
+                  ? s : ({
+                    ...s,
+                    imgUrl: `${rootApiUrl}/plugins/servlet/chronos/screenshots/${s.filename}`,
+                    thumbUrl: `${rootApiUrl}/plugins/servlet/chronos/screenshots/${s.filenameThumb}`,
+                  })
+              ),
             ),
           }];
         } else {
           const issueWorklogs = yield eff.select(selectors.getIssueWorklogs(issueId));
           const { worklogs: worklogsServer } = yield eff.call(
-            chronosApi.getScreenshots,
+            isCloud
+              ? chronosApi.getScreenshots
+              : jiraApi.getWorklogActivity,
             {
-              body: {
-                issueId,
-              },
+              ...(
+                isCloud
+                  ? {
+                    body: {
+                      issueId,
+                    },
+                  } : {
+                    params: {
+                      issueId,
+                    },
+                  }
+              ),
             },
           );
           const screenshotsWorklogMap = (
@@ -927,6 +1018,15 @@ function* handleScreenshotsViewerWindowReady({
                 screenshots: (
                   screenshotsWorklogMap[w.id]?.screenshots
                   || []
+                ).map(
+                  s => (
+                    isCloud
+                      ? s : ({
+                        ...s,
+                        imgUrl: `${rootApiUrl}/plugins/servlet/chronos/screenshots/${s.filename}`,
+                        thumbUrl: `${rootApiUrl}/plugins/servlet/chronos/screenshots/${s.filenameThumb}`,
+                      })
+                  ),
                 ),
               }),
             )
@@ -1092,6 +1192,8 @@ function* deleteScreenshot({
       screenshotViewerWindowId,
     ));
   } else {
+    const hostname = yield eff.select(selectors.getUiState('hostname'));
+    const isCloud = hostname.endsWith('.atlassian.net');
     yield eff.put(screenshotsActions.deleteScreenshot({
       issueId,
       worklogId,
@@ -1099,7 +1201,9 @@ function* deleteScreenshot({
       screenshotViewerWindowId,
     }));
     yield eff.call(
-      chronosApi.deleteScreenshot,
+      isCloud
+        ? chronosApi.deleteScreenshot
+        : jiraApi.deleteScreenshot,
       {
         body: {
           issueId,

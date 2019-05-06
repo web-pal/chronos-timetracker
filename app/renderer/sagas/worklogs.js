@@ -36,7 +36,6 @@ import {
   jiraApi,
   chronosApi,
 } from 'api';
-import config from 'config';
 
 import {
   throwError,
@@ -96,7 +95,7 @@ export function* getAdditionalWorklogsForIssues(
     });
     return issues;
   } catch (err) {
-    yield eff.call(throwError, err);
+    throwError(err);
     return incompleteIssues;
   }
 }
@@ -173,6 +172,7 @@ export function* saveWorklog({
         yield eff.race([
           eff.take(actionTypes.TAKE_SCREENSHOT_FINISHED),
           eff.take(actionTypes.UPLOAD_SCREENSHOT_FINISHED),
+          eff.delay(6000),
         ]);
       }
     }
@@ -220,6 +220,8 @@ export function* saveWorklog({
       },
     );
     if (isAuto) {
+      const hostname = yield eff.select(getUiState('hostname'));
+      const isCloud = hostname.endsWith('.atlassian.net');
       let screenshots = yield eff.select(getUiState('screenshots'));
       yield eff.all(
         screenshots
@@ -228,6 +230,7 @@ export function* saveWorklog({
             eff.call(
               uploadScreenshots,
               {
+                isCloud,
                 filenameImage: s.filename,
                 filenameThumb: s.filenameThumb,
                 imagePath: s.imagePath,
@@ -287,7 +290,9 @@ export function* saveWorklog({
       );
       if (screenshotsWithActivity.length) {
         yield eff.call(
-          chronosApi.saveScreenshots,
+          isCloud
+            ? chronosApi.saveScreenshots
+            : jiraApi.saveWorklogActivity,
           {
             body: {
               worklogId: worklog.id,
@@ -412,7 +417,7 @@ export function* saveWorklog({
       );
       return null;
     }
-    yield eff.call(throwError, err);
+    throwError(err);
     return null;
   }
 }
@@ -468,13 +473,13 @@ export function* uploadWorklog(options: any): Generator<*, *, *> {
       worklog,
     );
   } catch (err) {
-    yield eff.fork(notify, {
-      title: 'Failed to upload worklog',
-    });
+    throwError(err);
     yield eff.put(uiActions.setUiState({
       saveWorklogInProcess: false,
     }));
-    yield eff.call(throwError, err);
+    yield eff.fork(notify, {
+      title: 'Failed to upload worklog',
+    });
   }
 }
 
@@ -528,10 +533,10 @@ export function* deleteWorklog({ worklogId }: {
       resources: [worklog.id],
     }));
   } catch (err) {
+    throwError(err);
     yield eff.fork(notify, {
       title: 'Failed to delete worklog',
     });
-    yield eff.call(throwError, err);
   }
 }
 

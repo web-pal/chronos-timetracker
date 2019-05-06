@@ -60,7 +60,7 @@ export function* getIssueComments(issueId: Id): Generator<*, void, *> {
     }));
     yield eff.call(infoLog, `got comments for issue ${issueId}`, comments);
   } catch (err) {
-    yield eff.call(throwError, err);
+    throwError(err);
   }
 }
 
@@ -100,6 +100,7 @@ export function* addIssueComment({
       commentAdding: false,
     }));
   } catch (err) {
+    throwError(err);
     yield eff.put(uiActions.setUiState({
       commentAdding: false,
     }));
@@ -107,7 +108,6 @@ export function* addIssueComment({
 
       title: 'failed to add comment',
     });
-    yield eff.call(throwError, err);
   }
 }
 

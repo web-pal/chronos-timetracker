@@ -58,7 +58,6 @@ import {
 } from './sprints';
 import {
   throwError,
-  infoLog,
   notify,
 } from './ui';
 import {
@@ -97,16 +96,16 @@ function identifyInSentryAndMixpanel(host: string, userData: any): void {
 }
 
 function* initializeMixpanel(): Generator<*, *, *> {
-  if (process.env.DISABLE_MIXPANEL === '1') {
-    yield eff.call(infoLog, 'mixpanel disabled with ENV var');
-  }
-  if (!process.env.MIXPANEL_API_TOKEN) {
-    yield eff.call(throwError, 'MIXPANEL_API_TOKEN not set!');
-  }
   if (
     process.env.DISABLE_MIXPANEL !== '1'
     && process.env.MIXPANEL_API_TOKEN
   ) {
+    if (process.env.DISABLE_MIXPANEL === '1') {
+      throwError(new Error('mixpanel disabled with ENV var'));
+    }
+    if (!process.env.MIXPANEL_API_TOKEN) {
+      throwError(new Error('MIXPANEL_API_TOKEN not set!'));
+    }
     yield eff.call(
       mixpanel.init,
       process.env.MIXPANEL_API_TOKEN,
@@ -131,45 +130,48 @@ export function* chronosApiAuth(ignoreCheckEnabled = false) {
       port,
       protocol,
     } = authCredentials;
-    let jwt = yield eff.call(
-      keytar.getPassword,
-      'ChronosJWT',
-      `${name}_${hostname}`,
-    );
-    if (
-      ignoreCheckEnabled
-     || screenshotsEnabled
-    ) {
-      const cookiesStr = yield eff.call(
+    const isCloud = hostname.endsWith('.atlassian.net');
+    if (isCloud) {
+      let jwt = yield eff.call(
         keytar.getPassword,
-        'Chronos',
-        `${authCredentials.name}_${authCredentials.hostname}`,
-      );
-      const cookies = JSON.parse(cookiesStr);
-      const res = yield eff.call(
-        chronosApi.getJWT,
-        {
-          body: {
-            cookies,
-            name,
-            hostname,
-            baseUrl: `${protocol}://${hostname}${port}${pathname.replace(/\/$/, '')}`,
-            protocol,
-          },
-        },
-      );
-      jwt = res.jwtToken;
-      yield eff.call(
-        keytar.setPassword,
         'ChronosJWT',
         `${name}_${hostname}`,
+      );
+      if (
+        ignoreCheckEnabled
+       || screenshotsEnabled
+      ) {
+        const cookiesStr = yield eff.call(
+          keytar.getPassword,
+          'Chronos',
+          `${authCredentials.name}_${authCredentials.hostname}`,
+        );
+        const cookies = JSON.parse(cookiesStr);
+        const res = yield eff.call(
+          chronosApi.getJWT,
+          {
+            body: {
+              cookies,
+              name,
+              hostname,
+              baseUrl: `${protocol}://${hostname}${port}${pathname.replace(/\/$/, '')}`,
+              protocol,
+            },
+          },
+        );
+        jwt = res.jwtToken;
+        yield eff.call(
+          keytar.setPassword,
+          'ChronosJWT',
+          `${name}_${hostname}`,
+          jwt,
+        );
+      }
+      yield eff.call(
+        chronosApi.setJWT,
         jwt,
       );
     }
-    yield eff.call(
-      chronosApi.setJWT,
-      jwt,
-    );
   } catch (err) {
     yield eff.fork(
       notify,
@@ -182,7 +184,7 @@ export function* chronosApiAuth(ignoreCheckEnabled = false) {
     yield eff.put(uiActions.setUiState({
       screenshotsEnabled: false,
     }));
-    yield eff.call(throwError, err);
+    throwError(err);
   }
 }
 
@@ -339,7 +341,7 @@ export function* takeInitialConfigureApp() {
         initializeInProcess: false,
       }));
     } catch (err) {
-      yield eff.call(throwError, err);
+      throwError(err);
       yield eff.put(uiActions.setUiState({
         authorized: false,
         initializeInProcess: false,
@@ -387,10 +389,7 @@ export function* initializeApp(): Generator<*, *, *> {
             error,
           },
         });
-        yield eff.call(
-          throwError,
-          error,
-        );
+        throwError(error);
         if (process.platform === 'linux') {
           yield eff.fork(
             notify,
@@ -428,7 +427,7 @@ export function* initializeApp(): Generator<*, *, *> {
       }));
     }
   } catch (err) {
-    yield eff.call(throwError, err);
+    throwError(err);
     yield eff.put(uiActions.setUiState({
       authorized: false,
       initializeInProcess: false,

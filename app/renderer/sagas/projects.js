@@ -15,7 +15,6 @@ import {
   jiraApi,
 } from 'api';
 
-
 import {
   throwError,
   notify,
@@ -35,10 +34,10 @@ export function* fetchProjects(): Generator<*, *, *> {
       resources: projects,
     }));
   } catch (err) {
+    throwError(err);
     yield eff.fork(notify, {
       title: 'Failed to load projects, check your permissions',
     });
-    yield eff.call(throwError, err);
   }
 }
 
@@ -115,6 +114,7 @@ export function* fetchProjectStatuses(): Generator<*, *, *> {
       }));
     }
   } catch (err) {
+    throwError(err);
     yield eff.put(typesActions.succeeded({
       resources: [],
     }));
@@ -124,7 +124,6 @@ export function* fetchProjectStatuses(): Generator<*, *, *> {
     yield eff.put(uiActions.setUiState({
       filterStatusesIsFetched: true,
     }));
-    yield eff.call(throwError, err);
   }
 }
 

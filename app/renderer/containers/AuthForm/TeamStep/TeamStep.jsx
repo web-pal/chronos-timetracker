@@ -91,6 +91,7 @@ class TeamStep extends Component<Props> {
           {accounts.length > 0
           && (
             <S.DefaultButton
+              type="button"
               onClick={() => {
                 dispatch(uiActions.setUiState({
                   authFormStep: 0,
