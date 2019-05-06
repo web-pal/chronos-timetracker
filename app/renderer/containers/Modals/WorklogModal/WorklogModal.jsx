@@ -179,7 +179,12 @@ class WorklogModal extends Component<Props, State> {
   validateJiraTime = value => /^(?:\d{1,2}d{1}(?:\s{1}|$))?(?:\d{1,2}h{1}(?:\s{1}|$))?(?:\d{1,2}m{1}(?:\s{1}|$))?(?:\d{1,2}s{1}(?:\s{1}|$))?$/.test(value);
 
   validate = () => {
-    const { errors, comment, timeSpent } = this.state;
+    const {
+      errors,
+      comment,
+      timeSpent,
+      startTime,
+    } = this.state;
     let valid = true;
 
     if (comment === '' && !this.props.allowEmptyComment) {
@@ -196,6 +201,9 @@ class WorklogModal extends Component<Props, State> {
       valid = false;
     } else {
       errors.timeSpent = '';
+    }
+    if (!startTime) {
+      valid = false;
     }
 
     this.setState({ errors });

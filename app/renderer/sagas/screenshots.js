@@ -38,6 +38,7 @@ import {
 } from './helpers';
 import {
   throwError,
+  notify,
 } from './ui';
 import store from '../store';
 
@@ -558,11 +559,23 @@ function* handleScreenshot({
     }));
     yield eff.put(screenshotsActions.uploadScreenshotFinished());
   } catch (err) {
-    throwError(err);
     yield eff.put(uiActions.setUiState({
       uploadScreenshotLoading: false,
     }));
     yield eff.put(screenshotsActions.uploadScreenshotFinished());
+    if (err?.response?.status === 404) {
+      yield eff.fork(
+        notify,
+        {
+          icon: 'errorIcon',
+          autoDelete: false,
+          title: 'Install chronos plugin to use screenshots!',
+        },
+      );
+      yield eff.put(uiActions.setUiState({
+        screenshotsEnabled: false,
+      }));
+    }
   }
 }
 

@@ -172,6 +172,7 @@ export function* saveWorklog({
         yield eff.race([
           eff.take(actionTypes.TAKE_SCREENSHOT_FINISHED),
           eff.take(actionTypes.UPLOAD_SCREENSHOT_FINISHED),
+          eff.delay(6000),
         ]);
       }
     }
@@ -472,13 +473,13 @@ export function* uploadWorklog(options: any): Generator<*, *, *> {
       worklog,
     );
   } catch (err) {
-    yield eff.fork(notify, {
-      title: 'Failed to upload worklog',
-    });
+    throwError(err);
     yield eff.put(uiActions.setUiState({
       saveWorklogInProcess: false,
     }));
-    throwError(err);
+    yield eff.fork(notify, {
+      title: 'Failed to upload worklog',
+    });
   }
 }
 

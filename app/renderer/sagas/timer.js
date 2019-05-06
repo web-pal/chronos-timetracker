@@ -165,6 +165,7 @@ function* handleIdleScreenshots({
     yield eff.race([
       eff.take(actionTypes.TAKE_SCREENSHOT_FINISHED),
       eff.take(actionTypes.UPLOAD_SCREENSHOT_FINISHED),
+      eff.delay(6000),
     ]);
   }
   const screenshots = yield eff.select(getUiState('screenshots'));
@@ -506,6 +507,7 @@ function* timerFlow() {
           yield eff.race([
             eff.take(actionTypes.TAKE_SCREENSHOT_FINISHED),
             eff.take(actionTypes.UPLOAD_SCREENSHOT_FINISHED),
+            eff.delay(6000),
           ]);
         }
         yield eff.put(uiActions.setUiState({

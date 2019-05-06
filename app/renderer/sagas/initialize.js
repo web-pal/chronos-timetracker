@@ -58,7 +58,6 @@ import {
 } from './sprints';
 import {
   throwError,
-  infoLog,
   notify,
 } from './ui';
 import {
@@ -97,16 +96,16 @@ function identifyInSentryAndMixpanel(host: string, userData: any): void {
 }
 
 function* initializeMixpanel(): Generator<*, *, *> {
-  if (process.env.DISABLE_MIXPANEL === '1') {
-    throwError(new Error('mixpanel disabled with ENV var'));
-  }
-  if (!process.env.MIXPANEL_API_TOKEN) {
-    throwError(new Error('MIXPANEL_API_TOKEN not set!'));
-  }
   if (
     process.env.DISABLE_MIXPANEL !== '1'
     && process.env.MIXPANEL_API_TOKEN
   ) {
+    if (process.env.DISABLE_MIXPANEL === '1') {
+      throwError(new Error('mixpanel disabled with ENV var'));
+    }
+    if (!process.env.MIXPANEL_API_TOKEN) {
+      throwError(new Error('MIXPANEL_API_TOKEN not set!'));
+    }
     yield eff.call(
       mixpanel.init,
       process.env.MIXPANEL_API_TOKEN,
