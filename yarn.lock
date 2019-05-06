@@ -3821,10 +3821,10 @@ electron-updater@4.0.6:
     semver "^5.6.0"
     source-map-support "^0.5.9"
 
-electron@4.1.5:
-  version "4.1.5"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-4.1.5.tgz#d1873147d5be36ab0c8bb9db3a54297a82ee8fef"
-  integrity sha512-0VZzUd4vZaUeSLdxJI/XMrMnPN7AROjPFZOiNgZZkYRUUEjGHfaSAbCJyxuXtii52KGhzGL0JgW0q5QmQ3ykKQ==
+electron@4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-4.2.0.tgz#6066c7660597020365ee4427aa35260f23a678c9"
+  integrity sha512-bn41xAekJ8h4QfMwmlsL3Qx1xUloTwVHBEKRg8hGDhecfdPgDdps60gfoZOhdL88avimahrP01Bd7Aijsyywdg==
   dependencies:
     "@types/node" "^10.12.18"
     electron-download "^4.1.0"
@@ -7557,10 +7557,10 @@ react-popper@1.0.2:
     typed-styles "^0.0.5"
     warning "^3.0.0"
 
-react-redux@7.0.2:
-  version "7.0.2"
-  resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-7.0.2.tgz#34b280a3482aaf60e7d4a504b1295165cbe6b86a"
-  integrity sha512-uKRuMgQt8dWbcz0U75oFK5tDo3boyAKrqvf/j94vpqRFFZfyDDy4kofUgloFIGyuKTq2Zz51zgK9RzOTFXk5ew==
+react-redux@7.0.3:
+  version "7.0.3"
+  resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-7.0.3.tgz#983c5a6de81cb1e696bd1c090ba826545f9170f1"
+  integrity sha512-vYZA7ftOYlDk3NetitsI7fLjryt/widNl1SLXYvFenIpm7vjb4ryK0EeFrgn62usg5fYkyIAWNUPKnwWPevKLg==
   dependencies:
     "@babel/runtime" "^7.4.3"
     hoist-non-react-statics "^3.3.0"
