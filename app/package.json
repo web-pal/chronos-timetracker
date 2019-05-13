@@ -1,6 +1,6 @@
 {
   "name": "Chronos",
-  "version": "3.2.3",
+  "version": "3.2.4",
   "description": "Native app for time-tracking fully integrated with JIRA",
   "main": "./dist/main.prod.js",
   "author": {
