@@ -100,7 +100,7 @@ export function* getAdditionalWorklogsForIssues(
   }
 }
 
-export function* saveWorklog({
+function* saveWorklog({
   payload: {
     issueId,
     worklogId,
@@ -424,11 +424,7 @@ export function* saveWorklog({
 
 export function* uploadWorklog(options: any): Generator<*, *, *> {
   try {
-    yield eff.call(
-      infoLog,
-      'started uploading worklog with options:',
-      options,
-    );
+    console.log('started uploading worklog');
     yield eff.put(uiActions.setUiState({
       saveWorklogInProcess: true,
     }));

@@ -24,10 +24,12 @@ import {
 import {
   windowsManagerSagas,
 } from 'shared/sagas';
+/*
 import {
   browserWindowInstanceEvents,
   webContentsInstanceEvents,
 } from 'shared/constants';
+*/
 
 import store from '../store';
 import MenuBuilder from '../menu';
@@ -234,6 +236,7 @@ function* forkInitialRendererProcess() {
       channel: closeChannel,
     });
 
+    /*
     const eventsChannel = windowsManagerSagas.createWindowChannel({
       win,
       events: browserWindowInstanceEvents,
@@ -244,6 +247,7 @@ function* forkInitialRendererProcess() {
       channel: eventsChannel,
       scope: 'all',
     });
+    */
   } catch (err) {
     console.log(err);
   }

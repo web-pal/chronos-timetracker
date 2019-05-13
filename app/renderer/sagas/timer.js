@@ -590,5 +590,11 @@ function* timerFlow() {
 }
 
 export function* takeStartTimer(): Generator<*, *, *> {
-  yield eff.takeEvery(actionTypes.START_TIMER, timerFlow);
+  while (true) {
+    yield eff.take(actionTypes.START_TIMER);
+    const isRunning = yield eff.select(getTimerState('running'));
+    if (!isRunning) {
+      yield eff.fork(timerFlow);
+    }
+  }
 }

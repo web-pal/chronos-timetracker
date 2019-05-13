@@ -1,3 +1,13 @@
+<a name="3.2.4"></a>
+## [3.2.4](https://github.com/web-pal/chronos-timetracker/compare/v3.2.3...v3.2.4) (2019-05-13)
+
+
+### Bug Fixes
+
+* do not log windows events ([86f4474](https://github.com/web-pal/chronos-timetracker/commit/86f4474))
+
+
+
 <a name="3.2.2"></a>
 ## [3.2.2](https://github.com/web-pal/chronos-timetracker/compare/v3.2.1...v3.2.2) (2019-04-24)
 

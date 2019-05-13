@@ -14,6 +14,7 @@ export const tick = (second = 1): TimerAction => ({
 
 export const startTimer = (): TimerAction => ({
   type: types.START_TIMER,
+  scope: 1,
 });
 
 export const stopTimer = (): TimerAction => ({
@@ -32,6 +33,7 @@ export const setTime = (payload): TimerAction => ({
 export const stopTimerRequest = (closeRequest = false): TimerAction => ({
   type: types.STOP_TIMER_REQUEST,
   closeRequest,
+  scope: 1,
 });
 
 export const setIdleState = (

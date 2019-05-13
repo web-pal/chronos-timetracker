@@ -1,6 +1,6 @@
 {
   "name": "Chronos",
-  "version": "3.2.3",
+  "version": "3.2.4",
   "description": "Full functionality time tracking software with direct JIRA integration",
   "scripts": {
     "dev": "yarn start-renderer-dev",
@@ -91,7 +91,7 @@
     "babel-plugin-styled-components": "1.10.0",
     "concurrently": "4.1.0",
     "css-loader": "2.1.1",
-    "electron": "4.1.5",
+    "electron": "4.2.0",
     "electron-updater": "4.0.6",
     "electron-builder": "20.39.0",
     "electron-debug": "2.2.0",
@@ -126,7 +126,7 @@
     "react": "16.8.6",
     "@hot-loader/react-dom": "16.8.6",
     "react-hot-loader": "4.8.3",
-    "react-redux": "7.0.2",
+    "react-redux": "7.0.3",
     "redux": "4.0.1",
     "redux-saga": "1.0.2",
     "redux-form": "8.2.0",
