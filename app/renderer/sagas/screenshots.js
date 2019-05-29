@@ -462,6 +462,7 @@ function* handleScreenshot({
             })
         );
       } catch (err) {
+        console.log(err);
         if (err.isInternetConnectionIssue) {
           isOffline = true;
         } else {
