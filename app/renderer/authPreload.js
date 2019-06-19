@@ -2,11 +2,10 @@
 import {
   actionTypes,
 } from 'actions';
-import * as Sentry from '@sentry/electron';
 
 import configureStore from './store/configurePreloadStore';
-import pjson from '../package.json';
 
+/* Do not run sentry here, it will confilct with atlassian sentry
 if (process.env.NODE_ENV === 'production') {
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
@@ -14,6 +13,7 @@ if (process.env.NODE_ENV === 'production') {
     release: `${pjson.version}_${process.platform}`,
   });
 }
+*/
 
 const store = configureStore();
 

@@ -1,3 +1,14 @@
+<a name="3.2.5"></a>
+## [3.2.5](https://github.com/web-pal/chronos-timetracker/compare/v3.2.4...v3.2.5) (2019-06-19)
+
+
+### Bug Fixes
+
+* **Authorization:** fix auth issue, conflict with atlassian sentry ([b865f5c](https://github.com/web-pal/chronos-timetracker/commit/b865f5c))
+* **Tracking:** save worklogs duplicate ([048c4db](https://github.com/web-pal/chronos-timetracker/commit/048c4db))
+
+
+
 <a name="3.2.4"></a>
 ## [3.2.4](https://github.com/web-pal/chronos-timetracker/compare/v3.2.3...v3.2.4) (2019-05-13)
 

@@ -436,9 +436,6 @@ function* handleTick({
           if (time !== screenshotTime) {
             console.log('TIME !== SCREENSHOTTIME');
             console.log(`time: ${time}, screenshotTime: ${screenshotTime}`);
-            Sentry.captureMessage(
-              `time !== screenshotTime, time: ${time}, screenshotTime: ${screenshotTime}`,
-            );
           }
         }
       }
@@ -492,54 +489,55 @@ function* timerFlow() {
           yield eff.cancel(tickTask);
           yield eff.put(timerActions.resetTimer());
           yield eff.put(trayActions.trayStopTimer());
-        }
-        const {
-          takeScreenshotLoading,
-          uploadScreenshotLoading,
-        } = yield eff.select(getUiState([
-          'takeScreenshotLoading',
-          'uploadScreenshotLoading',
-        ]));
-        if (
-          takeScreenshotLoading
-          || uploadScreenshotLoading
-        ) {
-          yield eff.race([
-            eff.take(actionTypes.TAKE_SCREENSHOT_FINISHED),
-            eff.take(actionTypes.UPLOAD_SCREENSHOT_FINISHED),
-            eff.delay(6000),
-          ]);
-        }
-        yield eff.put(uiActions.setUiState({
-          screenshots: [],
-          activity: {},
-        }));
-        const screenshotViewerWindowId = yield eff.select(
-          getUiState('screenshotViewerWindowId'),
-        );
-        const screenshotsWin = (
-          screenshotViewerWindowId
-          && remote.BrowserWindow.fromId(screenshotViewerWindowId)
-        );
-        if (
-          screenshotsWin
-          && !screenshotsWin.isDestroyed()
-        ) {
-          screenshotsWin.destroy();
-        }
-        yield eff.cps(
-          rimraf,
-          `${app.getPath('userData')}/screens/`,
-        );
-        if (
-          closeRequest
-          && continueStop
-        ) {
-          if (process.env.NODE_ENV === 'development') {
-            window.location.reload();
-          } else {
-            app.quit();
+          const {
+            takeScreenshotLoading,
+            uploadScreenshotLoading,
+          } = yield eff.select(getUiState([
+            'takeScreenshotLoading',
+            'uploadScreenshotLoading',
+          ]));
+          if (
+            takeScreenshotLoading
+            || uploadScreenshotLoading
+          ) {
+            yield eff.race([
+              eff.take(actionTypes.TAKE_SCREENSHOT_FINISHED),
+              eff.take(actionTypes.UPLOAD_SCREENSHOT_FINISHED),
+              eff.delay(6000),
+            ]);
           }
+          yield eff.put(uiActions.setUiState({
+            screenshots: [],
+            activity: {},
+          }));
+          const screenshotViewerWindowId = yield eff.select(
+            getUiState('screenshotViewerWindowId'),
+          );
+          const screenshotsWin = (
+            screenshotViewerWindowId
+            && remote.BrowserWindow.fromId(screenshotViewerWindowId)
+          );
+          if (
+            screenshotsWin
+            && !screenshotsWin.isDestroyed()
+          ) {
+            screenshotsWin.destroy();
+          }
+          yield eff.cps(
+            rimraf,
+            `${app.getPath('userData')}/screens/`,
+          );
+          if (
+            closeRequest
+            && continueStop
+          ) {
+            if (process.env.NODE_ENV === 'development') {
+              window.location.reload();
+            } else {
+              app.quit();
+            }
+          }
+          yield eff.cancel();
         }
       } else {
         const allowEmptyComment = yield eff.select(getUiState('allowEmptyComment'));
@@ -559,6 +557,7 @@ function* timerFlow() {
           const timeSpentInSeconds = yield eff.select(getTimerState('time'));
           yield eff.cancel(tickTask);
           yield eff.put(timerActions.resetTimer());
+          console.log('run uploadWorklog');
           yield eff.call(
             uploadWorklog,
             {
@@ -590,11 +589,11 @@ function* timerFlow() {
 }
 
 export function* takeStartTimer(): Generator<*, *, *> {
+  let timerTask = null;
   while (true) {
     yield eff.take(actionTypes.START_TIMER);
-    const isRunning = yield eff.select(getTimerState('running'));
-    if (!isRunning) {
-      yield eff.fork(timerFlow);
+    if (!timerTask?.isRunning()) {
+      timerTask = yield eff.fork(timerFlow);
     }
   }
 }
