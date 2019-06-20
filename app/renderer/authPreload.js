@@ -59,12 +59,14 @@ function initAtlassian(base, reset) {
     input.focus();
   }
 
-  reset.innerHTML = 'Back';
-  reset.addEventListener('click', (ev) => {
-    ev.stopPropagation();
-    ev.preventDefault();
-    back();
-  });
+  if (reset) {
+    reset.innerHTML = 'Back';
+    reset.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      ev.preventDefault();
+      back();
+    });
+  }
   store.dispatch(setRendererUiState({
     authFormIsComplete: true,
   }));
@@ -105,10 +107,7 @@ function init() {
   ) {
     const base = document.getElementById('root');
     const reset = document.getElementById('resetPassword');
-    if (
-      base
-      && reset
-    ) {
+    if (base) {
       initAtlassian(base, reset);
     }
   } else if (global.location.host === 'accounts.google.com') {

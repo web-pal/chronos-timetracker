@@ -25,7 +25,7 @@ if (process.env.NODE_ENV === 'production') {
     enableNative: false,
     beforeSend(event, hint) {
       if (
-        event.message.startsWith('Non-Error exception captured')
+        event?.message?.startsWith('Non-Error exception captured')
         && hint.originalException.error
         && hint.originalException.extra
       ) {
