@@ -1,3 +1,13 @@
+<a name="3.2.6"></a>
+## [3.2.6](https://github.com/web-pal/chronos-timetracker/compare/v3.2.5...v3.2.6) (2019-06-20)
+
+
+### Bug Fixes
+
+* **Authorization:** atlassian change markup, fix auth screen ([7b4e381](https://github.com/web-pal/chronos-timetracker/commit/7b4e381))
+
+
+
 <a name="3.2.5"></a>
 ## [3.2.5](https://github.com/web-pal/chronos-timetracker/compare/v3.2.4...v3.2.5) (2019-06-19)
 
