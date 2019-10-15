@@ -44,7 +44,7 @@ const IdlePopup = ({
             },
           },
           {
-            content: 'Dissmiss',
+            content: 'Dismiss',
             onClick: () => {
               dispatch(timerActions.dismissIdleTime(
                 parseInt(time, 10),
