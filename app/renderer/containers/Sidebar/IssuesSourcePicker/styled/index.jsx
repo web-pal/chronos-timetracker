@@ -12,3 +12,11 @@ export const InputLabel = styled.span`
   font-weight: 600;
   margin-bottom: 4px;
 `;
+
+export const SingleSelectContainer = styled.div`
+  flex: 1;
+`;
+
+export const FavoriteIcon = styled.div`
+  cursor: pointer;
+`;

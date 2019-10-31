@@ -106,6 +106,7 @@ const rootReducer = combineReducers({
     initialState: {
       lists: {
         allProjects: [],
+        favorites: [],
       },
     },
   }),

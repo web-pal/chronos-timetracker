@@ -304,15 +304,22 @@ export const getTrackingIssueReport = createSelector(
 
 export const getIssuesSourceOptions = createSelector(
   [
+    getResourceMappedList('projects', 'favorites'),
     getResourceMappedList('projects', 'allProjects'),
     getResourceMappedList('boards', 'allBoards'),
     getResourceMappedList('filters', 'allFilters'),
   ],
   (
+    favoriteProjects: Array<Project>,
     projects: Array<Project>,
     boards: Array<Board>,
     filters: Array<JIRAFilter>,
   ) => [
+    {
+      heading: 'Favorite Projects',
+      items: favoriteProjects.map(project =>
+        ({ value: project.id, content: `${project.name}(${project.key})`, meta: { project } })),
+    },
     {
       heading: 'Projects',
       items: projects.map(project =>

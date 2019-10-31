@@ -29,6 +29,8 @@ import {
   issuesActions,
   updaterActions,
 } from 'actions';
+import createActionCreators from 'redux-resource-action-creators';
+
 import config from 'config';
 import {
   getPreload,
@@ -247,7 +249,7 @@ function* issueWindow(url) {
   }
 }
 
-export function* takeInitialConfigureApp() {
+export function* takeInitialConfigureApp(): Generator<*, *, *> {
   let issueWindowTask = null;
   while (true) {
     const {
@@ -307,6 +309,20 @@ export function* takeInitialConfigureApp() {
         ...persistUiState,
         accounts,
       }));
+
+      const favoriteProjects = yield eff.call(
+        getElectronStorage,
+        'projects_favorites',
+        [],
+      );
+      yield eff.put(
+        createActionCreators('update', {
+          resourceType: 'projects',
+          resources: favoriteProjects,
+          list: 'favorites',
+          mergeListIds: true,
+        }).succeeded(),
+      );
 
       yield eff.put(updaterActions.setUpdateSettings({
         autoDownload: persistUiState.updateAutomatically,

@@ -3,6 +3,7 @@ import storage from 'electron-json-storage';
 
 import {
   getUiState,
+  getResourceIds,
 } from 'selectors';
 import {
   persistInitialState as persistInitialUiState,
@@ -118,5 +119,14 @@ export function* savePersistStorage() {
     setElectronStorage,
     'accounts',
     accounts,
+  );
+
+  const favoriteProjects = yield eff.select(
+    getResourceIds('projects', 'favorites'),
+  );
+  yield eff.call(
+    setElectronStorage,
+    'projects_favorites',
+    favoriteProjects,
   );
 }

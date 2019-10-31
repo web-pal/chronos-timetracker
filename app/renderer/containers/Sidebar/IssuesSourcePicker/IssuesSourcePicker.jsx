@@ -14,6 +14,10 @@ import type {
 import type {
   Connector,
 } from 'react-redux';
+
+import StarIcon from '@atlaskit/icon/glyph/star';
+import StarFilledIcon from '@atlaskit/icon/glyph/star-filled';
+
 import type {
   Dispatch,
   SelectedOption,
@@ -21,6 +25,7 @@ import type {
 
 import {
   SingleSelect,
+  Flex,
 } from 'components';
 
 import {
@@ -29,6 +34,7 @@ import {
   getSprintsOptions,
   getIssuesSourceSelectedOption,
   getUiState,
+  getResourceIds,
 } from 'selectors';
 
 import {
@@ -37,6 +43,8 @@ import {
   resourcesActions,
   uiActions,
 } from 'actions';
+
+import createActionCreators from 'redux-resource-action-creators';
 
 import JQLFilter from './JQLFilter';
 
@@ -48,6 +56,7 @@ type Props = {
   selectedOption: SelectedOption,
   selectedSprintOption: any,
   projectsFetching: boolean,
+  favoriteProjectsIds: Array<string>,
   sprintsFetching: boolean,
   selectedSourceType: string,
   dispatch: Dispatch,
@@ -59,65 +68,110 @@ const IssuesSourcePicker: StatelessFunctionalComponent<Props> = ({
   selectedOption,
   selectedSprintOption,
   projectsFetching,
+  favoriteProjectsIds,
   sprintsFetching,
   selectedSourceType,
   dispatch,
 }: Props): Node => (
   <S.IssuesSource>
-    <SingleSelect
-      items={options}
-      hasAutocomplete
-      selectedItem={selectedOption}
-      defaultSelected={selectedOption || undefined}
-      placeholder="Select project or board"
-      onSelected={({ item }) => {
-        let type = '';
-        if (item.meta.board) type = item.meta.board.type;
-        if (item.meta.project) type = 'project';
-        if (item.meta.filter) type = 'filter';
-        const sources = {
-          issuesSprintId: null,
-          issuesSourceId: item.value,
-          issuesSourceType: type,
-        };
-        const filterKey = (
-          `${sources.issuesSourceType}_${sources.issuesSourceId}_${sources.issuesSprintId}`
-        );
-        dispatch(uiActions.setUiState({
-          ...sources,
-          sidebarFiltersIsOpen: false,
-        }));
+    <Flex row alignItems="center">
+      <S.SingleSelectContainer>
+        <SingleSelect
+          items={options}
+          hasAutocomplete
+          selectedItem={selectedOption}
+          defaultSelected={selectedOption || undefined}
+          placeholder="Select project or board"
+          onSelected={({ item }) => {
+            let type = '';
+            if (item.meta.board) type = item.meta.board.type;
+            if (item.meta.project) type = 'project';
+            if (item.meta.filter) type = 'filter';
+            const sources = {
+              issuesSprintId: null,
+              issuesSourceId: item.value,
+              issuesSourceType: type,
+            };
+            const filterKey = (
+              `${sources.issuesSourceType}_${sources.issuesSourceId}_${sources.issuesSprintId}`
+            );
+            dispatch(uiActions.setUiState({
+              ...sources,
+              sidebarFiltersIsOpen: false,
+            }));
 
-        dispatch(uiActions.setUiState({
-          [filterKey]: {
-            type: [],
-            status: [],
-            assignee: [],
-          },
-        }));
+            dispatch(uiActions.setUiState({
+              [filterKey]: {
+                type: [],
+                status: [],
+                assignee: [],
+              },
+            }));
 
-        if (type === 'scrum') {
-          dispatch(resourcesActions.clearResourceList({
-            resourceType: 'issues',
-            list: 'recentIssues',
-          }));
-          dispatch(sprintsActions.fetchSprintsRequest());
-        } else if (item.value) {
-          dispatch(uiActions.setUiState({
-            filterStatusesIsFetched: false,
-          }));
-          dispatch(resourcesActions.clearResourceList({
-            resourceType: 'issues',
-            list: 'recentIssues',
-          }));
-          dispatch(issuesActions.refetchIssuesRequest());
-        }
-      }}
-      isLoading={projectsFetching}
-      loadingMessage="Fetching projects..."
-      shouldFitContainer
-      noMatchesFound="Nothing found"
-    />
+            if (type === 'scrum') {
+              dispatch(resourcesActions.clearResourceList({
+                resourceType: 'issues',
+                list: 'recentIssues',
+              }));
+              dispatch(sprintsActions.fetchSprintsRequest());
+            } else if (item.value) {
+              dispatch(uiActions.setUiState({
+                filterStatusesIsFetched: false,
+              }));
+              dispatch(resourcesActions.clearResourceList({
+                resourceType: 'issues',
+                list: 'recentIssues',
+              }));
+              dispatch(issuesActions.refetchIssuesRequest());
+            }
+          }}
+          isLoading={projectsFetching}
+          loadingMessage="Fetching projects..."
+          shouldFitContainer
+          noMatchesFound="Nothing found"
+        />
+      </S.SingleSelectContainer>
+      {
+        selectedOption && (selectedSourceType === 'project')
+        && (
+          <S.FavoriteIcon
+            onClick={() => {
+              const index = favoriteProjectsIds.indexOf(selectedOption.value);
+              const favorited = index !== -1;
+              if (favorited) {
+                favoriteProjectsIds.splice(index, 1);
+              } else {
+                favoriteProjectsIds.push(selectedOption.value);
+              }
+              dispatch(createActionCreators('update', {
+                resourceType: 'projects',
+                resources: favoriteProjectsIds,
+                list: 'favorites',
+                mergeListIds: false,
+              }).succeeded());
+            }}
+          >
+            {
+              favoriteProjectsIds.indexOf(selectedOption.value) !== -1
+                ? (
+                  <StarFilledIcon
+                    size="large"
+                    label="FAVORITE"
+                    primaryColor="#6B778C"
+                  />
+                )
+                : (
+                  <StarIcon
+                    size="large"
+                    label="FAVORITE"
+                    primaryColor="#6B778C"
+                  />
+                )
+            }
+          </S.FavoriteIcon>
+        )
+      }
+    </Flex>
     { (selectedSourceType === 'scrum')
       && (
       <SingleSelect
@@ -161,6 +215,7 @@ function mapStateToProps(state) {
       'projects.requests.allProjects.status',
       true,
     ).pending,
+    favoriteProjectsIds: getResourceIds('projects', 'favorites')(state),
     sprintsFetching: getResourceStatus(
       state,
       'sprints.requests.allSprints.status',
