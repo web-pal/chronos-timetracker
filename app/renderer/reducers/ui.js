@@ -13,6 +13,7 @@ export const persistInitialState = {
   issueViewTab: 'Details',
   issuesSearch: '',
   issuesFilters: {},
+  issuesCommentsFilters: {},
 
   trayShowTimer: true,
   allowEmptyComment: true,
