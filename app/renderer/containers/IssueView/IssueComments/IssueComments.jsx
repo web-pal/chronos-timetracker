@@ -12,6 +12,7 @@ import type {
   User,
   IssueComment,
   Dispatch,
+  Filter,
 } from 'types';
 import type {
   Connector,
@@ -22,19 +23,25 @@ import Button from '@atlaskit/button';
 import {
   FieldTextAreaStateless,
 } from '@atlaskit/field-text-area';
+import ArrowDownIcon from '@atlaskit/icon/glyph/arrow-down';
+import ArrowUpIcon from '@atlaskit/icon/glyph/arrow-up';
 
 import {
   getUserData,
   getUiState,
-  getResourceMappedList,
+  getSortedIssueComments,
 } from 'selectors';
 import {
   issuesActions,
+  uiActions,
 } from 'actions';
 import {
   Flex,
   IssueCommentPlaceholder,
 } from 'components';
+import {
+  H200,
+} from 'styles/typography';
 
 import {
   getStatus as getResourceStatus,
@@ -52,6 +59,8 @@ type Props = {
   self: User,
   selectedIssueId: Id,
   dispatch: Dispatch,
+  filters: Filter,
+  filterKey: String,
 };
 
 type State = {
@@ -61,6 +70,7 @@ type State = {
 class IssueComments extends Component<Props, State> {
   state = {
     comment: '',
+
   };
 
   render() {
@@ -71,6 +81,8 @@ class IssueComments extends Component<Props, State> {
       self,
       selectedIssueId,
       dispatch,
+      filters,
+      filterKey,
     }: Props = this.props;
     return (
       <S.Activity>
@@ -86,6 +98,45 @@ class IssueComments extends Component<Props, State> {
               <Flex row>
                 There are no comments yet on this issue.
               </Flex>
+              )
+            }
+            {!commentsFetching && comments.length !== 0
+              && (
+                <Flex
+                  clickable
+                  onClick={() => {
+                    dispatch(uiActions.setUiState('issuesCommentsFilters', {
+                      [filterKey]: {
+                        _merge: true,
+                        orderType: (
+                          filters?.orderType === 'DESC'
+                            ? 'ASC'
+                            : 'DESC'
+                        ),
+                      },
+                    }));
+                  }}
+                >
+                  <H200>
+                    Order by {filters?.orderBy?.label || 'Created'}
+                  </H200>
+                  {
+                    filters?.orderType === 'DESC'
+                      ? (
+                        <ArrowDownIcon
+                          size="small"
+                          label="DESC"
+                          primaryColor="#6B778C"
+                        />
+                      ) : (
+                        <ArrowUpIcon
+                          size="small"
+                          label="ASC"
+                          primaryColor="#6B778C"
+                        />
+                      )
+                  }
+                </Flex>
               )
             }
             {!commentsFetching && comments.map(comment => (
@@ -160,16 +211,31 @@ class IssueComments extends Component<Props, State> {
 
 function mapStateToProps(state) {
   const selectedIssueId = getUiState('selectedIssueId')(state);
+  const {
+    issuesSourceType,
+    issuesSourceId,
+    issuesSprintId,
+  } = getUiState([
+    'issuesSourceType',
+    'issuesSourceId',
+    'issuesSprintId',
+  ])(state);
+  const filterKey = `${issuesSourceType}_${issuesSourceId}_${issuesSprintId}`;
   return {
-    comments: getResourceMappedList(
-      'issuesComments',
-      `issue_${selectedIssueId}`,
-    )(state),
+    comments: getSortedIssueComments(selectedIssueId)(state),
     commentsFetching: getResourceStatus(
       state,
       `issuesComments.requests.issue_${selectedIssueId}.status`,
     ).pending,
     selectedIssueId,
+    filterKey,
+    filters: (
+      getUiState('issuesCommentsFilters')(state)[filterKey]
+      || ({
+        orderBy: { label: 'Created', value: 'created' },
+        orderType: 'DESC',
+      })
+    ),
     adding: getUiState('commentAdding')(state),
     self: getUserData(state),
   };
