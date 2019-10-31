@@ -2,6 +2,7 @@
 import * as actionTypes from '../actions/actionTypes/ui';
 import type {
   Id,
+  IssuesCommentsFilter,
 } from './';
 
 
@@ -85,6 +86,7 @@ export type UiState = {|
     status: Array<string>,
     assignee: Array<string>,
   },
+  issuesCommentsFilters: IssuesCommentsFilter,
 
   selectedWorklogId: Id | null,
   deleteWorklogId: Id | null,

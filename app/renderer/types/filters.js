@@ -4,11 +4,22 @@ import type {
   User,
 } from './';
 
+export type OrderType = "ASC" | "DESC"
+
 export type Filter = {
   assignee: Array<string>,
   status: Array<string>,
   type: Array<string>,
 };
+
+export type IssuesCommentsFilter = {
+  author: Array<string>,
+  orderBy: {
+    label: string,
+    filter: string
+  },
+  orderType: OrderType
+}
 
 export type JIRAFilter = {
   self: string,

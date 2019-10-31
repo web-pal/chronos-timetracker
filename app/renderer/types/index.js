@@ -167,6 +167,8 @@ export type {
   Filter,
   JIRAFilter,
   FiltersResources,
+  OrderType,
+  IssuesCommentsFilter,
 } from './filters';
 
 export type {
