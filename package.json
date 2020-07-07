@@ -91,7 +91,7 @@
     "babel-plugin-styled-components": "1.10.0",
     "concurrently": "4.1.0",
     "css-loader": "2.1.1",
-    "electron": "4.2.0",
+    "electron": "7.2.4",
     "electron-updater": "4.0.6",
     "electron-builder": "20.39.0",
     "electron-debug": "2.2.0",
