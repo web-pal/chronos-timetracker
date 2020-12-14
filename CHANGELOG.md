@@ -1,3 +1,7 @@
+<a name="5.0.1"></a>
+
+**Fix Google authentication**
+
 <a name="5.0.0"></a>
 
 ### Bug Fixes
@@ -6,12 +10,6 @@
 * Perfomance
 
 **Electron 10.1.5 without remote module**
-
-
-### Bug Fixes
-
-* **Authorization:** atlassian change markup, fix auth screen ([7b4e381](https://github.com/web-pal/chronos-timetracker/commit/7b4e381))
-
 
 
 <a name="3.2.5"></a>
