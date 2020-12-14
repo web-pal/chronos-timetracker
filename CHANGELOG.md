@@ -1,5 +1,11 @@
-<a name="3.2.6"></a>
-## [3.2.6](https://github.com/web-pal/chronos-timetracker/compare/v3.2.5...v3.2.6) (2019-06-20)
+<a name="5.0.0"></a>
+
+### Bug Fixes
+
+* Lot of bug fixes and improvements
+* Perfomance
+
+**Electron 10.1.5 without remote module**
 
 
 ### Bug Fixes
