@@ -150,7 +150,7 @@
     "rc-progress": "2.3.0",
     "merge-images": "1.1.0",
     "rimraf": "2.6.3",
-    "moment": "2.24.0",
+    "moment": "2.29.2",
     "luxon": "1.12.1",
     "react-viewer": "2.8.1",
     "moment-duration-format": "2.2.2",
