@@ -151,7 +151,7 @@
     "merge-images": "1.1.0",
     "rimraf": "2.6.3",
     "moment": "2.24.0",
-    "luxon": "1.12.1",
+    "luxon": "2.5.2",
     "react-viewer": "2.8.1",
     "moment-duration-format": "2.2.2",
     "screenshot-desktop": "1.7.0",
